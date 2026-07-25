@@ -1,0 +1,47 @@
+file_name,format,width_px,height_px,source_catalog,display_name,category,core_reuse,reuse_stage,notes
+Cessna_152.png,PNG,805,1161,commercial,Cessna 152,light-ga,yes,local grass airfield,Transparent top-down sprite
+Cessna_172-Skyhawk.png,PNG,836,1159,commercial,Cessna 172 Skyhawk,light-ga,yes,local grass airfield,Transparent top-down sprite
+Cirrus_SR22.png,PNG,770,968,commercial,Cirrus SR22,light-ga,yes,developed local airport,Paved runway in source data
+Piper_PA-28-Archer.png,PNG,636,815,commercial,Piper PA-28 Archer,light-ga,yes,local or developed airfield,Paved runway in source data
+Diamond DA40.png,PNG,747,965,commercial,Diamond DA40,light-ga,yes,developed local airport,Transparent top-down sprite
+Mooney_M20r-Ovation.png,PNG,784,1072,commercial,Mooney M20R Ovation,light-ga,yes,developed local airport,Transparent top-down sprite
+Beechcraft_Bonanza-g36.png,PNG,672,797,commercial,Beechcraft Bonanza G36,light-ga,yes,developed local airport,Transparent top-down sprite
+Piper_PA-34-Seneca.png,PNG,673,940,commercial,Piper PA-34 Seneca,light-ga,yes,developed local airport,Useful first light twin
+deHaviland_DHC-2-Beaver.png,PNG,604,903,commercial,de Havilland DHC-2 Beaver,bush-ga,yes,local grass airfield,Bush-capable in source data
+Pilatus_PC-6-Porter.png,PNG,568,822,commercial,Pilatus PC-6 Porter,bush-ga,yes,local grass airfield,Bush-capable in source data
+Cessna_208-Caravan.png,PNG,740,1013,commercial,Cessna 208 Caravan,ga-turboprop,yes,developed local airport,Any-surface capability in source data
+Daher_Kodiak-100.png,PNG,573,773,commercial,Daher Kodiak 100,ga-turboprop,yes,developed local airport,Bush-capable in source data
+ATR_42-500.png,PNG,772,763,commercial,ATR 42-500,regional-turboprop,yes,regional airport,Medium stand in source data
+ATR_72-600.png,PNG,1000,989,commercial,ATR 72-600,regional-turboprop,yes,regional airport,Medium stand in source data
+deHaviland_DHC-8-300.png,PNG,760,850,commercial,De Havilland Dash 8-300,regional-turboprop,yes,regional airport,Medium stand in source data
+Saab_340B.png,PNG,735,867,commercial,Saab 340B,regional-turboprop,yes,regional airport,Medium stand in source data
+Fokker_50.png,PNG,720,1130,commercial,Fokker 50,regional-turboprop,yes,regional airport,Medium stand in source data
+Bombardier_Q400.png,PNG,1061,887,commercial,Bombardier Q400,regional-turboprop,yes,regional airport,Small stand in source data should be reviewed
+Embraer_E190.png,PNG,715,649,commercial,Embraer E190,regional-jet,yes,regional airport,Medium stand in source data
+Boeing_737-800.png,PNG,735,765,commercial,Boeing 737-800,narrowbody-jet,yes,national airport,Transparent top-down sprite
+Airbus_A321neo.png,PNG,782,599,commercial,Airbus A321neo,narrowbody-jet,yes,national airport,Also mapped to a cargo catalog variant
+Airbus_A330-300.svg,SVG,vector,vector,commercial,Airbus A330-300,widebody-jet,yes,international hub,Only SVG in the aircraft sprite set
+Boeing_787-9.png,PNG,719,776,commercial,Boeing 787-9,widebody-jet,yes,international hub,Also mapped to a cargo catalog variant
+C-130j.png,PNG,801,1097,military,Lockheed Martin C-130J Super Hercules,mil-cargo-turboprop,no,special event only,Not part of core civilian progression
+c-27j.png,PNG,719,1092,military,Leonardo C-27J Spartan,mil-cargo-turboprop,no,special event only,Not part of core civilian progression
+c-17a.png,PNG,944,858,military,Boeing C-17A Globemaster III,mil-cargo-jet,no,special event only,Not part of core civilian progression
+c-5m.png,PNG,1057,907,military,Lockheed Martin C-5M Super Galaxy,mil-cargo-jet,no,special event only,Not part of core civilian progression
+A-10c.png,PNG,866,939,military,Fairchild Republic A-10C Thunderbolt II,mil-attack-jet,no,airshow only,Combat aircraft is outside core scope
+f-15e.png,PNG,1151,760,military,McDonnell Douglas F-15E Strike Eagle,mil-fighter-jet,no,airshow only,Combat aircraft is outside core scope
+f-16c.png,PNG,929,619,military,General Dynamics F-16C Fighting Falcon,mil-fighter-jet,no,airshow only,Combat aircraft is outside core scope
+f-22a.png,PNG,1157,837,military,Lockheed Martin F-22A Raptor,mil-fighter-jet,no,airshow only,Combat aircraft is outside core scope
+f-35a.png,PNG,1094,749,military,Lockheed Martin F-35A Lightning II,mil-fighter-jet,no,airshow only,Combat aircraft is outside core scope
+fa-18e.png,PNG,1089,825,military,Boeing F/A-18E Super Hornet,mil-fighter-jet,no,airshow only,Combat aircraft is outside core scope
+f-117a.png,PNG,1174,763,military,Lockheed F-117A Nighthawk,mil-attack-jet,no,airshow only,Combat aircraft is outside core scope
+b-1b.png,PNG,971,869,military,Rockwell B-1B Lancer,mil-bomber-jet,no,airshow only,Combat aircraft is outside core scope
+b-2.png,PNG,408,1000,military,Northrop Grumman B-2 Spirit,mil-bomber-jet,no,airshow only,Combat aircraft is outside core scope
+b-52h.png,PNG,960,1088,military,Boeing B-52H Stratofortress,mil-bomber-jet,no,airshow only,Combat aircraft is outside core scope
+An-124.png,PNG,816,839,uncatalogued,Antonov An-124,uncatalogued,no,rights and data review,Sprite exists but is not in the inspected catalogs
+Il-76.png,PNG,930,1014,uncatalogued,Ilyushin Il-76,uncatalogued,no,rights and data review,Sprite exists but is not in the inspected catalogs
+j-16c.png,PNG,737,557,uncatalogued,Shenyang J-16,uncatalogued,no,airshow only,Sprite exists but is not in the inspected catalogs
+Mig-29.png,PNG,908,746,uncatalogued,Mikoyan MiG-29,uncatalogued,no,airshow only,Sprite exists but is not in the inspected catalogs
+Su-27.png,PNG,1139,751,uncatalogued,Sukhoi Su-27,uncatalogued,no,airshow only,Sprite exists but is not in the inspected catalogs
+Su-34.png,PNG,1152,723,uncatalogued,Sukhoi Su-34,uncatalogued,no,airshow only,Sprite exists but is not in the inspected catalogs
+Su-57.png,PNG,731,550,uncatalogued,Sukhoi Su-57,uncatalogued,no,airshow only,Sprite exists but is not in the inspected catalogs
+Tu-160.png,PNG,791,786,uncatalogued,Tupolev Tu-160,uncatalogued,no,airshow only,Sprite exists but is not in the inspected catalogs
+Tu-95.png,PNG,865,746,uncatalogued,Tupolev Tu-95,uncatalogued,no,airshow only,Sprite exists but is not in the inspected catalogs

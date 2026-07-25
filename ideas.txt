@@ -1,0 +1,698 @@
+# Airport Management Game — Living Concept Notebook
+
+Status: Active brainstorming
+
+This file is the living notebook for refining the concept of a single-player, 2D top-down airport-management game. It records what we want the game to feel like, the feature families that belong in it, and the boundaries agreed during brainstorming.
+
+This is not the final game design specification. It intentionally does not define exact prices, timings, capacities, probabilities, progression thresholds, objective counts, or detailed rules. Those decisions belong in the later specification-planning session.
+
+## Core Idea
+
+The player begins with a small piece of land, a road connection, a limited collection of starter resources, and the ambition to create an airport. The first airport may be little more than a grass runway, a taxi path, a parking position, a small building, and a few workers. Over time, it can grow into a sophisticated airport serving many kinds of aviation.
+
+The game should make the airport feel alive. Aircraft fly realistic patterns, use runways selected for the current conditions, taxi through the layout the player built, receive services, exchange passengers or cargo, and depart again. Passengers, workers, vehicles, businesses, and aircraft should all have understandable purposes.
+
+Growth is not defined only by becoming a large passenger hub. A successful airport may specialize in:
+
+- general aviation;
+- flight training;
+- charter operations;
+- cargo;
+- scheduled passenger service;
+- a balanced mixture of several activities.
+
+Every specialization should have a satisfying late game. A highly developed general-aviation or cargo airport should feel as complete and successful as a large passenger airport, even though its buildings, aircraft, income, and daily rhythm are different.
+
+## Intended Audience
+
+The primary audience is children aged 5–10 who love aviation and may already know a great deal about aircraft.
+
+Basic reading is expected. The game may use short labels, messages, contracts, and status explanations rather than relying entirely on icons or narration.
+
+The game should respect the audience's aviation knowledge. It should use authentic terms such as:
+
+- VFR;
+- special VFR;
+- IFR;
+- METAR;
+- traffic pattern;
+- hold short;
+- PAPI and VASI;
+- runway heading and runway number;
+- apron, stand, gate, taxiway, and hangar.
+
+These terms should not be replaced with invented child-like substitutes. Players learn by trying, observing aircraft behavior, reading short explanations, and responding to clear warnings. The game should not require a separate course or long tutorial sequence before the player can enjoy building.
+
+There is one intended, forgiving balance rather than separate difficulty modes. Young players should be able to experiment without permanently ruining an airport.
+
+## Player Fantasy
+
+The player is simultaneously:
+
+- the airport's planner, deciding what to build and where;
+- its manager, choosing priorities, services, staff coverage, and business relationships;
+- its scheduler, deciding which offered flights operate and when;
+- its observer, watching individual aircraft and passengers move through the airport;
+- its decision-maker during weather, closures, congestion, and unusual events.
+
+Routine work should become automated when the airport has the correct staff, facilities, and vehicles. The player should not have to click every fuel truck, baggage cart, or clearance repeatedly. Their job is to build enough capacity, create sensible layouts, assign zones and priorities, and intervene when something unusual or especially interesting happens.
+
+The airport should be enjoyable to watch even when the player is not actively building. A child should be able to follow one aircraft from arrival to departure, inspect a passenger's journey, or simply watch traffic move through a well-designed airport.
+
+## Game Structure
+
+The main experience is a guided sandbox.
+
+Each save contains one independent airport. Nothing functional carries between separate saves. A new airport begins as a fresh project with its own land, discoveries, achievements, finances, aircraft visitors, and history.
+
+The game uses curated fictional regions rather than recreations of real airports. Different maps can offer distinct:
+
+- terrain and land shapes;
+- road approaches;
+- weather patterns;
+- seasonal conditions;
+- available expansion areas;
+- types of aviation demand.
+
+The wider route network remains in the background. Aircraft arrive from named fictional destinations, but the player does not manage airlines or fleets across a world map.
+
+The world represents contemporary aviation. Modern aircraft, airport services, security practices, navigation aids, ground transport, and passenger expectations provide the baseline.
+
+Time passes through a compressed living calendar. Days, nights, weather, seasons, schedules, and special occasions repeat and evolve at a pace appropriate for a management game. A player's first successful airport should reveal major capabilities regularly and take roughly 10–15 hours to reach advanced operations.
+
+There is no formal ending. Reaching a highly developed airport is an achievement, but the player may continue operating, rebuilding, decorating, and expanding for as long as they enjoy the save.
+
+## Guidance and Achievements
+
+The sandbox includes a light achievement list rather than a long mission chain.
+
+Achievements may recognize accomplishments such as:
+
+- safely handling a new class of aircraft;
+- reaching a passenger or cargo milestone;
+- operating through difficult weather;
+- opening a new runway;
+- supporting several tenants;
+- earning a high airport rating;
+- building a working baggage system;
+- hosting a special event;
+- developing a chosen specialization.
+
+Achievements should suggest possibilities without forcing every airport through the same sequence. They may provide rewards and unlocks, but the player should normally choose their own next project.
+
+## Starting an Airport
+
+The opening scene begins on a mostly grass landscape connected to the outside world by a road.
+
+A box truck brings the initial supplies. A bus brings the first construction workers. These arrivals introduce the idea that construction is a visible activity performed by people and vehicles rather than an instant change to the map.
+
+The player chooses a modest starter layout that may include:
+
+- a grass runway;
+- a simple taxi connection;
+- one or more small aircraft parking positions;
+- a basic airport building or shelter;
+- road access;
+- a small public parking area;
+- essential safety and operating equipment.
+
+When the player opens the airport, compatible aircraft begin requesting or receiving service. The first visitors are real general-aviation aircraft types, especially small singles and twins. Each aircraft has a tail number and an identity.
+
+Some aircraft make quick visits. Others park while a pilot or passengers leave by car, taxi, rideshare, or rental vehicle. Based aircraft may remain at the airport and return to service later.
+
+The opening should make the full airport cycle visible:
+
+arrival → runway → taxiway → parking position or gate → passenger, cargo, or service activity → taxi → departure
+
+## Airport Growth and Specialization
+
+Growth uses broad capability tiers, but those tiers do not force every airport toward the same passenger-hub outcome.
+
+Possible stages include:
+
+### Small Local Airfield
+
+- Grass or basic paved surfaces
+- General-aviation singles and twins
+- Private flying and flight training
+- Basic parking and hangars
+- Simple weather and runway decisions
+- Uncontrolled traffic patterns
+
+### Developed Local Airport
+
+- Improved runways and taxiways
+- Lighting and visual approach aids
+- Fuel and maintenance services
+- Advanced general aviation and small turboprops
+- Charter businesses and flight schools
+- Rental cars and improved ground access
+- The option to establish an ATC tower
+
+### Regional-Capability Airport
+
+- Scheduled flights
+- Regional turboprops and jets
+- Passenger security and baggage handling
+- Airline and cargo contracts
+- More substantial emergency coverage
+- Multiple stands, terminal areas, or operating zones
+
+### Advanced Specialized Airport
+
+- Large passenger, cargo, charter, training, or mixed operations
+- Narrow-body aircraft where the runway and services allow
+- Larger terminal, hangar, warehouse, or apron facilities
+- Deicing and more demanding weather operations
+- More complex timetables and traffic flows
+
+### Major Airport Capability
+
+- Wide-body aircraft where appropriate
+- Multiple terminals or operating districts
+- Jetways, remote stands, cargo areas, or extensive GA facilities
+- Rail or tram access
+- Advanced navigation, rescue, security, customs, and passenger systems
+- A mature specialization rather than a mandatory passenger-airline identity
+
+Progress comes from money-like rewards, achievement rewards, airport rating, and capability unlocks. The economy should remain easy to read. Players spend rewards on land, construction, facilities, staff teams, vehicles, services, and upgrades without managing loans, taxes, depreciation, or financial statements.
+
+Recurring expenses may exist where they create an understandable choice, but the game should not create an unrecoverable debt spiral.
+
+## Construction and Land
+
+The player can purchase additional land to make room for:
+
+- longer or additional runways;
+- taxiways and aprons;
+- terminals;
+- hangars;
+- cargo areas;
+- parking lots;
+- rental-car areas;
+- service buildings;
+- emergency facilities;
+- rail and tram connections.
+
+Construction uses a hybrid approach.
+
+The player draws connected outdoor networks on a grid, including:
+
+- runways;
+- taxiways;
+- roads;
+- selected parking and apron surfaces;
+- train or tram track.
+
+Runway numbers are determined by the runway's heading and appear on the finished runway. Length, width, surface, lighting, and approach aids influence which aircraft and operating conditions the runway can support.
+
+Buildings and operating areas can use understandable placeable sections while still allowing extensive customization. The player should be able to create a distinctive airport without needing to construct every outdoor object one tile at a time.
+
+Once a plan is confirmed, supplies and workers arrive and complete the project visibly. Workers may carry materials, use equipment, and finish the project in stages.
+
+Construction closes only the affected facility or work zone. A runway project closes that runway, while another runway may remain open. A terminal expansion may close nearby rooms or gates without automatically shutting the entire airport.
+
+The player retains explicit controls to open or close the whole airport, individual runways, and other major facilities when necessary.
+
+Built facilities remain dependable. The game does not require routine repair or condition management. Operational failures arise from understandable events and choices rather than gradual wear bars.
+
+## Terminal Design
+
+Terminal interiors are fully buildable rather than represented only by upgrade menus.
+
+The player may shape rooms, walls, corridors, secure boundaries, entrances, exits, and passenger-processing areas. Interior features may include:
+
+- check-in counters;
+- ticketing and information;
+- security checkpoints;
+- waiting areas;
+- gates;
+- baggage drop and reclaim;
+- food and drink;
+- restrooms;
+- seating;
+- shops;
+- staff-only areas;
+- customs and immigration for appropriate flights.
+
+Terminal design creates visible passenger-flow puzzles. Corridors, queues, secure zones, gate access, and baggage connections need to make sense.
+
+Decoration is functional rather than an extensive creative-branding game. Players may place furniture, signs, landscaping, and selected themes, but most objects should either improve readability, passenger comfort, or airport operation.
+
+## Baggage
+
+Baggage is a visible terminal system.
+
+The player connects:
+
+- check-in and bag drop;
+- screening;
+- sorting;
+- outbound make-up areas;
+- baggage vehicles;
+- arriving-aircraft unloading;
+- baggage reclaim.
+
+Conveyors should be visible and understandable. Players should be able to follow where bags are going and identify a broken connection, overloaded belt, or badly placed sorting area.
+
+Individual bags do not need personal stories, but a named passenger can show whether their baggage is checked, loaded, delayed, missing, or waiting at reclaim.
+
+## Passengers
+
+Passengers are named individuals rather than anonymous statistics.
+
+Selecting a passenger may show:
+
+- name;
+- current flight and destination;
+- current location and task;
+- time pressure;
+- overall satisfaction;
+- baggage status;
+- a compact set of needs.
+
+The readable need set may include:
+
+- time;
+- comfort;
+- hunger;
+- restroom access;
+- information;
+- confidence in security and airport organization;
+- baggage outcome.
+
+Passengers travel to and from the airport using appropriate transport. They may park, be dropped off, use taxis or rideshare, take a bus or train, or rent a car after arriving.
+
+Passenger simulation should produce understandable stories without becoming a detailed life simulator.
+
+## Security, Customs, and Immigration
+
+Security is physically visible in the terminal.
+
+The player builds:
+
+- queues;
+- screening lanes;
+- staff posts;
+- secure and non-secure zones;
+- connections from screening to gates.
+
+Larger or international-capability operations can add customs and immigration areas with their own queues, staff, and secure routing.
+
+These systems focus on passenger flow, capacity, correct connections, and confidence. They do not require detailed prohibited-item policies or complex risk administration.
+
+## Ground Access
+
+Ground access is a functional network.
+
+The player draws or connects roads and tracks, designates uses, places stops, and adds capacity. Vehicles then route automatically.
+
+Possible ground-access features include:
+
+- private cars;
+- public parking;
+- short-term and long-term parking;
+- pickup and drop-off areas;
+- taxis;
+- rideshare;
+- buses;
+- employee access;
+- rental cars;
+- trains or trams.
+
+Rental companies can pay to establish a terminal presence. They require a designated rental-car parking area connected to the road network. Terminal growth may create space for more rental companies.
+
+Trains and trams may connect the airport to the outside world or connect multiple terminals. Track must form a valid route, and each station must be connected to the terminal area it serves.
+
+Ordinary power, water, waste, communications, and fuel distribution are represented through facility capacity and upgrades rather than player-built utility networks.
+
+## Aircraft
+
+The game uses recognizable real aircraft models with plausible capabilities. Airlines, cargo firms, charter companies, flight schools, and liveries are fictional.
+
+Aircraft categories may include:
+
+- general-aviation singles;
+- light twins;
+- bush aircraft;
+- advanced piston aircraft;
+- small and medium turboprops;
+- regional airliners;
+- narrow-body jets;
+- wide-body passenger aircraft;
+- cargo aircraft;
+- charter aircraft;
+- visiting special-event aircraft.
+
+Aircraft must use compatible:
+
+- runway surfaces and dimensions;
+- parking positions, stands, or gates;
+- taxi routes;
+- terminal or cargo facilities;
+- available services;
+- weather and navigation capability.
+
+Different aircraft sizes require different parking positions and gates. Jetways, remote stands, hangars, and cargo areas serve different kinds of traffic.
+
+Aircraft remain recognizable across visits within the same save. Their persistent record may include:
+
+- tail number;
+- operator;
+- aircraft type;
+- visit history;
+- regular routes;
+- based-aircraft status;
+- notable delays or incidents.
+
+This persistence should make repeat visitors feel familiar and give the airport a history.
+
+## Flight Operations
+
+Aircraft follow authentic, readable operating behavior.
+
+At an airport without a control tower, aircraft use standard traffic-pattern practices. Wind affects the active runway and traffic direction. Aircraft taxi using the paths the player built and respect runway crossings and hold-short locations.
+
+An ATC tower is an unlockable capability. Once staffed, controllers manage routine:
+
+- arrivals;
+- departures;
+- taxi clearances;
+- runway crossings;
+- pattern traffic;
+- sequencing.
+
+ATC is normally automated. The player sets policies, selects active runways, changes priorities, closes facilities, and may override decisions when traffic or weather requires attention.
+
+Frequent ATC and pilot exchanges are spoken using authentic language and also shown as captions. The current speaker and aircraft should be easy to identify. Radio sound may include an aviation-radio character, but the words must remain understandable.
+
+The player should not need to issue every routine clearance in order to keep the airport operating.
+
+## Flight Contracts and Timetables
+
+Airlines and other operators offer readable contracts.
+
+A contract explains:
+
+- the type of operation;
+- compatible aircraft;
+- proposed destinations;
+- available frequencies or flights;
+- service and facility requirements;
+- rewards;
+- satisfaction expectations;
+- renewal conditions.
+
+After accepting a contract, the player chooses which offered flights to operate and assigns exact timetable slots and gates or stands.
+
+The player balances:
+
+- runway capacity;
+- gate and stand availability;
+- terminal capacity;
+- security and baggage demand;
+- service-team workload;
+- expected weather;
+- peak traffic;
+- tenant satisfaction.
+
+The player does not manage the operator's worldwide route network or choose its aircraft fleet from scratch.
+
+## Aircraft Turnaround and Ground Services
+
+Aircraft turnarounds may include:
+
+- passenger boarding and deplaning;
+- baggage loading and unloading;
+- cargo loading;
+- fueling;
+- cleaning;
+- catering;
+- deicing;
+- maintenance response;
+- pushback.
+
+Ground services operate through automated teams. The player hires or expands teams, assigns service zones, provides vehicles and facilities, and sets priorities.
+
+The game should clearly show:
+
+- which tasks an aircraft requested;
+- which tasks are complete;
+- which task is delayed;
+- why the task is delayed;
+- whether the aircraft can depart.
+
+The player can intervene by changing priorities or assigning more capacity, but does not routinely dispatch every individual vehicle.
+
+## Staff
+
+Staff are managed as role-based teams rather than detailed individual careers.
+
+Possible teams include:
+
+- construction;
+- airport operations;
+- ground service;
+- baggage;
+- security;
+- rescue and firefighting;
+- air traffic control;
+- terminal service;
+- customs and immigration;
+- cleaning.
+
+The player assigns teams to zones and priorities. Hiring more staff increases coverage and operating ability while using more of the airport's rewards or recurring budget.
+
+The game does not require individual shift calendars, promotion trees, morale statistics, or employee résumés.
+
+## Tenants and Airport Businesses
+
+Tenants create recurring activity and help define an airport's specialization.
+
+Possible tenants include:
+
+- passenger airlines;
+- cargo operators;
+- charter companies;
+- flight schools;
+- fixed-base or general-aviation operators;
+- rental-car companies;
+- shops and food vendors.
+
+Contracts remain concise and readable. Each tenant has requirements, rewards, and a visible satisfaction level.
+
+Airlines rent gates or stands. Cargo firms need cargo-compatible parking and warehouse space. Charter companies and flight schools need appropriate hangars, parking, and supporting services. Rental-car companies need terminal space and designated vehicle storage.
+
+Tenant satisfaction contributes to contract renewals, future offers, airport rating, and rewards.
+
+## Cargo
+
+Cargo is a meaningful but simplified specialization.
+
+Cargo airports may build:
+
+- cargo stands;
+- warehouses;
+- truck access;
+- screening or customs space;
+- loading equipment;
+- specialized hangars.
+
+Cargo contracts have understandable requirements and deadlines. Freight movement is represented clearly, but the game does not require a detailed simulation of every crate, shipment route, or warehouse process.
+
+## Weather, Time, and Seasons
+
+Weather is meaningful and forecasted.
+
+The game may simulate:
+
+- wind direction and speed;
+- rain;
+- snow;
+- fog;
+- cloud ceiling;
+- visibility;
+- temperature;
+- changing seasons.
+
+Weather affects:
+
+- active runway selection;
+- VFR, special VFR, and IFR availability;
+- traffic spacing;
+- delays and diversions;
+- deicing;
+- snow operations;
+- lighting and navigation needs;
+- passenger and tenant satisfaction.
+
+The game produces authentic METAR-style information and uses real operating categories. Forecasts and warnings give the player time to prepare. Weather should create planning challenges without becoming an unfair surprise.
+
+The day/night cycle changes traffic, lighting, visibility, and atmosphere. Runway lights, taxiway lights, PAPI or VASI, and later navigation capabilities expand when and how safely the airport can operate.
+
+## Emergency Services and Serious Incidents
+
+Emergency services are an important airport capability.
+
+The player may build and expand:
+
+- rescue and firefighting stations;
+- emergency vehicle coverage;
+- medical response;
+- appropriate access routes;
+- higher levels of readiness for larger aircraft and busier operations.
+
+Serious incidents arise from traceable risks such as:
+
+- unsuitable weather;
+- unsafe capacity pressure;
+- poor runway or traffic decisions;
+- inadequate emergency readiness;
+- incompatible aircraft and facilities;
+- ignored warnings;
+- an understandable aircraft emergency.
+
+Warnings should make the risk visible before a preventable accident. Outcomes retain uncertainty, but the game should not use arbitrary disasters that could not be anticipated.
+
+Aircraft may be damaged or lost. Injuries and fatalities may be reported abstractly through non-graphic messages and records. Human harm is not visually depicted.
+
+Consequences may include:
+
+- temporary closures;
+- emergency response;
+- interrupted schedules;
+- reduced airport rating;
+- tenant dissatisfaction;
+- recovery achievements;
+- rebuilding or replacing affected facilities.
+
+Even after a serious accident, the airport remains recoverable. The player is not forced to abandon the save or restart because of one event.
+
+## Airport Rating
+
+The airport has a visible overall rating built from understandable categories.
+
+Possible contributors include:
+
+- passenger satisfaction;
+- tenant satisfaction;
+- delays and reliability;
+- safety and emergency readiness;
+- baggage outcomes;
+- terminal comfort;
+- ground-access performance;
+- cleanliness and organization;
+- successful handling of the airport's chosen specialization.
+
+The rating should reveal its strongest and weakest contributors rather than displaying only a mysterious score.
+
+A higher rating can improve rewards, attract better contracts, increase traffic interest, and unlock opportunities. A lower rating gives the player clear improvement goals without making recovery impossible.
+
+## Economy and Recovery
+
+The economy uses straightforward rewards rather than full business accounting.
+
+The airport earns from activities such as:
+
+- landing and parking;
+- tenant agreements;
+- passenger service;
+- cargo;
+- fuel and ground services;
+- rental cars;
+- shops and food;
+- special achievements and events.
+
+The airport spends rewards on:
+
+- land;
+- construction;
+- staff teams;
+- buildings;
+- vehicles;
+- operating capabilities;
+- upgrades;
+- emergency readiness.
+
+The player should understand where rewards come from and what a purchase enables. Complex accounting is outside the concept.
+
+If the airport runs short of rewards or operates poorly, growth may slow and some services may need to be reduced. Recovery opportunities, assistance, achievable goals, and continued basic operations prevent a permanent failure spiral.
+
+## Special Events
+
+Special events are occasional authored moments rather than a separate management career.
+
+Possible events include:
+
+- an airshow;
+- a general-aviation fly-in;
+- an airport open house;
+- a seasonal travel surge;
+- a visit from an unusual aircraft;
+- a weather or emergency challenge.
+
+An airshow may bring performers, spectators, vendors, temporary parking demand, and unusual aircraft activity. The airport can earn rewards from visitors and vendors after preparing suitable space and services.
+
+Events should make the airport feel surprising and alive without requiring a dedicated event calendar, performer-management system, or permanent event progression track.
+
+## Presentation
+
+The game has a clear, colorful cartoon style viewed primarily from above.
+
+Visual priorities include:
+
+- recognizable aircraft silhouettes;
+- readable runway and taxiway markings;
+- clear paths and connections;
+- visible workers and service vehicles;
+- understandable construction progress;
+- legible weather and night operations;
+- status cues that do not depend on color alone;
+- inspectable aircraft and passengers;
+- useful overlays for traffic, security, baggage, services, and satisfaction.
+
+The camera should support both airport-wide planning and close observation of individual stories.
+
+The tone is enthusiastic about aviation. The game can present serious operational consequences honestly while avoiding graphic depictions of human harm.
+
+## Features Intentionally Kept Simple
+
+The concept favors depth in airport layout, terminal flow, baggage, aviation operations, timetables, and visible entities. Other areas remain intentionally lighter:
+
+- finances use a reward economy;
+- utilities are abstract;
+- facilities do not wear down over time;
+- cargo uses a simplified chain;
+- staff are managed as teams;
+- the wider route network stays in the background;
+- decoration is functional;
+- special events are occasional;
+- there is one intended balance;
+- separate airport saves do not share progress.
+
+These boundaries help the game remain understandable for its intended audience while preserving meaningful aviation detail.
+
+## Deferred for the Final Specification
+
+The later game-design specification must decide exact values and rules for:
+
+- starting resources;
+- construction and upgrade prices;
+- recurring costs;
+- project duration;
+- turnaround duration;
+- aircraft and passenger capacity;
+- timetable spacing;
+- reward rates;
+- rating thresholds;
+- unlock thresholds;
+- land prices and parcel sizes;
+- weather frequency and severity;
+- incident and accident probability;
+- emergency-response outcomes;
+- achievement counts and rewards;
+- the order in which capabilities become available;
+- the exact scope of each airport specialization;
+- the complete list of aircraft, tenants, buildings, services, and events.
+
+Until that specification exists, all such values remain open balancing questions rather than settled requirements.

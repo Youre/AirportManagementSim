@@ -1,0 +1,39 @@
+# ai-project-init:begin managed
+themes: []
+palettes: []
+typography: []
+design_tokens: []
+assets: []
+# ai-project-init:end managed
+
+# Project-maintained inventory outside the generated block.
+project_themes:
+  - 2d_cartoon_top_down
+project_design_tokens:
+  - operational_status
+  - aircraft_size_class
+  - path_connectivity
+  - world_ui_balance
+  - overlay_pattern
+  - warning_severity
+  - selection_focus
+project_assets:
+  - source: C:\Users\Dave\Documents\AirplaneGame\src\assets\sprites
+    kind: aircraft_sprite_candidates
+    status: inventory_only
+    copy_policy: requires_approved_import_plan
+  - source: docs/planning/30-content-and-assets/concept-art/README.md
+    kind: concept_art_reference_set
+    status: approved_visual_reference
+    authority: subordinate_to_written_specifications
+project_palettes:
+  - name: riverbend_operational
+    role: directional_concept_palette
+    colors:
+      - deep_navy_ui
+      - off_white_text
+      - warm_concrete
+      - grass_green
+      - cyan_selection
+      - amber_caution
+      - coral_critical

@@ -1,0 +1,44 @@
+schema_version: 1
+project:
+  name: AirportManagementSim
+  mission: Plan and create an approachable, aviation-authentic, 2D top-down airport
+    management game in Unreal Engine.
+  archetype: document-project
+  material: documents
+  initialization_mode: augment-existing
+governance:
+  autonomy: balanced
+  unacceptable_failures:
+    - security_regression
+    - data_loss
+    - broken_migration
+  compliance: none
+  qualities:
+    - maintainability
+    - observability
+    - low_drift
+  existing_infrastructure_policy: preserve
+agents:
+  concurrency: multi-worktree
+  roles:
+    - documentation-steward
+    - knowledge-reviewer
+workflows:
+  default_lifecycle: feature-lifecycle
+  required_reviews:
+    - architecture-impact
+    - adversarial-review
+planning:
+  questions_resolved: true
+integrations:
+  linear:
+    enabled: false
+    team:
+    project:
+    last_tested_at: '2026-07-25T20:49:10.377298+00:00'
+    access_status: ok
+    access_detail: Linear API authenticated as Dave.
+org_doctrine:
+  packs: []
+  source:
+  last_synced_at:

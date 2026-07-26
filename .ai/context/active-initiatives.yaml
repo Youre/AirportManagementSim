@@ -1,0 +1,16 @@
+# ai-project-init:begin managed
+initiatives: []
+# ai-project-init:end managed
+
+# Project-maintained context outside the generated block.
+project_initiatives:
+  - id: workstation-migration
+    title: Migrate to a stable Windows Unreal workstation
+    status: active
+    source: .ai/handoffs/2026-07-25-windows-migration-resume.md
+    next_outcome: Verify a clean checkout and Unreal 5.8 environment on the replacement machine
+  - id: phase-0-foundation
+    title: Begin the approved Phase 0 technical foundation
+    status: pending
+    source: docs/planning/50-production/phased-implementation-roadmap.md
+    next_outcome: Replace blank-template rendering defaults with the approved 2D baseline and pass bootstrap checks

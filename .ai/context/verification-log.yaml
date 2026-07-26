@@ -1,0 +1,45 @@
+# ai-project-init:begin managed
+entries:
+  - timestamp: '2026-07-25T20:50:35.607650+00:00'
+    command: planning structure, 46-row sprite reconciliation, 6-screenshot relocation,
+      local Markdown link check, ai-init doctor
+    result: passed
+    notes: 46 of 46 source sprites inventoried; 6 screenshots present; no broken local
+      Markdown links; doctor clean before ledger update
+# ai-project-init:end managed
+  - timestamp: '2026-07-25T23:06:27.577024+00:00'
+    command: Planning document UTF-8, local-link, status, and specification-index
+      validation
+    result: passed
+    notes: 43 Markdown files; 39 indexed specifications; 0 UTF-8 errors; 0 broken
+      local links; 0 missing specification statuses; 39 index rows.
+  - timestamp: '2026-07-25T23:06:27.995625+00:00'
+    command: python -m ai_project_init.cli doctor .
+    result: failed
+    notes: 'Doctor completed with one pre-existing/still-present warning: verification-log.yaml
+      managed content is stale (update-managed-block). No structural error reported.'
+  - timestamp: '2026-07-25T23:11:28.557753+00:00'
+    command: gitignore assertion matrix and git diff --check
+    result: passed
+    notes: 25 ignore/track assertions passed; Unreal generated, IDE, automation, MCP-local,
+      package, and test artifacts are ignored; uproject, Config, Content, Source,
+      plugins, .vsconfig, docs, and Codex agent definitions remain trackable.
+  - timestamp: '2026-07-25T23:41:04.310261+00:00'
+    command: Concept-art decode, reference coverage, UTF-8, local-link, git-ignore,
+      and diff validation
+    result: passed
+    notes: 7 PNG references decoded at 1672x941; each has 3-6 planning-document references;
+      0 broken local links; 0 UTF-8 errors; no concept image is ignored; git diff
+      --check passed.
+  - timestamp: '2026-07-26T01:54:25.126158+00:00'
+    command: 'Migration scope audit: planning tree, portable Unreal sources, generated
+      ignore rules, JSON parse, and secret-signature scan'
+    result: passed
+    notes: Planning tree matches HEAD; 11 portable Unreal source/config files identified;
+      Binaries/Intermediate/Saved/.vs/solutions ignored; project-os.lock.json and
+      AMSim.uproject parse; no secret signatures found.
+  - timestamp: '2026-07-26T01:54:25.549158+00:00'
+    command: python -m ai_project_init.cli doctor .
+    result: passed
+    notes: 'Doctor exited 0 with one known warning: verification-log.yaml generated
+      managed content is stale; installed CLI has no update-managed-block command.'

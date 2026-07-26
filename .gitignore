@@ -141,3 +141,101 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Unreal Engine generated output
+#
+# Keep these in version control:
+# - *.uproject and *.uplugin descriptors
+# - Config/
+# - Content/ (including *.uasset and *.umap)
+# - Source/
+# - Build/ resources such as icons
+# - .vsconfig when it declares the shared Visual Studio workload
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+
+# Unreal local build, cook, and packaging output
+Build/Receipts/
+Build/*/FileOpenOrder/
+LocalBuilds/
+StagedBuilds/
+Releases/
+*.uatbuildrecord
+
+# Generated Unreal project/workspace files
+*.sln
+*.slnx
+*.xcodeproj/
+*.xcworkspace/
+Makefile
+CMakeLists.txt
+CMakeSettings.json
+
+# Visual Studio and VS Code machine-local state
+.vs/
+.vscode/
+*.VC.db
+*.VC.opendb
+*.suo
+*.opensdf
+*.sdf
+*.user
+*.userosscache
+*.sln.docstates
+ipch/
+
+# JetBrains Rider / IntelliJ machine-local state
+.idea/
+*.sln.iml
+*.sln.DotSettings.user
+cmake-build-*/
+
+# Xcode machine-local state
+xcuserdata/
+*.xcuserstate
+
+# C++ and Unreal analysis/tool caches
+.clangd/
+.cache/
+.sarif/
+compile_commands.json
+
+# Python editor automation and test caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.venv/
+venv/
+
+# Machine-local Unreal MCP and editor automation state
+.mcp.local.json
+mcp.local.json
+.unreal-mcp/
+mcp-logs/
+
+# Local packaging and test artifacts
+/artifacts/
+/test-results/
+/reports/
+
+# OS-generated files
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Temporary editor files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~

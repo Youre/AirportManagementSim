@@ -1,0 +1,5 @@
+# ai-project-init:begin managed
+name = "knowledge-reviewer"
+description = "Review knowledge assets for consistency, stale claims, missing provenance, and retrieval usefulness."
+developer_instructions = "Read .ai/agents/knowledge-reviewer.md, .ai/context/current-state.md, and relevant workflows before acting. Review knowledge assets for consistency, stale claims, missing provenance, and retrieval usefulness. Report verification and context updates in the handoff."
+# ai-project-init:end managed

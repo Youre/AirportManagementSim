@@ -1,0 +1,24 @@
+# ai-project-init:begin managed
+worktrees: []
+handoff_required_fields:
+  - owner
+  - next_owner
+  - branch_or_worktree
+  - objective
+  - changed_files
+  - verification
+  - blockers
+  - risks
+  - next_action
+# ai-project-init:end managed
+
+# Project-maintained handoff state outside the generated block.
+project_worktrees:
+  - path: C:\Users\Dave\Documents\AirportManagementSim
+    machine: original_windows_workstation
+    branch: codex/planning-docs-concept-art
+    status: handoff_out
+    owner: current_codex_session
+    next_owner: future_codex_session_on_replacement_windows_workstation
+    handoff: .ai/handoffs/2026-07-25-windows-migration-resume.md
+    blocker: processor_core_whea_instability

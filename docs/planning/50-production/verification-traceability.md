@@ -148,6 +148,33 @@ passed on 2026-07-26. The normative records are:
 | Content is controlled and cooked | Editor audit resolves 33 Phase 2 Primary Assets; direct Shipping IoStore inventory lists the same 33 names; zero external Phase 2 aircraft files and zero required 3D candidates |
 | Package remains clean and offline | Development integrated smoke passes; Shipping launches cleanly with zero TCP sockets and zero forbidden editor/test/MCP/Python/RemoteControl/Toolset matches |
 
+## Phase 3 implementation evidence
+
+[PI-05](phase-3-terminal-landside-implementation-plan.md) maps the terminal and
+landside slice to implementation work packages and evidence. Phase 3 passed on
+2026-07-26. The normative records are:
+
+- [Phase 3 verification record](../../../.ai/reviews/2026-07-26-phase-3-verification.md);
+- [Phase 3 architecture-impact review](../../../.ai/reviews/2026-07-26-phase-3-architecture-impact.md);
+- [Phase 3 adversarial review](../../../.ai/reviews/2026-07-26-phase-3-adversarial-review.md);
+- [Phase 3 visual review](phase-3-visual-review.md);
+- [Phase 3 content provenance](../30-content-and-assets/phase-3-content-provenance.md);
+- machine-readable local results at
+  `AMSim/Saved/Phase3/pipeline-result.json`.
+
+| Phase 3 claim | Evidence |
+| --- | --- |
+| One complete domestic turnaround works | Typed construction, network, opening, scheduling, security, assistance, bag-recovery, and time commands complete RB 304 through S05 |
+| Passenger and bag truth reconciles exactly | 52/52 passengers and 34/34 bags complete with exact aircraft, terminal, regional, and destination counts |
+| Security cannot be bypassed | Controlled topology, opening validation, security queue/state transitions, rejection fixtures, and text-plus-boundary presentation pass |
+| Accessibility is operational | Maya's mobility-restricted party uses the accessible entrance, route, checkpoint, and Gate A1 path; missing-route validation rejects invalid state |
+| Landside populations reconcile | Private car, taxi, public bus, parking, curb, entrance, terminal, and completed counts remain explicit and exact |
+| Persistence evolves safely | Schema 4 round-trip, schema 1-3 migration, future/corrupt/reference rejection, and construction/security/boarding/bag/reclaim/landside continuations pass |
+| Scale contracts hold | 10,000 logical/2,000 visible proxy fixture, bounded pools, deterministic selection, sorting, and zero 8x backlog pass |
+| Presentation is player-facing and concept-grounded | Dedicated query-backed presenter, pooled Paper2D world, visible mouse, VA-03 comparison, and 100-200% matrix pass with no P0-P2 visual defect |
+| Content is controlled and cooked | Editor audit and direct Shipping IoStore inventory match all 34 project-authored Phase 3 Primary Assets; zero external Phase 3 aircraft files |
+| Package remains clean and offline | Development packaged S05/save-load passes; Shipping launches with zero TCP sockets and zero forbidden, runtime string-load, or required 3D matches |
+
 ## Visual reference mapping
 
 | Reference | Owning surfaces | First comparison gate |

@@ -61,7 +61,7 @@ Add persistent airframes; recurring and training flights; runway configuration/P
 
 ## Phase 3: Terminal and landside vertical slice
 
-**Status:** Not opened.
+**Status:** Complete — verified on 2026-07-26. See [PI-05](phase-3-terminal-landside-implementation-plan.md), the [verification record](../../../.ai/reviews/2026-07-26-phase-3-verification.md), and the [VA-03 visual review](phase-3-visual-review.md).
 
 **Goal:** One complete departing and arriving passenger flight through a player-built terminal.
 

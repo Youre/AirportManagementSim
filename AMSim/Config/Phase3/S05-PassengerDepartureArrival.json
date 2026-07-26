@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "scenarioId": "S05.PassengerDepartureArrival",
+  "seed": "0xA17F3026",
+  "mapId": "Map.TemperateStarter",
+  "terminal": {
+    "domesticOnly": true,
+    "gateId": "Gate.A1",
+    "requiredRouteCount": 7,
+    "securityBypassAllowed": false,
+    "accessibleRouteRequired": true
+  },
+  "flight": {
+    "flightCode": "RB 304",
+    "operatorId": "Operator.RiverbendConnect",
+    "departingPassengers": 28,
+    "arrivingPassengers": 24,
+    "departingBags": 18,
+    "arrivingBags": 16
+  },
+  "scale": {
+    "logicalPassengers": 10000,
+    "visiblePassengerProxies": 2000
+  }
+}

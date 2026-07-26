@@ -341,7 +341,7 @@ bool FAMSimPhase2FoundationTest::RunTest(const FString& Parameters)
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 	FAMSimPhase2SaveAndMigrationTest,
-	"AMSim.Phase2.Persistence.Schema3AndTransientBoundaries",
+	"AMSim.Phase2.Persistence.Schema4AndTransientBoundaries",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 
 bool FAMSimPhase2SaveAndMigrationTest::RunTest(const FString& Parameters)
@@ -397,9 +397,9 @@ bool FAMSimPhase2SaveAndMigrationTest::RunTest(const FString& Parameters)
 	TestTrue(TEXT("Schema 2 fixture serializes"), SerializeSnapshot(Schema2, LegacyBytes));
 	TestTrue(TEXT("Schema 2 fixture migrates"), DeserializeSnapshot(LegacyBytes, Migrated));
 	TestEqual(
-		TEXT("Schema 2 migrates to schema 3"),
+		TEXT("Schema 2 migrates through schema 3 to the current schema"),
 		Migrated.SchemaVersion,
-		static_cast<uint32>(3));
+		SnapshotSchemaVersion);
 	TestFalse(TEXT("Migration does not invent Phase 2 completion"), Migrated.Phase2.bInitialized);
 
 	FSnapshot Duplicate = Simulation.CreateSnapshot();

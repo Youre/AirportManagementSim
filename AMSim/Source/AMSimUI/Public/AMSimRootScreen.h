@@ -13,6 +13,8 @@ class UCanvasPanel;
 class UEditableTextBox;
 class UTextBlock;
 class UUserWidget;
+class UVerticalBox;
+class UAMSimTerminalView;
 
 UCLASS(Blueprintable)
 class AMSIMUI_API UAMSimRootScreen : public UCommonActivatableWidget
@@ -161,6 +163,10 @@ private:
 	TObjectPtr<UTextBlock> Phase2TenantText;
 	UPROPERTY(Transient)
 	TObjectPtr<UTextBlock> Phase2EconomyText;
+	UPROPERTY(Transient)
+	TObjectPtr<UAMSimTerminalView> TerminalView;
+	UPROPERTY(Transient)
+	TObjectPtr<UVerticalBox> Phase1Page;
 
 	UPROPERTY(Transient)
 	TObjectPtr<UBorder> RunwayVisual;

@@ -520,6 +520,235 @@ namespace AMSim
 			Archive << State.TotalPhase2CostCredits;
 		}
 
+		void SerializePhase3Room(FArchive& Archive, FTerminalRoomRecord& Record)
+		{
+			Archive << Record.Id.Value;
+			SerializeName(Archive, Record.DefinitionId);
+			Archive << Record.DisplayName;
+			SerializeEnum(Archive, Record.Zone);
+			Archive << Record.Capacity;
+			Archive << Record.bBuilt;
+			Archive << Record.bOpen;
+			Archive << Record.bAccessible;
+		}
+
+		void SerializePhase3Route(FArchive& Archive, FTerminalRouteRecord& Record)
+		{
+			Archive << Record.Id.Value;
+			SerializeEnum(Archive, Record.Kind);
+			SerializeName(Archive, Record.DefinitionId);
+			SerializeEnum(Archive, Record.FromZone);
+			SerializeEnum(Archive, Record.ToZone);
+			Archive << Record.bConnected;
+			Archive << Record.bControlledTransition;
+			Archive << Record.bAccessible;
+			Archive << Record.bIntroducesSecurityBypass;
+			Archive << Record.Capacity;
+		}
+
+		void SerializePhase3Checkpoint(
+			FArchive& Archive,
+			FSecurityCheckpointRecord& Record)
+		{
+			Archive << Record.Id.Value;
+			SerializeName(Archive, Record.DefinitionId);
+			Archive << Record.TeamId.Value;
+			Archive << Record.bOpen;
+			Archive << Record.bAccessibleLaneOpen;
+			Archive << Record.ThroughputPerBucket;
+			Archive << Record.QueueCapacity;
+			Archive << Record.ProcessedCount;
+			Archive << Record.SecondaryCount;
+		}
+
+		void SerializePhase3Party(FArchive& Archive, FPassengerPartyRecord& Record)
+		{
+			Archive << Record.Id.Value;
+			Archive << Record.DisplayName;
+			int32 MemberCount = Record.Members.Num();
+			if (!SerializeCount(Archive, MemberCount, MaximumSmallRecords))
+			{
+				return;
+			}
+			if (Archive.IsLoading())
+			{
+				Record.Members.SetNum(MemberCount);
+			}
+			for (FPassengerId& Member : Record.Members)
+			{
+				Archive << Member.Value;
+			}
+			SerializeEnum(Archive, Record.ArrivalMode);
+			Archive << Record.bRequiresAccessibleRoute;
+			Archive << Record.bAssistanceAssigned;
+			Archive << Record.TimeConfidencePercent;
+			Archive << Record.CompactNeeds;
+		}
+
+		void SerializePhase3Passenger(FArchive& Archive, FPassengerRecord& Record)
+		{
+			Archive << Record.Id.Value;
+			Archive << Record.PartyId.Value;
+			Archive << Record.FlightId.Value;
+			Archive << Record.DisplayName;
+			SerializeName(Archive, Record.AgeBand);
+			SerializeEnum(Archive, Record.Direction);
+			SerializeEnum(Archive, Record.JourneyState);
+			SerializeEnum(Archive, Record.SecurityState);
+			SerializeEnum(Archive, Record.LandsideMode);
+			Archive << Record.BagCount;
+			Archive << Record.PatiencePercent;
+			Archive << Record.TimeConfidencePercent;
+			Archive << Record.bRequiresAccessibleRoute;
+			Archive << Record.bUsedAccessibleRoute;
+			Archive << Record.StateChangedAtGameMilliseconds;
+			Archive << Record.Blocker;
+		}
+
+		void SerializePhase3Bag(FArchive& Archive, FBagRecord& Record)
+		{
+			Archive << Record.Id.Value;
+			Archive << Record.PassengerId.Value;
+			Archive << Record.FlightId.Value;
+			SerializeEnum(Archive, Record.Direction);
+			SerializeEnum(Archive, Record.JourneyState);
+			Archive << Record.bScreened;
+			Archive << Record.bReconciled;
+			Archive << Record.StateChangedAtGameMilliseconds;
+			Archive << Record.ExceptionReason;
+		}
+
+		void SerializePhase3Landside(
+			FArchive& Archive,
+			FLandsideAccessRecord& Record)
+		{
+			SerializeEnum(Archive, Record.Mode);
+			SerializeName(Archive, Record.FacilityId);
+			Archive << Record.Capacity;
+			Archive << Record.ArrivedPassengerCount;
+			Archive << Record.DepartedPassengerCount;
+			Archive << Record.bRouteConnected;
+			Archive << Record.bOpen;
+		}
+
+		void SerializePhase3Team(FArchive& Archive, FPhase3StaffTeamRecord& Record)
+		{
+			Archive << Record.Id.Value;
+			SerializeName(Archive, Record.RoleId);
+			SerializeName(Archive, Record.ZoneId);
+			Archive << Record.TeamSize;
+			Archive << Record.WorkloadPercent;
+			Archive << Record.bOnShift;
+		}
+
+		void SerializePhase3Tenant(
+			FArchive& Archive,
+			FPassengerTenantRecord& Record)
+		{
+			Archive << Record.Id.Value;
+			SerializeName(Archive, Record.TenantContentId);
+			Archive << Record.DisplayName;
+			Archive << Record.Requirements;
+			Archive << Record.bActive;
+			Archive << Record.SatisfactionPercent;
+		}
+
+		void SerializePhase3Flight(
+			FArchive& Archive,
+			FPassengerFlightRecord& Record)
+		{
+			Archive << Record.Id.Value;
+			SerializeName(Archive, Record.FlightCode);
+			SerializeName(Archive, Record.OperatorContentId);
+			SerializeName(Archive, Record.AircraftContentId);
+			SerializeName(Archive, Record.GateId);
+			SerializeEnum(Archive, Record.State);
+			Archive << Record.ScheduledAtGameMilliseconds;
+			Archive << Record.StateChangedAtGameMilliseconds;
+			Archive << Record.DepartingPassengerCount;
+			Archive << Record.ArrivingPassengerCount;
+			Archive << Record.AcceptedDepartureBagCount;
+			Archive << Record.ArrivalBagCount;
+			Archive << Record.bPassengerReconciled;
+			Archive << Record.bBagReconciled;
+			Archive << Record.bRewardRecognized;
+			Archive << Record.Blocker;
+		}
+
+		void SerializePhase3Event(FArchive& Archive, FPhase3Event& Record)
+		{
+			Archive << Record.Sequence;
+			Archive << Record.GameTimeMilliseconds;
+			SerializeEnum(Archive, Record.Type);
+			Archive << Record.Cause.Value;
+			Archive << Record.SubjectId;
+			Archive << Record.Message;
+		}
+
+		void SerializePhase3State(FArchive& Archive, FPhase3State& State)
+		{
+			Archive << State.bInitialized;
+			Archive << State.MasterSeed;
+			Archive << State.RandomStreamState;
+			Archive << State.NextDomainId;
+			Archive << State.NextEventSequence;
+			Archive << State.InitializedAtGameMilliseconds;
+			Archive << State.LastUpdatedGameMilliseconds;
+			SerializeEnum(Archive, State.TerminalStage);
+			Archive << State.TerminalStageChangedAtGameMilliseconds;
+			Archive << State.TerminalCostCredits;
+			Archive << State.bTerminalOpen;
+			Archive << State.bSecurityIntegrityValid;
+			Archive << State.bAccessibleRouteValid;
+			SerializeRecords(
+				Archive,
+				State.Rooms,
+				MaximumSmallRecords,
+				SerializePhase3Room);
+			SerializeRecords(
+				Archive,
+				State.Routes,
+				MaximumSmallRecords,
+				SerializePhase3Route);
+			SerializePhase3Checkpoint(Archive, State.Checkpoint);
+			SerializeRecords(
+				Archive,
+				State.Parties,
+				MaximumSmallRecords,
+				SerializePhase3Party);
+			SerializeRecords(
+				Archive,
+				State.Passengers,
+				MaximumSmallRecords,
+				SerializePhase3Passenger);
+			SerializeRecords(
+				Archive,
+				State.Bags,
+				MaximumHistoryRecords,
+				SerializePhase3Bag);
+			SerializeRecords(
+				Archive,
+				State.Landside,
+				MaximumSmallRecords,
+				SerializePhase3Landside);
+			SerializeRecords(
+				Archive,
+				State.Teams,
+				MaximumSmallRecords,
+				SerializePhase3Team);
+			SerializePhase3Tenant(Archive, State.Tenant);
+			SerializePhase3Flight(Archive, State.Flight);
+			SerializeRecords(
+				Archive,
+				State.Events,
+				MaximumHistoryRecords,
+				SerializePhase3Event);
+			Archive << State.CompletedPassengerCount;
+			Archive << State.CompletedBagCount;
+			Archive << State.ReconciliationPassCount;
+			Archive << State.TotalPassengerRevenueCredits;
+		}
+
 		void SerializeBody(FArchive& Archive, FSnapshot& Snapshot)
 		{
 			Archive << Snapshot.SchemaVersion;
@@ -548,6 +777,10 @@ namespace AMSim
 			if (Snapshot.SchemaVersion >= 3)
 			{
 				SerializePhase2State(Archive, Snapshot.Phase2);
+			}
+			if (Snapshot.SchemaVersion >= 4)
+			{
+				SerializePhase3State(Archive, Snapshot.Phase3);
 			}
 		}
 	}
@@ -640,6 +873,13 @@ namespace AMSim
 				Snapshot.MasterSeed == 0 ? 1 : Snapshot.MasterSeed);
 			Snapshot.Phase2 = EmptyPhase2.GetState();
 			Snapshot.SchemaVersion = 3;
+		}
+		if (Snapshot.SchemaVersion == 3)
+		{
+			FPassengerTerminalSimulation EmptyPhase3(
+				Snapshot.MasterSeed == 0 ? 1 : Snapshot.MasterSeed);
+			Snapshot.Phase3 = EmptyPhase3.GetState();
+			Snapshot.SchemaVersion = 4;
 		}
 		return Snapshot.SchemaVersion == SnapshotSchemaVersion;
 	}

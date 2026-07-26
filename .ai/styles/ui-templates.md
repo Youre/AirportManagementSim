@@ -89,4 +89,31 @@ Template-first rule:
   progress, and dependency connector; color never acts alone.
 - Component: reusable native card content hosted by the contextual decision
   region.
+
+## Phase 3 terminal flow surface
+
+- Purpose: present one complete domestic terminal journey without replacing
+  the shared gameplay shell or hiding the airport world.
+- Applicable screens or flows: terminal construction, route validation,
+  passenger departure/arrival, baggage, domestic security, and landside
+  access.
+- Source visual:
+  `docs/planning/30-content-and-assets/concept-art/03-terminal-passenger-flow.png`.
+- Composition: persistent top status; compact terminal tool rail; dominant
+  top-down cutaway; named-party rail; bottom overlay legend. At 175-200%,
+  tools and party details become compact drawers while the terminal remains
+  the largest continuous region.
+- World palette: warm neutral floors; green landside route; cyan sterile
+  boundary and departure route; purple arrivals/reclaim route; amber
+  congestion hatch; yellow dashed accessible route.
+- World encoding: every route uses direction plus a distinct pattern or
+  symbol and a text legend. Secure transitions use shield/checkpoint symbols;
+  accessible links use the accessibility label and dashed route; congestion
+  uses hatch plus label.
+- Selected-party card: identity and member count, flight, current step,
+  compact needs, route, and time confidence. Do not show internal IDs, full
+  ledgers, or more than one short cause/remedy at once.
+- Component: `UAMSimTerminalView`, mapped from `FPhase3QuerySnapshot`.
+- Accepted placeholder content: `Maya's party`, `Security`,
+  `Accessible route ready`, and `On time`.
 - Accepted placeholder content: `Inspect aircraft — waiting`.

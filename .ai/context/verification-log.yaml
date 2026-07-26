@@ -536,3 +536,53 @@ entries:
     notes: Exited 0. Only the known ignored Saved artifact, managed-template,
       lexical-review, legacy-ledger, and project schema/version warnings
       remain; no structural error or Phase 2 evidence conflict.
+  - timestamp: '2026-07-26T21:31:00.0000000+00:00'
+    commit: 2eded6bacb2c41351711c5bbf4f584f43372ece2
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: Initial full AMSim automation after Phase 3 integration
+    result: failed
+    notes: Phase 3 focused automation passed. The full suite found one retained
+      Phase 2 serialization assertion that still expected schema 3 after the
+      authoritative snapshot advanced to schema 4. The test was corrected to
+      use the shared current schema constant; the next full run reported zero
+      failed/not-run/in-process records.
+  - timestamp: '2026-07-26T21:40:00.0000000+00:00'
+    commit: 2eded6bacb2c41351711c5bbf4f584f43372ece2
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: Initial Phase 3 Development package staging
+    result: failed
+    notes: Cook completed, but Unreal 5.8 tied the Zen server lifetime to
+      UnrealEditor-Cmd and staging could not read the completed cook oplog
+      after that process exited. No project build, audit, automation, cook, or
+      content assertion failed. The pipeline now starts Zen independently
+      before BuildCookRun.
+  - timestamp: '2026-07-26T22:09:26.5781009+00:00'
+    commit: 2eded6bacb2c41351711c5bbf4f584f43372ece2
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Final Phase 3 gate: editor build; Phase 0-3 audit; focused and
+      full automation; 100-200% rendered VA-03 matrix; schema/save boundary
+      matrix; clean Development and Shipping packages; packaged S05 smoke;
+      IoStore, socket, dependency, runtime-load, and 2D scans'
+    result: passed
+    notes: Audit resolved 20 Phase 1, 33 Phase 2, and 34 Phase 3 assets. Full
+      automation reported 40 succeeded and 1 succeeded-with-warning with zero
+      failed/not-run/in-process. S05 completed 52/52 passengers and 34/34 bags
+      with one exact reconciliation pass. Every scale passed with zero 8x
+      backlog; inspected 100%, 175%, and 200% VA-03 states have no P0-P2 visual
+      defect. Packaged smoke passed at 1.723 ms p99 and 1,108.093 average FPS
+      with checksum 10622603748974364525. Shipping directly contains all 34
+      Phase 3 assets, observes zero TCP sockets, and has zero forbidden,
+      runtime string-load, or required 3D matches.
+  - timestamp: '2026-07-26T22:11:00.0000000+00:00'
+    commit: 2eded6bacb2c41351711c5bbf4f584f43372ece2
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: python -m ai_project_init.cli doctor . --json
+    result: passed
+    notes: Exited 0. Only the known ignored Saved inspection artifact,
+      managed-template/baseline, lexical-review, legacy-ledger, and project
+      schema/version warnings remain; no structural error or Phase 3 evidence
+      conflict.

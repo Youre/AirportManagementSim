@@ -2,6 +2,7 @@
 #include "AMSimImportManifestValidator.h"
 #include "AMSimPhase1Content.h"
 #include "AMSimPhase2Content.h"
+#include "AMSimPhase3Content.h"
 #include "Dom/JsonObject.h"
 #include "Engine/AssetManager.h"
 #include "Misc/ConfigCacheIni.h"
@@ -337,6 +338,141 @@ int32 UAMSimProjectAuditCommandlet::Main(const FString& Params)
 		}
 	}
 
+	AssetManager.ScanPathsForPrimaryAssets(
+		TEXT("AMSimPhase3"),
+		{TEXT("/Game/Phase3/Definitions")},
+		UAMSimPhase3Definition::StaticClass(),
+		false);
+	const FAMSimPhase3CatalogValidation Phase3Catalog =
+		FAMSimPhase3ContentCatalog::ValidateLoadedCatalog();
+	for (const FString& Error : Phase3Catalog.Errors)
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s"), *Error);
+	}
+	bPassed &= Phase3Catalog.bValid;
+	UE_LOG(
+		LogTemp,
+		Display,
+		TEXT("Phase 3 catalog: %d Primary Assets; required definitions %s."),
+		Phase3Catalog.Assets.Num(),
+		Phase3Catalog.bValid ? TEXT("resolved") : TEXT("missing or invalid"));
+
+	const FString Phase3ConfigDirectory =
+		FPaths::Combine(FPaths::ProjectConfigDir(), TEXT("Phase3"));
+	TSharedPtr<FJsonObject> Phase3Fixture;
+	if (LoadJsonObject(
+		FPaths::Combine(
+			Phase3ConfigDirectory,
+			TEXT("S05-PassengerDepartureArrival.json")),
+		Phase3Fixture))
+	{
+		const TSharedPtr<FJsonObject>* Terminal = nullptr;
+		const TSharedPtr<FJsonObject>* Flight = nullptr;
+		const TSharedPtr<FJsonObject>* Scale = nullptr;
+		const bool bPhase3FixtureValid =
+			Phase3Fixture->GetIntegerField(TEXT("schema")) == 1 &&
+			Phase3Fixture->GetStringField(TEXT("scenarioId")) ==
+				TEXT("S05.PassengerDepartureArrival") &&
+			Phase3Fixture->TryGetObjectField(TEXT("terminal"), Terminal) &&
+			!(*Terminal)->GetBoolField(TEXT("securityBypassAllowed")) &&
+			(*Terminal)->GetBoolField(TEXT("accessibleRouteRequired")) &&
+			(*Terminal)->GetIntegerField(TEXT("requiredRouteCount")) == 7 &&
+			Phase3Fixture->TryGetObjectField(TEXT("flight"), Flight) &&
+			(*Flight)->GetIntegerField(TEXT("departingPassengers")) == 28 &&
+			(*Flight)->GetIntegerField(TEXT("arrivingPassengers")) == 24 &&
+			(*Flight)->GetIntegerField(TEXT("departingBags")) == 18 &&
+			(*Flight)->GetIntegerField(TEXT("arrivingBags")) == 16 &&
+			Phase3Fixture->TryGetObjectField(TEXT("scale"), Scale) &&
+			(*Scale)->GetIntegerField(TEXT("logicalPassengers")) == 10000 &&
+			(*Scale)->GetIntegerField(TEXT("visiblePassengerProxies")) == 2000;
+		if (!bPhase3FixtureValid)
+		{
+			UE_LOG(LogTemp, Error, TEXT("S05 violates the Phase 3 topology, reconciliation, or scale lock."));
+			bPassed = false;
+		}
+	}
+	else
+	{
+		bPassed = false;
+	}
+
+	TSharedPtr<FJsonObject> Phase3Manifest;
+	if (LoadJsonObject(
+		FPaths::Combine(
+			Phase3ConfigDirectory,
+			TEXT("Phase3ContentManifest.json")),
+		Phase3Manifest))
+	{
+		const bool bPhase3ManifestValid =
+			Phase3Manifest->GetIntegerField(TEXT("externalAircraftFilesCopied")) == 0 &&
+			Phase3Manifest->GetIntegerField(TEXT("required3DGameplayAssets")) == 0 &&
+			!Phase3Manifest->GetBoolField(TEXT("runtimeStringAssetLoadingAllowed")) &&
+			!Phase3Manifest->GetBoolField(TEXT("conceptArtUsedAsRuntimeAsset")) &&
+			Phase3Manifest->GetIntegerField(TEXT("requiredPrimaryAssetCount")) ==
+				FAMSimPhase3ContentCatalog::RequiredContentIds().Num() &&
+			Phase3Manifest->GetStringField(TEXT("contentReviewId")) ==
+				TEXT("CT04.Phase3.TerminalFlow.2026-07-26");
+		if (!bPhase3ManifestValid)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Phase 3 content manifest violates the controlled 2D content lock."));
+			bPassed = false;
+		}
+	}
+	else
+	{
+		bPassed = false;
+	}
+
+	TSharedPtr<FJsonObject> Phase3Review;
+	if (LoadJsonObject(
+		FPaths::Combine(
+			Phase3ConfigDirectory,
+			TEXT("Phase3ContentReview.json")),
+		Phase3Review))
+	{
+		const TSharedPtr<FJsonObject>* Checks = nullptr;
+		bool bPhase3ReviewValid =
+			Phase3Review->GetStringField(TEXT("reviewId")) ==
+				TEXT("CT04.Phase3.TerminalFlow.2026-07-26") &&
+			Phase3Review->GetBoolField(TEXT("passed")) &&
+			Phase3Review->GetStringField(TEXT("runtimeDimension")) == TEXT("2D") &&
+			Phase3Review->GetStringField(TEXT("visualReference")) == TEXT("VA-03") &&
+			Phase3Review->GetIntegerField(TEXT("externalSourceFilesCopied")) == 0 &&
+			Phase3Review->TryGetObjectField(TEXT("checks"), Checks);
+		if (bPhase3ReviewValid)
+		{
+			for (const TCHAR* CheckName : {
+				TEXT("stableIdsPreserved"),
+				TEXT("fictionalNamesAndOperatorConfirmed"),
+				TEXT("protectedTraitsHaveNoGameplayPenalty"),
+				TEXT("securityLanguageChildAppropriate"),
+				TEXT("accessibleRouteRequired"),
+				TEXT("passengerAndBagOwnershipVisible"),
+				TEXT("colorIndependentRouteEncodingRequired"),
+				TEXT("conceptArtNotShipped"),
+				TEXT("noRequired3DGameplayAsset"),
+				TEXT("noExternalAircraftSourceCopied")})
+			{
+				bool bCheckPassed = false;
+				if (!(*Checks)->TryGetBoolField(CheckName, bCheckPassed) ||
+					!bCheckPassed)
+				{
+					bPhase3ReviewValid = false;
+					break;
+				}
+			}
+		}
+		if (!bPhase3ReviewValid)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Phase 3 content review is incomplete or failed."));
+			bPassed = false;
+		}
+	}
+	else
+	{
+		bPassed = false;
+	}
+
 	FString ManifestPath;
 	if (FParse::Value(*Params, TEXT("Manifest="), ManifestPath))
 	{
@@ -358,6 +494,6 @@ int32 UAMSimProjectAuditCommandlet::Main(const FString& Params)
 		}
 	}
 
-	UE_LOG(LogTemp, Display, TEXT("AMSim Phase 0-2 project audit: %s"), bPassed ? TEXT("PASSED") : TEXT("FAILED"));
+	UE_LOG(LogTemp, Display, TEXT("AMSim Phase 0-3 project audit: %s"), bPassed ? TEXT("PASSED") : TEXT("FAILED"));
 	return bPassed ? 0 : 1;
 }

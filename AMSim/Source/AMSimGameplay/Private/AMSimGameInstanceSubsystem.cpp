@@ -341,6 +341,14 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 		bPhase1SmokeJourneyPassed &= bAccepted;
 		return bAccepted;
 	};
+	auto SubmitPhase3 = [this, SimulationSubsystem](AMSim::FPhase3Command Command)
+	{
+		const bool bAccepted =
+			SimulationSubsystem->SubmitPhase3Command(MoveTemp(Command)) ==
+			AMSim::EPhase3CommandResult::Accepted;
+		bPhase1SmokeJourneyPassed &= bAccepted;
+		return bAccepted;
+	};
 	auto SetSpeed = [&Submit](const int32 Multiplier)
 	{
 		AMSim::FPhase1Command Command;
@@ -363,6 +371,10 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 			SimulationSubsystem->GetPhase2Query();
 		const AMSim::FPhase2State& Phase2State =
 			SimulationSubsystem->GetSimulation().GetPhase2State();
+		const AMSim::FPhase3QuerySnapshot Phase3Query =
+			SimulationSubsystem->GetPhase3Query();
+		const AMSim::FPhase3State& Phase3State =
+			SimulationSubsystem->GetSimulation().GetPhase3State();
 		Phase1SmokeFrameMilliseconds.Sort();
 		Phase1SimulationWorkMilliseconds.Sort();
 		const double Percentile99Milliseconds =
@@ -393,7 +405,9 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 			IFileManager::Get().FileExists(*FPaths::Combine(ProofDirectory, TEXT("va06-weather.png"))) &&
 			IFileManager::Get().FileExists(*FPaths::Combine(ProofDirectory, TEXT("va06-incident.png"))) &&
 			IFileManager::Get().FileExists(*FPaths::Combine(ProofDirectory, TEXT("va07-progression.png"))) &&
-			IFileManager::Get().FileExists(*FPaths::Combine(ProofDirectory, TEXT("phase2-complete.png")));
+			IFileManager::Get().FileExists(*FPaths::Combine(ProofDirectory, TEXT("phase2-complete.png"))) &&
+			IFileManager::Get().FileExists(*FPaths::Combine(ProofDirectory, TEXT("va03-terminal-passenger-flow.png"))) &&
+			IFileManager::Get().FileExists(*FPaths::Combine(ProofDirectory, TEXT("phase3-complete.png")));
 		const bool bStatePassed =
 			Query.FlightState == AMSim::EFlightState::Completed &&
 			Query.OfferState == AMSim::EOfferState::Completed &&
@@ -408,7 +422,13 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 			Phase2State.SelectedSpecialization ==
 				AMSim::EAirportSpecialization::FlightSchool &&
 			Phase2State.Expansion.Stage == AMSim::EExpansionStage::Operational &&
-			Phase2State.Incident.State == AMSim::EIncidentState::Resolved;
+			Phase2State.Incident.State == AMSim::EIncidentState::Resolved &&
+			Phase3Query.bTerminalOpen &&
+			Phase3Query.FlightState == AMSim::EPhase3FlightState::Completed &&
+			Phase3Query.CompletedPassengerCount == Phase3Query.PassengerCount &&
+			Phase3Query.CompletedBagCount == Phase3Query.BagCount &&
+			Phase3State.Flight.bPassengerReconciled &&
+			Phase3State.Flight.bBagReconciled;
 		const bool bPassed =
 			!bTimedOut &&
 			bPhase1SmokeJourneyPassed &&
@@ -426,7 +446,7 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 			Phase1MaximumMemoryMiB < 4096 &&
 			bReferenceProfilePassed;
 		const FString Result = FString::Printf(
-			TEXT("{\"schema\":2,\"scenario\":\"S01-S10.IntegratedPhase2Smoke\",")
+			TEXT("{\"schema\":3,\"scenario\":\"S01-S11.IntegratedPhase3Smoke\",")
 			TEXT("\"passed\":%s,\"timedOut\":%s,\"journeyPassed\":%s,")
 			TEXT("\"saveLoadContinuity\":%s,\"stateAssertions\":%s,\"screenshotsCaptured\":%s,")
 			TEXT("\"resolution\":{\"width\":%d,\"height\":%d},")
@@ -444,6 +464,9 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 			TEXT("\"credits\":%lld,\"airportPoints\":%d,\"phraseIntentCount\":%d,")
 			TEXT("\"phase2OperatingDay\":%d,\"phase2CompletedFlights\":%d,")
 			TEXT("\"phase2IncidentState\":%d,\"phase2ExpansionStage\":%d,")
+			TEXT("\"phase3FlightState\":%d,\"phase3Passengers\":%d,")
+			TEXT("\"phase3CompletedPassengers\":%d,\"phase3Bags\":%d,")
+			TEXT("\"phase3CompletedBags\":%d,\"phase3ReconciliationPasses\":%d,")
 			TEXT("\"checksum\":\"%llu\"}"),
 			bPassed ? TEXT("true") : TEXT("false"),
 			bTimedOut ? TEXT("true") : TEXT("false"),
@@ -488,6 +511,12 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 			Phase2Query.CompletedFlightCount,
 			static_cast<int32>(Phase2State.Incident.State),
 			static_cast<int32>(Phase2State.Expansion.Stage),
+			static_cast<int32>(Phase3Query.FlightState),
+			Phase3Query.PassengerCount,
+			Phase3Query.CompletedPassengerCount,
+			Phase3Query.BagCount,
+			Phase3Query.CompletedBagCount,
+			Phase3State.ReconciliationPassCount,
 			Phase1SmokeChecksum);
 		FFileHelper::SaveStringToFile(
 			Result,
@@ -756,6 +785,107 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 		}
 		break;
 	case 17:
+		if (ProofReady())
+		{
+			AMSim::FPhase3Command Initialize;
+			Initialize.Type =
+				AMSim::EPhase3CommandType::InitializePassengerAirport;
+			SubmitPhase3(MoveTemp(Initialize));
+			AMSim::FPhase3Command Fund;
+			Fund.Type = AMSim::EPhase3CommandType::FundTerminal;
+			SubmitPhase3(MoveTemp(Fund));
+			SetSpeed(8);
+			Phase1SmokeStage = 18;
+		}
+		break;
+	case 18:
+		if (SimulationSubsystem->GetPhase3Query().TerminalStage ==
+			AMSim::ETerminalConstructionStage::ShellReady)
+		{
+			Pause();
+			const int32 RouteCount =
+				SimulationSubsystem->GetSimulation().GetPhase3State().Routes.Num();
+			for (int32 Index = 0; Index < RouteCount; ++Index)
+			{
+				AMSim::FPhase3Command Connect;
+				Connect.Type = AMSim::EPhase3CommandType::ConnectNextNetwork;
+				SubmitPhase3(MoveTemp(Connect));
+			}
+			AMSim::FPhase3Command Open;
+			Open.Type = AMSim::EPhase3CommandType::OpenTerminal;
+			SubmitPhase3(MoveTemp(Open));
+			AMSim::FPhase3Command Schedule;
+			Schedule.Type =
+				AMSim::EPhase3CommandType::SchedulePassengerService;
+			SubmitPhase3(MoveTemp(Schedule));
+			const AMSim::FPassengerRecord* Accessible =
+				SimulationSubsystem->GetSimulation().GetPhase3State().
+					Passengers.FindByPredicate(
+						[](const AMSim::FPassengerRecord& Passenger)
+							{
+								return Passenger.bRequiresAccessibleRoute;
+							});
+			if (Accessible)
+			{
+				AMSim::FPhase3Command Assist;
+				Assist.Type =
+					AMSim::EPhase3CommandType::RequestPassengerAssistance;
+				Assist.PassengerId = Accessible->Id;
+				SubmitPhase3(MoveTemp(Assist));
+			}
+			else
+			{
+				bPhase1SmokeJourneyPassed = false;
+			}
+			SetSpeed(8);
+			Phase1SmokeStage = 19;
+		}
+		break;
+	case 19:
+		if (SimulationSubsystem->GetPhase3Query().SecurityQueueCount > 0)
+		{
+			Pause();
+			Phase1SmokeChecksum =
+				SimulationSubsystem->GetSimulation().CalculateChecksum();
+			AMSim::FSnapshot Snapshot =
+				SimulationSubsystem->CreateSnapshot();
+			AMSim::FSaveMetadata Metadata;
+			Metadata.PlayerLabel = TEXT("Phase 3 security-flow smoke");
+			Metadata.AirportName = Query.AirportName;
+			const AMSim::FSaveResult SaveResult = SaveSnapshotAsync(
+				TEXT("Phase3Smoke"),
+				MoveTemp(Snapshot),
+				MoveTemp(Metadata)).Get();
+			AMSim::FSnapshot Loaded;
+			bool bUsedBackup = false;
+			bPhase1SmokeSaveLoadPassed &=
+				SaveResult.bSucceeded &&
+				LoadSnapshot(TEXT("Phase3Smoke"), Loaded, bUsedBackup) &&
+				!bUsedBackup &&
+				SimulationSubsystem->RestoreSnapshot(Loaded) &&
+				SimulationSubsystem->GetSimulation().CalculateChecksum() ==
+					Phase1SmokeChecksum;
+			RequestProof(TEXT("va03-terminal-passenger-flow.png"));
+			Phase1SmokeStage = 20;
+		}
+		break;
+	case 20:
+		if (ProofReady())
+		{
+			SetSpeed(8);
+			Phase1SmokeStage = 21;
+		}
+		break;
+	case 21:
+		if (SimulationSubsystem->GetPhase3Query().FlightState ==
+			AMSim::EPhase3FlightState::Completed)
+		{
+			Pause();
+			RequestProof(TEXT("phase3-complete.png"));
+			Phase1SmokeStage = 22;
+		}
+		break;
+	case 22:
 		if (ProofReady())
 		{
 			Phase1SmokeChecksum =

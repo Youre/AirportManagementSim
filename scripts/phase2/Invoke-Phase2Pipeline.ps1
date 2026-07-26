@@ -91,7 +91,7 @@ $runtimeStringAssetLoads = @(
 $phase2Passed =
     $pipeline.passed -and
     $smoke.passed -and
-    $smoke.schema -eq 2 -and
+    $smoke.schema -ge 2 -and
     $smoke.phase2OperatingDay -ge 8 -and
     $smoke.phase2CompletedFlights -ge 20 -and
     $smoke.phase2IncidentState -eq 5 -and

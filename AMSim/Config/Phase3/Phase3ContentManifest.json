@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "phase": "Phase3",
+  "contentReviewId": "CT04.Phase3.TerminalFlow.2026-07-26",
+  "requiredPrimaryAssetCount": 34,
+  "externalAircraftFilesCopied": 0,
+  "required3DGameplayAssets": 0,
+  "runtimeStringAssetLoadingAllowed": false,
+  "conceptArtUsedAsRuntimeAsset": false,
+  "sourcePolicy": "ProjectAuthored2DOnly"
+}

@@ -2,6 +2,7 @@
 
 #include "AMSimDeterminism.h"
 #include "AMSimLivingAirportSimulation.h"
+#include "AMSimPassengerTerminalSimulation.h"
 #include "AMSimStarterAirfieldSimulation.h"
 
 namespace AMSim
@@ -17,6 +18,7 @@ namespace AMSim
 		TArray<FEntityId> Entities;
 		FPhase1State Phase1;
 		FPhase2State Phase2;
+		FPhase3State Phase3;
 	};
 
 	class AMSIMSIMULATION_API FSimulation
@@ -29,15 +31,18 @@ namespace AMSim
 		FQuerySnapshot CreateQuerySnapshot() const;
 		FPhase1QuerySnapshot CreatePhase1QuerySnapshot() const;
 		FPhase2QuerySnapshot CreatePhase2QuerySnapshot() const;
+		FPhase3QuerySnapshot CreatePhase3QuerySnapshot() const;
 		FSimulationDiagnostics CreateDiagnostics() const;
 		FSnapshot CreateSnapshot() const;
 		bool RestoreSnapshot(const FSnapshot& Snapshot);
 		EPhase1CommandResult QueuePhase1Command(const FPhase1Command& Command);
 		EPhase2CommandResult QueuePhase2Command(const FPhase2Command& Command);
+		EPhase3CommandResult QueuePhase3Command(const FPhase3Command& Command);
 
 		const TArray<FEvent>& GetEvents() const { return Events; }
 		const FPhase1State& GetPhase1State() const { return Phase1.GetState(); }
 		const FPhase2State& GetPhase2State() const { return Phase2.GetState(); }
+		const FPhase3State& GetPhase3State() const { return Phase3.GetState(); }
 		uint64 CalculateChecksum() const;
 
 	private:
@@ -54,6 +59,7 @@ namespace AMSim
 		TArray<FEvent> Events;
 		FStarterAirfieldSimulation Phase1;
 		FLivingAirportSimulation Phase2;
+		FPassengerTerminalSimulation Phase3;
 	};
 
 	struct FReplayResult

@@ -24,6 +24,7 @@ $buildScript = Join-Path $EngineRoot 'Engine\Build\BatchFiles\Build.bat'
 $uatScript = Join-Path $EngineRoot 'Engine\Build\BatchFiles\RunUAT.bat'
 $editor = Join-Path $EngineRoot 'Engine\Binaries\Win64\UnrealEditor.exe'
 $editorCommand = Join-Path $EngineRoot 'Engine\Binaries\Win64\UnrealEditor-Cmd.exe'
+$zenTool = Join-Path $EngineRoot 'Engine\Binaries\Win64\zen.exe'
 
 function Invoke-Native {
     param(
@@ -247,6 +248,8 @@ if (-not $SkipScaleMatrix) {
             'va06-incident.png',
             'va07-progression.png',
             'phase2-complete.png',
+            'va03-terminal-passenger-flow.png',
+            'phase3-complete.png',
             'smoke-result.json'
         )) {
             Copy-Item `
@@ -265,6 +268,10 @@ if (-not $SkipScaleMatrix) {
 }
 
 if (-not $SkipPackage) {
+    # UE 5.8 staging reads the cook oplog after UnrealEditor-Cmd exits. Starting
+    # Zen independently keeps that oplog available instead of tying its lifetime
+    # to the transient cook process.
+    Invoke-Native -Executable $zenTool -Arguments @('up')
     Reset-GeneratedDirectory -Path $packageRoot
     foreach ($configuration in @('Development', 'Shipping')) {
         Invoke-Native -Executable $uatScript -Arguments @(
@@ -426,7 +433,9 @@ $requiredProofs = @(
     'va06-weather.png',
     'va06-incident.png',
     'va07-progression.png',
-    'phase2-complete.png'
+    'phase2-complete.png',
+    'va03-terminal-passenger-flow.png',
+    'phase3-complete.png'
 )
 $packagedProofRoot = Join-Path $developmentExe.Directory.FullName 'AMSim\Saved\Phase1'
 foreach ($proofName in $requiredProofs) {

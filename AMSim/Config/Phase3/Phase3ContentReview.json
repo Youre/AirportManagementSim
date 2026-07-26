@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "reviewId": "CT04.Phase3.TerminalFlow.2026-07-26",
+  "passed": true,
+  "runtimeDimension": "2D",
+  "visualReference": "VA-03",
+  "externalSourceFilesCopied": 0,
+  "fictionalOperator": "Riverbend Connect",
+  "checks": {
+    "stableIdsPreserved": true,
+    "fictionalNamesAndOperatorConfirmed": true,
+    "protectedTraitsHaveNoGameplayPenalty": true,
+    "securityLanguageChildAppropriate": true,
+    "accessibleRouteRequired": true,
+    "passengerAndBagOwnershipVisible": true,
+    "colorIndependentRouteEncodingRequired": true,
+    "conceptArtNotShipped": true,
+    "noRequired3DGameplayAsset": true,
+    "noExternalAircraftSourceCopied": true
+  }
+}

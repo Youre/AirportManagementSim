@@ -4,6 +4,7 @@
 #include "AMSimAirportSimulationSubsystem.h"
 #include "AMSimGameInstanceSubsystem.h"
 #include "AMSimPhase1Fixture.h"
+#include "AMSimTerminalView.h"
 #include "AMSimUITheme.h"
 #include "Blueprint/WidgetTree.h"
 #include "Blueprint/UserWidget.h"
@@ -315,6 +316,7 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	UVerticalBox* Page = WidgetTree->ConstructWidget<UVerticalBox>(
 		UVerticalBox::StaticClass(),
 		TEXT("Page"));
+	Phase1Page = Page;
 	UOverlaySlot* PageSlot = Root->AddChildToOverlay(Page);
 	PageSlot->SetHorizontalAlignment(HAlign_Fill);
 	PageSlot->SetVerticalAlignment(VAlign_Fill);
@@ -1395,6 +1397,13 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	UVerticalBoxSlot* FooterSlot = Page->AddChildToVerticalBox(Footer);
 	FooterSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
 
+	TerminalView = WidgetTree->ConstructWidget<UAMSimTerminalView>(
+		UAMSimTerminalView::StaticClass(),
+		TEXT("PassengerTerminalView"));
+	UOverlaySlot* TerminalSlot = Root->AddChildToOverlay(TerminalView);
+	TerminalSlot->SetHorizontalAlignment(HAlign_Fill);
+	TerminalSlot->SetVerticalAlignment(VAlign_Fill);
+
 	SpeechProvider = CreateAMSimLocalSpeechProvider();
 	const bool bSpeechReady = SpeechProvider->Initialize();
 	SetInteractionMessage(
@@ -1681,6 +1690,18 @@ void UAMSimRootScreen::RefreshFromSimulation()
 	const AMSim::FPhase1State& State = Subsystem->GetSimulation().GetPhase1State();
 	const AMSim::FPhase2QuerySnapshot Phase2Query = Subsystem->GetPhase2Query();
 	const AMSim::FPhase2State& Phase2State = Subsystem->GetSimulation().GetPhase2State();
+	const AMSim::FPhase3QuerySnapshot Phase3Query = Subsystem->GetPhase3Query();
+	if (TerminalView)
+	{
+		TerminalView->RefreshFromSimulation();
+	}
+	if (Phase1Page)
+	{
+		Phase1Page->SetVisibility(
+			Phase3Query.bUnlocked || Phase3Query.bInitialized
+				? ESlateVisibility::Collapsed
+				: ESlateVisibility::Visible);
+	}
 	if (LastAppliedRevision == Query.Revision)
 	{
 		return;
@@ -1772,8 +1793,13 @@ void UAMSimRootScreen::RefreshFromSimulation()
 
 	for (TActorIterator<AAMSimWorldPresenter> It(GetWorld()); It; ++It)
 	{
-		It->ApplySnapshot(Query);
-		It->ApplyPhase2Snapshot(Phase2Query, Phase2State);
+		if (!Phase3Query.bInitialized ||
+			Phase3Query.TerminalStage <
+				AMSim::ETerminalConstructionStage::ShellReady)
+		{
+			It->ApplySnapshot(Query);
+			It->ApplyPhase2Snapshot(Phase2Query, Phase2State);
+		}
 		break;
 	}
 
@@ -1919,6 +1945,10 @@ void UAMSimRootScreen::RefreshFromSimulation()
 				: ESlateVisibility::Collapsed);
 	}
 	RefreshPhase2Presentation(Phase2Query, Phase2State, State);
+	if (TerminalView)
+	{
+		TerminalView->RefreshFromSimulation();
+	}
 	LastPhraseCount = State.PhraseIntents.Num();
 	ForceLayoutPrepass();
 }

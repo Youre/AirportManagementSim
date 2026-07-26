@@ -4,7 +4,7 @@ This directory is the durable source of truth for planning the 2D, top-down airp
 
 ## Current planning stage
 
-The project is in **phased implementation**. `ideas.txt` remains the living concept source; the approved specification set defines implementable feature behavior, technical boundaries, initial tuning, verification, and phased integration. Phase 0 is complete, and the approved Phase 1 grass-airfield plan is ready for work packages P1-00 and P1-01. Work still enters only through its owning approved specifications and phase gate.
+The project is in **phased implementation**. `ideas.txt` remains the living concept source; the approved specification set defines implementable feature behavior, technical boundaries, initial tuning, verification, and phased integration. Phase 0 is complete. Phase 1 implementation, player-facing content lock, package, and offline gates pass; formal Phase 1 closure remains pending the physical reference-tier run and unassisted tester/audio/comprehension record. Work still enters only through its owning approved specifications and phase gate.
 
 ## Directory map
 

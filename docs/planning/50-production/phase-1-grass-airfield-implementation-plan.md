@@ -5,7 +5,7 @@
 **Last updated:** 2026-07-26
 **Roadmap phase:** Phase 1
 
-Implementation evidence is recorded in the [Phase 1 verification record](../../../.ai/reviews/2026-07-26-phase-1-verification.md). The final code/package gates and elevated network-denied S15 pass. Formal closure still requires physical reference-tier measurement and the [unassisted new-tester/audio/comprehension protocol](phase-1-new-tester-protocol.md).
+Implementation evidence is recorded in the [Phase 1 verification record](../../../.ai/reviews/2026-07-26-phase-1-verification.md). All P1-00 through P1-08 implementation exits, the reviewed player-facing content lock, the final code/package gates, and elevated network-denied S15 pass. Formal closure still requires physical reference-tier measurement and the [unassisted new-tester/audio/comprehension protocol](phase-1-new-tester-protocol.md).
 
 ## Purpose
 
@@ -85,9 +85,9 @@ Continuation must match uninterrupted deterministic state and events. A zero-cre
 
 ## Content policy
 
-The stable Phase 1 content identity is `Aircraft.LightPiston.Starter`, paired with a fictional starter operator and fictional call sign. Development may begin with an internally authored 2D test silhouette whose provenance is recorded as internal-test content.
+The stable Phase 1 content identity is `Aircraft.LightPiston.Starter`, paired with the fictional Riverbend Trainer, Riverbend Flying Club, and Riverbend call sign. The reviewed player-facing asset is a project-authored 2D directional vector silhouette with 16 heading steps; it uses no copied external aircraft file.
 
-Before Phase 1 closes, the player-facing aircraft, livery, dimensions, capability values, directions, and terminology must pass CT-01/CT-02 provenance and accuracy review. The content lock may replace the internal-test art without changing the stable content ID or save contract.
+CT-01/CT-02 review `CT02.Phase1.RiverbendTrainer.2026-07-26` passes for the fictional identity and livery, 8.3 m length, 11.0 m wingspan, four-place capacity, 600 m grass-runway compatibility envelope, color-independent direction, deliberately fictional `RB-021` registration, and controller terminology. The machine-readable record is `AMSim/Config/Phase1/Phase1ContentReview.json`; its source and derived-asset hashes are enforced by the project audit and final acceptance aggregate. Stable content IDs and the save contract did not change.
 
 No file is copied from `C:\Users\dave\Documents\Joes_Game\dist\assets` unless a populated manifest row records its exact deployed filename, checksum, creator/license, reuse decision, cleanup, scale, directions, destination ID, and reviewer. Using internally authored art is the default path when that approval is unavailable.
 
@@ -253,7 +253,7 @@ Exit: UI automation and visual/accessibility review pass at 1920 x 1080 and 100%
 - Scan Shipping for editor/test/MCP/network leakage and required 3D gameplay assets.
 - Conduct the new-tester completion/comprehension review and record visual-reference differences.
 
-Exit: every Phase 1 gate and traceability row has machine-readable and human evidence.
+Exit: every locally executable Phase 1 gate and traceability row has machine-readable evidence. The physical reference-tier and unassisted human-session records remain the two formal external locks.
 
 ## Verification matrix
 

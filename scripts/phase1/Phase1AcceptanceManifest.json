@@ -3,7 +3,7 @@
   "phase": 1,
   "engine": "5.8.0",
   "platform": "Win64",
-  "packageSourceCommit": "cdb1ad16e11a5b5a10fbb5a39072886242c9451b",
+  "packageSourceCommit": "0e9b679e642a0e8e2a4f4350ba9573c180936036",
   "contentReview": {
     "relativePath": "AMSim/Config/Phase1/Phase1ContentReview.json",
     "sha256": "8CC56CCDED7E41BD72D7155607AC0A90DE88E6670B016D30C0AF11DC79FB7AD5"
@@ -15,7 +15,7 @@
     },
     "developmentRuntime": {
       "relativePath": "Development/Windows/AMSim/Binaries/Win64/AMSim.exe",
-      "sha256": "5A67AD0EDEFD31893B5AE5BFED6D6A5B4ED1A4060BA196B3885621220DFF3A5E"
+      "sha256": "937AFBB4C57EB90A241694C7F46D2DCFA96A89DB1D5DF986921ACCFA913F8CC7"
     },
     "shippingLauncher": {
       "relativePath": "Shipping/Windows/AMSim.exe",
@@ -23,7 +23,7 @@
     },
     "shippingRuntime": {
       "relativePath": "Shipping/Windows/AMSim/Binaries/Win64/AMSim-Win64-Shipping.exe",
-      "sha256": "73F229B63E43EF6E9857E4B7C6DD932D5B8919C584FCE00D9C7922AF0215F920"
+      "sha256": "885C78F3660E0894BA60CCDEB73F6D57CE79D4A6CF781F7779521B43FFB12468"
     }
   }
 }

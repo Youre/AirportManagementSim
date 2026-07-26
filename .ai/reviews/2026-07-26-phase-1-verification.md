@@ -14,7 +14,10 @@
 - exact five-minute schedule, explicit Stand A1 assignment, protected stand buffers, persistent airframe, automated runway/taxi/service/departure state, five captioned radio intents, ledger, rating, objective, and reward;
 - editable airport name and independent local slot, save/load controls, query-backed status/remedy surfaces, local speech abstraction, and caption/cue fallback;
 - snapshot schema 2, pure schema-1 migration, boundary continuation matrix, deterministic replay/checksum, async verified writes, backup fallback, and packaged continuation;
-- project-owned map, 20 validated Primary Assets, internally authored 2D aircraft marker, and zero copied external aircraft files.
+- project-owned map, 20 validated Primary Assets, reviewed fictional Riverbend
+  Trainer/operator/livery, project-authored directional 2D silhouette, reviewed
+  compatibility and aviation terminology, and zero copied external aircraft
+  files.
 
 ## Automated results
 
@@ -42,18 +45,18 @@ packages are generated under `AMSim/Saved/Phase1Packages/`.
 | Metric | Result |
 | --- | ---: |
 | Rendered resolution | 1920 x 1080 |
-| Frames / elapsed | 6,074 / 5.000395 s |
-| Average FPS | 1,214.704 |
-| p99 frame | 1.271 ms |
-| Maximum frame | 320.003 ms |
+| Frames / elapsed | 6,138 / 5.000533 s |
+| Average FPS | 1,227.469 |
+| p99 frame | 1.752 ms |
+| Maximum frame | 2.498 ms |
 | 1x simulation median / p99 | 0.000 / 0.001 ms per frame |
-| Snapshot capture | 0.028 ms |
-| Save write | 8.652 ms |
+| Snapshot capture | 0.025 ms |
+| Save write | 7.524 ms |
 | Maximum 8x backlog | 0 steps |
-| Resident memory | 432 MiB ending / 447 MiB maximum |
+| Resident memory | 499 MiB ending / 501 MiB maximum |
 | Final economy | 2,200 Credits / 5 Airport Points |
 | Phrase intents | 5 |
-| Final checksum | `8264913351739008826` |
+| Final checksum | `6583174326702355518` |
 
 This is RTX 5090 development-host evidence, not representative-tier certification.
 
@@ -65,11 +68,11 @@ distance 0, antialiasing 2, shadows/global illumination/reflections/post process
 
 | Scale | Result | p99 frame | Layout |
 | ---: | --- | ---: | --- |
-| 100% | Passed | 1.268 ms | three rails; local scroll |
-| 125% | Passed | 1.316 ms | three rails; local scroll |
-| 150% | Passed | 1.381 ms | three rails; local scroll |
-| 175% | Passed | 1.491 ms | stacked full-width scroll |
-| 200% | Passed | 1.512 ms | stacked full-width scroll |
+| 100% | Passed | 1.061 ms | three rails; local scroll |
+| 125% | Passed | 1.100 ms | three rails; local scroll |
+| 150% | Passed | 1.326 ms | three rails; local scroll |
+| 175% | Passed | 1.688 ms | stacked full-width scroll |
+| 200% | Passed | 1.739 ms | stacked full-width scroll |
 
 Visual inspection confirmed no objective/status or ledger/rating collision after the final fixes. Scrollbars intentionally preserve access where all controls cannot fit simultaneously.
 
@@ -78,7 +81,10 @@ Visual inspection confirmed no objective/status or ledger/rating collision after
 - VA-01: retains a clear airport/status/economy hierarchy and north-up parcel; implementation uses flat project-owned 2D geometry rather than incidental concept-art detail.
 - VA-02: exposes cost, project stage, cause/remedy, affected facilities, and visible construction state; proposal geometry is the deterministic starter bundle.
 - VA-04: exposes compatibility, pin/decline/accept, exact slot, stand, buffer, and departure details; only the Phase 1 one-flight timetable is shown.
-- VA-05: exposes persistent airframe identity, movement state, inspection, fueling, captions, and completion feedback; service animation remains derived.
+- VA-05: exposes persistent fictional `RB-021` identity, state-derived heading
+  through a color-independent aircraft silhouette, movement state, inspection,
+  fueling, reviewed captions, and completion feedback; service animation
+  remains derived.
 
 Written 2D, accessibility, value, and behavior requirements take precedence over generated reference dimensions and ornamental detail.
 
@@ -87,9 +93,30 @@ Written 2D, accessibility, value, and behavior requirements take precedence over
 | Package file | SHA-256 |
 | --- | --- |
 | Development launcher | `6E313C72D7EAF9147AEBE8B3ADB593FAC4D75C6EEEEA818A201E677A222EC39F` |
-| Development runtime | `5A67AD0EDEFD31893B5AE5BFED6D6A5B4ED1A4060BA196B3885621220DFF3A5E` |
+| Development runtime | `937AFBB4C57EB90A241694C7F46D2DCFA96A89DB1D5DF986921ACCFA913F8CC7` |
 | Shipping launcher | `DEF5538AC925382C0F5FFE98FE9689C66EA921595043D72D6BE9A2C321DE474B` |
-| Shipping runtime | `73F229B63E43EF6E9857E4B7C6DD932D5B8919C584FCE00D9C7922AF0215F920` |
+| Shipping runtime | `885C78F3660E0894BA60CCDEB73F6D57CE79D4A6CF781F7779521B43FFB12468` |
+
+The package source commit is
+`0e9b679e642a0e8e2a4f4350ba9573c180936036`. The two launcher hashes are
+unchanged because those bootstrap executables contain no project runtime code;
+both inner runtime hashes changed and are independently enforced.
+
+## Player-facing content lock
+
+- Review `CT02.Phase1.RiverbendTrainer.2026-07-26` approves a deliberately
+  fictional light-piston trainer envelope: 8.3 m length, 11.0 m wingspan, four
+  occupants, and 600 m minimum grass-runway compatibility.
+- `RB-021`, Riverbend Flying Club, the cyan livery, and the 16-heading
+  directional silhouette are fictional and project-authored.
+- The silhouette communicates direction by fuselage, main wing, and shorter
+  tailplane, independent of color.
+- Captions use the reviewed `Riverbend Tower`, `cleared to land`, `taxi via
+  Taxiway A`, `hold short`, and `cleared for takeoff` terminology.
+- `Phase1ContentReview.json` binds all seven authored source files and four
+  derived assets. The project audit and strict aggregate validate the review,
+  its content, hashes, and package-source relationship.
+- No file from `C:\Users\dave\Documents\Joes_Game\dist\assets` was copied.
 
 ## Closeout hardening evidence
 
@@ -111,13 +138,13 @@ Written 2D, accessibility, value, and behavior requirements take precedence over
 
 ## Elevated network-denied S15
 
-At `2026-07-26T07:22:54.5810261Z`, Windows Firewall applied temporary inbound
+At `2026-07-26T13:17:09.2982848Z`, Windows Firewall applied temporary inbound
 and outbound block rules on every profile to the exact final Development and
 Shipping launcher/runtime paths.
 
-- Development completed S01 and save/load continuation at 1.140 ms p99 frame
+- Development completed S01 and save/load continuation at 1.819 ms p99 frame
   time with zero 8x backlog.
-- Its 49 sampled TCP observations were only the expected local Development trace
+- Its 51 sampled TCP observations were only the expected local Development trace
   listener; no unexpected socket was observed.
 - Shipping remained running for five seconds and produced zero TCP observations.
 - The tested package hashes match the final package identity table above.
@@ -127,16 +154,21 @@ Shipping launcher/runtime paths.
 ## Acceptance-record enforcement
 
 - `Phase1AcceptanceManifest.json` binds the closeout to package source commit
-  `cdb1ad16e11a5b5a10fbb5a39072886242c9451b` and the four hashes above.
+  `0e9b679e642a0e8e2a4f4350ba9573c180936036`, the content-review hash, and the
+  four hashes above.
+- The pipeline result records the clean source commit and four freshly produced
+  executable hashes. Elevated S15 records and revalidates the same package
+  identity, preventing stale offline evidence from surviving a repackage.
 - The updated reference collector rehashed all four binaries before launch. Its
   five-second development-host harness passed package identity and runtime
   metrics at 1.816 ms p99, while correctly retaining `passed: false`.
 - A minimal tester fixture and an all-positive rehearsal both retained
   `passed: false`; the latter failed only the deliberately absent formal-evidence
   attestation.
-- The strict aggregate passed exact package identity, the full pipeline, and
-  elevated network-denied S15. With no certifying external records, it reported
-  exactly `referenceTierPassed` and `testerAcceptancePassed` as false.
+- The strict aggregate passed exact package identity, player-facing content
+  review, the full pipeline, and elevated network-denied S15. With no certifying
+  external records, it reported exactly `referenceTierPassed` and
+  `testerAcceptancePassed` as false.
 - Calling the aggregate without `-AllowIncompleteEvidence` wrote the same false
   result and exited with failure. The switch affects exit handling only and
   cannot turn an incomplete result into acceptance.

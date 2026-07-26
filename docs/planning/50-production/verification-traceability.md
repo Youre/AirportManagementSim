@@ -103,6 +103,8 @@ Accepted residuals are metadata-only transitive editor plugin descriptors, the t
 - [Phase 1 implementation adversarial review](../../../.ai/reviews/2026-07-26-phase-1-implementation-adversarial-review.md);
 - [Phase 1 closeout-hardening architecture-impact review](../../../.ai/reviews/2026-07-26-phase-1-closeout-architecture-impact.md);
 - [Phase 1 closeout-hardening adversarial review](../../../.ai/reviews/2026-07-26-phase-1-closeout-adversarial-review.md);
+- [Phase 1 player-facing content-lock architecture-impact review](../../../.ai/reviews/2026-07-26-phase-1-content-lock-architecture-impact.md);
+- [Phase 1 player-facing content-lock adversarial review](../../../.ai/reviews/2026-07-26-phase-1-content-lock-adversarial-review.md);
 - machine-readable local results at `AMSim/Saved/Phase1/pipeline-result.json`.
 
 | Phase 1 claim | Current evidence |
@@ -113,7 +115,7 @@ Accepted residuals are metadata-only transitive editor plugin descriptors, the t
 | Construction is authoritative and persistent | Proposal/stage/delivery/team/inspection/open/close/cancel tests and save matrix pass |
 | Aircraft operation is safe and deterministic | ATC, reservation, taxi, turnaround, readiness, replay, no-overlap, and intermediate-state catch-up assertions pass |
 | UI explains cause, remedy, compatibility, and reward | Query-backed rendered matrix passes 100–200%; new-tester comprehension pending |
-| Content is controlled | 20-asset catalog, internal 2D provenance, and zero copied external aircraft pass |
+| Content is controlled | 20-asset catalog plus reviewed fictional Riverbend Trainer/operator/livery; project-authored directional 2D silhouette; reviewed dimensions, capability, registration treatment, and terminology; zero copied external aircraft files |
 | Save evolution is safe | Schema-1 migration, schema-2 boundary continuation, corruption/backup/future validation pass |
 | Performance meets a representative target | Development-host frame/simulation/save/memory budgets and reference-profile collector pass; physical four-hour reference-tier run pending |
 | Product remains strict 2D and offline | Shipping asset/dependency/socket scans and elevated firewall-denied S15 pass; Development journey/save-load succeeds and Shipping observes zero TCP sockets |

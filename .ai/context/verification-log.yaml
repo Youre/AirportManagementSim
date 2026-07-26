@@ -171,3 +171,81 @@ entries:
       secret signatures, and doctor structural checks passed. Doctor reported
       only pre-existing managed-template/schema/legacy-ledger warnings plus
       lexical review warnings.
+  - timestamp: '2026-07-26T07:13:29.842418+00:00'
+    commit: f4b66cc907a6cb2538b8fc2ccfffd840a115d302
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: .\scripts\phase1\Invoke-Phase1Pipeline.ps1 -SkipFirewall (closeout
+      attempt 1)
+    result: failed
+    notes: Build, audit, automation, and all five UI scales passed;
+      AutomationTool then lost the local Zen oplog stream during Development
+      staging and exited 1. Failure preserved; no acceptance claim.
+  - timestamp: '2026-07-26T07:13:30.199194+00:00'
+    commit: f4b66cc907a6cb2538b8fc2ccfffd840a115d302
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: .\scripts\phase1\Invoke-Phase1Pipeline.ps1 -SkipBuild -SkipFirewall
+      (closeout attempt 2)
+    result: failed
+    notes: The 100% rendered smoke exposed four of five required phrase intents.
+      Sequential flight catch-up and a forced catch-up regression were added;
+      the attempt remains recorded as failed.
+  - timestamp: '2026-07-26T07:13:30.560020+00:00'
+    commit: f4b66cc907a6cb2538b8fc2ccfffd840a115d302
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: .\scripts\phase1\Invoke-Phase1Pipeline.ps1 -SkipFirewall (closeout
+      final)
+    result: passed
+    notes: 'UE 5.8.0 Win64; machine-readable automation report: 25 executed, 0 failed/not-run/in-process;
+      20 Primary Assets; UI 100-200%; fresh Development/Shipping; packaged S01/save-load;
+      1.271 ms frame p99; 0.000/0.001 ms simulation median/p99; 8.652 ms save; 447
+      MiB max; exact Reference scalability profile; zero backlog, forbidden Shipping
+      matches, unexpected Development sockets, Shipping sockets, or required 3D candidates.'
+  - timestamp: '2026-07-26T07:13:30.914968+00:00'
+    commit: f4b66cc907a6cb2538b8fc2ccfffd840a115d302
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: .\scripts\phase1\Test-Phase1ReferenceTier.ps1 -SoakSeconds 5
+      -TierAttestation Unreviewed -AllowIncompleteEvidence
+    result: passed
+    notes: 'Collector harness completed: hardware/package hashes/profile/1x timing/memory
+      samples captured and all development-host metrics passed. Result correctly kept
+      formal passed=false because this RTX 5090 host is unreviewed and the four-hour
+      soak was not run.'
+  - timestamp: '2026-07-26T07:13:31.299128+00:00'
+    commit: f4b66cc907a6cb2538b8fc2ccfffd840a115d302
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: .\scripts\phase1\Test-Phase1NetworkDenied.ps1 via Start-Process
+      -Verb RunAs
+    result: skipped
+    notes: Windows UAC consent was canceled. No network-denied-result.json was
+      created and no firewall rule was applied; Phase 1 S15 remains open.
+  - timestamp: '2026-07-26T07:13:31.637957+00:00'
+    commit: f4b66cc907a6cb2538b8fc2ccfffd840a115d302
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: Phase 1 physical reference-tier four-hour run and unassisted
+      new-tester/audio/fallback session
+    result: skipped
+    notes: No approved physical reference-tier machine or genuinely new tester
+      is available in this session. Reproducible collector and privacy-conscious
+      tester protocol are now repository worktree artifacts; formal gates remain
+      open.
+  - timestamp: '2026-07-26T07:17:18.221303+00:00'
+    commit: f4b66cc907a6cb2538b8fc2ccfffd840a115d302
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Phase 1 closeout-hardening integrity: Unreal build, machine-readable
+      automation, final pipeline, reference collector, PowerShell AST, source length,
+      JSON, Markdown UTF-8/local links, secret signatures, diff, and ai-init doctor'
+    result: passed
+    notes: Editor build succeeded; final pipeline passed; 25 tests with zero
+      failed/not-run/in-process; reference collector metrics passed while formal
+      gate remained false; 3 Phase1 PowerShell scripts parse; 54 C++/header
+      files under 2,000 lines; Phase1/config/result JSON parses; 96 Markdown
+      files valid with zero broken local links; secret and diff checks pass;
+      doctor exits 0 with only known managed-template, lexical, legacy-ledger,
+      and project-os version warnings.

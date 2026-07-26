@@ -7,6 +7,7 @@
 #include "Engine/GameViewportClient.h"
 #include "GenericPlatform/GenericPlatformMisc.h"
 #include "GenericPlatform/GenericPlatformMemory.h"
+#include "HAL/IConsoleManager.h"
 #include "HAL/PlatformTime.h"
 #include "HAL/FileManager.h"
 #include "Misc/CommandLine.h"
@@ -15,6 +16,95 @@
 #include "Misc/Parse.h"
 #include "Misc/Paths.h"
 #include "UnrealClient.h"
+
+namespace
+{
+#if !UE_BUILD_SHIPPING
+	struct FPhase1ScalabilityValues
+	{
+		int32 ViewDistance = -1;
+		int32 AntiAliasing = -1;
+		int32 Shadow = -1;
+		int32 GlobalIllumination = -1;
+		int32 Reflection = -1;
+		int32 PostProcess = -1;
+		int32 Texture = -1;
+		int32 Effects = -1;
+		int32 Foliage = -1;
+		int32 Shading = -1;
+	};
+
+	void SetScalabilityValue(const TCHAR* Name, const int32 Value)
+	{
+		if (IConsoleVariable* Variable = IConsoleManager::Get().FindConsoleVariable(Name))
+		{
+			Variable->Set(Value, ECVF_SetByCommandline);
+		}
+	}
+
+	int32 GetScalabilityValue(const TCHAR* Name)
+	{
+		const IConsoleVariable* Variable = IConsoleManager::Get().FindConsoleVariable(Name);
+		return Variable ? Variable->GetInt() : -1;
+	}
+
+	void ApplyPhase1ReferenceProfile()
+	{
+		SetScalabilityValue(TEXT("sg.ViewDistanceQuality"), 0);
+		SetScalabilityValue(TEXT("sg.AntiAliasingQuality"), 2);
+		SetScalabilityValue(TEXT("sg.ShadowQuality"), 0);
+		SetScalabilityValue(TEXT("sg.GlobalIlluminationQuality"), 0);
+		SetScalabilityValue(TEXT("sg.ReflectionQuality"), 0);
+		SetScalabilityValue(TEXT("sg.PostProcessQuality"), 0);
+		SetScalabilityValue(TEXT("sg.TextureQuality"), 2);
+		SetScalabilityValue(TEXT("sg.EffectsQuality"), 1);
+		SetScalabilityValue(TEXT("sg.FoliageQuality"), 0);
+		SetScalabilityValue(TEXT("sg.ShadingQuality"), 1);
+	}
+
+	FPhase1ScalabilityValues GetPhase1ScalabilityValues()
+	{
+		return {
+			GetScalabilityValue(TEXT("sg.ViewDistanceQuality")),
+			GetScalabilityValue(TEXT("sg.AntiAliasingQuality")),
+			GetScalabilityValue(TEXT("sg.ShadowQuality")),
+			GetScalabilityValue(TEXT("sg.GlobalIlluminationQuality")),
+			GetScalabilityValue(TEXT("sg.ReflectionQuality")),
+			GetScalabilityValue(TEXT("sg.PostProcessQuality")),
+			GetScalabilityValue(TEXT("sg.TextureQuality")),
+			GetScalabilityValue(TEXT("sg.EffectsQuality")),
+			GetScalabilityValue(TEXT("sg.FoliageQuality")),
+			GetScalabilityValue(TEXT("sg.ShadingQuality"))};
+	}
+
+	bool IsPhase1ReferenceProfile(const FPhase1ScalabilityValues& Values)
+	{
+		return Values.ViewDistance == 0 &&
+			Values.AntiAliasing == 2 &&
+			Values.Shadow == 0 &&
+			Values.GlobalIllumination == 0 &&
+			Values.Reflection == 0 &&
+			Values.PostProcess == 0 &&
+			Values.Texture == 2 &&
+			Values.Effects == 1 &&
+			Values.Foliage == 0 &&
+			Values.Shading == 1;
+	}
+
+	double CalculatePercentile(const TArray<double>& SortedValues, const double Percentile)
+	{
+		if (SortedValues.IsEmpty())
+		{
+			return 0.0;
+		}
+		const int32 Index = FMath::Clamp(
+			FMath::CeilToInt(static_cast<double>(SortedValues.Num()) * Percentile) - 1,
+			0,
+			SortedValues.Num() - 1);
+		return SortedValues[Index];
+	}
+#endif
+}
 
 void UAMSimGameInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -43,6 +133,21 @@ void UAMSimGameInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collectio
 	}
 	if (FParse::Param(FCommandLine::Get(), TEXT("AMSimPhase1Smoke")))
 	{
+		double RequestedPerformanceSeconds = Phase1PerformanceTargetSeconds;
+		if (FParse::Value(
+			FCommandLine::Get(),
+			TEXT("AMSimPhase1PerformanceSeconds="),
+			RequestedPerformanceSeconds))
+		{
+			Phase1PerformanceTargetSeconds =
+				FMath::Clamp(RequestedPerformanceSeconds, 5.0, 14400.0);
+		}
+		bPhase1ReferenceProfileRequested =
+			FParse::Param(FCommandLine::Get(), TEXT("AMSimPhase1ReferenceProfile"));
+		if (bPhase1ReferenceProfileRequested)
+		{
+			ApplyPhase1ReferenceProfile();
+		}
 		const FString ProofDirectory = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("Phase1"));
 		IFileManager::Get().MakeDirectory(*ProofDirectory, true);
 		for (const TCHAR* ProofName : {
@@ -189,6 +294,11 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 		Phase1SmokeMaximumFrameMilliseconds =
 			FMath::Max(Phase1SmokeMaximumFrameMilliseconds, FrameMilliseconds);
 		Phase1SmokeFrameMilliseconds.Add(FrameMilliseconds);
+		Phase1SimulationWorkMilliseconds.Add(
+			SimulationSubsystem->GetLastSimulationWorkMilliseconds());
+		Phase1MaximumMemoryMiB = FMath::Max(
+			Phase1MaximumMemoryMiB,
+			FPlatformMemory::GetStats().UsedPhysical / (1024ull * 1024ull));
 		++Phase1SmokeFrameCount;
 	}
 	Phase1MaximumBacklogSteps =
@@ -237,20 +347,26 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 		const AMSim::FPhase1QuerySnapshot Query = SimulationSubsystem->GetPhase1Query();
 		const AMSim::FPhase1State& State = SimulationSubsystem->GetSimulation().GetPhase1State();
 		Phase1SmokeFrameMilliseconds.Sort();
-		const int32 PercentileIndex = FMath::Clamp(
-			FMath::CeilToInt(static_cast<double>(Phase1SmokeFrameMilliseconds.Num()) * 0.99) - 1,
-			0,
-			Phase1SmokeFrameMilliseconds.Num() - 1);
+		Phase1SimulationWorkMilliseconds.Sort();
 		const double Percentile99Milliseconds =
-			Phase1SmokeFrameMilliseconds.IsEmpty()
-				? 0.0
-				: Phase1SmokeFrameMilliseconds[PercentileIndex];
+			CalculatePercentile(Phase1SmokeFrameMilliseconds, 0.99);
+		const double SimulationMedianMilliseconds =
+			CalculatePercentile(Phase1SimulationWorkMilliseconds, 0.5);
+		const double SimulationPercentile99Milliseconds =
+			CalculatePercentile(Phase1SimulationWorkMilliseconds, 0.99);
 		const double AverageFps =
 			Phase1SmokeElapsedSeconds > 0.0
 				? static_cast<double>(Phase1SmokeFrameCount) / Phase1SmokeElapsedSeconds
 				: 0.0;
 		const uint64 ResidentMemoryMiB =
 			FPlatformMemory::GetStats().UsedPhysical / (1024ull * 1024ull);
+		Phase1MaximumMemoryMiB = FMath::Max(Phase1MaximumMemoryMiB, ResidentMemoryMiB);
+		const int64 MemoryGrowthMiB =
+			static_cast<int64>(ResidentMemoryMiB) -
+			static_cast<int64>(Phase1StartingMemoryMiB);
+		const FPhase1ScalabilityValues Scalability = GetPhase1ScalabilityValues();
+		const bool bReferenceProfilePassed =
+			!bPhase1ReferenceProfileRequested || IsPhase1ReferenceProfile(Scalability);
 		const bool bAllProofsCaptured =
 			IFileManager::Get().FileExists(*FPaths::Combine(ProofDirectory, TEXT("va01-new-airport.png"))) &&
 			IFileManager::Get().FileExists(*FPaths::Combine(ProofDirectory, TEXT("va02-construction.png"))) &&
@@ -274,10 +390,13 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 			ViewportSize == FIntPoint(1920, 1080) &&
 			AverageFps >= 60.0 &&
 			Percentile99Milliseconds <= 16.6 &&
+			SimulationMedianMilliseconds <= 4.0 &&
+			SimulationPercentile99Milliseconds <= 8.0 &&
 			Phase1MaximumBacklogSteps == 0 &&
 			Phase1SnapshotCaptureMilliseconds <= 50.0 &&
 			Phase1SaveWriteMilliseconds <= 2000.0 &&
-			ResidentMemoryMiB < 4096;
+			Phase1MaximumMemoryMiB < 4096 &&
+			bReferenceProfilePassed;
 		const FString Result = FString::Printf(
 			TEXT("{\"schema\":1,\"scenario\":\"S01.StarterGrassAirfield\",")
 			TEXT("\"passed\":%s,\"timedOut\":%s,\"journeyPassed\":%s,")
@@ -285,8 +404,15 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 			TEXT("\"resolution\":{\"width\":%d,\"height\":%d},")
 			TEXT("\"frameCount\":%llu,\"elapsedSeconds\":%.6f,\"averageFps\":%.3f,")
 			TEXT("\"p99FrameMilliseconds\":%.3f,\"maximumFrameMilliseconds\":%.3f,")
+			TEXT("\"simulationMedianMilliseconds\":%.3f,\"simulationP99Milliseconds\":%.3f,")
+			TEXT("\"simulationSampleCount\":%d,\"performanceTargetSeconds\":%.3f,")
 			TEXT("\"snapshotCaptureMilliseconds\":%.3f,\"saveWriteMilliseconds\":%.3f,")
 			TEXT("\"maximum8xBacklogSteps\":%d,\"residentMemoryMiB\":%llu,")
+			TEXT("\"startingMemoryMiB\":%llu,\"maximumMemoryMiB\":%llu,\"memoryGrowthMiB\":%lld,")
+			TEXT("\"referenceProfileRequested\":%s,\"referenceProfileApplied\":%s,")
+			TEXT("\"scalability\":{\"viewDistance\":%d,\"antiAliasing\":%d,\"shadow\":%d,")
+			TEXT("\"globalIllumination\":%d,\"reflection\":%d,\"postProcess\":%d,")
+			TEXT("\"texture\":%d,\"effects\":%d,\"foliage\":%d,\"shading\":%d},")
 			TEXT("\"credits\":%lld,\"airportPoints\":%d,\"phraseIntentCount\":%d,")
 			TEXT("\"checksum\":\"%llu\"}"),
 			bPassed ? TEXT("true") : TEXT("false"),
@@ -302,10 +428,29 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 			AverageFps,
 			Percentile99Milliseconds,
 			Phase1SmokeMaximumFrameMilliseconds,
+			SimulationMedianMilliseconds,
+			SimulationPercentile99Milliseconds,
+			Phase1SimulationWorkMilliseconds.Num(),
+			Phase1PerformanceTargetSeconds,
 			Phase1SnapshotCaptureMilliseconds,
 			Phase1SaveWriteMilliseconds,
 			Phase1MaximumBacklogSteps,
 			ResidentMemoryMiB,
+			Phase1StartingMemoryMiB,
+			Phase1MaximumMemoryMiB,
+			MemoryGrowthMiB,
+			bPhase1ReferenceProfileRequested ? TEXT("true") : TEXT("false"),
+			bReferenceProfilePassed ? TEXT("true") : TEXT("false"),
+			Scalability.ViewDistance,
+			Scalability.AntiAliasing,
+			Scalability.Shadow,
+			Scalability.GlobalIllumination,
+			Scalability.Reflection,
+			Scalability.PostProcess,
+			Scalability.Texture,
+			Scalability.Effects,
+			Scalability.Foliage,
+			Scalability.Shading,
 			Query.Credits,
 			Query.AirportPoints,
 			State.PhraseIntents.Num(),
@@ -318,7 +463,7 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 		FGenericPlatformMisc::RequestExit(false);
 	};
 
-	if (Phase1SmokeTimeoutSeconds > 120.0)
+	if (Phase1SmokeTimeoutSeconds > Phase1PerformanceTargetSeconds + 120.0)
 	{
 		Finalize(true);
 		return;
@@ -442,15 +587,21 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 	case 9:
 		if (ProofReady())
 		{
+			SetSpeed(1);
 			Phase1SmokeElapsedSeconds = 0.0;
 			Phase1SmokeMaximumFrameMilliseconds = 0.0;
 			Phase1SmokeFrameCount = 0;
 			Phase1SmokeFrameMilliseconds.Reset();
+			Phase1SimulationWorkMilliseconds.Reset();
+			Phase1StartingMemoryMiB =
+				FPlatformMemory::GetStats().UsedPhysical / (1024ull * 1024ull);
+			Phase1MaximumMemoryMiB = Phase1StartingMemoryMiB;
 			Phase1SmokeStage = 10;
 		}
 		break;
 	case 10:
-		if (Phase1SmokeElapsedSeconds >= 5.0 && Phase1SmokeFrameCount >= 120)
+		if (Phase1SmokeElapsedSeconds >= Phase1PerformanceTargetSeconds &&
+			Phase1SmokeFrameCount >= 120)
 		{
 			Finalize(false);
 		}

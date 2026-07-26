@@ -22,7 +22,7 @@
 | --- | --- |
 | Editor build | Passed |
 | Project/content audit | Passed; 20 required Primary Assets resolved |
-| Full automation | 24/24 passed; 14 Phase 0 plus 10 Phase 1 |
+| Full automation | 25/25 passed; 14 Phase 0 plus 11 Phase 1; machine-readable report has 0 failed/not-run/in-process |
 | Schema/replay/save | Passed |
 | UI scale matrix | Passed at 100%, 125%, 150%, 175%, and 200% |
 | Development package | Built, launched, and completed packaged S01 |
@@ -38,29 +38,34 @@ The machine-readable aggregate is generated at `AMSim/Saved/Phase1/pipeline-resu
 | Metric | Result |
 | --- | ---: |
 | Rendered resolution | 1920 x 1080 |
-| Frames / elapsed | 6,203 / 5.056168 s |
-| Average FPS | 1,226.819 |
-| p99 frame | 1.172 ms |
-| Maximum frame | 163.851 ms |
-| Snapshot capture | 0.023 ms |
-| Save write | 8.157 ms |
+| Frames / elapsed | 6,074 / 5.000395 s |
+| Average FPS | 1,214.704 |
+| p99 frame | 1.271 ms |
+| Maximum frame | 320.003 ms |
+| 1x simulation median / p99 | 0.000 / 0.001 ms per frame |
+| Snapshot capture | 0.028 ms |
+| Save write | 8.652 ms |
 | Maximum 8x backlog | 0 steps |
-| Resident memory | 441 MiB |
+| Resident memory | 432 MiB ending / 447 MiB maximum |
 | Final economy | 2,200 Credits / 5 Airport Points |
 | Phrase intents | 5 |
 | Final checksum | `8264913351739008826` |
 
 This is RTX 5090 development-host evidence, not representative-tier certification.
 
+The run applied the documented Phase 1 `Reference` scalability profile: view
+distance 0, antialiasing 2, shadows/global illumination/reflections/post process
+0, textures 2, effects 1, foliage 0, and shading 1.
+
 ## UI-scale evidence
 
 | Scale | Result | p99 frame | Layout |
 | ---: | --- | ---: | --- |
-| 100% | Passed | 1.535 ms | three rails; local scroll |
-| 125% | Passed | 1.164 ms | three rails; local scroll |
-| 150% | Passed | 1.237 ms | three rails; local scroll |
-| 175% | Passed | 1.145 ms | stacked full-width scroll |
-| 200% | Passed | 1.284 ms | stacked full-width scroll |
+| 100% | Passed | 1.268 ms | three rails; local scroll |
+| 125% | Passed | 1.316 ms | three rails; local scroll |
+| 150% | Passed | 1.381 ms | three rails; local scroll |
+| 175% | Passed | 1.491 ms | stacked full-width scroll |
+| 200% | Passed | 1.512 ms | stacked full-width scroll |
 
 Visual inspection confirmed no objective/status or ledger/rating collision after the final fixes. Scrollbars intentionally preserve access where all controls cannot fit simultaneously.
 
@@ -73,10 +78,40 @@ Visual inspection confirmed no objective/status or ledger/rating collision after
 
 Written 2D, accessibility, value, and behavior requirements take precedence over generated reference dimensions and ornamental detail.
 
+## Final package identity
+
+| Package file | SHA-256 |
+| --- | --- |
+| Development launcher | `6E313C72D7EAF9147AEBE8B3ADB593FAC4D75C6EEEEA818A201E677A222EC39F` |
+| Development runtime | `5A67AD0EDEFD31893B5AE5BFED6D6A5B4ED1A4060BA196B3885621220DFF3A5E` |
+| Shipping launcher | `DEF5538AC925382C0F5FFE98FE9689C66EA921595043D72D6BE9A2C321DE474B` |
+| Shipping runtime | `73F229B63E43EF6E9857E4B7C6DD932D5B8919C584FCE00D9C7922AF0215F920` |
+
+## Closeout hardening evidence
+
+- The first closeout pipeline attempt passed build, audit, automation, and all UI
+  scales, then failed when AutomationTool lost its local Zen oplog stream during
+  Development staging. The failure is preserved rather than relabeled.
+- A retry exposed a four-of-five phrase-intent result at 100% scale. Flight
+  catch-up now processes every intermediate state in order; the
+  `AMSim.Phase1.Movement.CatchUpPreservesIntermediateEffects` regression forces a
+  full scheduled-to-completed catch-up and verifies services, reward, and all five
+  phrases.
+- The pipeline now parses Unreal's exported automation `index.json`; process exit
+  code 0 alone can no longer hide failed, not-run, or in-process tests.
+- The one success-with-warning is the intentional Phase 0 backup fixture deleting
+  the current snapshot before verifying backup recovery.
+- `Test-Phase1ReferenceTier.ps1` passed its five-second collector check and
+  correctly reported formal acceptance false because this host is unreviewed and
+  the four-hour soak was not requested.
+
 ## External phase-close evidence still required
 
 1. Run `scripts/phase1/Test-Phase1NetworkDenied.ps1` from elevated PowerShell against the final packages.
-2. Run the same packaged scenario on a physical machine meeting or falling below the approved reference tier and record hardware/scalability measurements.
-3. Record an unassisted new-tester completion/comprehension review, including audible local speech and caption/local-cue fallback.
+2. Run `scripts/phase1/Test-Phase1ReferenceTier.ps1 -TierAttestation AtOrBelowApprovedTier`
+   on a physical machine meeting or falling below the approved reference tier.
+3. Complete the
+   [unassisted new-tester protocol](../../docs/planning/50-production/phase-1-new-tester-protocol.md),
+   including audible local speech and caption/local-cue fallback.
 
 Until those records pass, Phase 1 implementation is verified but the formal phase gate remains open.

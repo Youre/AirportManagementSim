@@ -73,6 +73,8 @@ The inventory confirms presence, format, dimensions, and source classification. 
 - [Implementation planning review record](00-foundation/specification-review-record.md) — architecture and adversarial review
 - [Phased implementation roadmap](50-production/phased-implementation-roadmap.md)
 - [Phase 1 grass-airfield implementation plan](50-production/phase-1-grass-airfield-implementation-plan.md)
+- [Phase 1 reference-hardware gate](50-production/phase-1-reference-hardware.md)
+- [Phase 1 unassisted new-tester protocol](50-production/phase-1-new-tester-protocol.md)
 - [Verification and requirements traceability](50-production/verification-traceability.md)
 - [Initial Game Concept](00-foundation/game-concept.md) — earlier concept summary
 - [`ideas.txt`](../../ideas.txt) — living concept source

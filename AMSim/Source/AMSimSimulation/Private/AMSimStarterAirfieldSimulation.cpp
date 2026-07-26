@@ -568,9 +568,11 @@ namespace AMSim
 		else if (CurrentGameMilliseconds >= Arrival - 15000) Desired = EFlightState::Approach;
 		else if (CurrentGameMilliseconds >= Arrival - 30000) Desired = EFlightState::Inbound;
 
-		if (Desired != State.Flight.State)
+		while (static_cast<uint8>(State.Flight.State) < static_cast<uint8>(Desired))
 		{
-			ChangeFlightState(Desired, CurrentGameMilliseconds);
+			const EFlightState NextState = static_cast<EFlightState>(
+				static_cast<uint8>(State.Flight.State) + 1);
+			ChangeFlightState(NextState, CurrentGameMilliseconds);
 		}
 	}
 

@@ -25,11 +25,13 @@ public:
 	int64 GetRecommendedStarterArrivalTime() const;
 	int64 GetLastSimulationMilliseconds() const { return LastSimulationMilliseconds; }
 	int32 GetBacklogSteps() const { return BacklogSteps; }
+	double GetLastSimulationWorkMilliseconds() const { return LastSimulationWorkMilliseconds; }
 
 private:
 	TUniquePtr<AMSim::FSimulation> Simulation;
 	uint64 NextPhase1CommandId = 1;
 	double AccumulatedGameMilliseconds = 0.0;
+	double LastSimulationWorkMilliseconds = 0.0;
 	int64 LastSimulationMilliseconds = 0;
 	int32 BacklogSteps = 0;
 };

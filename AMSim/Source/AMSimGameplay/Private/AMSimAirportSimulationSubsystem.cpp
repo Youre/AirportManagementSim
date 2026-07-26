@@ -1,6 +1,7 @@
 #include "AMSimAirportSimulationSubsystem.h"
 #include "AMSimPhase1Fixture.h"
 #include "Engine/World.h"
+#include "HAL/PlatformTime.h"
 
 void UAMSimAirportSimulationSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -8,6 +9,7 @@ void UAMSimAirportSimulationSubsystem::Initialize(FSubsystemCollectionBase& Coll
 	Simulation = MakeUnique<AMSim::FSimulation>(AMSim::GetPhase1Fixture().Seed);
 	NextPhase1CommandId = 1;
 	AccumulatedGameMilliseconds = 0.0;
+	LastSimulationWorkMilliseconds = 0.0;
 	LastSimulationMilliseconds = 0;
 	BacklogSteps = 0;
 }
@@ -16,6 +18,7 @@ void UAMSimAirportSimulationSubsystem::Deinitialize()
 {
 	Simulation.Reset();
 	AccumulatedGameMilliseconds = 0.0;
+	LastSimulationWorkMilliseconds = 0.0;
 	LastSimulationMilliseconds = 0;
 	BacklogSteps = 0;
 	Super::Deinitialize();
@@ -25,12 +28,14 @@ void UAMSimAirportSimulationSubsystem::Tick(const float DeltaTime)
 {
 	if (!Simulation || DeltaTime <= 0.0f)
 	{
+		LastSimulationWorkMilliseconds = 0.0;
 		return;
 	}
 
 	const AMSim::FPhase1State& State = Simulation->GetPhase1State();
 	if (State.bPaused || State.SpeedMultiplier <= 0)
 	{
+		LastSimulationWorkMilliseconds = 0.0;
 		BacklogSteps = 0;
 		return;
 	}
@@ -45,10 +50,13 @@ void UAMSimAirportSimulationSubsystem::Tick(const float DeltaTime)
 		AccumulatedGameMilliseconds / static_cast<double>(AMSim::FixedStepMilliseconds));
 	constexpr int64 MaximumStepsPerFrame = 4096;
 	const int64 StepsToRun = FMath::Min(AvailableSteps, MaximumStepsPerFrame);
+	const double SimulationStartSeconds = FPlatformTime::Seconds();
 	for (int64 StepIndex = 0; StepIndex < StepsToRun; ++StepIndex)
 	{
 		Simulation->Step();
 	}
+	LastSimulationWorkMilliseconds =
+		(FPlatformTime::Seconds() - SimulationStartSeconds) * 1000.0;
 	AccumulatedGameMilliseconds -=
 		static_cast<double>(StepsToRun * AMSim::FixedStepMilliseconds);
 	BacklogSteps = static_cast<int32>(FMath::Min<int64>(

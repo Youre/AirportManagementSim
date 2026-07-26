@@ -1,8 +1,10 @@
 #include "AMSimSpeechProvider.h"
 
 #include "Engine/Engine.h"
-#include "Sound/SoundWaveProcedural.h"
 #include "Kismet/GameplayStatics.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
+#include "Sound/SoundWaveProcedural.h"
 #include "TextToSpeechEngineSubsystem.h"
 
 namespace
@@ -14,6 +16,12 @@ namespace
 	public:
 		virtual bool Initialize() override
 		{
+#if !UE_BUILD_SHIPPING
+			if (FParse::Param(FCommandLine::Get(), TEXT("AMSimDisableLocalSpeech")))
+			{
+				return false;
+			}
+#endif
 			if (!GEngine)
 			{
 				return false;

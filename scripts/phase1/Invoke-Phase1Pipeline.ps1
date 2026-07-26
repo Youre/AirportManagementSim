@@ -13,6 +13,7 @@ $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
 $projectPath = Join-Path $repoRoot 'AMSim\AMSim.uproject'
 $savedRoot = Join-Path $repoRoot 'AMSim\Saved\Phase1'
 $scaleRoot = Join-Path $savedRoot 'Scale'
+$automationReportRoot = Join-Path $savedRoot 'Automation'
 $packageRoot = if ($PackageRoot) {
     [System.IO.Path]::GetFullPath($PackageRoot)
 } else {
@@ -165,14 +166,29 @@ Invoke-Native -Executable $editorCommand -Arguments @(
     '-NullRHI',
     "-Manifest=$manifestPath"
 )
+Reset-GeneratedDirectory -Path $automationReportRoot
 Invoke-Native -Executable $editorCommand -Arguments @(
     $projectPath,
     '-unattended',
     '-nop4',
     '-NullRHI',
     '-ExecCmds=Automation RunTests AMSim',
-    '-TestExit=Automation Test Queue Empty'
+    '-TestExit=Automation Test Queue Empty',
+    "-ReportExportPath=$automationReportRoot"
 )
+$automationReportPath = Join-Path $automationReportRoot 'index.json'
+if (-not (Test-Path -LiteralPath $automationReportPath)) {
+    throw "Full automation did not emit its machine-readable report: $automationReportPath"
+}
+$automationReport = Get-Content -LiteralPath $automationReportPath -Raw | ConvertFrom-Json
+$automationPassed =
+    $automationReport.tests.Count -gt 0 -and
+    $automationReport.failed -eq 0 -and
+    $automationReport.notRun -eq 0 -and
+    $automationReport.inProcess -eq 0
+if (-not $automationPassed) {
+    throw "Full automation failed: $(Get-Content -LiteralPath $automationReportPath -Raw)"
+}
 
 $scaleResults = @()
 if (-not $SkipScaleMatrix) {
@@ -189,6 +205,7 @@ if (-not $SkipScaleMatrix) {
             $projectPath,
             '-game',
             '-AMSimPhase1Smoke',
+            '-AMSimPhase1ReferenceProfile',
             '-windowed',
             '-ForceRes',
             '-ResX=1920',
@@ -298,7 +315,8 @@ try {
             '-ForceRes',
             '-ResX=1920',
             '-ResY=1080',
-            '-AMSimPhase1Smoke'
+            '-AMSimPhase1Smoke',
+            '-AMSimPhase1ReferenceProfile'
         )
     $packagedSmoke = Wait-ForSmoke `
         -Process $developmentProcess `
@@ -408,7 +426,15 @@ $result = [ordered]@{
     engine = '5.8.0'
     platform = 'Win64'
     auditPassed = $true
-    fullAutomationPassed = $true
+    fullAutomationPassed = $automationPassed
+    automation = [ordered]@{
+        report = $automationReportPath
+        succeeded = $automationReport.succeeded
+        succeededWithWarnings = $automationReport.succeededWithWarnings
+        failed = $automationReport.failed
+        notRun = $automationReport.notRun
+        inProcess = $automationReport.inProcess
+    }
     scaleMatrix = $scaleResults
     developmentPackage = $developmentExe.FullName
     shippingPackage = $shippingExe.FullName

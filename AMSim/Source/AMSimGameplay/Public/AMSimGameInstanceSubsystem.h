@@ -56,12 +56,17 @@ private:
 	double Phase1SmokeWarmupSeconds = 0.0;
 	double Phase1SmokeTimeoutSeconds = 0.0;
 	double Phase1SmokeElapsedSeconds = 0.0;
+	double Phase1PerformanceTargetSeconds = 5.0;
 	double Phase1SmokeMaximumFrameMilliseconds = 0.0;
 	double Phase1SnapshotCaptureMilliseconds = 0.0;
 	double Phase1SaveWriteMilliseconds = 0.0;
 	uint64 Phase1SmokeFrameCount = 0;
 	uint64 Phase1SmokeChecksum = 0;
+	uint64 Phase1StartingMemoryMiB = 0;
+	uint64 Phase1MaximumMemoryMiB = 0;
 	int32 Phase1MaximumBacklogSteps = 0;
+	bool bPhase1ReferenceProfileRequested = false;
 	FString Phase1PendingScreenshot;
 	TArray<double> Phase1SmokeFrameMilliseconds;
+	TArray<double> Phase1SimulationWorkMilliseconds;
 };

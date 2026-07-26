@@ -17,7 +17,7 @@ Next verification command:
 - From elevated PowerShell: `.\scripts\phase1\Test-Phase1NetworkDenied.ps1`
 
 Last verification:
-- 2026-07-26 UTC: all 24 AMSim automation tests, 20-asset audit, 100–200% UI matrix, clean Development/Shipping packages, packaged S01/save/load/performance, socket observation, dependency scan, and strict-2D scan passed on the development host.
+- 2026-07-26 UTC: all 25 AMSim automation tests, 20-asset audit, 100–200% UI matrix, clean Development/Shipping packages, packaged S01/save/load/performance, 1x simulation timing, reference-profile application, socket observation, dependency scan, and strict-2D scan passed on the development host.
 <!-- ai-project-init:end managed -->
 
 ## Project-specific state
@@ -44,17 +44,18 @@ Verification note:
 - The baseline replaces blank-template 3D renderer defaults with a DX11/SM5 scalable 2D configuration and explicitly opts into Paper 2D, CommonUI, and Enhanced Input.
 - Six module boundaries now separate bootstrap, simulation, gameplay/save, UI, editor tooling, and developer tests.
 - The deterministic empty-airport foundation has a 250 ms clock, stable IDs, named random streams, command/event/query contracts, replay/checksum, spatial occupancy, versioned snapshots, async verified saves, backup fallback, and definition validation.
-- Twenty-four full-suite automation tests pass: 14 Phase 0 regressions and 10 Phase 1 contracts.
+- Twenty-five full-suite automation tests pass: 14 Phase 0 regressions and 11 Phase 1 contracts.
 - The final 1920 x 1080 proof recorded 1164.596 average FPS, 1.488 ms p99 frame time, save/load continuation, and checksum `4404817232840225737`.
 - Development and Shipping packages pass; Shipping has zero forbidden file/manifest/receipt matches and zero observed TCP sockets.
-- An elevated inbound/outbound network-denied journey passes, and its temporary firewall rules clean up.
+- The Phase 0 elevated inbound/outbound network-denied journey passes, and its temporary firewall rules clean up. Phase 1 S15 remains pending.
 - Repository inspection and the initial 46-file aircraft inventory were completed on 2026-07-25.
 - The replacement source `C:\Users\dave\Documents\Joes_Game\dist\assets` contains 45 dimension-matching PNGs; the inventoried Airbus A330-300 SVG is absent.
 - CT-01 has a validated 21-column, zero-row import-manifest template. No aircraft source image has been copied into `AMSim/Content`.
 - Seven reviewed concept-art references now cover overview, build mode, terminal flow, timetable planning, turnaround, weather/incidents, and specialization progression.
 - Phase 1 implementation is verified on the development host. It includes schema 2/migration, project-owned map, 20 Primary Assets, construction/cancel/refund/open/close, offer pin/decline/accept, exact timetable/stand buffers, persistent airframe operation/services/reward/recovery, query-backed UI, local radio, save/load, and clean packages.
-- The final packaged S01 recorded 1,226.819 average FPS, 1.172 ms p99, 8.157 ms save write, 441 MiB resident memory, zero 8x backlog, checksum `8264913351739008826`, 2,200 Credits, 5 Airport Points, and five phrase intents.
+- The final packaged S01 recorded 1,214.704 average FPS, 1.271 ms p99 frame time, 0.000 ms median/0.001 ms p99 1x simulation work, 8.652 ms save write, 447 MiB maximum resident memory, zero 8x backlog, checksum `8264913351739008826`, 2,200 Credits, 5 Airport Points, and five phrase intents.
 - The 100%, 125%, 150%, 175%, and 200% rendered UI matrix passes; 175–200% uses stacked full-width scrolling.
 - Shipping has zero forbidden file/text/receipt matches, zero observed TCP sockets, and zero required 3D gameplay candidates. Development has zero unexpected socket observations beyond the local trace listener.
+- The portable reference-tier collector passes its five-second harness check, applies the documented profile, and deliberately reports formal acceptance false on the unreviewed RTX 5090 host.
 - Phase 1 formal closure remains pending elevated S15, physical reference-tier results, and an unassisted tester/audio/comprehension review.
 - Until `ai-init` is installed on `PATH`, run the CLI module with the skill source on `PYTHONPATH`.

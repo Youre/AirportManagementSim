@@ -107,7 +107,8 @@ try {
             '-ForceRes',
             '-ResX=1920',
             '-ResY=1080',
-            '-AMSimPhase1Smoke'
+            '-AMSimPhase1Smoke',
+            '-AMSimPhase1ReferenceProfile'
         )
     $deadline = [DateTime]::UtcNow.AddSeconds(90)
     while (-not $developmentProcess.HasExited -and [DateTime]::UtcNow -lt $deadline) {

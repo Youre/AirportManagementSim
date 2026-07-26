@@ -630,6 +630,58 @@ bool FAMSimPhase1MovementSafetyTest::RunTest(const FString& Parameters)
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+	FAMSimPhase1FlightCatchUpTest,
+	"AMSim.Phase1.Movement.CatchUpPreservesIntermediateEffects",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FAMSimPhase1FlightCatchUpTest::RunTest(const FString& Parameters)
+{
+	using namespace AMSim;
+	FSimulation Simulation(GetPhase1Fixture().Seed);
+	if (!CreateAndBuildStarterAirfield(*this, Simulation) ||
+		!OpenAcceptAndSchedule(*this, Simulation))
+	{
+		return false;
+	}
+
+	FSnapshot CatchUp = Simulation.CreateSnapshot();
+	CatchUp.GameTimeMilliseconds =
+		CatchUp.Phase1.Flight.ScheduledArrivalGameMilliseconds + 129750;
+	CatchUp.Revision =
+		static_cast<uint64>(CatchUp.GameTimeMilliseconds / FixedStepMilliseconds);
+	FSimulation Restored;
+	if (!TestTrue(TEXT("Scheduled catch-up fixture restores"), Restored.RestoreSnapshot(CatchUp)))
+	{
+		return false;
+	}
+	Restored.Step();
+
+	const FPhase1State& State = Restored.GetPhase1State();
+	TestEqual(TEXT("Catch-up reaches completion"), State.Flight.State, EFlightState::Completed);
+	TestEqual(TEXT("Inspection completes during catch-up"), State.Flight.Inspection, EServiceTaskState::Completed);
+	TestEqual(TEXT("Fueling completes during catch-up"), State.Flight.Fueling, EServiceTaskState::Completed);
+	TestTrue(TEXT("Reward is recognized during catch-up"), State.Flight.bRewardRecognized);
+
+	TSet<FName> PhraseIds;
+	for (const FPhraseIntentRecord& Phrase : State.PhraseIntents)
+	{
+		PhraseIds.Add(Phrase.PhraseId);
+	}
+	for (const FName RequiredPhrase : {
+		FName(TEXT("Radio.ArrivalContact")),
+		FName(TEXT("Radio.LandingClearance")),
+		FName(TEXT("Radio.TaxiRoute")),
+		FName(TEXT("Radio.TaxiDeparture")),
+		FName(TEXT("Radio.TakeoffClearance"))})
+	{
+		TestTrue(
+			*FString::Printf(TEXT("Catch-up emits required phrase: %s"), *RequiredPhrase.ToString()),
+			PhraseIds.Contains(RequiredPhrase));
+	}
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 	FAMSimPhase1RecoveryTest,
 	"AMSim.Phase1.Economy.ZeroCreditRecovery",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)

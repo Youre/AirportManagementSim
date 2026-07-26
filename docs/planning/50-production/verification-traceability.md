@@ -101,6 +101,8 @@ Accepted residuals are metadata-only transitive editor plugin descriptors, the t
 - [Phase 1 verification record](../../../.ai/reviews/2026-07-26-phase-1-verification.md);
 - [Phase 1 implementation architecture-impact review](../../../.ai/reviews/2026-07-26-phase-1-implementation-architecture-impact.md);
 - [Phase 1 implementation adversarial review](../../../.ai/reviews/2026-07-26-phase-1-implementation-adversarial-review.md);
+- [Phase 1 closeout-hardening architecture-impact review](../../../.ai/reviews/2026-07-26-phase-1-closeout-architecture-impact.md);
+- [Phase 1 closeout-hardening adversarial review](../../../.ai/reviews/2026-07-26-phase-1-closeout-adversarial-review.md);
 - machine-readable local results at `AMSim/Saved/Phase1/pipeline-result.json`.
 
 | Phase 1 claim | Current evidence |
@@ -109,11 +111,11 @@ Accepted residuals are metadata-only transitive editor plugin descriptors, the t
 | Starter plan is affordable and recoverable | 3,400 Credits, 32% contingency, ledger reconciliation, cancellation/refund, and zero-credit recovery pass |
 | First traffic is timely and compatible | Immediate paused offer, exact five-minute slot, explicit Stand A1/buffers, and arrival timing pass |
 | Construction is authoritative and persistent | Proposal/stage/delivery/team/inspection/open/close/cancel tests and save matrix pass |
-| Aircraft operation is safe and deterministic | ATC, reservation, taxi, turnaround, readiness, replay, and no-overlap assertions pass |
+| Aircraft operation is safe and deterministic | ATC, reservation, taxi, turnaround, readiness, replay, no-overlap, and intermediate-state catch-up assertions pass |
 | UI explains cause, remedy, compatibility, and reward | Query-backed rendered matrix passes 100–200%; new-tester comprehension pending |
 | Content is controlled | 20-asset catalog, internal 2D provenance, and zero copied external aircraft pass |
 | Save evolution is safe | Schema-1 migration, schema-2 boundary continuation, corruption/backup/future validation pass |
-| Performance meets a representative target | Development-host budgets pass; physical reference-tier run pending |
+| Performance meets a representative target | Development-host frame/simulation/save/memory budgets and reference-profile collector pass; physical four-hour reference-tier run pending |
 | Product remains strict 2D and offline | Shipping asset/dependency/socket scans pass; elevated firewall-denied S15 pending |
 
 ## Visual reference mapping

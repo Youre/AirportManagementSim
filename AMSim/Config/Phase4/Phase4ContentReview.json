@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "reviewId": "CT04.Phase4.RegionalWeek.2026-07-26",
+  "passed": true,
+  "runtimeDimension": "2D",
+  "visualReferences": ["VA-04", "VA-06"],
+  "externalSourceFilesCopied": 0,
+  "fictionalOperators": [
+    "Riverbend Connect",
+    "Northstar Regional",
+    "Coastal Airways"
+  ],
+  "checks": {
+    "stableIdsPreserved": true,
+    "recurringContractsUseExactSlots": true,
+    "remoteBusRouteRequired": true,
+    "internationalProcessingTraitIndependent": true,
+    "securityAndIncidentLanguageChildAppropriate": true,
+    "seriousIncidentRequiresWarningProvenance": true,
+    "humanOutcomeAbstract": true,
+    "colorIndependentStatusEncodingRequired": true,
+    "conceptArtNotShipped": true,
+    "noRequired3DGameplayAsset": true,
+    "noExternalAircraftSourceCopied": true
+  }
+}

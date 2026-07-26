@@ -175,6 +175,31 @@ landside slice to implementation work packages and evidence. Phase 3 passed on
 | Content is controlled and cooked | Editor audit and direct Shipping IoStore inventory match all 34 project-authored Phase 3 Primary Assets; zero external Phase 3 aircraft files |
 | Package remains clean and offline | Development packaged S05/save-load passes; Shipping launches with zero TCP sockets and zero forbidden, runtime string-load, or required 3D matches |
 
+## Phase 4 implementation evidence
+
+[PI-06](phase-4-regional-scheduled-airport-implementation-plan.md) maps the
+regional scheduled-airport slice to implementation work packages and evidence.
+Phase 4 passed on 2026-07-26. The normative records are:
+
+- [Phase 4 verification record](../../../.ai/reviews/2026-07-26-phase-4-verification.md);
+- [Phase 4 architecture-impact review](../../../.ai/reviews/2026-07-26-phase-4-architecture-impact.md);
+- [Phase 4 adversarial review](../../../.ai/reviews/2026-07-26-phase-4-adversarial-review.md);
+- [Phase 4 visual review](phase-4-visual-review.md);
+- [Phase 4 content provenance](../30-content-and-assets/phase-4-content-provenance.md);
+- machine-readable local results under `AMSim/Saved/Phase4`.
+
+| Phase 4 claim | Evidence |
+| --- | --- |
+| Recurring regional schedule is authoritative | Three fictional contracts, 21 save-stable flights, exact five-minute slots, Gates A1/A2/R1, remote bus, locked horizon, early/late/weather state, and gate-warning confirmation pass |
+| Connections and bags reconcile | 18 connect, 6 miss and rebook, and all 32 transfer bags complete with stable inbound/outbound ownership |
+| International and landside flows reconcile | 96 passengers complete immigration/customs; 42 rental-car and 58 rail passengers retain open facility, tenant, capacity, frequency, and route evidence |
+| Serious incident is warned and recoverable | Stored warning/cause/remedy/conditions/seed/decision precede activation; hold/divert/tow/protect/report/recover pass with affected-only closure and `No injuries` |
+| Tenant loop completes | Completion, delay, connection, and safety evidence produce one accepted recurring-operator renewal |
+| Persistence evolves safely | Schema 5 round-trip, schema 4 migration, future/reference/incident rejection, deterministic replay, and packaged save/load pass |
+| Presentation is concept-grounded | VA-04/VA-06 combined boards, player-facing commands, Paper2D world layers, visible mouse, and 100-200% matrix pass |
+| Content is controlled and cooked | Source and Shipping IoStore match all 34 project-authored Phase 4 assets; no external Phase 4 aircraft or generated runtime asset was retained |
+| Package remains clean and offline | Packaged Development S06/S10 passes; Shipping launches with zero TCP sockets and zero forbidden, runtime string-load, or required 3D matches |
+
 ## Visual reference mapping
 
 | Reference | Owning surfaces | First comparison gate |

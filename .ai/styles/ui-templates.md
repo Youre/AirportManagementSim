@@ -116,4 +116,33 @@ Template-first rule:
 - Component: `UAMSimTerminalView`, mapped from `FPhase3QuerySnapshot`.
 - Accepted placeholder content: `Maya's party`, `Security`,
   `Accessible route ready`, and `On time`.
+
+## Phase 4 regional operations surfaces
+
+- Purpose: extend the shared gameplay shell with a scanable seven-day timetable
+  and a recoverable weather/incident command surface.
+- Applicable screens or flows: recurring contract acceptance, exact slot/gate
+  ownership, selected-flight feasibility, connection recovery, international
+  processing, weather restrictions, incident response, and tenant renewal.
+- Source visuals:
+  `docs/planning/30-content-and-assets/concept-art/04-flight-planning-timetable.png`
+  and
+  `docs/planning/30-content-and-assets/concept-art/06-weather-incident-response.png`.
+- Timetable composition: compact contract rail; dominant day/time/gate grid;
+  selected-flight and feasibility rail; one bounded primary action. Cards use
+  short operator, flight, aircraft, exact time, gate, and icon-plus-text risk.
+- Incident composition: current/forecast weather rail; dominant operational
+  world with localized route and closure; lifecycle rail; captioned
+  cause/consequence/action tray. Continued operation outside the closure is
+  stated and visible.
+- State encoding: cyan selected; green ready/complete; amber patterned
+  high-risk; coral patterned blocked/critical; blue-gray waiting. Color is
+  always paired with text, border treatment, or pattern.
+- Responsive behavior: 100-150% retains both rails; 175-200% converts contract,
+  feasibility, weather, and lifecycle rails into bounded drawers without
+  shrinking the timetable or operational labels below the minimum.
+- Component: `UAMSimRegionalOperationsView`, mapped from
+  `FPhase4QuerySnapshot`.
+- Accepted placeholder content: `No regional timetable`, `Select a flight`,
+  `Forecast available`, and `No active incident`.
 - Accepted placeholder content: `Inspect aircraft — waiting`.

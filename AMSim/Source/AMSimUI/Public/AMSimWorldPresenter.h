@@ -3,6 +3,7 @@
 #include "AMSimPhase1Types.h"
 #include "AMSimPhase2Types.h"
 #include "AMSimPhase3Types.h"
+#include "AMSimPhase4Types.h"
 #include "GameFramework/Actor.h"
 #include "AMSimWorldPresenter.generated.h"
 
@@ -25,6 +26,9 @@ public:
 	void ApplyPhase3Snapshot(
 		const AMSim::FPhase3QuerySnapshot& Query,
 		const AMSim::FPhase3State& State);
+	void ApplyPhase4Snapshot(
+		const AMSim::FPhase4QuerySnapshot& Query,
+		const AMSim::FPhase4State& State);
 	void SetPhase3OverlayMode(int32 Mode);
 	uint64 GetLastAppliedRevision() const { return LastAppliedRevision; }
 	bool HasRequiredPresentationAssets() const;
@@ -34,6 +38,11 @@ public:
 	int32 GetActivePhase2VehicleProxyCount() const;
 	int32 GetActivePhase3PassengerProxyCount() const;
 	int32 GetActivePhase3BagProxyCount() const;
+	int32 GetActivePhase4ResponseProxyCount() const;
+	bool IsPhase4IncidentWorldVisible() const
+	{
+		return bPhase4IncidentWorldVisible;
+	}
 
 private:
 	UPaperSpriteComponent* CreateSpriteComponent(
@@ -110,6 +119,16 @@ private:
 	TArray<TObjectPtr<UPaperSpriteComponent>> Phase3Staff;
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UPaperSpriteComponent> Phase3Aircraft;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPaperSpriteComponent> Phase4WeatherOverlay;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPaperSpriteComponent> Phase4IncidentRunway;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase4RunwayClosure;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase4EmergencyRoute;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase4ResponseVehicles;
 
 	UPROPERTY()
 	TObjectPtr<UPaperSprite> TerrainSprite;
@@ -133,7 +152,9 @@ private:
 	uint64 LastAppliedRevision = MAX_uint64;
 	uint64 LastAppliedPhase2Revision = MAX_uint64;
 	uint64 LastAppliedPhase3Revision = MAX_uint64;
+	uint64 LastAppliedPhase4Revision = MAX_uint64;
 	int32 Phase3OverlayMode = 0;
 	bool bPhase3WorldVisible = false;
 	bool bPhase3RoutesConnected = false;
+	bool bPhase4IncidentWorldVisible = false;
 };

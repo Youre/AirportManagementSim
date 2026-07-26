@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "phase": "Phase4",
+  "contentReviewId": "CT04.Phase4.RegionalWeek.2026-07-26",
+  "requiredPrimaryAssetCount": 34,
+  "externalAircraftFilesCopied": 0,
+  "required3DGameplayAssets": 0,
+  "runtimeStringAssetLoadingAllowed": false,
+  "conceptArtUsedAsRuntimeAsset": false,
+  "sourcePolicy": "ProjectAuthored2DOnly"
+}

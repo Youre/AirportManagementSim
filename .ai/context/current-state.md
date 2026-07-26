@@ -6,7 +6,7 @@ Material profile: documents
 Initialization mode: augment-existing
 
 Active priorities:
-- Preserve the completed Phase 3 evidence and open Phase 4 only after an
+- Preserve the completed Phase 4 evidence and open Phase 5 only after an
   explicit planning session.
 
 Current architectural tensions:
@@ -15,14 +15,14 @@ Current architectural tensions:
 - Automated screenshot checks prove capture integrity and layout bounds, not visual similarity or polish.
 
 Next verification command:
-- Before opening Phase 4, run `scripts/phase3/Invoke-Phase3Pipeline.ps1
-  -SkipFirewall` if the Phase 3 foundation changes.
+- Before opening Phase 5, run `scripts/phase4/Invoke-Phase4Pipeline.ps1
+  -SkipFirewall` if the Phase 4 foundation changes.
 
 Last verification:
-- 2026-07-26 UTC: Phase 3 builds and audits; all 41 automation records
-  complete with zero failed/not-run/in-process results; the 100-200% rendered
-  matrix and VA-03 comparison pass; clean Development and Shipping packages
-  pass integrated S05, save/load, launch, socket, dependency, 2D, runtime-load,
+- 2026-07-26 UTC: Phase 4 builds and audits; all 46 automation records
+  complete with zero failed/not-run/in-process results; VA-04/VA-06 and the
+  100-200% matrix pass; clean Development and Shipping packages pass integrated
+  S06/S10, schema-5 save/load, launch, socket, dependency, 2D, runtime-load,
   and direct 34-asset IoStore inventory gates.
 <!-- ai-project-init:end managed -->
 
@@ -30,7 +30,7 @@ Last verification:
 
 Active priorities:
 
-- Keep Phase 3 stable and plan Phase 4 only when the owner opens it.
+- Keep Phase 4 stable and plan Phase 5 only when the owner opens it.
 - Preserve a visible mouse cursor across gameplay world, HUD, panels, and click capture.
 - Use OpenAI Image Gen for concept/UI exploration and local ComfyUI for reviewed simple textures, variants, edits, and cutouts.
 
@@ -38,8 +38,7 @@ Current tensions:
 
 - The approved reference capability tier has no physical result yet, but its four-hour soak is deferred to Phase 7 rather than blocking continued development.
 - The fictional Riverbend Trainer content lock is approved for this slice; any later real-aircraft naming, data, art, or livery still requires a separate CT-01/CT-02 review.
-- Phase 3 is complete. Phase 4 must extend the accepted terminal templates and
-  passenger domain without reopening their foundations.
+- Phase 4 is complete. Phase 5 remains unopened.
 
 Verification note:
 
@@ -49,7 +48,7 @@ Verification note:
 - The baseline replaces blank-template 3D renderer defaults with a DX11/SM5 scalable 2D configuration and explicitly opts into Paper 2D, CommonUI, and Enhanced Input.
 - Six module boundaries now separate bootstrap, simulation, gameplay/save, UI, editor tooling, and developer tests.
 - The deterministic empty-airport foundation has a 250 ms clock, stable IDs, named random streams, command/event/query contracts, replay/checksum, spatial occupancy, versioned snapshots, async verified saves, backup fallback, and definition validation.
-- The current full-suite report contains 40 succeeded and one
+- The current full-suite report contains 45 succeeded and one
   succeeded-with-warning record, with zero failed, not-run, or in-process
   tests.
 - The final 1920 x 1080 proof recorded 1164.596 average FPS, 1.488 ms p99 frame time, save/load continuation, and checksum `4404817232840225737`.
@@ -108,4 +107,21 @@ Verification note:
   Development packaged S05 and save/load pass; Shipping observes zero TCP
   sockets and has zero forbidden editor/test/MCP/Python/RemoteControl/Toolset,
   runtime string-load, or required 3D matches.
+- Phase 4 is complete. It adds schema 5, three fictional recurring operators,
+  a 21-flight seven-day timetable, exact slots, contact/remote gates and bus
+  boarding, regional/narrow-body roles, connections, 32 transfer bags,
+  international immigration/customs, rental/rail access, approach limits,
+  a warned serious incident, report/recovery, and tenant renewal.
+- S06/S10 completes 21 flights, connects 18 passengers, rebooks 6 missed
+  passengers, completes 32 transfer bags, processes 96 international
+  passengers, reconciles 42 rental-car and 58 rail passengers, records
+  `No injuries`, and accepts one renewal.
+- VA-04 and VA-06 use the accepted navy rounded component language. The
+  100-150% layout retains seven-day rails; 175-200% uses compact data-derived
+  labels and bounded scrolling without clipped critical actions.
+- The final Shipping IoStore directly matches all 34 Phase 4 Primary Assets.
+  Packaged Development S06/S10 and schema-5 save/load pass; Shipping observes
+  zero TCP sockets and has zero forbidden editor/test/MCP/Python/
+  RemoteControl/Toolset, runtime string-load, required 3D, or external Phase 4
+  aircraft matches.
 - Until `ai-init` is installed on `PATH`, run the CLI module with the skill source on `PYTHONPATH`.

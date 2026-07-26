@@ -9,6 +9,7 @@ class UButton;
 class UCanvasPanel;
 class UProgressBar;
 class UTextBlock;
+class UAMSimRegionalOperationsView;
 
 UCLASS()
 class AMSIMUI_API UAMSimTerminalView final : public UUserWidget
@@ -66,6 +67,10 @@ private:
 
 	UPROPERTY(Transient)
 	TObjectPtr<UBorder> TerminalChrome;
+	UPROPERTY(Transient)
+	TObjectPtr<UCanvasPanel> TerminalCanvas;
+	UPROPERTY(Transient)
+	TObjectPtr<UAMSimRegionalOperationsView> RegionalOperationsView;
 	UPROPERTY(Transient)
 	TObjectPtr<UBorder> PlanningCard;
 	UPROPERTY(Transient)

@@ -586,3 +586,41 @@ entries:
       managed-template/baseline, lexical-review, legacy-ledger, and project
       schema/version warnings remain; no structural error or Phase 3 evidence
       conflict.
+  - timestamp: '2026-07-26T23:43:00.0000000+00:00'
+    commit: 126ce1087c7518176f617a5e2063f7f254a64c0c
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: Initial Phase 4 clean package staging
+    result: failed
+    notes: Cook completed, but staging lost its UE 5.8 Zen oplog connection.
+      No implementation, automation, content, or package-boundary assertion
+      failed. The incomplete package root was rejected, Zen was restarted,
+      and the clean package gate reran from the beginning.
+  - timestamp: '2026-07-26T23:48:00.0000000+00:00'
+    commit: 126ce1087c7518176f617a5e2063f7f254a64c0c
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Final Phase 4 gate: editor build; focused and full automation;
+      deterministic seven-day S06/S10 fixture; schema-5 migration/save;
+      VA-04/VA-06 comparison; 100-200% rendered matrix; clean Development and
+      Shipping packages; packaged Phase 4 smoke; IoStore, socket, dependency,
+      runtime-load, and 2D scans'
+    result: passed
+    notes: Five focused Phase 4 tests passed. The full suite reported 45
+      succeeded plus one retained warning with zero failed/not-run/in-process.
+      The fixture completed 21 flights, 18 connections, 6 missed/rebooked
+      passengers, 32 transfer bags, 96 border passengers, rental/rail access,
+      incident recovery, and one renewal. All five scales passed after visual
+      inspection corrected compact clipping. Packaged Phase 4 passed at 1.722
+      ms p99 with checksum 4002092208679843671. Shipping directly contains all
+      34 Phase 4 assets and has zero TCP socket, forbidden, runtime string-load,
+      or required 3D matches.
+  - timestamp: '2026-07-26T23:50:00.0000000+00:00'
+    commit: 126ce1087c7518176f617a5e2063f7f254a64c0c
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: python -m ai_project_init.cli doctor . --json
+    result: passed
+    notes: Exited 0. Only known ignored Saved-artifact, managed-template,
+      lexical-review, legacy-ledger, and project schema/version warnings
+      remain; no structural error or Phase 4 evidence conflict.

@@ -2,6 +2,7 @@
 
 #include "AMSimAirportSimulationSubsystem.h"
 #include "AMSimGameInstanceSubsystem.h"
+#include "AMSimRegionalOperationsView.h"
 #include "AMSimUITheme.h"
 #include "AMSimWorldPresenter.h"
 #include "Blueprint/WidgetTree.h"
@@ -190,6 +191,7 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		UCanvasPanel::StaticClass(),
 		TEXT("TerminalCanvas"));
 	WidgetTree->RootWidget = Canvas;
+	TerminalCanvas = Canvas;
 	TerminalChrome = MakeSurface(
 		WidgetTree,
 		TEXT("TerminalChrome"),
@@ -730,6 +732,17 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		FMargin(0.0f),
 		8);
 
+	RegionalOperationsView =
+		WidgetTree->ConstructWidget<UAMSimRegionalOperationsView>(
+			UAMSimRegionalOperationsView::StaticClass(),
+			TEXT("RegionalOperationsView"));
+	AddAnchored(
+		Canvas,
+		RegionalOperationsView,
+		FAnchors(0.0f, 0.0f, 1.0f, 1.0f),
+		FMargin(0.0f),
+		100);
+
 	SetVisibility(ESlateVisibility::Collapsed);
 	RefreshFromSimulation();
 	return Super::RebuildWidget();
@@ -999,6 +1012,30 @@ void UAMSimTerminalView::RefreshFromSimulation()
 	const AMSim::FPhase3QuerySnapshot Query = Subsystem->GetPhase3Query();
 	const AMSim::FPhase3State& State =
 		Subsystem->GetSimulation().GetPhase3State();
+	const AMSim::FPhase4QuerySnapshot Phase4Query =
+		Subsystem->GetPhase4Query();
+	if (RegionalOperationsView)
+	{
+		RegionalOperationsView->RefreshFromSimulation();
+	}
+	if (Phase4Query.bUnlocked || Phase4Query.bInitialized)
+	{
+		SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		if (TerminalCanvas)
+		{
+			for (int32 Index = 0;
+				Index < TerminalCanvas->GetChildrenCount();
+				++Index)
+			{
+				UWidget* Child = TerminalCanvas->GetChildAt(Index);
+				Child->SetVisibility(
+					Child == RegionalOperationsView
+						? ESlateVisibility::SelfHitTestInvisible
+						: ESlateVisibility::Collapsed);
+			}
+		}
+		return;
+	}
 	if (!Query.bUnlocked && !Query.bInitialized)
 	{
 		SetVisibility(ESlateVisibility::Collapsed);

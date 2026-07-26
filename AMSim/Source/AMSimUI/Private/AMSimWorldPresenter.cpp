@@ -149,6 +149,36 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 		TEXT("Phase3Aircraft"),
 		67,
 		FLinearColor(0.92f, 0.58f, 0.22f, 1.0f));
+	Phase4WeatherOverlay = CreateSpriteComponent(
+		TEXT("Phase4WeatherOverlay"),
+		76,
+		FLinearColor(0.20f, 0.43f, 0.55f, 0.26f));
+	Phase4IncidentRunway = CreateSpriteComponent(
+		TEXT("Phase4IncidentRunway"),
+		78);
+	for (int32 Index = 0; Index < 4; ++Index)
+	{
+		Phase4RunwayClosure.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("Phase4RunwayClosure%d"), Index),
+			81,
+			FLinearColor(0.96f, 0.25f, 0.18f, 0.90f)));
+	}
+	for (int32 Index = 0; Index < 7; ++Index)
+	{
+		Phase4EmergencyRoute.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("Phase4EmergencyRoute%d"), Index),
+			79,
+			FLinearColor(0.96f, 0.25f, 0.18f, 0.90f)));
+	}
+	for (int32 Index = 0; Index < 3; ++Index)
+	{
+		Phase4ResponseVehicles.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("Phase4ResponseVehicle%d"), Index),
+			82 + Index,
+			Index == 0
+				? FLinearColor(0.95f, 0.23f, 0.18f, 1.0f)
+				: FLinearColor(0.98f, 0.78f, 0.20f, 1.0f)));
+	}
 
 	TerrainSprite = FindSprite(TEXT("/Game/Phase1/Presentation/Sprites/Surfaces/S_TemperateGrass.S_TemperateGrass"));
 	RunwaySprite = FindSprite(TEXT("/Game/Phase1/Presentation/Sprites/Surfaces/S_GrassRunway.S_GrassRunway"));
@@ -391,6 +421,66 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 			: WhiteSprite,
 		FVector(33000.0, -22000.0, 67.0),
 		FVector(15.0, 1.0, 15.0));
+	ConfigureSprite(
+		Phase4WeatherOverlay,
+		WhiteSprite,
+		FVector(0.0, 0.0, 76.0),
+		FVector(520.0, 1.0, 520.0));
+	ConfigureSprite(
+		Phase4IncidentRunway,
+		RunwaySprite,
+		FVector(27000.0, 0.0, 78.0),
+		FVector(2.8, 1.0, 45.0));
+	Phase4IncidentRunway->SetVisibility(false);
+	const FVector ClosureLocations[] = {
+		FVector(27000.0, -35000.0, 81.0),
+		FVector(27000.0, -30000.0, 81.0),
+		FVector(23500.0, -32500.0, 81.0),
+		FVector(30500.0, -32500.0, 81.0)};
+	const FVector ClosureScales[] = {
+		FVector(24.0, 1.0, 2.2),
+		FVector(24.0, 1.0, 2.2),
+		FVector(2.2, 1.0, 24.0),
+		FVector(2.2, 1.0, 24.0)};
+	for (int32 Index = 0; Index < Phase4RunwayClosure.Num(); ++Index)
+	{
+		ConfigureSprite(
+			Phase4RunwayClosure[Index],
+			WhiteSprite,
+			ClosureLocations[Index],
+			ClosureScales[Index]);
+		Phase4RunwayClosure[Index]->SetVisibility(false);
+	}
+	const FVector RouteLocations[] = {
+		FVector(-27000.0, 10000.0, 79.0),
+		FVector(-18000.0, 3000.0, 79.0),
+		FVector(-9000.0, -5000.0, 79.0),
+		FVector(0.0, -12000.0, 79.0),
+		FVector(9000.0, -20000.0, 79.0),
+		FVector(18000.0, -28000.0, 79.0),
+		FVector(25000.0, -32500.0, 79.0)};
+	for (int32 Index = 0; Index < Phase4EmergencyRoute.Num(); ++Index)
+	{
+		ConfigureSprite(
+			Phase4EmergencyRoute[Index],
+			WhiteSprite,
+			RouteLocations[Index],
+			FVector(28.0, 1.0, 2.8));
+		Phase4EmergencyRoute[Index]->SetVisibility(false);
+	}
+	for (int32 Index = 0; Index < Phase4ResponseVehicles.Num(); ++Index)
+	{
+		ConfigureSprite(
+			Phase4ResponseVehicles[Index],
+			WhiteSprite,
+			FVector(
+				-22000.0 + Index * 22000.0,
+				6000.0 - Index * 18000.0,
+				82.0 + Index),
+			FVector(12.0, 1.0, 5.0));
+		Phase4ResponseVehicles[Index]->SetVisibility(false);
+	}
+	Phase4WeatherOverlay->SetVisibility(false);
 	ConfigureSprite(
 		ExpansionOverlay,
 		StandSprite,
@@ -766,6 +856,55 @@ void AAMSimWorldPresenter::ApplyPhase3Snapshot(
 	RefreshPhase3OverlayVisibility();
 }
 
+void AAMSimWorldPresenter::ApplyPhase4Snapshot(
+	const AMSim::FPhase4QuerySnapshot& Query,
+	const AMSim::FPhase4State& State)
+{
+	if (LastAppliedPhase4Revision == Query.Revision)
+	{
+		return;
+	}
+	LastAppliedPhase4Revision = Query.Revision;
+	const bool bIncidentActive =
+		Query.bInitialized &&
+		Query.IncidentLifecycle >= AMSim::EPhase4IncidentLifecycle::Alerted &&
+		Query.IncidentLifecycle < AMSim::EPhase4IncidentLifecycle::Recovered;
+	bPhase4IncidentWorldVisible = bIncidentActive;
+	Phase4WeatherOverlay->SetVisibility(bIncidentActive);
+	Phase4IncidentRunway->SetVisibility(bIncidentActive);
+	const bool bRunwayClosed =
+		bIncidentActive && State.Incident.bRunwayClosed;
+	IncidentOverlay->SetRelativeLocation(
+		FVector(27000.0, -32500.0, 83.0));
+	IncidentOverlay->SetRelativeScale3D(FVector(5.0, 1.0, 5.0));
+	IncidentOverlay->SetSpriteColor(
+		FLinearColor(0.96f, 0.25f, 0.18f, 0.92f));
+	IncidentOverlay->SetVisibility(bRunwayClosed);
+	for (UPaperSpriteComponent* Component : Phase4RunwayClosure)
+	{
+		Component->SetVisibility(bRunwayClosed);
+	}
+	const bool bRouteVisible =
+		bIncidentActive && State.Incident.bTowDispatched;
+	for (UPaperSpriteComponent* Component : Phase4EmergencyRoute)
+	{
+		Component->SetVisibility(bRouteVisible);
+	}
+	for (int32 Index = 0; Index < Phase4ResponseVehicles.Num(); ++Index)
+	{
+		const bool bVisible =
+			bIncidentActive &&
+			(Index == 0
+				? State.Incident.bTowDispatched
+				: State.Incident.bAreaProtected);
+		Phase4ResponseVehicles[Index]->SetVisibility(bVisible);
+	}
+	if (bIncidentActive)
+	{
+		Terrain->SetSpriteColor(FLinearColor(0.16f, 0.26f, 0.23f, 1.0f));
+	}
+}
+
 void AAMSimWorldPresenter::SetPhase3OverlayMode(const int32 Mode)
 {
 	Phase3OverlayMode = FMath::Clamp(Mode, 0, 4);
@@ -880,6 +1019,16 @@ int32 AAMSimWorldPresenter::GetActivePhase3BagProxyCount() const
 {
 	return Algo::CountIf(
 		Phase3Bags,
+		[](const UPaperSpriteComponent* Component)
+			{
+				return Component && Component->IsVisible();
+			});
+}
+
+int32 AAMSimWorldPresenter::GetActivePhase4ResponseProxyCount() const
+{
+	return Algo::CountIf(
+		Phase4ResponseVehicles,
 		[](const UPaperSpriteComponent* Component)
 			{
 				return Component && Component->IsVisible();

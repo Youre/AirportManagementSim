@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "scenarioId": "S10.WarnedIncidentRecovery",
+  "seed": "0x524547494F4E414C",
+  "mapId": "Map.TemperateStarter",
+  "incident": {
+    "class": "DisabledAircraft",
+    "affectedRunway": "27",
+    "warningProvenanceRequired": true,
+    "overrideAcknowledgementRequired": true,
+    "affectedOnlyClosure": true,
+    "otherOperationsContinue": true,
+    "humanOutcome": "NoInjuries",
+    "response": [
+      "HoldAffectedDepartures",
+      "DivertAffectedArrivals",
+      "DeployTowTeam",
+      "ProtectIncidentArea",
+      "ReviewIncidentCause",
+      "ApplyRecoveryPlan"
+    ],
+    "recoverable": true
+  }
+}

@@ -21,6 +21,7 @@ namespace AMSim
 		, Phase1(MasterSeed)
 		, Phase2(MasterSeed)
 		, Phase3(MasterSeed)
+		, Phase4(MasterSeed)
 	{
 	}
 
@@ -41,7 +42,9 @@ namespace AMSim
 	EPhase1CommandResult FSimulation::QueuePhase1Command(const FPhase1Command& Command)
 	{
 		if (Command.Type == EPhase1CommandType::CloseAirport &&
-			(Phase2.GetState().bInitialized || Phase3.GetState().bInitialized))
+			(Phase2.GetState().bInitialized ||
+				Phase3.GetState().bInitialized ||
+				Phase4.GetState().bInitialized))
 		{
 			return EPhase1CommandResult::RejectedInvalidState;
 		}
@@ -65,6 +68,17 @@ namespace AMSim
 			Phase2.GetState());
 	}
 
+	EPhase4CommandResult FSimulation::QueuePhase4Command(
+		const FPhase4Command& Command)
+	{
+		return Phase4.QueueCommand(
+			Command,
+			Clock.GetGameTimeMilliseconds(),
+			Phase1.GetState(),
+			Phase2.GetState(),
+			Phase3.GetState());
+	}
+
 	void FSimulation::Step()
 	{
 		PendingCommands.Sort([](const FCommand& Left, const FCommand& Right)
@@ -80,6 +94,11 @@ namespace AMSim
 		Phase1.Step(Clock.GetGameTimeMilliseconds());
 		Phase2.Step(Clock.GetGameTimeMilliseconds(), Phase1);
 		Phase3.Step(Clock.GetGameTimeMilliseconds(), Phase1, Phase2.GetState());
+		Phase4.Step(
+			Clock.GetGameTimeMilliseconds(),
+			Phase1,
+			Phase2.GetState(),
+			Phase3.GetState());
 		++Revision;
 	}
 
@@ -137,6 +156,16 @@ namespace AMSim
 			Phase2.GetState());
 	}
 
+	FPhase4QuerySnapshot FSimulation::CreatePhase4QuerySnapshot() const
+	{
+		return Phase4.CreateQuerySnapshot(
+			Revision,
+			Clock.GetGameTimeMilliseconds(),
+			Phase1.GetState(),
+			Phase2.GetState(),
+			Phase3.GetState());
+	}
+
 	FSimulationDiagnostics FSimulation::CreateDiagnostics() const
 	{
 		return {
@@ -162,6 +191,7 @@ namespace AMSim
 		Snapshot.Phase1 = Phase1.GetState();
 		Snapshot.Phase2 = Phase2.GetState();
 		Snapshot.Phase3 = Phase3.GetState();
+		Snapshot.Phase4 = Phase4.GetState();
 		return Snapshot;
 	}
 
@@ -210,6 +240,15 @@ namespace AMSim
 		{
 			return false;
 		}
+		FRegionalScheduledSimulation RestoredPhase4(Candidate.MasterSeed);
+		if (!RestoredPhase4.RestoreState(
+			Candidate.Phase4,
+			Candidate.Phase1,
+			Candidate.Phase2,
+			Candidate.Phase3))
+		{
+			return false;
+		}
 
 		MasterSeed = Candidate.MasterSeed;
 		NextEntityId = Candidate.NextEntityId;
@@ -220,6 +259,7 @@ namespace AMSim
 		Phase1 = MoveTemp(RestoredPhase1);
 		Phase2 = MoveTemp(RestoredPhase2);
 		Phase3 = MoveTemp(RestoredPhase3);
+		Phase4 = MoveTemp(RestoredPhase4);
 		PendingCommands.Reset();
 		Events.Reset();
 		return true;
@@ -243,6 +283,8 @@ namespace AMSim
 		HashBytes(Hash, &Phase2Checksum, sizeof(Phase2Checksum));
 		const uint64 Phase3Checksum = Phase3.CalculateChecksum();
 		HashBytes(Hash, &Phase3Checksum, sizeof(Phase3Checksum));
+		const uint64 Phase4Checksum = Phase4.CalculateChecksum();
+		HashBytes(Hash, &Phase4Checksum, sizeof(Phase4Checksum));
 		return Hash;
 	}
 

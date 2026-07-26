@@ -49,6 +49,7 @@ private:
 	TArray<double> SmokeFrameMilliseconds;
 
 	bool bPhase1SmokeActive = false;
+	bool bPhase4SmokeRequested = false;
 	bool bPhase1SmokeJourneyPassed = true;
 	bool bPhase1SmokeSaveLoadPassed = false;
 	bool bPhase1SmokeResolutionRequested = false;

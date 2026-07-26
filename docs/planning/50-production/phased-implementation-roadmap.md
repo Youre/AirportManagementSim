@@ -73,6 +73,11 @@ Journey: build terminal -> connect landside/sterile/gate/baggage routes -> sched
 
 ## Phase 4: Regional scheduled airport
 
+**Status:** Complete — verified on 2026-07-26. See
+[PI-06](phase-4-regional-scheduled-airport-implementation-plan.md), the
+[verification record](../../../.ai/reviews/2026-07-26-phase-4-verification.md),
+and the [VA-04/VA-06 visual review](phase-4-visual-review.md).
+
 **Goal:** A multi-day timetable with several operators, connections, international processing, and disruption recovery.
 
 Add recurring contracts, seven-day timetable and locked horizon; regional/narrow-body roster; contact/remote gates and buses; transfers; customs/immigration; rental cars and rail; tenant renewals; richer forecasts/seasons; runway approach limits; serious incident traceability/reporting.

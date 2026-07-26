@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "scenarioId": "S06.PassengerConnectionTransfer",
+  "seed": "0x524547494F4E414C",
+  "mapId": "Map.TemperateStarter",
+  "timetable": {
+    "days": 7,
+    "flightsPerDay": 3,
+    "timetableIncrementMinutes": 5,
+    "lockedHorizonMinutes": 30,
+    "gates": ["A1", "A2", "R1"]
+  },
+  "connection": {
+    "passengers": 24,
+    "missed": 6,
+    "rebooked": 6,
+    "transferBags": 32,
+    "exactReconciliation": true
+  },
+  "international": {
+    "passengers": 96,
+    "immigrationRequired": true,
+    "customsRequired": true,
+    "controlledRouteRequired": true
+  },
+  "landside": {
+    "rentalCarPassengers": 42,
+    "railPassengers": 58
+  }
+}

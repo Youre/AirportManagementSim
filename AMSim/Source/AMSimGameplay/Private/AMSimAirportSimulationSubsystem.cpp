@@ -10,6 +10,7 @@ void UAMSimAirportSimulationSubsystem::Initialize(FSubsystemCollectionBase& Coll
 	NextPhase1CommandId = 1;
 	NextPhase2CommandId = 1;
 	NextPhase3CommandId = 1;
+	NextPhase4CommandId = 1;
 	AccumulatedGameMilliseconds = 0.0;
 	LastSimulationWorkMilliseconds = 0.0;
 	LastSimulationMilliseconds = 0;
@@ -22,6 +23,7 @@ void UAMSimAirportSimulationSubsystem::Deinitialize()
 	NextPhase1CommandId = 1;
 	NextPhase2CommandId = 1;
 	NextPhase3CommandId = 1;
+	NextPhase4CommandId = 1;
 	AccumulatedGameMilliseconds = 0.0;
 	LastSimulationWorkMilliseconds = 0.0;
 	LastSimulationMilliseconds = 0;
@@ -181,6 +183,39 @@ AMSim::FPhase3QuerySnapshot UAMSimAirportSimulationSubsystem::GetPhase3Query() c
 	return GetSimulation().CreatePhase3QuerySnapshot();
 }
 
+AMSim::EPhase4CommandResult UAMSimAirportSimulationSubsystem::SubmitPhase4Command(
+	AMSim::FPhase4Command Command)
+{
+	if (!Simulation)
+	{
+		return AMSim::EPhase4CommandResult::RejectedInvalidState;
+	}
+	if (!Command.Id.IsValid())
+	{
+		Command.Id = AMSim::FCommandId{NextPhase4CommandId++};
+	}
+	else
+	{
+		NextPhase4CommandId = FMath::Max(
+			NextPhase4CommandId,
+			Command.Id.Value + 1);
+	}
+	const AMSim::EPhase4CommandResult Result =
+		Simulation->QueuePhase4Command(Command);
+	if (Result == AMSim::EPhase4CommandResult::Accepted)
+	{
+		Simulation->Step();
+		LastSimulationMilliseconds =
+			Simulation->CreateDiagnostics().GameTimeMilliseconds;
+	}
+	return Result;
+}
+
+AMSim::FPhase4QuerySnapshot UAMSimAirportSimulationSubsystem::GetPhase4Query() const
+{
+	return GetSimulation().CreatePhase4QuerySnapshot();
+}
+
 AMSim::FSnapshot UAMSimAirportSimulationSubsystem::CreateSnapshot() const
 {
 	check(Simulation);
@@ -212,6 +247,12 @@ bool UAMSimAirportSimulationSubsystem::RestoreSnapshot(const AMSim::FSnapshot& S
 	NextPhase3CommandId = FMath::Max(
 		NextPhase3CommandId,
 		MaximumPhase3CommandId + 1);
+	const uint64 MaximumPhase4CommandId = Snapshot.Phase4.Events.IsEmpty()
+		? 0
+		: Snapshot.Phase4.Events.Last().Cause.Value;
+	NextPhase4CommandId = FMath::Max(
+		NextPhase4CommandId,
+		MaximumPhase4CommandId + 1);
 	return true;
 }
 

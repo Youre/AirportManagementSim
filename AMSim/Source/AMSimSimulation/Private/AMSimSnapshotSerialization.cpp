@@ -749,6 +749,296 @@ namespace AMSim
 			Archive << State.TotalPassengerRevenueCredits;
 		}
 
+		void SerializePhase4Contract(
+			FArchive& Archive,
+			FPhase4ContractRecord& Record)
+		{
+			Archive << Record.Id.Value;
+			SerializeName(Archive, Record.ContentId);
+			SerializeName(Archive, Record.OperatorId);
+			Archive << Record.OperatorDisplayName;
+			SerializeName(Archive, Record.AircraftId);
+			Archive << Record.AircraftDisplayName;
+			Archive << Record.FrequencyPerWeek;
+			Archive << Record.PassengerCapacity;
+			Archive << Record.RewardPerCompletedFlightCredits;
+			Archive << Record.bInternational;
+			Archive << Record.bAccepted;
+			Archive << Record.CompletedFlights;
+			Archive << Record.ControllableDelayMinutes;
+			Archive << Record.SatisfactionPercent;
+		}
+
+		void SerializePhase4Gate(FArchive& Archive, FPhase4GateRecord& Record)
+		{
+			SerializeName(Archive, Record.GateId);
+			Archive << Record.DisplayName;
+			SerializeEnum(Archive, Record.BoardingMode);
+			SerializeName(Archive, Record.SizeClass);
+			Archive << Record.bBusAvailable;
+			Archive << Record.bBorderRouteAvailable;
+			Archive << Record.bOperational;
+		}
+
+		void SerializePhase4Flight(
+			FArchive& Archive,
+			FPhase4FlightRecord& Record)
+		{
+			Archive << Record.Id.Value;
+			Archive << Record.ContractId.Value;
+			SerializeName(Archive, Record.FlightCode);
+			SerializeName(Archive, Record.OperatorId);
+			Archive << Record.OperatorDisplayName;
+			SerializeName(Archive, Record.AircraftId);
+			Archive << Record.AircraftDisplayName;
+			SerializeName(Archive, Record.OriginRegion);
+			SerializeName(Archive, Record.DestinationRegion);
+			Archive << Record.DayIndex;
+			Archive << Record.PlannedArrivalMinute;
+			Archive << Record.PlannedDepartureMinute;
+			Archive << Record.ActualArrivalOffsetMinutes;
+			Archive << Record.ActualDepartureOffsetMinutes;
+			SerializeName(Archive, Record.PlannedGateId);
+			SerializeName(Archive, Record.AssignedGateId);
+			SerializeEnum(Archive, Record.BoardingMode);
+			SerializeEnum(Archive, Record.Feasibility);
+			SerializeEnum(Archive, Record.State);
+			Archive << Record.PassengerCount;
+			Archive << Record.TransferPassengerCount;
+			Archive << Record.TransferBagCount;
+			Archive << Record.bInternational;
+			Archive << Record.bWeatherRestricted;
+			Archive << Record.bGateChanged;
+			Archive << Record.bOverrideRecorded;
+			Archive << Record.bCompleted;
+			Archive << Record.RiskReason;
+		}
+
+		void SerializePhase4Connection(
+			FArchive& Archive,
+			FPhase4ConnectionRecord& Record)
+		{
+			Archive << Record.Id.Value;
+			Archive << Record.InboundFlightId.Value;
+			Archive << Record.OutboundFlightId.Value;
+			Archive << Record.PassengerCount;
+			Archive << Record.BagCount;
+			Archive << Record.MinimumConnectionMinutes;
+			Archive << Record.AvailableConnectionMinutes;
+			SerializeEnum(Archive, Record.State);
+			Archive << Record.Cause;
+			Archive << Record.Remedy;
+		}
+
+		void SerializePhase4TransferBag(
+			FArchive& Archive,
+			FPhase4TransferBagRecord& Record)
+		{
+			Archive << Record.Id.Value;
+			Archive << Record.ConnectionId.Value;
+			Archive << Record.InboundFlightId.Value;
+			Archive << Record.OutboundFlightId.Value;
+			SerializeEnum(Archive, Record.State);
+			Archive << Record.bScreened;
+			Archive << Record.bReconciled;
+		}
+
+		void SerializePhase4Border(
+			FArchive& Archive,
+			FPhase4BorderRecord& Record)
+		{
+			Archive << Record.FlightId.Value;
+			Archive << Record.PassengerCount;
+			Archive << Record.ImmigrationProcessed;
+			Archive << Record.CustomsProcessed;
+			Archive << Record.SecondaryCount;
+			SerializeEnum(Archive, Record.State);
+			Archive << Record.bControlledRouteValid;
+			Archive << Record.bAccessibleLaneOpen;
+		}
+
+		void SerializePhase4Transport(
+			FArchive& Archive,
+			FPhase4TransportRecord& Record)
+		{
+			SerializeEnum(Archive, Record.Mode);
+			SerializeName(Archive, Record.FacilityId);
+			SerializeName(Archive, Record.TenantId);
+			Archive << Record.Capacity;
+			Archive << Record.ServiceFrequencyMinutes;
+			Archive << Record.PassengerCount;
+			Archive << Record.bOpen;
+			Archive << Record.bRouteConnected;
+		}
+
+		void SerializePhase4Forecast(
+			FArchive& Archive,
+			FPhase4ForecastRecord& Record)
+		{
+			Archive << Record.DayIndex;
+			Archive << Record.HourOffset;
+			SerializeEnum(Archive, Record.Category);
+			Archive << Record.WindDirectionDegrees;
+			Archive << Record.WindSpeedKnots;
+			Archive << Record.VisibilityMeters;
+			Archive << Record.ConfidencePercent;
+			SerializeName(Archive, Record.RunwaySurface);
+			SerializeName(Archive, Record.RecommendedRunway);
+		}
+
+		void SerializePhase4ApproachLimit(
+			FArchive& Archive,
+			FPhase4ApproachLimitRecord& Record)
+		{
+			SerializeName(Archive, Record.AircraftId);
+			Archive << Record.MinimumVisibilityMeters;
+			Archive << Record.MaximumCrosswindKnots;
+			SerializeName(Archive, Record.RequiredApproach);
+		}
+
+		void SerializePhase4Renewal(
+			FArchive& Archive,
+			FPhase4RenewalRecord& Record)
+		{
+			Archive << Record.TenantId.Value;
+			SerializeName(Archive, Record.OperatorId);
+			Archive << Record.OperatorDisplayName;
+			SerializeEnum(Archive, Record.State);
+			Archive << Record.SatisfactionPercent;
+			Archive << Record.Evidence;
+			Archive << Record.RecoveryOffer;
+		}
+
+		void SerializePhase4Incident(
+			FArchive& Archive,
+			FPhase4IncidentRecord& Record)
+		{
+			Archive << Record.Id.Value;
+			SerializeEnum(Archive, Record.Lifecycle);
+			Archive << Record.FlightId.Value;
+			SerializeName(Archive, Record.AffectedRunway);
+			Archive << Record.OutcomeSeed;
+			Archive << Record.RiskFactor;
+			Archive << Record.Warning;
+			Archive << Record.Remedy;
+			Archive << Record.PlayerDecision;
+			Archive << Record.CurrentConditions;
+			Archive << Record.Mitigations;
+			Archive << Record.Outcome;
+			Archive << Record.Report;
+			Archive << Record.Prevention;
+			Archive << Record.bWarningShown;
+			Archive << Record.bOverrideAcknowledged;
+			Archive << Record.bDeparturesHeld;
+			Archive << Record.bArrivalsDiverted;
+			Archive << Record.bAreaProtected;
+			Archive << Record.bTowDispatched;
+			Archive << Record.bRunwayClosed;
+			Archive << Record.bOtherOperationsContinue;
+			Archive << Record.bReportReviewed;
+			Archive << Record.bRecoveryApplied;
+			Archive << Record.AlertedAtGameMilliseconds;
+			Archive << Record.ProtectedAtGameMilliseconds;
+		}
+
+		void SerializePhase4Event(FArchive& Archive, FPhase4Event& Record)
+		{
+			Archive << Record.Sequence;
+			Archive << Record.GameTimeMilliseconds;
+			SerializeEnum(Archive, Record.Type);
+			Archive << Record.Cause.Value;
+			Archive << Record.SubjectId;
+			Archive << Record.Message;
+		}
+
+		void SerializePhase4State(FArchive& Archive, FPhase4State& State)
+		{
+			Archive << State.bInitialized;
+			Archive << State.bTimetablePublished;
+			Archive << State.bFixtureCompleted;
+			Archive << State.bRecoverable;
+			Archive << State.MasterSeed;
+			Archive << State.RandomStreamState;
+			Archive << State.NextDomainId;
+			Archive << State.NextEventSequence;
+			Archive << State.InitializedAtGameMilliseconds;
+			Archive << State.PublishedAtGameMilliseconds;
+			Archive << State.LastUpdatedGameMilliseconds;
+			Archive << State.CurrentOperatingDay;
+			Archive << State.ProcessedDayMask;
+			SerializeRecords(
+				Archive,
+				State.Contracts,
+				MaximumSmallRecords,
+				SerializePhase4Contract);
+			SerializeRecords(
+				Archive,
+				State.Gates,
+				MaximumSmallRecords,
+				SerializePhase4Gate);
+			SerializeRecords(
+				Archive,
+				State.Flights,
+				MaximumSmallRecords,
+				SerializePhase4Flight);
+			SerializeRecords(
+				Archive,
+				State.Connections,
+				MaximumSmallRecords,
+				SerializePhase4Connection);
+			SerializeRecords(
+				Archive,
+				State.TransferBags,
+				MaximumHistoryRecords,
+				SerializePhase4TransferBag);
+			SerializeRecords(
+				Archive,
+				State.BorderProcesses,
+				MaximumSmallRecords,
+				SerializePhase4Border);
+			SerializeRecords(
+				Archive,
+				State.Transports,
+				MaximumSmallRecords,
+				SerializePhase4Transport);
+			SerializeRecords(
+				Archive,
+				State.Forecast,
+				MaximumSmallRecords,
+				SerializePhase4Forecast);
+			SerializeRecords(
+				Archive,
+				State.ApproachLimits,
+				MaximumSmallRecords,
+				SerializePhase4ApproachLimit);
+			SerializeRecords(
+				Archive,
+				State.Renewals,
+				MaximumSmallRecords,
+				SerializePhase4Renewal);
+			SerializePhase4Incident(Archive, State.Incident);
+			SerializeRecords(
+				Archive,
+				State.Events,
+				MaximumHistoryRecords,
+				SerializePhase4Event);
+			Archive << State.CompletedFlightCount;
+			Archive << State.EarlyFlightCount;
+			Archive << State.LateFlightCount;
+			Archive << State.GateChangeCount;
+			Archive << State.WeatherRestrictedFlightCount;
+			Archive << State.ConnectedPassengerCount;
+			Archive << State.MissedConnectionPassengerCount;
+			Archive << State.RebookedPassengerCount;
+			Archive << State.CompletedTransferBagCount;
+			Archive << State.InternationalPassengerCount;
+			Archive << State.BorderProcessedPassengerCount;
+			Archive << State.RentalCarPassengerCount;
+			Archive << State.RailPassengerCount;
+			Archive << State.RenewalAcceptedCount;
+			Archive << State.TotalRegionalRevenueCredits;
+		}
+
 		void SerializeBody(FArchive& Archive, FSnapshot& Snapshot)
 		{
 			Archive << Snapshot.SchemaVersion;
@@ -781,6 +1071,10 @@ namespace AMSim
 			if (Snapshot.SchemaVersion >= 4)
 			{
 				SerializePhase3State(Archive, Snapshot.Phase3);
+			}
+			if (Snapshot.SchemaVersion >= 5)
+			{
+				SerializePhase4State(Archive, Snapshot.Phase4);
 			}
 		}
 	}
@@ -880,6 +1174,13 @@ namespace AMSim
 				Snapshot.MasterSeed == 0 ? 1 : Snapshot.MasterSeed);
 			Snapshot.Phase3 = EmptyPhase3.GetState();
 			Snapshot.SchemaVersion = 4;
+		}
+		if (Snapshot.SchemaVersion == 4)
+		{
+			FRegionalScheduledSimulation EmptyPhase4(
+				Snapshot.MasterSeed == 0 ? 1 : Snapshot.MasterSeed);
+			Snapshot.Phase4 = EmptyPhase4.GetState();
+			Snapshot.SchemaVersion = 5;
 		}
 		return Snapshot.SchemaVersion == SnapshotSchemaVersion;
 	}

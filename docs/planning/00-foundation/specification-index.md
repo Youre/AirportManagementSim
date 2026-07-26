@@ -101,6 +101,7 @@ The [Concept Art Reference Set](../30-content-and-assets/concept-art/README.md) 
 | PI-03 | [Phase 1 Grass-Airfield Implementation Plan](../50-production/phase-1-grass-airfield-implementation-plan.md) | Phase 1 scope, architecture, work packages, and exit evidence |
 | PI-04 | [Phase 2 Living General-Aviation Implementation Plan](../50-production/phase-2-living-ga-implementation-plan.md) | Phase 2 scope, architecture, work packages, and exit evidence |
 | PI-05 | [Phase 3 Terminal and Landside Implementation Plan](../50-production/phase-3-terminal-landside-implementation-plan.md) | Phase 3 terminal, passenger, baggage, security, landside, presentation, and exit evidence |
+| PI-06 | [Phase 4 Regional Scheduled Airport Implementation Plan](../50-production/phase-4-regional-scheduled-airport-implementation-plan.md) | Phase 4 recurring timetable, connections, border, disruption, presentation, and exit evidence |
 
 ## Shared identifiers and interfaces
 

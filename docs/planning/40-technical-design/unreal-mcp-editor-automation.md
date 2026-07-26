@@ -43,6 +43,8 @@ Long operations report progress and can stop between assets without corrupting c
 6. headless scenario and performance fixture execution;
 7. screenshot and documentation evidence capture.
 
+For visual work, screenshot capture is followed by the repository visual-validation workflow: equivalent-state comparison, image inspection, prioritized mismatch notes, one bounded mutation, and same-state recapture. MCP may author and inspect the editor asset, but it cannot approve its own visual result.
+
 ## Verification and audit
 
 Tool invocations write a local developer log containing tool/version, time, inputs without secrets, affected paths, result, and validation summary. A source-control diff remains the final authority. MCP output cannot mark its own result approved without independent validator/test evidence.

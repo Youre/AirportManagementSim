@@ -1,7 +1,9 @@
 #pragma once
 
+#include "AMSimPhase1ViewState.h"
 #include "AMSimSpeechProvider.h"
 #include "CommonActivatableWidget.h"
+#include "Input/UIActionBindingHandle.h"
 #include "AMSimRootScreen.generated.h"
 
 class UBorder;
@@ -9,14 +11,20 @@ class UButton;
 class UCanvasPanel;
 class UEditableTextBox;
 class UTextBlock;
+class UUserWidget;
 
-UCLASS()
-class AMSIMUI_API UAMSimRootScreen final : public UCommonActivatableWidget
+UCLASS(Blueprintable)
+class AMSIMUI_API UAMSimRootScreen : public UCommonActivatableWidget
 {
 	GENERATED_BODY()
 
+public:
+	UAMSimRootScreen(const FObjectInitializer& ObjectInitializer);
+	static FUIInputConfig MakeGameplayInputConfig();
+
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
+	virtual TOptional<FUIInputConfig> GetDesiredInputConfig() const override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	virtual void NativeDestruct() override;
 
@@ -55,6 +63,10 @@ private:
 	void SaveGame();
 	UFUNCTION()
 	void LoadGame();
+	UFUNCTION()
+	void ToggleObjectiveDrawer();
+	UFUNCTION()
+	void ToggleOperationsDrawer();
 
 	void SubmitSpeed(int32 Multiplier);
 	void RefreshFromSimulation();
@@ -111,9 +123,25 @@ private:
 	TObjectPtr<UBorder> HutVisual;
 	UPROPERTY(Transient)
 	TObjectPtr<UCanvasPanel> AircraftMarker;
+	UPROPERTY(Transient)
+	TObjectPtr<UBorder> ContextPanel;
+	UPROPERTY(Transient)
+	TObjectPtr<UBorder> ObjectiveDrawer;
+	UPROPERTY(Transient)
+	TObjectPtr<UBorder> OperationsDrawer;
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> ContextHeaderText;
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> ContextBodyText;
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> ContextStatusText;
 
 	UPROPERTY(Transient)
 	TObjectPtr<UButton> CreateButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UUserWidget> CreateButtonWidget;
+	UPROPERTY()
+	TSubclassOf<UUserWidget> PrimaryButtonWidgetClass;
 	UPROPERTY(Transient)
 	TObjectPtr<UButton> BuildButton;
 	UPROPERTY(Transient)
@@ -134,5 +162,7 @@ private:
 	TObjectPtr<UButton> RecoveryButton;
 
 	TUniquePtr<IAMSimSpeechProvider> SpeechProvider;
+	AMSim::FPhase1ViewState CurrentViewState;
+	uint64 LastAppliedRevision = MAX_uint64;
 	int32 LastPhraseCount = 0;
 };

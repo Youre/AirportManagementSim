@@ -10,4 +10,11 @@ class AMSIMUI_API AAMSimGameMode final : public AGameModeBase
 
 public:
 	AAMSimGameMode();
+
+protected:
+	virtual void BeginPlay() override;
+
+private:
+	UPROPERTY(Transient)
+	TObjectPtr<class AAMSimWorldPresenter> WorldPresenter;
 };

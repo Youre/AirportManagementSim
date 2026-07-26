@@ -1,11 +1,11 @@
 # PI-03: Phase 1 Grass-Airfield Implementation Plan
 
-**Status:** Implementation verified; external phase gate pending
+**Status:** Systems implementation verified; visual and interaction polish active
 **Owner:** Production and integration
 **Last updated:** 2026-07-26
 **Roadmap phase:** Phase 1
 
-Implementation evidence is recorded in the [Phase 1 verification record](../../../.ai/reviews/2026-07-26-phase-1-verification.md). All P1-00 through P1-08 implementation exits, the reviewed player-facing content lock, the final code/package gates, and elevated network-denied S15 pass. Formal closure still requires physical reference-tier measurement and the [unassisted new-tester/audio/comprehension protocol](phase-1-new-tester-protocol.md).
+Implementation evidence is recorded in the [Phase 1 verification record](../../../.ai/reviews/2026-07-26-phase-1-verification.md). All P1-00 through P1-08 systems exits, the reviewed player-facing content lock, the code/package gates, and elevated network-denied S15 pass. Active follow-up is visual fidelity and interaction polish, including concept-art comparison and persistent mouse behavior. The four-hour physical-tier measurement and [formal unassisted new-tester/audio/comprehension protocol](phase-1-new-tester-protocol.md) are retained but deferred to Phase 7 release hardening.
 
 ## Purpose
 
@@ -13,7 +13,7 @@ Phase 1 turns the Phase 0 empty-airport foundation into the first complete playe
 
 `select temperate region -> name/save airport -> plan and build a grass airfield -> open it -> accept and schedule one compatible GA visit -> observe arrival, taxi, inspection/fueling, and departure -> receive an explained reward -> save/load`
 
-The slice is complete only when a new tester can finish that journey without developer intervention and can explain why the aircraft was compatible, where it went, what it needed, and what the airport earned.
+The player-facing target is that a new tester can finish that journey without developer intervention and explain why the aircraft was compatible, where it went, what it needed, and what the airport earned. Short iterative playtests improve the slice now; the formal unassisted evidence record is deferred to Phase 7.
 
 ## Authoritative scope
 
@@ -253,7 +253,7 @@ Exit: UI automation and visual/accessibility review pass at 1920 x 1080 and 100%
 - Scan Shipping for editor/test/MCP/network leakage and required 3D gameplay assets.
 - Conduct the new-tester completion/comprehension review and record visual-reference differences.
 
-Exit: every locally executable Phase 1 gate and traceability row has machine-readable evidence. The physical reference-tier and unassisted human-session records remain the two formal external locks.
+Exit: every locally executable Phase 1 systems gate and traceability row has machine-readable evidence. Visual and interaction review remains iterative. The physical reference-tier long soak and formal unassisted human-session records are deferred release-hardening evidence rather than Phase 1 development locks.
 
 ## Verification matrix
 
@@ -271,26 +271,27 @@ Exit: every locally executable Phase 1 gate and traceability row has machine-rea
 | 2D/offline Shipping boundary | package scans and network-denied `S15` | proof contains no required 3D presentation |
 | Performance | reference-tier frame/sim/save/memory JSON | interaction remains responsive |
 
-## Phase gate
+## Phase 1 development gate
 
-Phase 1 closes only when:
+Phase 1 is ready to hand off into subsequent feature development only when:
 
-1. a new tester completes the full journey without developer intervention;
+1. an owner hands-on walkthrough completes the full journey without a blocking interaction defect, and observed usability issues enter the visual iteration loop;
 2. the compatible starter offer appears immediately at readiness and the first aircraft arrives within three game minutes after schedule confirmation;
 3. the valid starter plan costs no more than 3,500 Credits and leaves at least 30% contingency;
 4. a zero-credit safe airfield remains recoverable;
 5. identical command streams and save/load continuations match checksums/events;
 6. no authoritative state is owned solely by Actors, Widgets, audio, or animation;
 7. the player-facing content and all copied source files, if any, pass provenance/accuracy review;
-8. the representative reference hardware and scalability tier are recorded and meet TS-08 budgets;
+8. short development-host performance, simulation, save, backlog, and memory checks pass; the physical-tier four-hour soak remains a Phase 7 release-hardening gate;
 9. the clean Shipping package runs `S01`/`S15` with network denied and without editor/MCP/test dependencies or required 3D gameplay assets;
-10. VA-01, VA-02, VA-04, and VA-05 comparisons, accessibility checks, and known differences are recorded.
+10. VA-01, VA-02, VA-04, and VA-05 equivalent-state comparison boards, prioritized mismatches, accessibility checks, bounded iterations, and known differences are recorded;
+11. the Windows mouse remains visible and interactive when the player clicks into the world or CommonUI.
 
-The exact final binary identity is tracked in
-`scripts/phase1/Phase1AcceptanceManifest.json`. After the physical-tier and
-unassisted-tester records exist, run
-`.\scripts\phase1\Test-Phase1Acceptance.ps1`; the phase stays open unless its
-machine-readable aggregate reports `passed: true`.
+The latest verified package identity is tracked in
+`scripts/phase1/Phase1AcceptanceManifest.json`. Short local gates are refreshed
+after retained runtime changes. The physical-tier and unassisted-tester
+collectors remain available, but their strict aggregate becomes a Phase 7
+release-candidate gate rather than a blocker for continued development.
 
 ## Explicit non-goals
 
@@ -316,7 +317,7 @@ These exclusions may not be used to bypass stable interfaces required for later 
 | UI owns gameplay state | Query-backed view models and command adapters; save excludes UI/proxies |
 | Async or frame timing changes outcomes | Fixed-step barriers, canonical queues, named streams, and replay checks at every tranche |
 | TTS leaks network/runtime dependencies | Local provider abstraction, captions-first fallback, Shipping/network scans |
-| High-end workstation hides performance problems | Select and test a representative reference tier before close |
+| High-end workstation hides performance problems | Run short budgets every phase and complete the physical reference-tier soak during Phase 7 |
 | Phase 2 complexity is pulled forward | Explicit non-goals and one-aircraft/one-offer fixture |
 
 ## Rollback

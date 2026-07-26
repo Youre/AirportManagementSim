@@ -21,6 +21,12 @@ The [Concept Art Reference Set](concept-art/README.md) defines the approved visu
 
 These images are directional rather than production assets. Their dimensional shading must be translated into 2D sprite treatment, and their incidental numbers, geometry, aircraft shapes, and text are non-normative.
 
+## AI-assisted generation
+
+OpenAI Image Gen is the preferred generator for concept art, UI mockups, composition studies, and high-fidelity visual-language exploration. The local ComfyUI server may be used through the `comfyui-imagegen` skill for simple textures, surface variants, controlled edits, transparent cutouts, and token-efficient candidate generation when its output quality is sufficient.
+
+Generated output is a candidate source, not approved game content. Retained candidates record generator/workflow, prompt, seed or request identity when available, input paths, dimensions, date, checksum, post-processing, intended use, and review decision. They remain subject to the same 2D, provenance, accessibility, visual-consistency, import, and packaging checks as any other source asset.
+
 ## Coordinate and scale contract
 
 Simulation space is meters. Art uses a project-wide pixels-per-meter value stored in import configuration; the initial baseline is 32 pixels per meter for world assets. Aircraft source art is normalized to real type length and wingspan rather than displayed at arbitrary sprite-file size. Oversized interactive outlines and selection markers may improve usability without changing collision or clearance dimensions.

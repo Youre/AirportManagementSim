@@ -378,10 +378,12 @@ finally {
 $forbiddenNames = @(
     'AMSimEditor',
     'AMSimTests',
+    'EditorToolset',
     'ModelContextProtocol',
     'PythonScriptPlugin',
     'RemoteControl',
-    'ToolsetRegistry'
+    'ToolsetRegistry',
+    'UMGToolSet'
 )
 $shippingFiles = Get-ChildItem -LiteralPath (Join-Path $packageRoot 'Shipping') -File -Recurse
 $forbiddenFiles = @($shippingFiles | Where-Object {

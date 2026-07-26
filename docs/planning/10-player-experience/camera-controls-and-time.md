@@ -80,6 +80,7 @@ The game performs no offline progression while closed.
 ## Feedback
 
 - Current speed is always visible.
+- The Windows mouse cursor remains visible while interacting with the world, HUD, and management panels, including during click capture.
 - Keyboard shortcuts produce a brief non-modal label.
 - A blocked speed change explains the reason, such as save migration or active blocking dialog.
 - Critical incidents automatically reduce 8× or 4× to 1× when pause-on-critical-alert is disabled.
@@ -88,9 +89,9 @@ The game performs no offline progression while closed.
 ## Acceptance criteria
 
 - All required actions can be remapped without code changes.
+- Clicking into the gameplay viewport does not hide or lock the mouse cursor.
 - The player can reach any owned parcel, select an entity, and return north-up using only documented actions.
 - Zooming from full airport to an individual aircraft preserves the mouse target within a small screen-space tolerance.
 - Commands issued while paused apply in submission order when resumed.
 - At each speed, a seeded simulation reaches identical authoritative state at the same game timestamp.
 - Closing and reopening the game does not advance the calendar.
-

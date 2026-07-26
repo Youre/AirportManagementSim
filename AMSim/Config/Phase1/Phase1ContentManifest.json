@@ -2,8 +2,8 @@
   "schema": 1,
   "manifestId": "ContentManifest.Phase1.StarterGrassAirfield",
   "owningPhase": "Phase1",
-  "contentReviewId": "CT02.Phase1.RiverbendTrainer.2026-07-26",
-  "contentReviewStatus": "ApprovedPhase1",
+  "contentReviewId": "CT02.Phase1_5.Cessna152Presentation.2026-07-26",
+  "contentReviewStatus": "ApprovedPhase1_5",
   "entries": [
     {
       "contentId": "Map.TemperateStarter",
@@ -16,13 +16,13 @@
     {
       "contentId": "Aircraft.LightPiston.Starter",
       "kind": "Aircraft",
-      "provenance": "InternalApproved",
+      "provenance": "OwnerApprovedExternalSource",
       "rightsState": "InternalApproved",
-      "source": "ProjectAuthored",
+      "source": "C:\\Users\\dave\\Documents\\Joes_Game\\dist\\assets\\Cessna_152-JWsK-d3E.png",
       "localizationKey": "Aircraft.LightPiston.Starter.Name",
-      "accuracyReviewId": "CT02.Phase1.RiverbendTrainer.2026-07-26",
+      "accuracyReviewId": "CT02.Phase1_5.Cessna152Presentation.2026-07-26",
       "identityTreatment": "FictionalLightPistonTrainer",
-      "liveryTreatment": "FictionalCyanDirectionalSilhouette",
+      "liveryTreatment": "FictionalRiverbendYellowRB021",
       "headingDirectionCount": 16
     },
     {
@@ -178,7 +178,7 @@
       "localizationKey": "Audio.RadioCue.Local.Name"
     }
   ],
-  "externalAircraftFilesCopied": 0,
+  "externalAircraftFilesCopied": 1,
   "candidateSource": "C:\\Users\\dave\\Documents\\Joes_Game\\dist\\assets",
-  "candidateCopyPolicy": "RequiresCompletedCT01ManifestAndReview"
+  "candidateCopyPolicy": "ApprovedSingleSourceViaPhase15Manifest"
 }

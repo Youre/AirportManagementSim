@@ -10,10 +10,14 @@ public class AMSimEditor : ModuleRules
 			"AMSimGameplay",
 			"AMSimSimulation",
 			"AMSimUI",
+			"AssetRegistry",
+			"AssetTools",
 			"Core",
 			"CoreUObject",
 			"Engine",
 			"Json",
+			"Paper2D",
+			"UMGEditor",
 			"UnrealEd"
 		});
 	}

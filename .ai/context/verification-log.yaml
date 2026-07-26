@@ -348,3 +348,101 @@ entries:
       scripts, tracked JSON/YAML/UTF-8, 99 Markdown files with zero broken local
       links, content/source/asset hashes, secret signatures, diff, firewall
       cleanup, and process cleanup passed.
+  - timestamp: '2026-07-26T14:08:49.795976+00:00'
+    commit: 8001ac16e81f52776d90841640ef49321eb5fb91
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: Unreal MCP StartPIE with -NoSound during UI mutation probe
+    result: failed
+    notes: Editor asserted in TextToSpeech initialization because the probe
+      disabled audio; stack reached the existing speech provider after
+      constructing the root UI. Retried under the normal audio configuration,
+      where PIE and capture passed.
+  - timestamp: '2026-07-26T14:08:50.154291+00:00'
+    commit: 8001ac16e81f52776d90841640ef49321eb5fb91
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: Unreal 5.8 MCP primary-button mutation; editor build; normal-audio
+      PIE capture/log review; project audit; AMSim automation; Shipping
+      cook/package/IoStore and forbidden-dependency scan
+    result: passed
+    notes: MCP created, reflection-styled, compiled, saved, and re-read
+      WBP_PrimaryActionButton. AMSimEditor compiled; normal-audio PIE rendered
+      the integrated Create Airport button and MCP captured it; log review found
+      no UI errors. Correct-manifest project audit passed. Automation emitted 25
+      results with 0 failed/not-run/in-process. Shipping BuildCookRun passed;
+      final IoStore contains the button asset; files, text inventory, and
+      receipt contain zero AMSimEditor, AMSimTests, EditorToolset,
+      ModelContextProtocol, PythonScriptPlugin, RemoteControl, ToolsetRegistry,
+      or UMGToolSet matches.
+  - timestamp: '2026-07-26T14:17:05.503644+00:00'
+    commit: 8001ac16e81f52776d90841640ef49321eb5fb91
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: Unreal workflow agent-guidance review; ai-project-init doctor
+      --json; git diff --check; Markdown link review
+    result: passed
+    notes: Added concise AGENTS.md routing and a durable Unreal hybrid
+      C++/Blueprint/MCP/cooking standard. Doctor exited 0 with known warnings
+      only; guidance uses primary Epic 5.8 documentation.
+  - timestamp: '2026-07-26T14:40:09.118362+00:00'
+    commit: 8001ac16e81f52776d90841640ef49321eb5fb91
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: AMSimEditor build after cursor-policy test addition
+    result: failed
+    notes: Initial compile rejected TestEqual on TSubclassOf versus UClass in
+      AMSimPresentationTests. Replaced it with an explicit boolean equality
+      assertion and rebuilt.
+  - timestamp: '2026-07-26T14:40:09.450973+00:00'
+    commit: 8001ac16e81f52776d90841640ef49321eb5fb91
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Cursor/input policy and visual-workflow verification: AMSimEditor build;
+      25 AMSim automation results; rendered S01 smoke; VA-01 comparison; ComfyUI preflight;
+      AST/link/diff/doctor checks'
+    result: passed
+    notes: Editor build passed. Automation reported 25 results, 24 succeeded and
+      1 succeeded-with-warnings, with 0 failed/not-run/in-process. Rendered S01
+      passed. Cursor defaults and CommonUI capture/no-lock/no-hide policy are
+      asserted. VA-01 board and mismatch worksheet generated. ComfyUI 0.28.0
+      preflight passed at 192.168.5.12:8188. Governance and repository checks
+      passed.
+  - timestamp: '2026-07-26T14:40:09.815696+00:00'
+    commit: 8001ac16e81f52776d90841640ef49321eb5fb91
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: Human OS-cursor observation after clicking the gameplay viewport
+    result: skipped
+    notes: Automated tests prove the controller and CommonUI input
+      configuration, and rendered S01 exercises the runtime path, but Unreal
+      screenshots do not capture the operating-system cursor. Confirm visually
+      in the next hands-on PIE or packaged session.
+  - timestamp: '2026-07-26T16:16:00.000000+00:00'
+    commit: 8001ac16e81f52776d90841640ef49321eb5fb91
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: Initial Phase 1.5 clean Shipping cook dependency inspection
+    result: failed
+    notes: The cook exposed seven aircraft heading sprites whose imported
+      textures existed in the editor session but had not been saved to disk.
+      The package was rejected despite UAT success. The asset commandlet now
+      adds every imported texture package to the explicit save set.
+  - timestamp: '2026-07-26T16:46:00.000000+00:00'
+    commit: 8001ac16e81f52776d90841640ef49321eb5fb91
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Phase 1.5 final verification: editor build; project audit; 27-result
+      automation; five-scale rendered matrix; manual cursor/state review; clean
+      Shipping cook, asset registry, launch, socket, and forbidden-dependency checks;
+      ai-project-init doctor'
+    result: passed
+    notes: Unreal 5.8.0 editor build and content audit passed. Automation
+      completed 27 results with 0 failed/not-run/in-process. The 100–200%
+      1920x1080 matrix passed with zero 8x backlog and compact drawers at
+      175–200%. Manual inspection confirmed visible cursor and representative
+      state progression. Shipping produced 267 packages with no missing
+      presentation dependency; the runtime stayed alive for five seconds with
+      0 TCP sockets and 0 forbidden file/text/receipt matches. Doctor exited 0
+      with only known managed-template, lexical, legacy-ledger, and schema
+      warnings plus an ignored Saved inspection artifact warning.

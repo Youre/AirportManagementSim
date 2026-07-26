@@ -476,11 +476,6 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 		Phase1SmokeWarmupSeconds += FMath::Min(static_cast<double>(DeltaTime), 0.1);
 		if (Phase1SmokeWarmupSeconds >= 0.5)
 		{
-			AMSim::FPhase1Command Create;
-			Create.Type = AMSim::EPhase1CommandType::CreateAirport;
-			Create.AirportName = TEXT("Riverbend Field");
-			Create.MapId = AMSim::GetPhase1Fixture().MapId;
-			Submit(MoveTemp(Create));
 			RequestProof(TEXT("va01-new-airport.png"));
 			Phase1SmokeStage = 1;
 		}
@@ -488,6 +483,11 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 	case 1:
 		if (ProofReady())
 		{
+			AMSim::FPhase1Command Create;
+			Create.Type = AMSim::EPhase1CommandType::CreateAirport;
+			Create.AirportName = TEXT("Riverbend Field");
+			Create.MapId = AMSim::GetPhase1Fixture().MapId;
+			Submit(MoveTemp(Create));
 			AMSim::FPhase1Command Build;
 			Build.Type = AMSim::EPhase1CommandType::CommitStarterPlan;
 			Build.Proposal = AMSim::CreateDefaultStarterPlan();

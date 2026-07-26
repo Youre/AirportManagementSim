@@ -18,7 +18,7 @@ AAMSimCameraPawn::AAMSimCameraPawn()
 	Camera->SetRelativeLocation({0.0, 0.0, 2000.0});
 	Camera->SetRelativeRotation({-90.0, 0.0, 0.0});
 	Camera->ProjectionMode = ECameraProjectionMode::Orthographic;
-	Camera->OrthoWidth = 4096.0f;
+	Camera->OrthoWidth = 105000.0f;
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 	MappingContext = CreateDefaultSubobject<UInputMappingContext>(TEXT("CameraInput"));
 	PanUpAction = CreateDefaultSubobject<UInputAction>(TEXT("PanUp"));
@@ -67,10 +67,13 @@ void AAMSimCameraPawn::PanRight() { Pan(FVector::RightVector); }
 
 void AAMSimCameraPawn::Pan(const FVector Direction)
 {
-	AddActorWorldOffset(Direction * 100.0);
+	AddActorWorldOffset(Direction * 5000.0);
 }
 
 void AAMSimCameraPawn::Zoom(const FInputActionValue& Value)
 {
-	Camera->OrthoWidth = FMath::Clamp(Camera->OrthoWidth - Value.Get<float>() * 256.0f, 512.0f, 16384.0f);
+	Camera->OrthoWidth = FMath::Clamp(
+		Camera->OrthoWidth - Value.Get<float>() * 5000.0f,
+		30000.0f,
+		160000.0f);
 }

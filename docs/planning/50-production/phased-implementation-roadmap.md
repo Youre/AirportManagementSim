@@ -37,7 +37,7 @@ Deliver:
 
 ## Phase 1: Grass-airfield vertical slice
 
-**Status:** Implementation verified — external phase gate pending. See [PI-03](phase-1-grass-airfield-implementation-plan.md) and the [verification record](../../../.ai/reviews/2026-07-26-phase-1-verification.md).
+**Status:** Systems implementation verified; visual and interaction polish active. Long-soak and formal unassisted acceptance are deferred to Phase 7. See [PI-03](phase-1-grass-airfield-implementation-plan.md) and the [verification record](../../../.ai/reviews/2026-07-26-phase-1-verification.md).
 
 **Goal:** Starting from a parcel, build and operate one complete light-aircraft visit.
 
@@ -45,9 +45,11 @@ Integrate PX-01, PX-02, PX-03, PX-04; GS-01/02 construction and validation; one 
 
 Journey: select temperate map -> build grass runway/taxi/stand/access -> number/open runway -> accept and slot a GA flight -> hear/read calls -> land/taxi/service/depart -> receive reward -> save/load.
 
-**Gate:** a new tester completes the journey without developer intervention; first flight target and recoverable starting budget pass; no state owned solely by Actors.
+**Development gate:** the complete journey, first-flight target, recoverable starting budget, deterministic/save/package/offline boundaries, persistent visible mouse interaction, and equivalent-state visual review pass. Short hands-on playtests inform iteration throughout development; the formal unassisted protocol and four-hour physical-tier soak are retained for Phase 7 rather than blocking Phase 2.
 
 ## Phase 2: Living general-aviation airport
+
+Phase 2 begins after **Phase 1.5: Visual foundation and validation loop** closes. Phase 1.5 replaces the proof HUD/map with reusable CommonUI/UMG regions and a real Paper2D presentation, validates VA-01/02/04/05 at supported UI scales, and re-proves the clean packaged Phase 1 journey. See [PI-03A](phase-1-5-visual-foundation-plan.md).
 
 **Goal:** Sustained operations with multiple aircraft, staff, construction logistics, changing weather, and GA/flight-school/charter identity.
 
@@ -94,6 +96,8 @@ Add large aircraft only after scale/art validation; parallel runway numbering/co
 **Goal:** A shippable offline Windows game rather than a technically complete prototype.
 
 Complete curated maps, approved aircraft/operator catalog, guidance/help, voiced/captioned radio coverage, visual/audio polish, accessibility review, balance playtests, rights/provenance, migration matrix, long soak, clean-machine package, security/offline audit, and child-safety content review.
+
+Run the retained physical reference-tier four-hour soak and formal unassisted tester/audio/caption/comprehension protocol against a release-candidate package identity.
 
 **Gate:** zero release-blocking issues; all traceability rows verified; package runs with network denied; every supported old save migrates; no 3D or unapproved source asset ships.
 

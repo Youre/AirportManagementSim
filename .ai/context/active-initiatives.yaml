@@ -16,6 +16,11 @@ project_initiatives:
     next_outcome: Preserve its deterministic, save, 2D, offline, and Shipping boundaries in Phase 1
   - id: phase-1-grass-airfield
     title: Build the grass-airfield vertical slice
-    status: active
+    status: acceptance
     source: docs/planning/50-production/phase-1-grass-airfield-implementation-plan.md
-    next_outcome: Complete physical reference-tier and unassisted tester/audio/comprehension acceptance records
+    next_outcome: Accept the four Phase 1.5 visual comparison boards; defer four-hour and formal unassisted evidence to Phase 7
+  - id: phase-1-5-visual-foundation
+    title: Establish the reusable visual foundation and validation loop
+    status: acceptance
+    source: docs/planning/50-production/phase-1-5-visual-foundation-plan.md
+    next_outcome: Owner accepts P15-01 through P15-04 or requests one bounded visual revision

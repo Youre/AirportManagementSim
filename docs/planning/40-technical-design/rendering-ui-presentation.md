@@ -43,6 +43,10 @@ The [Concept Art Reference Set](../30-content-and-assets/concept-art/README.md) 
 
 The reference images do not authorize dimensional meshes or perspective. Translate their volume cues into Paper 2D sprites, flipbooks, 2D overlays, and restrained sprite effects. Written performance and accessibility requirements take precedence over visual density.
 
+Visual validation is iterative rather than a one-time prose sign-off. Each mapped state requires an equivalent-state implementation capture, side-by-side comparison board, prioritized mismatch list, one bounded visual-system iteration, and a recapture of the same state. Automated screenshot presence, non-black sampling, scale coverage, and overlap checks cannot by themselves establish visual fidelity.
+
+The Windows gameplay cursor remains visible over both the world and CommonUI. Root gameplay screens use combined game-and-UI input, do not hide the cursor during viewport capture, and do not lock it to the viewport. Any modal or temporary input configuration must restore that policy when dismissed.
+
 ## Acceptance and sources
 
 Tests must prove pooling reuse, relevance transitions, stable sorting, hit selection, query-only UI, 100–200% UI scale, captions, color-independent status, large-list virtualization, and graceful presentation degradation. A packaged scene must contain no required 3D gameplay asset.

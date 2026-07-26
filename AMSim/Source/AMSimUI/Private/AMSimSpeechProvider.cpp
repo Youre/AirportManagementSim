@@ -16,6 +16,11 @@ namespace
 	public:
 		virtual bool Initialize() override
 		{
+			bAudioOutputDisabled = FParse::Param(FCommandLine::Get(), TEXT("NoSound"));
+			if (bAudioOutputDisabled)
+			{
+				return false;
+			}
 #if !UE_BUILD_SHIPPING
 			if (FParse::Param(FCommandLine::Get(), TEXT("AMSimDisableLocalSpeech")))
 			{
@@ -44,6 +49,10 @@ namespace
 
 		virtual void Speak(UWorld* World, const FString& Caption) override
 		{
+			if (bAudioOutputDisabled)
+			{
+				return;
+			}
 			if (SpeechSubsystem && SpeechSubsystem->IsChannelActive(RadioChannel))
 			{
 				SpeechSubsystem->SpeakOnChannel(RadioChannel, Caption);
@@ -103,6 +112,7 @@ namespace
 
 		TObjectPtr<UTextToSpeechEngineSubsystem> SpeechSubsystem;
 		TStrongObjectPtr<USoundWaveProcedural> FallbackCue;
+		bool bAudioOutputDisabled = false;
 	};
 }
 

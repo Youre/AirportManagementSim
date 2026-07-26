@@ -1,12 +1,12 @@
 # Phase 1 Reference Hardware and Scalability Tier
 
-**Status:** Approved reference target; physical-tier validation required for phase close
+**Status:** Approved reference target; four-hour validation deferred to Phase 7
 **Owner:** Quality engineering
 **Last updated:** 2026-07-26
 
 ## Purpose
 
-This document defines the representative Windows tier used to interpret TS-08 Phase 1 budgets. The CORSAIR/RTX 5090 development workstation remains useful for deterministic, build, and upper-bound presentation evidence, but it is not the representative target.
+This document defines the representative Windows tier used to interpret TS-08 budgets. The CORSAIR/RTX 5090 development workstation remains useful for deterministic, build, and upper-bound presentation evidence, but it is not the representative target. The collector is retained for release-candidate validation; its four-hour run does not block continued feature development.
 
 ## Reference tier
 
@@ -55,10 +55,11 @@ sampling and antialiasing:
 
 UI scale remains independently verified at 100%, 125%, 150%, 175%, and 200%.
 
-## Physical measurement
+## Deferred physical measurement
 
-Copy or build the final Development and Shipping packages on the candidate
-machine, review the actual hardware against the capability tier, and run:
+When a release-candidate package is ready, copy or build the final Development
+and Shipping packages on the candidate machine, review the actual hardware
+against the capability tier, and run:
 
 ```powershell
 .\scripts\phase1\Test-Phase1ReferenceTier.ps1 `
@@ -82,20 +83,20 @@ last-quarter memory-sample median is no more than 64 MiB above the first-quarter
 median. This threshold tolerates normal allocator/cache settling while rejecting
 sustained material growth in the bounded Phase 1 fixture.
 
-`-AllowIncompleteEvidence -SoakSeconds 5` is only a harness check. It cannot
-close the reference-tier gate.
+`-AllowIncompleteEvidence -SoakSeconds 5` is a harness check suitable for
+ongoing development. It does not satisfy the deferred release-hardening gate.
 
 ## Development-host interpretation
 
 Results from the Phase 0 CORSAIR VENGEANCE i5200, Intel Core Ultra 9 285K, 63.4 GiB RAM, and RTX 5090 are labeled `development host`. They can prove correctness, deterministic continuity, package boundaries, and that the software is not intrinsically frame-locked below budget. They cannot alone prove reference-tier performance.
 
-## Close condition
+## Release-hardening condition
 
-Phase 1 performance closes only after
+Release-candidate performance closes only after
 `AMSim/Saved/Phase1/reference-tier-result.json` names a physical machine meeting
 or falling below this tier and reports `passed: true`. Until then, performance
-status is `development-host passed; reference-tier pending`.
+status is `development-host passed; release reference-tier pending`.
 
-When the reference-tier and tester records both pass, run
+During Phase 7, when the reference-tier and tester records both pass, run
 `.\scripts\phase1\Test-Phase1Acceptance.ps1`. The aggregate result must report
-`passed: true` before the Phase 1 planning status changes to complete.
+`passed: true` before release hardening closes.

@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "reviewId": "CT02.Phase1.RiverbendTrainer.2026-07-26",
+  "reviewId": "CT02.Phase1_5.Cessna152Presentation.2026-07-26",
   "reviewedUtc": "2026-07-26T13:10:00Z",
   "scope": "Phase1PlayerFacingContent",
   "aircraft": {
@@ -29,16 +29,18 @@
     "callSignPrefix": "Riverbend",
     "fictionalBrand": true,
     "realOperatorImitated": false,
-    "liveryTreatment": "FictionalCyanDirectionalSilhouette"
+    "liveryTreatment": "FictionalRiverbendYellowRB021"
   },
   "visual": {
-    "source": "ProjectAuthoredProceduralVector",
-    "externalSourceFilesCopied": 0,
+    "source": "OwnerApprovedExternalRasterWithDeterministicNormalization",
+    "externalSourceFilesCopied": 1,
+    "sourceMaster": "SourceAssets/Phase1.5/Aircraft/Cessna_152-JWsK-d3E.png",
+    "sourceSha256": "7021780AC8BC63E92A40F0AAEE623F4E710202B24A990C8975EC5F2A336F64EA",
     "runtimeDimension": "2D",
     "components": [
-      "Fuselage",
-      "MainWing",
-      "Tailplane"
+      "NormalizedSourceMaster",
+      "SixteenHeadingVariants",
+      "FictionalRiverbendLivery"
     ],
     "headingDirectionCount": 16,
     "smoothRotationApproved": true,
@@ -86,12 +88,28 @@
     {
       "path": "AMSim/Content/Phase1/CoreDefinitions/DA_Presentation_GrassAirfield.uasset",
       "sha256": "089ED8D1391A2DCC45A5CEDE7AEE169575FA54651FBD3EC21E854AA261D801A0"
+    },
+    {
+      "path": "AMSim/Content/UI/Screens/WBP_AMSimRootScreen.uasset",
+      "sha256": "919C6506E9811B68C262D8EF7F1772CE53848623F74A7C1568C25CB1AAABF03E"
+    },
+    {
+      "path": "AMSim/Content/Phase1/Presentation/Sprites/Aircraft/S_Cessna152_Heading_00.uasset",
+      "sha256": "8BE9C876DADB4111E0315208FC2437543E47BB2C23CC7E2A745FCEF9D6020515"
+    },
+    {
+      "path": "AMSim/Content/Phase1/Presentation/Sprites/Aircraft/S_Cessna152_Heading_15.uasset",
+      "sha256": "6382EB9FB08BCB23F86459699CD708E3B00818614BEB698306E525B3BF2A3B36"
     }
   ],
   "sourceFiles": [
     {
       "path": "AMSim/Source/AMSimUI/Private/AMSimRootScreen.cpp",
-      "sha256": "847DF85E10DE2C5779D8D9C73590B628A9F56098C8B2FEFBE9361294EF66DCAC"
+      "sha256": "C06B02408B3CB771ADC5CE5BB69E79ACD406FD7052EBD5760BA9A6AFD8F04EF5"
+    },
+    {
+      "path": "AMSim/Source/AMSimUI/Private/AMSimWorldPresenter.cpp",
+      "sha256": "F179FFB5C0D525E1B38CC83F82EB7BAE37569D718298919D3E93D9A64B7C174C"
     },
     {
       "path": "AMSim/Source/AMSimUI/Public/AMSimAircraftPresentation.h",
@@ -116,12 +134,16 @@
     {
       "path": "scripts/phase1/CreatePhase1Assets.py",
       "sha256": "8EE3AD9B1ED3F293B774DB0B3902A1AA4BA634B490C09354B5C52E1B49B829A2"
+    },
+    {
+      "path": "SourceAssets/Phase1.5/Aircraft/Cessna_152-JWsK-d3E.png",
+      "sha256": "7021780AC8BC63E92A40F0AAEE623F4E710202B24A990C8975EC5F2A336F64EA"
     }
   ],
   "checks": {
     "stableIdsPreserved": true,
-    "projectAuthoredSourceConfirmed": true,
-    "externalSourceFilesCopiedIsZero": true,
+    "ownerApprovedSourceReuseConfirmed": true,
+    "externalSourceManifestMatchesOne": true,
     "fictionalAircraftIdentityConfirmed": true,
     "fictionalOperatorAndLiveryConfirmed": true,
     "dimensionsAndCapabilityReviewed": true,

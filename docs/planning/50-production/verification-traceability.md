@@ -90,13 +90,13 @@ The normative closeout evidence is:
 | Static content | definition/tag/dependency/cycle validator and 21-column CT-01 manifest template passed |
 | Aircraft import | zero candidate PNG/SVG/aircraft assets copied into `AMSim/Content` |
 
-The measurement host was a CORSAIR VENGEANCE i5200 with Windows 11 Pro build 26200, Intel Core Ultra 9 285K, approximately 63.4 GiB RAM, and NVIDIA GeForce RTX 5090 driver `32.0.16.1074`. It is Phase 0 measurement evidence, not the minimum or release-reference PC. A representative reference tier remains due before Phase 1 closes.
+The measurement host was a CORSAIR VENGEANCE i5200 with Windows 11 Pro build 26200, Intel Core Ultra 9 285K, approximately 63.4 GiB RAM, and NVIDIA GeForce RTX 5090 driver `32.0.16.1074`. It is Phase 0 measurement evidence, not the minimum or release-reference PC. A representative physical-tier soak remains due during Phase 7 release hardening.
 
 Accepted residuals are metadata-only transitive editor plugin descriptors, the temporary use of `/Engine/Maps/Entry`, the Development-only local trace listener, and the absence of a pre-schema-1 migration fixture. None places editor code, network behavior, or unapproved aircraft content in Shipping. Phase 1 owns the project-map replacement; its first authoritative schema change owns a migration fixture.
 
 ## Phase 1 implementation evidence
 
-[PI-03](phase-1-grass-airfield-implementation-plan.md) maps the grass-airfield slice to implementation work packages and evidence. Implementation verification passed on 2026-07-26; the formal phase gate remains open for external evidence. The normative records are:
+[PI-03](phase-1-grass-airfield-implementation-plan.md) maps the grass-airfield slice to implementation work packages and evidence. Systems implementation verification passed on 2026-07-26. Visual and interaction polish remains active; formal long-soak and unassisted evidence is deferred to Phase 7 release hardening. The normative records are:
 
 - [Phase 1 verification record](../../../.ai/reviews/2026-07-26-phase-1-verification.md);
 - [Phase 1 implementation architecture-impact review](../../../.ai/reviews/2026-07-26-phase-1-implementation-architecture-impact.md);
@@ -105,19 +105,21 @@ Accepted residuals are metadata-only transitive editor plugin descriptors, the t
 - [Phase 1 closeout-hardening adversarial review](../../../.ai/reviews/2026-07-26-phase-1-closeout-adversarial-review.md);
 - [Phase 1 player-facing content-lock architecture-impact review](../../../.ai/reviews/2026-07-26-phase-1-content-lock-architecture-impact.md);
 - [Phase 1 player-facing content-lock adversarial review](../../../.ai/reviews/2026-07-26-phase-1-content-lock-adversarial-review.md);
+- [Phase 1.5 visual-foundation plan](phase-1-5-visual-foundation-plan.md);
+- [Phase 1.5 equivalent-state visual review](phase-1-5-visual-review.md);
 - machine-readable local results at `AMSim/Saved/Phase1/pipeline-result.json`.
 
 | Phase 1 claim | Current evidence |
 | --- | --- |
-| Fresh save reaches first complete visit | Headless and rendered/package `S01` pass; unassisted tester pending |
+| Fresh save reaches first complete visit | Headless and rendered/package `S01` pass; short owner testing continues; formal unassisted session deferred to Phase 7 |
 | Starter plan is affordable and recoverable | 3,400 Credits, 32% contingency, ledger reconciliation, cancellation/refund, and zero-credit recovery pass |
 | First traffic is timely and compatible | Immediate paused offer, exact five-minute slot, explicit Stand A1/buffers, and arrival timing pass |
 | Construction is authoritative and persistent | Proposal/stage/delivery/team/inspection/open/close/cancel tests and save matrix pass |
 | Aircraft operation is safe and deterministic | ATC, reservation, taxi, turnaround, readiness, replay, no-overlap, and intermediate-state catch-up assertions pass |
-| UI explains cause, remedy, compatibility, and reward | Query-backed rendered matrix passes 100–200%; new-tester comprehension pending |
-| Content is controlled | 20-asset catalog plus reviewed fictional Riverbend Trainer/operator/livery; project-authored directional 2D silhouette; reviewed dimensions, capability, registration treatment, and terminology; zero copied external aircraft files |
+| UI explains cause, remedy, compatibility, and reward | Query-backed rendered matrix passes 100–200%; 175–200% uses compact objective/operations drawers; four equivalent-state boards await final owner acceptance |
+| Content is controlled | 20-asset catalog plus approved Phase 1.5 Cessna source master, checksum, fictional Riverbend livery, and 16 reviewed heading variants; later external aircraft still require separate review |
 | Save evolution is safe | Schema-1 migration, schema-2 boundary continuation, corruption/backup/future validation pass |
-| Performance meets a representative target | Development-host frame/simulation/save/memory budgets and reference-profile collector pass; physical four-hour reference-tier run pending |
+| Performance meets a representative target | Development-host frame/simulation/save/memory budgets and short reference-profile harness pass; physical four-hour reference-tier run deferred to Phase 7 |
 | Product remains strict 2D and offline | Shipping asset/dependency/socket scans and elevated firewall-denied S15 pass; Development journey/save-load succeeds and Shipping observes zero TCP sockets |
 
 ## Visual reference mapping

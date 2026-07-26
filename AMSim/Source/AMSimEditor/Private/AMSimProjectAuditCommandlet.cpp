@@ -126,11 +126,11 @@ int32 UAMSimProjectAuditCommandlet::Main(const FString& Params)
 	{
 		const TArray<TSharedPtr<FJsonValue>>* Entries = nullptr;
 		const bool bManifestValid =
-			ContentManifest->GetIntegerField(TEXT("externalAircraftFilesCopied")) == 0 &&
+			ContentManifest->GetIntegerField(TEXT("externalAircraftFilesCopied")) == 1 &&
 			ContentManifest->GetStringField(TEXT("contentReviewId")) ==
-				TEXT("CT02.Phase1.RiverbendTrainer.2026-07-26") &&
+				TEXT("CT02.Phase1_5.Cessna152Presentation.2026-07-26") &&
 			ContentManifest->GetStringField(TEXT("contentReviewStatus")) ==
-				TEXT("ApprovedPhase1") &&
+				TEXT("ApprovedPhase1_5") &&
 			ContentManifest->TryGetArrayField(TEXT("entries"), Entries) &&
 			Entries->Num() >= FAMSimPhase1ContentCatalog::RequiredContentIds().Num();
 		if (!bManifestValid)
@@ -158,7 +158,7 @@ int32 UAMSimProjectAuditCommandlet::Main(const FString& Params)
 		const bool bReviewHeaderValid =
 			ContentReview->GetIntegerField(TEXT("schema")) == 1 &&
 			ContentReview->GetStringField(TEXT("reviewId")) ==
-				TEXT("CT02.Phase1.RiverbendTrainer.2026-07-26") &&
+				TEXT("CT02.Phase1_5.Cessna152Presentation.2026-07-26") &&
 			ContentReview->GetBoolField(TEXT("passed")) &&
 			ContentReview->TryGetObjectField(TEXT("aircraft"), Aircraft) &&
 			(*Aircraft)->GetStringField(TEXT("stableContentId")) ==
@@ -170,7 +170,7 @@ int32 UAMSimProjectAuditCommandlet::Main(const FString& Params)
 			(*Aircraft)->GetIntegerField(TEXT("minimumGrassRunwayMeters")) == 600 &&
 			(*Aircraft)->GetStringField(TEXT("registration")) == TEXT("RB-021") &&
 			ContentReview->TryGetObjectField(TEXT("visual"), Visual) &&
-			(*Visual)->GetIntegerField(TEXT("externalSourceFilesCopied")) == 0 &&
+			(*Visual)->GetIntegerField(TEXT("externalSourceFilesCopied")) == 1 &&
 			(*Visual)->GetStringField(TEXT("runtimeDimension")) == TEXT("2D") &&
 			(*Visual)->GetIntegerField(TEXT("headingDirectionCount")) >= 16 &&
 			(*Visual)->GetBoolField(TEXT("smoothRotationApproved")) &&
@@ -182,8 +182,8 @@ int32 UAMSimProjectAuditCommandlet::Main(const FString& Params)
 		{
 			for (const TCHAR* CheckName : {
 				TEXT("stableIdsPreserved"),
-				TEXT("projectAuthoredSourceConfirmed"),
-				TEXT("externalSourceFilesCopiedIsZero"),
+				TEXT("ownerApprovedSourceReuseConfirmed"),
+				TEXT("externalSourceManifestMatchesOne"),
 				TEXT("fictionalAircraftIdentityConfirmed"),
 				TEXT("fictionalOperatorAndLiveryConfirmed"),
 				TEXT("dimensionsAndCapabilityReviewed"),

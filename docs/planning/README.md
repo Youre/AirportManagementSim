@@ -4,7 +4,7 @@ This directory is the durable source of truth for planning the 2D, top-down airp
 
 ## Current planning stage
 
-The project is in **phased implementation**. `ideas.txt` remains the living concept source; the approved specification set defines implementable feature behavior, technical boundaries, initial tuning, verification, and phased integration. Phase 0 is complete. Phase 1 implementation, player-facing content lock, package, and offline gates pass; formal Phase 1 closure remains pending the physical reference-tier run and unassisted tester/audio/comprehension record. Work still enters only through its owning approved specifications and phase gate.
+The project is in **phased implementation**. `ideas.txt` remains the living concept source; the approved specification set defines implementable feature behavior, technical boundaries, initial tuning, verification, and phased integration. Phase 0 is complete. Phase 1 systems, content lock, package, and offline gates pass; visual fidelity and interaction polish remain active. The four-hour physical-tier soak and formal unassisted tester record are deferred to release hardening and do not block continued feature development. Work still enters only through its owning approved specifications and phase gate.
 
 ## Directory map
 
@@ -73,6 +73,8 @@ The inventory confirms presence, format, dimensions, and source classification. 
 - [Implementation planning review record](00-foundation/specification-review-record.md) — architecture and adversarial review
 - [Phased implementation roadmap](50-production/phased-implementation-roadmap.md)
 - [Phase 1 grass-airfield implementation plan](50-production/phase-1-grass-airfield-implementation-plan.md)
+- [Phase 1.5 visual-foundation plan](50-production/phase-1-5-visual-foundation-plan.md)
+- [Phase 1.5 visual review](50-production/phase-1-5-visual-review.md)
 - [Phase 1 reference-hardware gate](50-production/phase-1-reference-hardware.md)
 - [Phase 1 unassisted new-tester protocol](50-production/phase-1-new-tester-protocol.md)
 - [Verification and requirements traceability](50-production/verification-traceability.md)

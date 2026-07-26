@@ -54,3 +54,5 @@ The first playable surface keeps the 2D airport dominant while construction, fli
 - VA-05: aircraft-centered service state and dependency explanation.
 
 Exact concept-art geometry, values, typefaces, and dimensional shading are non-normative.
+
+For every bounded UI polish change, use `.ai/workflows/visual-validation.md`. A passing review requires an equivalent-state side-by-side board, three prioritized mismatch notes, intentional-difference notes, a recapture after mutation, and interaction checks. Screenshot existence or lack of overlap is not visual-fidelity approval.

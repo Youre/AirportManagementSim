@@ -34,7 +34,7 @@ Reference targets at 1920 x 1080:
 - memory target below 4 GB at maximum supported map and population;
 - no unbounded growth during a 4-real-hour soak.
 
-Hardware reference and scalability tier must be recorded before Phase 1 closes; budgets then become measured release gates.
+The hardware reference and scalability tier are recorded early so short per-phase budgets remain comparable. The physical four-hour reference-tier soak becomes a measured Phase 7 release-candidate gate rather than an early development blocker.
 
 ## Diagnostics
 
@@ -51,4 +51,3 @@ Each phase requires compilation, automated suites for owned systems, content val
 The build pipeline must produce a fresh Windows package from a clean checkout, run the smoke suite without network, and emit machine-readable results. The release candidate cannot ship with test failures, broken content references, save migration failures, or unexplained performance budget regression.
 
 Source: [Automation Test Framework](https://dev.epicgames.com/documentation/en-us/unreal-engine/automation-test-framework-in-unreal-engine).
-

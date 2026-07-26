@@ -255,10 +255,12 @@ if ($shippingTcp.Count -ne 0) {
 $forbiddenNames = @(
     'AMSimEditor',
     'AMSimTests',
+    'EditorToolset',
     'ModelContextProtocol',
     'PythonScriptPlugin',
     'RemoteControl',
-    'ToolsetRegistry'
+    'ToolsetRegistry',
+    'UMGToolSet'
 )
 $packageFiles = Get-ChildItem -LiteralPath (Join-Path $packageRoot 'Shipping') -File -Recurse
 $forbiddenFiles = @($packageFiles | Where-Object {

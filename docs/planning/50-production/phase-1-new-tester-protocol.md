@@ -1,15 +1,20 @@
 # Phase 1 Unassisted New-Tester Protocol
 
-**Status:** Approved acceptance protocol; external session required
+**Status:** Approved formal protocol; deferred to Phase 7
 **Owner:** Player experience and quality engineering
 **Last updated:** 2026-07-26
 
 ## Purpose
 
-This protocol closes the human Phase 1 gate without turning developer knowledge
-into hidden assistance. It tests whether a first-time player can complete the
+This protocol closes the formal release-candidate human gate without turning
+developer knowledge into hidden assistance. It tests whether a first-time player can complete the
 starter grass-airfield journey, understand the operational cause-and-effect, and
 use both audible local radio and the caption/fallback path.
+
+Short owner and informal usability sessions should continue throughout
+development, with issues entering the visual and interaction iteration loop.
+They do not need to satisfy this protocol, and this formal session does not block
+work on later phases.
 
 ## Tester and privacy
 
@@ -154,5 +159,5 @@ After both external records exist, run:
 .\scripts\phase1\Test-Phase1Acceptance.ps1
 ```
 
-Phase 1 closes only when
+Release hardening closes only when
 `AMSim/Saved/Phase1/acceptance-result.json` reports `passed: true`.

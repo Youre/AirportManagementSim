@@ -6,11 +6,16 @@ initiatives: []
 project_initiatives:
   - id: workstation-migration
     title: Migrate to a stable Windows Unreal workstation
-    status: active
+    status: complete
     source: .ai/handoffs/2026-07-25-windows-migration-resume.md
-    next_outcome: Verify a clean checkout and Unreal 5.8 environment on the replacement machine
+    next_outcome: Historical evidence only; replacement workstation and Unreal 5.8 verified
   - id: phase-0-foundation
-    title: Begin the approved Phase 0 technical foundation
+    title: Complete the approved Phase 0 technical foundation
+    status: complete
+    source: docs/planning/50-production/phased-implementation-roadmap.md
+    next_outcome: Preserve its deterministic, save, 2D, offline, and Shipping boundaries in Phase 1
+  - id: phase-1-grass-airfield
+    title: Build the grass-airfield vertical slice
     status: pending
     source: docs/planning/50-production/phased-implementation-roadmap.md
-    next_outcome: Replace blank-template rendering defaults with the approved 2D baseline and pass bootstrap checks
+    next_outcome: Complete Phase 1 discovery and architecture-impact review for the end-to-end light-aircraft visit

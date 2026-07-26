@@ -1,12 +1,12 @@
 # Windows Migration and Codex Resume Handoff
 
-**Status:** Active handoff  
+**Status:** Completed on replacement workstation
 **Created:** 2026-07-25  
 **Owner:** Current Codex session on the original Windows workstation  
 **Next owner:** Future Codex session on the replacement Windows workstation  
 **Repository:** `https://github.com/Youre/AirportManagementSim.git`  
 **Branch:** `codex/planning-docs-concept-art`  
-**Objective:** Recreate a clean development environment and resume at Phase 0 without repeating concept or specification work.
+**Objective:** Recreate a clean development environment and resume at Phase 0 without repeating concept or specification work. Completed; retained as historical evidence.
 
 ## Critical first instruction
 
@@ -44,7 +44,7 @@ Do not begin implementation until the branch, handoff, and planning files are pr
 
 Treat `ideas.txt` as product intent and the approved specifications as normative implementation behavior. Treat concept art as subordinate visual evidence, never as numerical or technical authority.
 
-## Current project state
+## Historical project state at handoff
 
 - Concept brainstorming is complete and organized in `ideas.txt`.
 - The planning workspace contains 39 indexed specifications:
@@ -54,8 +54,8 @@ Treat `ideas.txt` as product intent and the approved specifications as normative
   - 9 technical specifications;
   - 2 production/integration specifications.
 - The seven reviewed concept-art images cover overview/HUD, build mode, terminal flow, timetable, turnaround, weather/incidents, and specialization progression.
-- The aircraft research inventory contains 46 source sprite records. No AirplaneGame asset has been copied or approved for import.
-- Gameplay implementation has not started.
+- The aircraft research inventory contains 46 source sprite records. No source aircraft asset has been copied or approved for import.
+- Gameplay implementation had not started at the time of migration.
 - `AMSim/` is the current and correct Unreal project folder. Earlier notes may mention `APSim`; do not recreate or rename back to that obsolete name.
 - `AMSim` is a minimal Unreal Engine 5.8 C++ scaffold with `Config`, `Source`, `.uproject`, and `.vsconfig`.
 - Generated Unreal directories, solutions, caches, logs, crash dumps, and binaries are intentionally excluded by `.gitignore`.
@@ -149,17 +149,44 @@ The migration commit should include only portable project sources:
 
 Planning documents, research screenshots, concept art, and `ideas.txt` were already committed in `dd4592d`.
 
-## Blockers and open risks
+## Historical blockers and open risks
 
 - The branch is not merged into `main`; the new session must explicitly check it out.
 - Real-aircraft names/data and source sprite rights still require content review.
-- No asset may be copied from `C:\Users\Dave\Documents\AirplaneGame` until CT-01's import manifest and rights review are approved.
+- On the replacement workstation, no aircraft asset may be copied from `C:\Users\dave\Documents\Joes_Game\dist\assets` until CT-01's import manifest and rights review are approved. The deployment currently contains 45 matching PNGs; the inventoried Airbus A330-300 SVG is absent.
 - TextToSpeech and Unreal MCP are experimental and must remain isolated behind documented fallbacks/editor-only boundaries.
 - Reference-PC performance hardware has not been selected.
-- The first successful Unreal launch and clean build on the replacement machine are not yet verified.
+- The first successful Unreal launch and clean build were not yet verified at the time of handoff; they are now complete.
 
 ## Next concrete action
 
 On the replacement workstation, verify the checkout and environment, then open Phase 0 from `docs/planning/50-production/phased-implementation-roadmap.md`. Begin with the project baseline/configuration audit and 2D renderer correction before gameplay systems or asset import.
 
 Record all checks in `.ai/context/verification-log.yaml`, update `.ai/context/current-state.md`, and preserve this handoff as historical evidence after the migration succeeds.
+
+## Replacement-workstation completion
+
+Completed 2026-07-25:
+
+- checked out and verified `codex/planning-docs-concept-art`;
+- installed and associated Unreal Engine 5.8.0;
+- regenerated ignored local project state;
+- compiled `AMSimEditor Win64 Development`;
+- completed a clean headless Unreal startup and shutdown;
+- opened Phase 0 with the initial 2D/offline baseline audit;
+- relocated the read-only aircraft source to `C:\Users\dave\Documents\Joes_Game\dist\assets`.
+
+This file is now historical migration evidence. Current work is tracked in `.ai/context/current-state.md`.
+
+## Phase 0 completion
+
+Completed after migration:
+
+- all 14 `AMSim.Phase0` automation tests passed;
+- deterministic replay and save/load continuation passed;
+- the orthographic CommonUI proof exceeded 60 FPS at 1920 x 1080;
+- Development and Shipping packages passed boundary scans;
+- the elevated inbound/outbound network-denied journey passed, with zero Shipping TCP sockets;
+- the CT-01 zero-row manifest template passed and no aircraft source asset was copied.
+
+See `.ai/reviews/2026-07-25-phase-0-verification.md` and `.ai/reviews/2026-07-25-phase-0-adversarial-review.md`. The next production step is Phase 1 grass-airfield discovery and architecture review, not more migration work.

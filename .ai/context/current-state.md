@@ -6,41 +6,51 @@ Material profile: documents
 Initialization mode: augment-existing
 
 Active priorities:
-- Initialize durable AI-native engineering context.
+- Begin Phase 1 grass-airfield vertical-slice discovery and architecture.
 
 Current architectural tensions:
-- None recorded yet.
+- Shipping must exclude editor and online-support dependencies.
+- The Phase 0 high-end measurement host is not the release reference PC; select a representative reference tier before Phase 1 closes.
 
 Next verification command:
-- `ai-init doctor .`
+- `.\scripts\phase0\Invoke-Phase0Pipeline.ps1 -PackageRoot 'D:\AMSimPhase0Final-20260726' -SkipFirewall`
 
 Last verification:
-- None recorded yet. Use `ai-init record-verification` after meaningful checks.
+- 2026-07-26 UTC: all 14 Phase 0 automation tests, Development/Shipping package pipeline, rendered 60 FPS proof, save/load continuation, Shipping boundary scans, and elevated network-denied smoke test passed.
 <!-- ai-project-init:end managed -->
 
 ## Project-specific state
 
 Active priorities:
 
-- Migrate the repository to a stable replacement Windows workstation using `.ai/handoffs/2026-07-25-windows-migration-resume.md`.
-- Review the approved specification set beginning at `docs/planning/00-foundation/specification-index.md`.
-- Use `docs/planning/30-content-and-assets/concept-art/README.md` for mapped visual comparison gates.
-- When implementation is authorized, open Phase 0 in `docs/planning/50-production/phased-implementation-roadmap.md`.
-- Preserve the 2D-only Unreal direction and complete the approved import manifest before copying aircraft sprites.
+- Open Phase 1 from `docs/planning/50-production/phased-implementation-roadmap.md`.
+- Define the smallest complete grass-airfield journey and its architecture-impact review before implementation.
+- Preserve the verified deterministic simulation, async save, strict 2D, and offline Shipping boundaries.
+- Use the mapped concept-art comparison gates and keep the CT-01 manifest empty until an import/rights plan is approved.
 
 Current tensions:
 
-- The original i9-14900K workstation has confirmed processor-core WHEA errors and is not a valid Unreal build/verification host.
 - Real-aircraft naming, performance data, and livery rights require later review.
 - The experimental Unreal TextToSpeech and MCP plugins require isolation and fallback; neither may become a shipped dependency.
-- Performance budgets need a recorded reference-PC specification during Phase 0.
+- Reference-PC selection remains open; the Phase 0 CORSAIR/RTX 5090 host is measurement evidence, not a release target.
+- Three transitive editor plugin descriptors remain as staged metadata, but Shipping contains no corresponding editor modules or binaries.
+- The proof uses `/Engine/Maps/Entry`; Phase 1 should replace it with a project-owned grass-airfield map.
 
 Verification note:
 
+- Migration to the replacement Windows workstation is complete.
+- Unreal Engine 5.8.0 is associated with `AMSim`; the editor target compiles and headless startup exits cleanly.
+- Phase 0 is complete. Its verification and adversarial records are under `.ai/reviews/`.
+- The baseline replaces blank-template 3D renderer defaults with a DX11/SM5 scalable 2D configuration and explicitly opts into Paper 2D, CommonUI, and Enhanced Input.
+- Six module boundaries now separate bootstrap, simulation, gameplay/save, UI, editor tooling, and developer tests.
+- The deterministic empty-airport foundation has a 250 ms clock, stable IDs, named random streams, command/event/query contracts, replay/checksum, spatial occupancy, versioned snapshots, async verified saves, backup fallback, and definition validation.
+- Fourteen `AMSim.Phase0` automation tests pass.
+- The final 1920 x 1080 proof recorded 1164.596 average FPS, 1.488 ms p99 frame time, save/load continuation, and checksum `4404817232840225737`.
+- Development and Shipping packages pass; Shipping has zero forbidden file/manifest/receipt matches and zero observed TCP sockets.
+- An elevated inbound/outbound network-denied journey passes, and its temporary firewall rules clean up.
 - Repository inspection and the initial 46-file aircraft inventory were completed on 2026-07-25.
-- The implementation planning baseline selects Unreal Engine 5.8, orthographic Paper 2D, deterministic lightweight simulation records, versioned async saves, Windows mouse/keyboard, and a fully offline product.
+- The replacement source `C:\Users\dave\Documents\Joes_Game\dist\assets` contains 45 dimension-matching PNGs; the inventoried Airbus A330-300 SVG is absent.
+- CT-01 has a validated 21-column, zero-row import-manifest template. No aircraft source image has been copied into `AMSim/Content`.
 - Seven reviewed concept-art references now cover overview, build mode, terminal flow, timetable planning, turnaround, weather/incidents, and specialization progression.
-- Portable Unreal source is under `AMSim/`; `APSim` is obsolete.
-- The next session must check out `codex/planning-docs-concept-art`, install/associate Unreal 5.8, and regenerate all ignored build state locally.
-- Gameplay implementation has not started.
+- Phase 1 gameplay implementation has not started.
 - Until `ai-init` is installed on `PATH`, run the CLI module with the skill source on `PYTHONPATH`.

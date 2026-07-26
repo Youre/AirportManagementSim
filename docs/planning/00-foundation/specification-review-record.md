@@ -6,14 +6,14 @@
 
 ## Architecture-impact review
 
-Affected planned modules are `APSim`, `APSimSimulation`, `APSimGameplay`, `APSimUI`, `APSimEditor`, and `APSimTests`. Ownership is explicit in TS-01. The cross-module public contracts are stable IDs, typed commands, immutable events, revisioned query snapshots, static definitions, and versioned save snapshots.
+Affected planned modules are `AMSim`, `AMSimSimulation`, `AMSimGameplay`, `AMSimUI`, `AMSimEditor`, and `AMSimTests`. Ownership is explicit in TS-01. The cross-module public contracts are stable IDs, typed commands, immutable events, revisioned query snapshots, static definitions, and versioned save snapshots.
 
 The design preserves all project invariants:
 
 - Unreal Engine remains the target;
 - shipped gameplay and presentation remain 2D and top-down;
 - MCP remains an editor-only inspection/automation tool;
-- AirplaneGame remains read-only until an approved manifest and rights review;
+- `C:\Users\dave\Documents\Joes_Game\dist\assets` remains a read-only source until an approved manifest and rights review;
 - simulation rules remain separate from presentation.
 
 The architecture intentionally replaces the blank-template assumption with a modular deterministic simulation. There is no code or save data to migrate yet. Once implementation starts, every authoritative schema change requires a TS-05 migration fixture. Rollback is specification revision before implementation and source-control reversion after implementation; player saves must never be rolled back without a supported migration/recovery path.

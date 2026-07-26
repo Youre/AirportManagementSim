@@ -18,7 +18,7 @@ project_design_tokens:
   - warning_severity
   - selection_focus
 project_assets:
-  - source: C:\Users\Dave\Documents\AirplaneGame\src\assets\sprites
+  - source: C:\Users\dave\Documents\Joes_Game\dist\assets
     kind: aircraft_sprite_candidates
     status: inventory_only
     copy_policy: requires_approved_import_plan

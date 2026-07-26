@@ -12,18 +12,18 @@ The Unreal project separates deterministic simulation, game orchestration, prese
 
 | Module | Type | Responsibility | May depend on |
 | --- | --- | --- | --- |
-| `APSim` | Runtime | Executable bootstrap and game modes | Gameplay, UI |
-| `APSimSimulation` | Runtime | Fixed-step state, commands, domain rules, queries, snapshots | Core, CoreUObject; minimal engine utilities |
-| `APSimGameplay` | Runtime | Unreal lifecycle, content resolution, world services, orchestration | Simulation, Engine |
-| `APSimUI` | Runtime | Paper 2D presentation, UMG/CommonUI, input-facing adapters, audio | Gameplay |
-| `APSimEditor` | Editor | Import, validation, authoring, MCP-safe toolsets | Runtime modules, editor APIs |
-| `APSimTests` | Developer | Unit, integration, content, save, performance fixtures | All testable runtime modules |
+| `AMSim` | Runtime | Executable bootstrap and game modes | Gameplay, UI |
+| `AMSimSimulation` | Runtime | Fixed-step state, commands, domain rules, queries, snapshots | Core, CoreUObject; minimal engine utilities |
+| `AMSimGameplay` | Runtime | Unreal lifecycle, content resolution, world services, orchestration | Simulation, Engine |
+| `AMSimUI` | Runtime | Paper 2D presentation, UMG/CommonUI, input-facing adapters, audio | Gameplay |
+| `AMSimEditor` | Editor | Import, validation, authoring, MCP-safe toolsets | Runtime modules, editor APIs |
+| `AMSimTests` | Developer | Unit, integration, content, save, performance fixtures | All testable runtime modules |
 
-The existing `APSim` blank module is the bootstrap seed, not the final home for every system. Dependency direction cannot point from simulation to UI, editor, widgets, Actors, or audio.
+The existing `AMSim` blank module is the bootstrap seed, not the final home for every system. Dependency direction cannot point from simulation to UI, editor, widgets, Actors, or audio.
 
 ## Service lifetimes
 
-`UAPSimGameInstanceSubsystem` owns profile settings, content catalog, save catalog, save/load coordination, and transition into an airport. `UAirportSimulationWorldSubsystem` owns one active airport simulation, fixed-step clock, command queue, event stream, and query publication. Editor-only validation and import services live in `APSimEditor`.
+`UAMSimGameInstanceSubsystem` owns profile settings, content catalog, save catalog, save/load coordination, and transition into an airport. `UAMSimAirportSimulationSubsystem` owns one active airport simulation, fixed-step clock, command queue, event stream, and query publication. Editor-only validation and import services live in `AMSimEditor`.
 
 Subsystem lifetimes are explicit and appropriate because Unreal subsystems are automatically instanced classes tied to engine/game-instance/world lifetimes. No global mutable singleton may bypass these lifetimes.
 
@@ -52,4 +52,3 @@ Paper2D and CommonUI are explicit runtime dependencies. Enhanced Input remains e
 Architecture tests must prove the simulation module runs without a rendered world, UI cannot mutate records directly, subsystem creation/destruction preserves ownership, and shipping builds exclude editor/MCP dependencies.
 
 Sources: [Programming Subsystems](https://dev.epicgames.com/documentation/en-us/unreal-engine/programming-subsystems-in-unreal-engine), [Paper 2D overview](https://dev.epicgames.com/documentation/unreal-engine/paper-2d-overview-in-unreal-engine?lang=en-US), [CommonUI](https://dev.epicgames.com/documentation/unreal-engine/common-ui-plugin-for-advanced-user-interfaces-in-unreal-engine?lang=en-US).
-

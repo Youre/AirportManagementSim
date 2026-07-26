@@ -16,6 +16,8 @@ Simulation state is integrated before presentation for each domain, then command
 
 ## Phase 0: Technical foundation
 
+**Status:** Complete — verification passed 2026-07-25 local / 2026-07-26 UTC. See [PI-02](verification-traceability.md#phase-0-evidence-record).
+
 **Goal:** A clean 2D Unreal baseline that can deterministically run, inspect, save, and test an empty airport.
 
 Deliver:
@@ -29,11 +31,13 @@ Deliver:
 - TS-07 editor-only MCP setup/audit tools;
 - TS-08 automation/package pipeline and recorded reference hardware;
 - TS-09 network-denied Windows smoke test;
-- CT-01 import manifest/template, without copying AirplaneGame assets.
+- CT-01 import manifest/template, without copying aircraft assets from `C:\Users\dave\Documents\Joes_Game\dist\assets`.
 
 **Gate:** identical empty-world replay checksums; save/load continuity; 60 FPS proof scene; clean package; editor/MCP absent from Shipping.
 
 ## Phase 1: Grass-airfield vertical slice
+
+**Status:** Next — discovery and architecture-impact review have not started.
 
 **Goal:** Starting from a parcel, build and operate one complete light-aircraft visit.
 

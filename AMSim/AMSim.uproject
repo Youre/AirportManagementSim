@@ -1,18 +1,122 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{3BF1C4E1-49BA-C236-DBC4-47A94981BE63}",
+	"EngineAssociation": "5.8",
 	"Category": "",
 	"Description": "",
+	"DisableEnginePluginsByDefault": true,
 	"Modules": [
 		{
 			"Name": "AMSim",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "AMSimSimulation",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "AMSimGameplay",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "AMSimUI",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "AMSimEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "AMSimTests",
+			"Type": "DeveloperTool",
+			"LoadingPhase": "PostEngineInit",
+			"TargetAllowList": [
+				"Editor"
+			]
 		}
 	],
 	"Plugins": [
 		{
-			"Name": "ModelingToolsEditorMode",
+			"Name": "Paper2D",
+			"Enabled": true
+		},
+		{
+			"Name": "CommonUI",
+			"Enabled": true
+		},
+		{
+			"Name": "EnhancedInput",
+			"Enabled": true
+		},
+		{
+			"Name": "AndroidFileServer",
+			"Enabled": false
+		},
+		{
+			"Name": "OnlineSubsystem",
+			"Enabled": false
+		},
+		{
+			"Name": "OnlineSubsystemEOS",
+			"Enabled": false
+		},
+		{
+			"Name": "OnlineSubsystemNull",
+			"Enabled": false
+		},
+		{
+			"Name": "OnlineSubsystemUtils",
+			"Enabled": false
+		},
+		{
+			"Name": "OnlineServices",
+			"Enabled": false
+		},
+		{
+			"Name": "OnlineServicesNull",
+			"Enabled": false
+		},
+		{
+			"Name": "OnlineServicesEOS",
+			"Enabled": false
+		},
+		{
+			"Name": "OnlineServicesEOSGS",
+			"Enabled": false
+		},
+		{
+			"Name": "OnlineServicesEpicCommon",
+			"Enabled": false
+		},
+		{
+			"Name": "EOSShared",
+			"Enabled": false
+		},
+		{
+			"Name": "EOSOverlayInputProvider",
+			"Enabled": false
+		},
+		{
+			"Name": "SocketSubsystemEOS",
+			"Enabled": false
+		},
+		{
+			"Name": "EOSVoiceChat",
+			"Enabled": false
+		},
+		{
+			"Name": "ModelContextProtocol",
+			"Enabled": true,
+			"TargetAllowList": [
+				"Editor"
+			]
+		},
+		{
+			"Name": "ToolsetRegistry",
 			"Enabled": true,
 			"TargetAllowList": [
 				"Editor"

@@ -25,7 +25,7 @@ The official Unreal MCP plugin is experimental and operates through the editor. 
 - execute idempotent project-setup actions;
 - invoke approved Python/editor utility scripts.
 
-MCP must not copy from AirplaneGame until CT-01's manifest is approved, alter source-control history, delete asset trees, install third-party runtime plugins, change security/network exposure, or perform broad refactors without explicit task scope.
+MCP must not copy aircraft files from `C:\Users\dave\Documents\Joes_Game\dist\assets` until CT-01's manifest is approved, alter source-control history, delete asset trees, install third-party runtime plugins, change security/network exposure, or perform broad refactors without explicit task scope.
 
 ## Tool contract
 
@@ -52,4 +52,3 @@ Tool invocations write a local developer log containing tool/version, time, inpu
 Acceptance requires a documented localhost editor setup, a read-only project audit, one idempotent sprite-import dry run, a validator invocation, test execution, interruption recovery, and proof that a Shipping package contains no MCP endpoint or editor modules.
 
 Sources: [Unreal MCP in Unreal Editor](https://dev.epicgames.com/documentation/unreal-engine/unreal-mcp-in-unreal-editor), [Scripting the Unreal Editor using Python](https://dev.epicgames.com/documentation/unreal-engine/scripting-the-unreal-editor-using-python).
-

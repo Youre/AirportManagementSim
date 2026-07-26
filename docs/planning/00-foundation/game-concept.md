@@ -164,7 +164,7 @@ Difficulty should come from interacting systems and imperfect capacity, not hidd
 
 The game uses a 2D cartoon style with a primarily top-down camera. Aircraft silhouettes, runway markings, taxi paths, vehicles, workers, and status states must remain legible at management zoom. Day/night and weather should change atmosphere without hiding operational information.
 
-The existing `AirplaneGame` library provides 46 aircraft sprite files. The 23 catalogued civilian/commercial models cover the entire proposed progression. They are strong prototype and reuse candidates, but their varied pixel dimensions, orientation, scale, outlines, liveries, and one SVG/PNG format difference require an Unreal import and normalization plan. Military and uncatalogued aircraft are out of the core scope unless later justified for airshows, government traffic, or special events. See `../90-research/aircraft-asset-inventory.csv`.
+The research inventory records 46 aircraft sprites. The replacement workstation currently exposes 45 dimension-matching PNGs under `C:\Users\dave\Documents\Joes_Game\dist\assets`; deployed filenames include build-hash suffixes, and the inventoried Airbus A330-300 SVG is not present. The 23 catalogued civilian/commercial records cover the proposed progression, but every available file remains only a prototype/reuse candidate pending provenance, rights, import, scale, orientation, outline, and livery review. Military and uncatalogued aircraft are out of the core scope unless later justified for airshows, government traffic, or special events. See `../90-research/aircraft-asset-inventory.csv`.
 
 ATC and pilot audio should favor short, comprehensible exchanges. Procedural text-to-speech, radio filtering, and distance/static effects are a later feature that must preserve captioning and allow players to reduce repetition.
 
@@ -223,7 +223,7 @@ These are research prompts, not requirements to reproduce another game's interfa
 ### Explicitly out of scope
 
 - 3D presentation or 3D asset use
-- Reusing the `AirplaneGame` 3D models
+- Reusing any 3D assets from `Joes_Game`
 - Combat as a core system
 - Building code before the planning baseline is approved
 
@@ -256,4 +256,3 @@ Move this document to `Approved` only when the team agrees on:
 - the intended player audience and difficulty posture;
 - the first-playable identity test;
 - whether real aircraft branding is a product requirement or an optional content direction.
-

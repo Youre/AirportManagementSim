@@ -157,8 +157,9 @@ Intermediate/
 Saved/
 
 # Unreal local build, cook, and packaging output
-Build/Receipts/
-Build/*/FileOpenOrder/
+# These generated paths live below the AMSim project rather than the repo root.
+/AMSim/Build/Receipts/
+/AMSim/Build/*/FileOpenOrder/
 LocalBuilds/
 StagedBuilds/
 Releases/

@@ -4,7 +4,7 @@ This directory is the durable source of truth for planning the 2D, top-down airp
 
 ## Current planning stage
 
-The project is in **approved implementation planning**. `ideas.txt` remains the living concept source; the specification set defines implementable feature behavior, technical boundaries, initial tuning, verification, and phased integration. No gameplay code has been authorized by this planning pass.
+The project is in **phased implementation**. `ideas.txt` remains the living concept source; the approved specification set defines implementable feature behavior, technical boundaries, initial tuning, verification, and phased integration. Phase 0 is complete, and Phase 1 grass-airfield discovery is next. Work still enters only through its owning approved specifications and phase gate.
 
 ## Directory map
 
@@ -50,19 +50,20 @@ The level of detail should match the stage. Concept documents explain the experi
 - Engine: Unreal Engine, with Unreal's MCP server used for inspection and editor-assisted workflows once the installation is available.
 - Presentation: 2D cartoon art viewed primarily from above.
 - 3D assets and a 3D presentation are out of scope.
-- Reuse eligible 2D aircraft art from `C:\Users\Dave\Documents\AirplaneGame`; do not modify or copy from that repository until the asset-import plan is approved.
+- Reuse eligible 2D aircraft art from `C:\Users\dave\Documents\Joes_Game\dist\assets`; treat that deployment directory as read-only and do not copy from it until the asset-import plan is approved.
 - Real aircraft names, dimensions, performance, liveries, and branding require a later accuracy and rights review.
 - Numerical values in `ideas.txt` are concept placeholders until the economy is planned and balanced.
 
 ## Aircraft inventory interpretation
 
-The inventory uses `C:\Users\Dave\Documents\AirplaneGame\src\assets\sprites` because the source game's aircraft mapping code references that directory. It contains 46 top-down files: 45 transparent PNGs and one SVG.
+The research inventory retains 46 canonical source records. On the replacement workstation, `C:\Users\dave\Documents\Joes_Game\dist\assets` currently exposes 45 matching transparent PNGs with build-hash suffixes. Their dimensions match the corresponding inventory records.
 
 - 23 catalogued civilian/commercial sprites are core reuse candidates.
 - 14 catalogued military sprites are excluded from core progression.
 - 9 additional aircraft sprites exist without entries in the inspected commercial or military catalogs.
 - 2 military catalog entries (P-40E and C-141B) have no matching file in the sprite directory.
-- `src\assets\images` is a parallel set; 45 of the 46 same-name files are byte-identical to their sprite counterparts. Treating both folders as separate content would double-count assets.
+- The inventoried Airbus A330-300 SVG is not present in the replacement deployment and is unavailable for import until separately restored and reviewed.
+- Build-hash suffixes are deployment details. The import manifest must capture the exact deployed filename and checksum used rather than assuming a stable physical filename.
 
 The inventory confirms presence, format, dimensions, and source classification. It does not approve rights, accuracy, import settings, in-game scale, or visual consistency.
 

@@ -17,4 +17,4 @@ Do not treat `.ai/scratch/` as source of truth.
 ## Project-specific routing
 
 For game planning, read `docs/planning/README.md` and the active documents it lists before adding or changing requirements.
-Keep Unreal work 2D-first. Do not introduce 3D assets or copy assets from `C:\Users\Dave\Documents\AirplaneGame` without an approved import plan.
+Keep Unreal work 2D-first. Do not introduce 3D assets or copy aircraft sprites from `C:\Users\dave\Documents\Joes_Game\dist\assets` without an approved import plan.

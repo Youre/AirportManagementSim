@@ -1,18 +1,18 @@
 # ai-project-init:begin managed
 entries:
   - timestamp: '2026-07-25T20:50:35.607650+00:00'
-    command: planning structure, 46-row sprite reconciliation, 6-screenshot relocation,
-      local Markdown link check, ai-init doctor
+    command: planning structure, 46-row sprite reconciliation, 6-screenshot
+      relocation, local Markdown link check, ai-init doctor
     result: passed
-    notes: 46 of 46 source sprites inventoried; 6 screenshots present; no broken local
-      Markdown links; doctor clean before ledger update
+    notes: 46 of 46 source sprites inventoried; 6 screenshots present; no broken
+      local Markdown links; doctor clean before ledger update
 # ai-project-init:end managed
   - timestamp: '2026-07-25T23:06:27.577024+00:00'
-    command: Planning document UTF-8, local-link, status, and specification-index
-      validation
+    command: Planning document UTF-8, local-link, status, and
+      specification-index validation
     result: passed
-    notes: 43 Markdown files; 39 indexed specifications; 0 UTF-8 errors; 0 broken
-      local links; 0 missing specification statuses; 39 index rows.
+    notes: 43 Markdown files; 39 indexed specifications; 0 UTF-8 errors; 0
+      broken local links; 0 missing specification statuses; 39 index rows.
   - timestamp: '2026-07-25T23:06:27.995625+00:00'
     command: python -m ai_project_init.cli doctor .
     result: failed
@@ -21,25 +21,102 @@ entries:
   - timestamp: '2026-07-25T23:11:28.557753+00:00'
     command: gitignore assertion matrix and git diff --check
     result: passed
-    notes: 25 ignore/track assertions passed; Unreal generated, IDE, automation, MCP-local,
-      package, and test artifacts are ignored; uproject, Config, Content, Source,
-      plugins, .vsconfig, docs, and Codex agent definitions remain trackable.
+    notes: 25 ignore/track assertions passed; Unreal generated, IDE, automation,
+      MCP-local, package, and test artifacts are ignored; uproject, Config,
+      Content, Source, plugins, .vsconfig, docs, and Codex agent definitions
+      remain trackable.
   - timestamp: '2026-07-25T23:41:04.310261+00:00'
-    command: Concept-art decode, reference coverage, UTF-8, local-link, git-ignore,
-      and diff validation
+    command: Concept-art decode, reference coverage, UTF-8, local-link,
+      git-ignore, and diff validation
     result: passed
-    notes: 7 PNG references decoded at 1672x941; each has 3-6 planning-document references;
-      0 broken local links; 0 UTF-8 errors; no concept image is ignored; git diff
-      --check passed.
+    notes: 7 PNG references decoded at 1672x941; each has 3-6 planning-document
+      references; 0 broken local links; 0 UTF-8 errors; no concept image is
+      ignored; git diff --check passed.
   - timestamp: '2026-07-26T01:54:25.126158+00:00'
     command: 'Migration scope audit: planning tree, portable Unreal sources, generated
       ignore rules, JSON parse, and secret-signature scan'
     result: passed
-    notes: Planning tree matches HEAD; 11 portable Unreal source/config files identified;
-      Binaries/Intermediate/Saved/.vs/solutions ignored; project-os.lock.json and
-      AMSim.uproject parse; no secret signatures found.
+    notes: Planning tree matches HEAD; 11 portable Unreal source/config files
+      identified; Binaries/Intermediate/Saved/.vs/solutions ignored;
+      project-os.lock.json and AMSim.uproject parse; no secret signatures found.
   - timestamp: '2026-07-26T01:54:25.549158+00:00'
     command: python -m ai_project_init.cli doctor .
     result: passed
     notes: 'Doctor exited 0 with one known warning: verification-log.yaml generated
       managed content is stale; installed CLI has no update-managed-block command.'
+  - timestamp: '2026-07-26T03:21:42.781342+00:00'
+    commit: 3e5f62e403e9875543bbd25cc9c618ae2a03251c
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: Unreal 5.8 project generation, AMSimEditor Win64 Development build,
+      and NullRHI headless startup/shutdown
+    result: passed
+    notes: UE 5.8.0 CL 55116800; MSVC 14.44; Windows SDK 10.0.26100.0; editor
+      target succeeded; Paper2D/CommonUI loaded; Entry map 0 errors and 0
+      warnings; process exited 0.
+  - timestamp: '2026-07-26T03:21:43.171714+00:00'
+    commit: 3e5f62e403e9875543bbd25cc9c618ae2a03251c
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Phase 0 initial audit: config/plugin assertions, planning UTF-8 and
+      links, stale-reference scan, 45-file aircraft reconciliation, ignore checks,
+      secret-signature scan, and git diff check'
+    result: passed
+    notes: 45 PNGs matched inventory dimensions; Airbus_A330-300.svg absent as
+      documented; 0 broken planning links; 0 UTF-8 errors; 0 stale
+      AirplaneGame/APSim planning refs; generated state ignored; no tracked
+      runtime config token signature.
+  - timestamp: '2026-07-26T04:34:44.319074+00:00'
+    commit: 3e5f62e403e9875543bbd25cc9c618ae2a03251c
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: .\scripts\phase0\Invoke-Phase0Pipeline.ps1 -PackageRoot
+      'D:\AMSimPhase0Final-20260726' -SkipFirewall
+    result: passed
+    notes: UE 5.8.0 Win64; 14/14 automation tests; Development and Shipping
+      packages; save/load continuity; 1920x1080 proof at 1164.596 average FPS
+      and 1.488 ms p99; checksum 4404817232840225737; zero forbidden Shipping
+      file, manifest, or receipt matches; zero Shipping TCP observations.
+  - timestamp: '2026-07-26T04:34:44.728644+00:00'
+    commit: 3e5f62e403e9875543bbd25cc9c618ae2a03251c
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: .\scripts\phase0\Test-Phase0NetworkDenied.ps1 -PackageRoot
+      'D:\AMSimPhase0Final-20260726' (elevated)
+    result: passed
+    notes: Exact Development and Shipping executable inbound/outbound firewall
+      blocks on all profiles; Development save/load continuity passed; Shipping
+      launched for 5 seconds with zero TCP sockets; temporary rules removed.
+  - timestamp: '2026-07-26T04:34:45.148865+00:00'
+    commit: 3e5f62e403e9875543bbd25cc9c618ae2a03251c
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Phase 0 closeout integrity: JSON parse, PowerShell AST, automation-log
+      count, UTF-8/local Markdown links, diff, secret signatures, asset boundary,
+      firewall/process cleanup'
+    result: passed
+    notes: 14 successful Phase 0 test completions and queue empty; 86 Markdown
+      files valid UTF-8 with zero broken local links; git diff check, JSON,
+      scripts, and secret scan passed; zero candidate aircraft content; zero
+      remaining firewall rules or AMSim processes.
+  - timestamp: '2026-07-26T04:35:22.791962+00:00'
+    commit: 3e5f62e403e9875543bbd25cc9c618ae2a03251c
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: python -m ai_project_init.cli doctor .
+    result: passed
+    notes: Exited 0. Reported only pre-existing
+      managed-template/schema/legacy-ledger warnings plus one lexical
+      false-positive caused by the literal -SkipFirewall command in the Phase 0
+      evidence record; no structural error.
+  - timestamp: '2026-07-26T04:40:31.083215+00:00'
+    commit: 3e5f62e403e9875543bbd25cc9c618ae2a03251c
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: gitignore assertion matrix, tracked-ignore audit, untracked-size
+      audit, and git diff --check
+    result: passed
+    notes: 17 generated Unreal/editor/package paths ignored; 10 shared
+      source/config/content/plugin/script paths remain trackable; zero untracked
+      files over 5 MiB; nested AMSim Build receipt and file-order rules
+      corrected.

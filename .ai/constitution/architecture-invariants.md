@@ -12,5 +12,5 @@
 - Unreal Engine is the target engine.
 - The shipped presentation is 2D and top-down; do not introduce 3D assets or a 3D-dependent design.
 - Unreal MCP is a development and inspection tool, never a shipped runtime dependency.
-- Treat `C:\Users\Dave\Documents\AirplaneGame` as a read-only source library until an asset-import plan is approved.
+- Treat `C:\Users\dave\Documents\Joes_Game\dist\assets` as a read-only aircraft-sprite source until an asset-import plan is approved.
 - Keep simulation rules separate from presentation so aircraft, economy, weather, and progression remain data-driven and testable.

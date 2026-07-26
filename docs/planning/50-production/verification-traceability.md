@@ -66,6 +66,34 @@ For every specification implemented, the phase evidence links:
 
 Evidence uses exact engine version, build identifier, content-manifest hash, seed, map, scenario, hardware, and date. "Tested" without these identifiers is not sufficient.
 
+## Phase 0 evidence record
+
+**Result:** Complete and passed on 2026-07-25 local / 2026-07-26 UTC.
+
+The normative closeout evidence is:
+
+- [Phase 0 verification record](../../../.ai/reviews/2026-07-25-phase-0-verification.md);
+- [Phase 0 adversarial review](../../../.ai/reviews/2026-07-25-phase-0-adversarial-review.md);
+- [Phase 0 architecture-impact review](../../../.ai/reviews/2026-07-25-phase-0-architecture-impact.md);
+- machine-readable local results at `AMSim/Saved/Phase0/pipeline-result.json` and `AMSim/Saved/Phase0/network-denied-result.json`.
+
+| Evidence | Result |
+| --- | --- |
+| Engine/platform | Unreal Engine 5.8.0, Win64 |
+| Automated contracts | 14 of 14 `AMSim.Phase0` tests passed |
+| Deterministic proof | replay and post-load continuation passed; packaged checksum `4404817232840225737` |
+| Save | async verified write, backup rotation, corrupt-current fallback, coalescing, and packaged continuity passed |
+| Render proof | 1920 x 1080, 5,823 frames in 5.000017 s, 1164.596 average FPS, 1.488 ms p99 |
+| Package boundary | Development and Shipping passed; zero forbidden Shipping file, manifest, or receipt matches |
+| Offline boundary | elevated inbound/outbound firewall-denied journey passed; Shipping observed zero TCP sockets |
+| Presentation | orthographic camera, CommonUI shell, Enhanced Input, and proxy reuse tests passed |
+| Static content | definition/tag/dependency/cycle validator and 21-column CT-01 manifest template passed |
+| Aircraft import | zero candidate PNG/SVG/aircraft assets copied into `AMSim/Content` |
+
+The measurement host was a CORSAIR VENGEANCE i5200 with Windows 11 Pro build 26200, Intel Core Ultra 9 285K, approximately 63.4 GiB RAM, and NVIDIA GeForce RTX 5090 driver `32.0.16.1074`. It is Phase 0 measurement evidence, not the minimum or release-reference PC. A representative reference tier remains due before Phase 1 closes.
+
+Accepted residuals are metadata-only transitive editor plugin descriptors, the temporary use of `/Engine/Maps/Entry`, the Development-only local trace listener, and the absence of a pre-schema-1 migration fixture. None places editor code, network behavior, or unapproved aircraft content in Shipping. Phase 1 owns the project-map replacement; its first authoritative schema change owns a migration fixture.
+
 ## Visual reference mapping
 
 | Reference | Owning surfaces | First comparison gate |

@@ -6,7 +6,7 @@
 
 ## Outcome and scope
 
-The game presents a coherent cartoon airport entirely through 2D artwork in an orthographic top-down world. This specification owns visual scale, sprite directions, layers, animation, import requirements, source provenance, and the review gate for the existing AirplaneGame assets.
+The game presents a coherent cartoon airport entirely through 2D artwork in an orthographic top-down world. This specification owns visual scale, sprite directions, layers, animation, import requirements, source provenance, and the review gate for the candidate aircraft assets under `C:\Users\dave\Documents\Joes_Game\dist\assets`.
 
 ## Non-negotiable direction
 
@@ -31,7 +31,7 @@ Sprites use a common top-down orientation with forward direction recorded in met
 
 The inventory in `../90-research/aircraft-asset-inventory.csv` records 46 top-down source files: 23 catalogued civilian/commercial candidates, 14 catalogued military exclusions, and 9 uncatalogued candidates requiring identification. It does not grant reuse approval.
 
-Before any file is copied from `C:\Users\Dave\Documents\AirplaneGame`, an import manifest must record:
+Before any file is copied from `C:\Users\dave\Documents\Joes_Game\dist\assets`, an import manifest must record:
 
 - source path and checksum;
 - creator/license and reuse decision;
@@ -41,6 +41,8 @@ Before any file is copied from `C:\Users\Dave\Documents\AirplaneGame`, an import
 - destination asset ID and reviewer.
 
 Only approved civilian candidates enter the core catalog. Military art remains outside core progression unless a later event-specific decision approves it. The parallel source folders must not be imported as duplicates.
+
+The replacement deployment currently provides 45 dimension-matching PNGs with build-hash suffixes. The Airbus A330-300 SVG retained in the 46-record research inventory is not present and cannot be imported unless it is separately restored and reviewed. Because deployment hashes may change, the manifest records the exact physical filename and checksum observed at approval time while retaining the inventory's canonical aircraft filename as the logical source identity.
 
 ## Animation and effects
 

@@ -126,6 +126,8 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<UBorder> ContextPanel;
 	UPROPERTY(Transient)
+	TObjectPtr<UBorder> CreateAirportTray;
+	UPROPERTY(Transient)
 	TObjectPtr<UBorder> ObjectiveDrawer;
 	UPROPERTY(Transient)
 	TObjectPtr<UBorder> OperationsDrawer;

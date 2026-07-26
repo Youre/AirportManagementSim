@@ -4,6 +4,7 @@
 #include "AMSimAirportSimulationSubsystem.h"
 #include "AMSimGameInstanceSubsystem.h"
 #include "AMSimPhase1Fixture.h"
+#include "AMSimUITheme.h"
 #include "Blueprint/WidgetTree.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Border.h"
@@ -31,30 +32,31 @@
 
 namespace
 {
-	const FLinearColor Background(0.025f, 0.047f, 0.063f, 1.0f);
-	const FLinearColor Panel(0.012f, 0.028f, 0.038f, 0.96f);
-	const FLinearColor PanelLight(0.024f, 0.064f, 0.078f, 1.0f);
+	const FLinearColor Background = AMSim::UITheme::Navy900();
+	const FLinearColor Panel = AMSim::UITheme::Navy800();
+	const FLinearColor PanelLight = AMSim::UITheme::Navy700();
 	const FLinearColor Grass(0.145f, 0.255f, 0.165f, 1.0f);
 	const FLinearColor GrassBuilt(0.39f, 0.58f, 0.31f, 1.0f);
-	const FLinearColor Amber(0.96f, 0.68f, 0.22f, 1.0f);
-	const FLinearColor Cyan(0.27f, 0.82f, 0.92f, 1.0f);
-	const FLinearColor White(0.91f, 0.95f, 0.94f, 1.0f);
-	const FLinearColor Muted(0.57f, 0.68f, 0.69f, 1.0f);
-	const FLinearColor ErrorColor(0.97f, 0.39f, 0.32f, 1.0f);
+	const FLinearColor Amber = AMSim::UITheme::Amber();
+	const FLinearColor Cyan = AMSim::UITheme::Cyan();
+	const FLinearColor White = AMSim::UITheme::White();
+	const FLinearColor Muted = AMSim::UITheme::Muted();
+	const FLinearColor ErrorColor = AMSim::UITheme::Coral();
 
 	UTextBlock* MakeText(
 		UWidgetTree* Tree,
 		const TCHAR* Name,
 		const FString& Text,
 		const int32 Size,
-		const FLinearColor Color = White)
+		const FLinearColor Color = White,
+		const bool bBold = false,
+		const bool bShadow = false)
 	{
 		UTextBlock* Widget = Tree->ConstructWidget<UTextBlock>(
 			UTextBlock::StaticClass(),
 			FName(Name));
 		Widget->SetText(FText::FromString(Text));
-		Widget->SetColorAndOpacity(FSlateColor(Color));
-		Widget->SetFont(FCoreStyle::GetDefaultFontStyle(TEXT("Regular"), Size));
+		AMSim::UITheme::StyleText(Widget, Size, Color, bBold, bShadow);
 		Widget->SetAutoWrapText(true);
 		return Widget;
 	}
@@ -63,21 +65,22 @@ namespace
 		UWidgetTree* Tree,
 		const TCHAR* Name,
 		const FString& Label,
-		const bool bAccent = false)
+		const AMSim::UITheme::EButton Kind = AMSim::UITheme::EButton::Secondary,
+		const int32 LabelSize = 15)
 	{
 		UButton* Button = Tree->ConstructWidget<UButton>(UButton::StaticClass(), FName(Name));
-		FButtonStyle Style = Button->GetStyle();
-		const FLinearColor Normal =
-			bAccent ? FLinearColor(0.025f, 0.20f, 0.24f, 1.0f) : PanelLight;
-		const FLinearColor Hovered =
-			bAccent ? FLinearColor(0.04f, 0.34f, 0.39f, 1.0f) : FLinearColor(0.04f, 0.12f, 0.14f, 1.0f);
-		Style.Normal.TintColor = FSlateColor(Normal);
-		Style.Hovered.TintColor = FSlateColor(Hovered);
-		Style.Pressed.TintColor = FSlateColor(Amber);
-		Style.Disabled.TintColor = FSlateColor(FLinearColor(0.008f, 0.016f, 0.020f, 0.55f));
-		Button->SetStyle(Style);
+		Button->SetStyle(AMSim::UITheme::ButtonStyle(Kind));
 		Button->SetBackgroundColor(FLinearColor::White);
-		Button->SetContent(MakeText(Tree, *FString::Printf(TEXT("%sLabel"), Name), Label, 16));
+		UTextBlock* LabelText = MakeText(
+			Tree,
+			*FString::Printf(TEXT("%sLabel"), Name),
+			Label,
+			LabelSize,
+			Kind == AMSim::UITheme::EButton::Positive ? White : White,
+			true,
+			true);
+		LabelText->SetJustification(ETextJustify::Center);
+		Button->SetContent(LabelText);
 		return Button;
 	}
 
@@ -92,11 +95,7 @@ namespace
 			FName(Name));
 		Entry->SetText(FText::FromString(Value));
 		Entry->SetHintText(FText::FromString(Hint));
-		FEditableTextBoxStyle Style = Entry->GetWidgetStyle();
-		Style.SetFont(FCoreStyle::GetDefaultFontStyle(TEXT("Regular"), 17));
-		Style.BackgroundColor = PanelLight;
-		Style.Padding = FMargin(10.0f, 8.0f);
-		Entry->SetWidgetStyle(Style);
+		Entry->SetWidgetStyle(AMSim::UITheme::EntryStyle());
 		Entry->SetForegroundColor(White);
 		Entry->SetMinDesiredWidth(220.0f);
 		return Entry;
@@ -111,10 +110,68 @@ namespace
 	UBorder* MakePanel(UWidgetTree* Tree, const TCHAR* Name)
 	{
 		UBorder* Border = Tree->ConstructWidget<UBorder>(UBorder::StaticClass(), FName(Name));
-		Border->SetBrushColor(Panel);
-		Border->SetPadding(FMargin(20.0f));
-		Border->SetClipping(EWidgetClipping::ClipToBounds);
+		AMSim::UITheme::StyleSurface(
+			Border,
+			AMSim::UITheme::ESurface::Panel,
+			FMargin(20.0f),
+			18.0f,
+			1.5f);
 		return Border;
+	}
+
+	UBorder* MakeSurface(
+		UWidgetTree* Tree,
+		const TCHAR* Name,
+		const AMSim::UITheme::ESurface Surface,
+		const FMargin Padding,
+		const float Radius = 14.0f,
+		const float StrokeWidth = 1.0f)
+	{
+		UBorder* Border = Tree->ConstructWidget<UBorder>(UBorder::StaticClass(), FName(Name));
+		AMSim::UITheme::StyleSurface(Border, Surface, Padding, Radius, StrokeWidth);
+		return Border;
+	}
+
+	UBorder* MakeTextCard(
+		UWidgetTree* Tree,
+		const TCHAR* Name,
+		const FString& Eyebrow,
+		UTextBlock*& Body,
+		const FString& InitialBody,
+		const FLinearColor& Accent = Cyan,
+		const int32 BodySize = 18)
+	{
+		UBorder* Card = MakeSurface(
+			Tree,
+			Name,
+			AMSim::UITheme::ESurface::Card,
+			FMargin(16.0f, 14.0f),
+			14.0f,
+			1.2f);
+		UVerticalBox* Column = Tree->ConstructWidget<UVerticalBox>(
+			UVerticalBox::StaticClass(),
+			FName(*(FString(Name) + TEXT("Column"))));
+		Card->SetContent(Column);
+		AddVertical(
+			Column,
+			MakeText(
+				Tree,
+				*FString::Printf(TEXT("%sEyebrow"), Name),
+				Eyebrow,
+				12,
+				Accent,
+				true),
+			0.0f);
+		Body = MakeText(
+			Tree,
+			*FString::Printf(TEXT("%sBody"), Name),
+			InitialBody,
+			BodySize,
+			White,
+			true,
+			true);
+		AddVertical(Column, Body, 5.0f);
+		return Card;
 	}
 
 	void PlaceCanvas(
@@ -267,52 +324,94 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		? InterfaceSettings->GetDPIScaleBasedOnSize(FIntPoint(1920, 1080))
 		: 1.0f;
 	const bool bCompactLayout = InterfaceScale >= 1.75f;
-	const int32 AirportHeaderSize = bCompactLayout ? 18 : 26;
-	const int32 ClockHeaderSize = bCompactLayout ? 15 : 18;
-	const int32 FundsHeaderSize = bCompactLayout ? 18 : 22;
+	const int32 AirportHeaderSize = bCompactLayout ? 18 : 24;
+	const int32 ClockHeaderSize = bCompactLayout ? 14 : 16;
+	const int32 FundsHeaderSize = bCompactLayout ? 16 : 19;
 
 	UBorder* Header = MakePanel(WidgetTree, TEXT("Header"));
-	Header->SetPadding(bCompactLayout ? FMargin(12.0f, 6.0f) : FMargin(24.0f, 12.0f));
+	AMSim::UITheme::StyleSurface(
+		Header,
+		AMSim::UITheme::ESurface::Chrome,
+		bCompactLayout ? FMargin(12.0f, 7.0f) : FMargin(20.0f, 12.0f),
+		18.0f,
+		1.5f);
 	UHorizontalBox* HeaderRow = WidgetTree->ConstructWidget<UHorizontalBox>(
 		UHorizontalBox::StaticClass(),
 		TEXT("HeaderRow"));
 	Header->SetContent(HeaderRow);
+	UTextBlock* BrandText = MakeText(
+		WidgetTree,
+		TEXT("Brand"),
+		bCompactLayout ? TEXT("AMS") : TEXT("AIRPORT\nMGMT SIM"),
+		bCompactLayout ? 15 : 17,
+		White,
+		true,
+		true);
+	UHorizontalBoxSlot* BrandSlot = HeaderRow->AddChildToHorizontalBox(BrandText);
+	BrandSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
+	BrandSlot->SetPadding(FMargin(0.0f, 0.0f, bCompactLayout ? 12.0f : 24.0f, 0.0f));
+	BrandSlot->SetVerticalAlignment(VAlign_Center);
 	AirportNameText = MakeText(
 		WidgetTree,
 		TEXT("AirportName"),
 		TEXT("NEW AIRPORT"),
 		AirportHeaderSize,
-		Cyan);
+		White,
+		true,
+		true);
 	UHorizontalBoxSlot* AirportSlot = HeaderRow->AddChildToHorizontalBox(AirportNameText);
 	AirportSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+	AirportSlot->SetVerticalAlignment(VAlign_Center);
 	ClockText = MakeText(
 		WidgetTree,
 		TEXT("Clock"),
 		TEXT("DAY 1  00:00  PAUSED"),
 		ClockHeaderSize,
-		Muted);
+		White,
+		true);
 	ClockText->SetJustification(ETextJustify::Center);
-	UHorizontalBoxSlot* ClockSlot = HeaderRow->AddChildToHorizontalBox(ClockText);
-	ClockSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+	UBorder* ClockPill = MakeSurface(
+		WidgetTree,
+		TEXT("ClockPill"),
+		AMSim::UITheme::ESurface::Field,
+		FMargin(14.0f, 8.0f),
+		12.0f,
+		1.0f);
+	ClockPill->SetContent(ClockText);
+	UHorizontalBoxSlot* ClockSlot = HeaderRow->AddChildToHorizontalBox(ClockPill);
+	ClockSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
+	ClockSlot->SetPadding(FMargin(8.0f, 0.0f));
+	ClockSlot->SetVerticalAlignment(VAlign_Center);
 	FundsText = MakeText(
 		WidgetTree,
 		TEXT("Funds"),
 		TEXT("5,000 CR  |  0 AP"),
 		FundsHeaderSize,
-		Amber);
+		Amber,
+		true,
+		true);
 	FundsText->SetJustification(ETextJustify::Right);
-	UHorizontalBoxSlot* FundsSlot = HeaderRow->AddChildToHorizontalBox(FundsText);
-	FundsSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+	UBorder* FundsPill = MakeSurface(
+		WidgetTree,
+		TEXT("FundsPill"),
+		AMSim::UITheme::ESurface::Field,
+		FMargin(14.0f, 8.0f),
+		12.0f,
+		1.0f);
+	FundsPill->SetContent(FundsText);
+	UHorizontalBoxSlot* FundsSlot = HeaderRow->AddChildToHorizontalBox(FundsPill);
+	FundsSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
+	FundsSlot->SetVerticalAlignment(VAlign_Center);
 	UVerticalBoxSlot* HeaderSlot = Page->AddChildToVerticalBox(Header);
 	HeaderSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
 
-	const float RailWrapWidth = 420.0f / FMath::Max(InterfaceScale, 1.0f);
+	const float RailWrapWidth = 350.0f / FMath::Max(InterfaceScale, 1.0f);
 	UHorizontalBox* Main = WidgetTree->ConstructWidget<UHorizontalBox>(
 		UHorizontalBox::StaticClass(),
 		TEXT("Main"));
 	UVerticalBoxSlot* MainSlot = Page->AddChildToVerticalBox(Main);
 	MainSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
-	MainSlot->SetPadding(FMargin(12.0f));
+	MainSlot->SetPadding(FMargin(10.0f, 8.0f));
 
 	UBorder* LeftPanel = MakePanel(WidgetTree, TEXT("LeftPanel"));
 	ObjectiveDrawer = LeftPanel;
@@ -322,80 +421,120 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	UScrollBox* LeftScroll = WidgetTree->ConstructWidget<UScrollBox>(
 		UScrollBox::StaticClass(),
 		TEXT("LeftScroll"));
+	AMSim::UITheme::StyleSurface(
+		LeftPanel,
+		AMSim::UITheme::ESurface::Panel,
+		FMargin(10.0f),
+		18.0f,
+		1.5f);
 	LeftPanel->SetContent(LeftScroll);
 	LeftScroll->AddChild(Left);
-	AddVertical(Left, MakeText(WidgetTree, TEXT("ObjectiveHeader"), TEXT("ACTIVE OBJECTIVE"), 14, Amber));
-	ObjectiveText = MakeText(WidgetTree, TEXT("Objective"), TEXT("Create your airport"), 22);
-	ObjectiveText->SetWrapTextAt(RailWrapWidth);
-	USizeBox* ObjectiveHeight = WidgetTree->ConstructWidget<USizeBox>(
-		USizeBox::StaticClass(),
-		TEXT("ObjectiveHeight"));
-	ObjectiveHeight->SetMinDesiredHeight(90.0f);
-	ObjectiveHeight->SetContent(ObjectiveText);
-	AddVertical(Left, ObjectiveHeight, 18.0f);
-	AddVertical(Left, MakeText(WidgetTree, TEXT("StatusHeader"), TEXT("OPERATION STATUS"), 14, Amber), 15.0f);
-	StatusText = MakeText(WidgetTree, TEXT("Status"), TEXT("Ready to begin"), 19);
-	StatusText->SetWrapTextAt(RailWrapWidth);
-	AddVertical(Left, StatusText);
-	CauseText = MakeText(WidgetTree, TEXT("Cause"), TEXT(""), 15, ErrorColor);
-	CauseText->SetWrapTextAt(RailWrapWidth);
-	AddVertical(Left, CauseText);
-	RemedyText = MakeText(WidgetTree, TEXT("Remedy"), TEXT(""), 15, Cyan);
-	RemedyText->SetWrapTextAt(RailWrapWidth);
-	AddVertical(Left, RemedyText);
-	ProjectText = MakeText(WidgetTree, TEXT("Project"), TEXT("Starter airfield: not funded"), 17, Muted);
+	AddVertical(
+		Left,
+		MakeText(
+			WidgetTree,
+			TEXT("ToolsHeader"),
+			TEXT("AIRFIELD"),
+			13,
+			Cyan,
+			true),
+		0.0f);
+	ProjectText = MakeText(
+		WidgetTree,
+		TEXT("Project"),
+		TEXT("Starter plan"),
+		14,
+		Muted,
+		true);
 	ProjectText->SetWrapTextAt(RailWrapWidth);
-	AddVertical(Left, ProjectText, 15.0f);
-	AddVertical(Left, MakeText(WidgetTree, TEXT("AirportNameEntryHeader"), TEXT("AIRPORT NAME"), 13, Muted), 10.0f);
+	UBorder* ProjectChip = MakeSurface(
+		WidgetTree,
+		TEXT("ProjectChip"),
+		AMSim::UITheme::ESurface::Chip,
+		FMargin(10.0f, 8.0f),
+		10.0f,
+		1.0f);
+	ProjectChip->SetContent(ProjectText);
+	AddVertical(Left, ProjectChip, 5.0f);
 	AirportNameEntry = MakeEntry(
 		WidgetTree,
 		TEXT("AirportNameEntry"),
 		TEXT("Riverbend Field"),
 		TEXT("Enter airport name"));
-	AddVertical(Left, AirportNameEntry, 2.0f);
-	AddVertical(Left, MakeText(WidgetTree, TEXT("SaveSlotEntryHeader"), TEXT("LOCAL SAVE SLOT"), 13, Muted), 10.0f);
 	SaveSlotEntry = MakeEntry(
 		WidgetTree,
 		TEXT("SaveSlotEntry"),
 		TEXT("Phase1Auto"),
 		TEXT("Letters, numbers, - or _"));
-	AddVertical(Left, SaveSlotEntry, 2.0f);
-	if (PrimaryButtonWidgetClass)
-	{
-		CreateButtonWidget = WidgetTree->ConstructWidget<UUserWidget>(
-			PrimaryButtonWidgetClass,
-			TEXT("CreateAirportTemplate"));
-		CreateButton = Cast<UButton>(
-			CreateButtonWidget
-				? CreateButtonWidget->GetWidgetFromName(TEXT("PrimaryButton"))
-				: nullptr);
-	}
-	if (!CreateButton)
-	{
-		CreateButton = MakeButton(WidgetTree, TEXT("CreateAirport"), TEXT("CREATE AIRPORT"), true);
-		CreateButtonWidget = nullptr;
-	}
+	CreateButton = MakeButton(
+		WidgetTree,
+		TEXT("CreateAirport"),
+		TEXT("CREATE AIRPORT"),
+		AMSim::UITheme::EButton::Positive,
+		16);
+	CreateButtonWidget = nullptr;
 	CreateButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::CreateAirport);
-	AddVertical(Left, CreateButtonWidget ? static_cast<UWidget*>(CreateButtonWidget) : CreateButton);
-	BuildButton = MakeButton(WidgetTree, TEXT("BuildStarter"), TEXT("COMMIT STARTER PLAN  3,400 CR"), true);
+	BuildButton = MakeButton(
+		WidgetTree,
+		TEXT("BuildStarter"),
+		TEXT("BUILD"),
+		AMSim::UITheme::EButton::Primary,
+		14);
 	BuildButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::CommitStarterPlan);
 	AddVertical(Left, BuildButton);
-	CancelBuildButton = MakeButton(WidgetTree, TEXT("CancelStarter"), TEXT("CANCEL PROJECT / FULL REFUND"));
+	for (const TPair<const TCHAR*, const TCHAR*>& Tool : {
+		TPair<const TCHAR*, const TCHAR*>(TEXT("ScheduleTool"), TEXT("SCHEDULE")),
+		TPair<const TCHAR*, const TCHAR*>(TEXT("StaffTool"), TEXT("STAFF")),
+		TPair<const TCHAR*, const TCHAR*>(TEXT("OverlayTool"), TEXT("OVERLAYS"))})
+	{
+		UButton* ToolButton = MakeButton(
+			WidgetTree,
+			Tool.Key,
+			Tool.Value,
+			AMSim::UITheme::EButton::Tool,
+			12);
+		ToolButton->SetIsEnabled(false);
+		AddVertical(Left, ToolButton);
+	}
+	CancelBuildButton = MakeButton(
+		WidgetTree,
+		TEXT("CancelStarter"),
+		TEXT("CANCEL"),
+		AMSim::UITheme::EButton::Destructive,
+		13);
+	CancelBuildButton->SetToolTipText(FText::FromString(TEXT("Cancel starter-airfield construction")));
 	CancelBuildButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::CancelStarterPlan);
 	AddVertical(Left, CancelBuildButton);
-	OpenButton = MakeButton(WidgetTree, TEXT("OpenAirport"), TEXT("OPEN AIRPORT"), true);
+	OpenButton = MakeButton(
+		WidgetTree,
+		TEXT("OpenAirport"),
+		TEXT("OPEN"),
+		AMSim::UITheme::EButton::Positive,
+		14);
+	OpenButton->SetToolTipText(FText::FromString(TEXT("Open the airport")));
 	OpenButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::OpenAirport);
 	AddVertical(Left, OpenButton);
-	CloseButton = MakeButton(WidgetTree, TEXT("CloseAirport"), TEXT("CLOSE AIRPORT"));
+	CloseButton = MakeButton(
+		WidgetTree,
+		TEXT("CloseAirport"),
+		TEXT("CLOSE"),
+		AMSim::UITheme::EButton::Destructive,
+		13);
+	CloseButton->SetToolTipText(FText::FromString(TEXT("Close the airport")));
 	CloseButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::CloseAirport);
 	AddVertical(Left, CloseButton);
-	RecoveryButton = MakeButton(WidgetTree, TEXT("Recovery"), TEXT("REQUEST RECOVERY REVIEW"));
+	RecoveryButton = MakeButton(
+		WidgetTree,
+		TEXT("Recovery"),
+		TEXT("RECOVERY"),
+		AMSim::UITheme::EButton::Secondary,
+		13);
 	RecoveryButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::RequestRecovery);
 	AddVertical(Left, RecoveryButton);
 	USizeBox* LeftRailWidth = WidgetTree->ConstructWidget<USizeBox>(
 		USizeBox::StaticClass(),
 		TEXT("LeftRailWidth"));
-	LeftRailWidth->SetWidthOverride(360.0f / FMath::Max(InterfaceScale, 1.0f));
+	LeftRailWidth->SetWidthOverride(190.0f / FMath::Max(InterfaceScale, 1.0f));
 	LeftRailWidth->SetContent(LeftPanel);
 	UHorizontalBoxSlot* LeftSlot = Main->AddChildToHorizontalBox(LeftRailWidth);
 	LeftSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
@@ -467,10 +606,134 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	AircraftLabel->SetVisibility(ESlateVisibility::Hidden);
 	PlaceCanvas(Map, AircraftLabel, FAnchors(0.03f, 0.27f, 0.17f, 0.32f));
 
+	CreateAirportTray = MakeSurface(
+		WidgetTree,
+		TEXT("CreateAirportTray"),
+		AMSim::UITheme::ESurface::RaisedCard,
+		bCompactLayout ? FMargin(12.0f, 10.0f) : FMargin(18.0f, 16.0f),
+		18.0f,
+		1.8f);
+	if (bCompactLayout)
+	{
+		UVerticalBox* CreateColumn = WidgetTree->ConstructWidget<UVerticalBox>(
+			UVerticalBox::StaticClass(),
+			TEXT("CreateAirportCompactColumn"));
+		CreateAirportTray->SetContent(CreateColumn);
+		AddVertical(
+			CreateColumn,
+			MakeText(
+				WidgetTree,
+				TEXT("CompactCreateTitle"),
+				TEXT("RIVERBEND PLAINS  /  NEW AIRPORT"),
+				13,
+				Cyan,
+				true),
+			0.0f);
+		UHorizontalBox* CompactEntryRow = WidgetTree->ConstructWidget<UHorizontalBox>(
+			UHorizontalBox::StaticClass(),
+			TEXT("CompactEntryRow"));
+		UHorizontalBoxSlot* CompactNameSlot =
+			CompactEntryRow->AddChildToHorizontalBox(AirportNameEntry);
+		CompactNameSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+		CompactNameSlot->SetPadding(FMargin(0.0f, 0.0f, 4.0f, 0.0f));
+		UHorizontalBoxSlot* CompactSaveSlot =
+			CompactEntryRow->AddChildToHorizontalBox(SaveSlotEntry);
+		CompactSaveSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+		CompactSaveSlot->SetPadding(FMargin(4.0f, 0.0f, 0.0f, 0.0f));
+		AddVertical(CreateColumn, CompactEntryRow, 3.0f);
+		AddVertical(CreateColumn, CreateButton, 4.0f);
+	}
+	else
+	{
+		UHorizontalBox* CreateRow = WidgetTree->ConstructWidget<UHorizontalBox>(
+			UHorizontalBox::StaticClass(),
+			TEXT("CreateAirportRow"));
+		CreateAirportTray->SetContent(CreateRow);
+
+		UVerticalBox* ParcelSummary = WidgetTree->ConstructWidget<UVerticalBox>(
+			UVerticalBox::StaticClass(),
+			TEXT("ParcelSummary"));
+		AddVertical(
+			ParcelSummary,
+			MakeText(
+				WidgetTree,
+				TEXT("ParcelName"),
+				TEXT("RIVERBEND PLAINS"),
+				17,
+				White,
+				true,
+				true),
+			0.0f);
+		AddVertical(
+			ParcelSummary,
+			MakeText(
+				WidgetTree,
+				TEXT("ParcelFacts"),
+				TEXT("TEMPERATE  •  LARGE BUILD AREA"),
+				12,
+				Cyan,
+				true),
+			3.0f);
+		UHorizontalBoxSlot* ParcelSlot = CreateRow->AddChildToHorizontalBox(ParcelSummary);
+		ParcelSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+		ParcelSlot->SetPadding(FMargin(0.0f, 0.0f, 16.0f, 0.0f));
+		ParcelSlot->SetVerticalAlignment(VAlign_Center);
+
+		UVerticalBox* NameColumn = WidgetTree->ConstructWidget<UVerticalBox>(
+			UVerticalBox::StaticClass(),
+			TEXT("AirportNameColumn"));
+		AddVertical(
+			NameColumn,
+			MakeText(
+				WidgetTree,
+				TEXT("AirportNameEntryHeader"),
+				TEXT("AIRPORT NAME"),
+				11,
+				Muted,
+				true),
+			0.0f);
+		AddVertical(NameColumn, AirportNameEntry, 2.0f);
+		UHorizontalBoxSlot* NameSlot = CreateRow->AddChildToHorizontalBox(NameColumn);
+		NameSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+		NameSlot->SetPadding(FMargin(0.0f, 0.0f, 12.0f, 0.0f));
+
+		UVerticalBox* SaveColumn = WidgetTree->ConstructWidget<UVerticalBox>(
+			UVerticalBox::StaticClass(),
+			TEXT("SaveSlotColumn"));
+		AddVertical(
+			SaveColumn,
+			MakeText(
+				WidgetTree,
+				TEXT("SaveSlotEntryHeader"),
+				TEXT("SAVE SLOT"),
+				11,
+				Muted,
+				true),
+			0.0f);
+		AddVertical(SaveColumn, SaveSlotEntry, 2.0f);
+		UHorizontalBoxSlot* SaveSlot = CreateRow->AddChildToHorizontalBox(SaveColumn);
+		SaveSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
+		SaveSlot->SetPadding(FMargin(0.0f, 0.0f, 12.0f, 0.0f));
+		SaveSlot->SetVerticalAlignment(VAlign_Center);
+
+		UHorizontalBoxSlot* CreateSlot = CreateRow->AddChildToHorizontalBox(CreateButton);
+		CreateSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
+		CreateSlot->SetVerticalAlignment(VAlign_Center);
+	}
+	PlaceCanvas(
+		Map,
+		CreateAirportTray,
+		bCompactLayout
+			? FAnchors(0.05f, 0.50f, 0.95f, 0.91f)
+			: FAnchors(0.06f, 0.73f, 0.94f, 0.96f));
+
 	ContextPanel = MakePanel(WidgetTree, TEXT("ContextPanel"));
-	ContextPanel->SetPadding(
-		bCompactLayout ? FMargin(11.0f, 8.0f) : FMargin(22.0f, 16.0f));
-	ContextPanel->SetBrushColor(FLinearColor(0.008f, 0.022f, 0.032f, 0.97f));
+	AMSim::UITheme::StyleSurface(
+		ContextPanel,
+		AMSim::UITheme::ESurface::RaisedCard,
+		bCompactLayout ? FMargin(12.0f, 9.0f) : FMargin(18.0f, 15.0f),
+		18.0f,
+		1.8f);
 	UVerticalBox* ContextColumn = WidgetTree->ConstructWidget<UVerticalBox>(
 		UVerticalBox::StaticClass(),
 		TEXT("ContextColumn"));
@@ -480,24 +743,60 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		TEXT("ContextHeader"),
 		TEXT("STARTER AIRFIELD"),
 		bCompactLayout ? 12 : 14,
-		Amber);
+		Cyan,
+		true);
 	AddVertical(ContextColumn, ContextHeaderText, 2.0f);
 	ContextBodyText = MakeText(
 		WidgetTree,
 		TEXT("ContextBody"),
 		TEXT("Presentation context"),
-		bCompactLayout ? 16 : 20,
-		White);
-	ContextBodyText->SetWrapTextAt(620.0f);
-	AddVertical(ContextColumn, ContextBodyText, 5.0f);
+		bCompactLayout ? 15 : 18,
+		White,
+		true,
+		true);
 	ContextStatusText = MakeText(
 		WidgetTree,
 		TEXT("ContextStatus"),
 		TEXT("Status"),
-		bCompactLayout ? 13 : 15,
-		Cyan);
-	ContextStatusText->SetWrapTextAt(620.0f);
-	AddVertical(ContextColumn, ContextStatusText, 5.0f);
+		bCompactLayout ? 12 : 14,
+		Amber,
+		true);
+	UHorizontalBox* ContextDetailRow = WidgetTree->ConstructWidget<UHorizontalBox>(
+		UHorizontalBox::StaticClass(),
+		TEXT("ContextDetailRow"));
+	UBorder* ContextIdentitySurface = MakeSurface(
+		WidgetTree,
+		TEXT("ContextIdentitySurface"),
+		AMSim::UITheme::ESurface::Field,
+		FMargin(11.0f, 8.0f),
+		10.0f,
+		1.0f);
+	ContextIdentitySurface->SetContent(ContextBodyText);
+	UHorizontalBoxSlot* ContextIdentitySlot =
+		ContextDetailRow->AddChildToHorizontalBox(ContextIdentitySurface);
+	FSlateChildSize ContextIdentitySize(ESlateSizeRule::Fill);
+	ContextIdentitySize.Value = 1.0f;
+	ContextIdentitySlot->SetSize(ContextIdentitySize);
+	ContextIdentitySlot->SetPadding(FMargin(0.0f, 0.0f, 4.0f, 0.0f));
+	UBorder* ContextEvidenceSurface = MakeSurface(
+		WidgetTree,
+		TEXT("ContextEvidenceSurface"),
+		AMSim::UITheme::ESurface::Chip,
+		FMargin(11.0f, 8.0f),
+		10.0f,
+		1.0f);
+	ContextEvidenceSurface->SetContent(ContextStatusText);
+	UHorizontalBoxSlot* ContextEvidenceSlot =
+		ContextDetailRow->AddChildToHorizontalBox(ContextEvidenceSurface);
+	FSlateChildSize ContextEvidenceSize(ESlateSizeRule::Fill);
+	ContextEvidenceSize.Value = 1.0f;
+	ContextEvidenceSlot->SetSize(ContextEvidenceSize);
+	ContextEvidenceSlot->SetPadding(FMargin(4.0f, 0.0f, 0.0f, 0.0f));
+	AddVertical(ContextColumn, ContextDetailRow, 5.0f);
+	UHorizontalBox* ContextActions = WidgetTree->ConstructWidget<UHorizontalBox>(
+		UHorizontalBox::StaticClass(),
+		TEXT("ContextActions"));
+	AddVertical(ContextColumn, ContextActions, 4.0f);
 	ContextPanel->SetVisibility(ESlateVisibility::Hidden);
 	PlaceCanvas(Map, ContextPanel, FAnchors(0.10f, 0.61f, 0.90f, 0.95f));
 	UHorizontalBoxSlot* MapSlot = Main->AddChildToHorizontalBox(MapPanel);
@@ -511,57 +810,218 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	UScrollBox* RightScroll = WidgetTree->ConstructWidget<UScrollBox>(
 		UScrollBox::StaticClass(),
 		TEXT("RightScroll"));
+	AMSim::UITheme::StyleSurface(
+		RightPanel,
+		AMSim::UITheme::ESurface::Panel,
+		FMargin(12.0f),
+		18.0f,
+		1.5f);
 	RightPanel->SetContent(RightScroll);
 	RightScroll->AddChild(Right);
-	AddVertical(Right, MakeText(WidgetTree, TEXT("OfferHeader"), TEXT("RIVERBEND FLYING CLUB"), 14, Amber));
-	OfferText = MakeText(WidgetTree, TEXT("Offer"), TEXT("No offer"), 22);
+	AddVertical(
+		Right,
+		MakeText(
+			WidgetTree,
+			TEXT("ObjectiveSectionHeader"),
+			TEXT("OBJECTIVES"),
+			13,
+			Cyan,
+			true),
+		0.0f);
+	UTextBlock* ObjectiveBody = nullptr;
+	UBorder* ObjectiveCard = MakeTextCard(
+		WidgetTree,
+		TEXT("ObjectiveCard"),
+		TEXT("ACTIVE"),
+		ObjectiveBody,
+		TEXT("Start a new airport"),
+		Cyan,
+		18);
+	ObjectiveText = ObjectiveBody;
+	ObjectiveText->SetWrapTextAt(RailWrapWidth);
+	AddVertical(Right, ObjectiveCard, 5.0f);
+
+	UBorder* StatusCard = MakeSurface(
+		WidgetTree,
+		TEXT("StatusCard"),
+		AMSim::UITheme::ESurface::Card,
+		FMargin(15.0f, 13.0f),
+		14.0f,
+		1.2f);
+	UVerticalBox* StatusColumn = WidgetTree->ConstructWidget<UVerticalBox>(
+		UVerticalBox::StaticClass(),
+		TEXT("StatusColumn"));
+	StatusCard->SetContent(StatusColumn);
+	AddVertical(
+		StatusColumn,
+		MakeText(
+			WidgetTree,
+			TEXT("StatusHeader"),
+			TEXT("STATUS"),
+			11,
+			Amber,
+			true),
+		0.0f);
+	StatusText = MakeText(
+		WidgetTree,
+		TEXT("Status"),
+		TEXT("Ready to begin"),
+		16,
+		White,
+		true);
+	StatusText->SetWrapTextAt(RailWrapWidth);
+	AddVertical(StatusColumn, StatusText, 4.0f);
+	CauseText = MakeText(WidgetTree, TEXT("Cause"), TEXT(""), 13, ErrorColor, true);
+	CauseText->SetWrapTextAt(RailWrapWidth);
+	AddVertical(StatusColumn, CauseText, 3.0f);
+	RemedyText = MakeText(WidgetTree, TEXT("Remedy"), TEXT(""), 13, Cyan, true);
+	RemedyText->SetWrapTextAt(RailWrapWidth);
+	AddVertical(StatusColumn, RemedyText, 3.0f);
+	AddVertical(Right, StatusCard, 5.0f);
+
+	UBorder* ActivityCard = MakeSurface(
+		WidgetTree,
+		TEXT("ActivityCard"),
+		AMSim::UITheme::ESurface::Card,
+		FMargin(15.0f, 13.0f),
+		14.0f,
+		1.2f);
+	UVerticalBox* ActivityColumn = WidgetTree->ConstructWidget<UVerticalBox>(
+		UVerticalBox::StaticClass(),
+		TEXT("ActivityColumn"));
+	ActivityCard->SetContent(ActivityColumn);
+	AddVertical(
+		ActivityColumn,
+		MakeText(
+			WidgetTree,
+			TEXT("OfferHeader"),
+			TEXT("FLYING CLUB"),
+			11,
+			Amber,
+			true),
+		0.0f);
+	OfferText = MakeText(WidgetTree, TEXT("Offer"), TEXT("No offer"), 17, White, true);
 	OfferText->SetWrapTextAt(RailWrapWidth);
-	AddVertical(Right, OfferText, 18.0f);
-	CompatibilityText = MakeText(WidgetTree, TEXT("Compatibility"), TEXT("Complete the airfield to unlock offers."), 15, Muted);
+	AddVertical(ActivityColumn, OfferText, 3.0f);
+	CompatibilityText = MakeText(
+		WidgetTree,
+		TEXT("Compatibility"),
+		TEXT("Complete the airfield to unlock offers."),
+		13,
+		Muted);
 	CompatibilityText->SetWrapTextAt(RailWrapWidth);
-	AddVertical(Right, CompatibilityText);
-	PinOfferButton = MakeButton(WidgetTree, TEXT("PinOffer"), TEXT("PIN OFFER"));
+	AddVertical(ActivityColumn, CompatibilityText, 3.0f);
+	PinOfferButton = MakeButton(
+		WidgetTree,
+		TEXT("PinOffer"),
+		TEXT("PIN"),
+		AMSim::UITheme::EButton::Quiet,
+		12);
 	PinOfferButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::PinOffer);
-	AddVertical(Right, PinOfferButton);
-	DeclineOfferButton = MakeButton(WidgetTree, TEXT("DeclineOffer"), TEXT("DECLINE OFFER"));
+	UHorizontalBoxSlot* PinSlot = ContextActions->AddChildToHorizontalBox(PinOfferButton);
+	PinSlot->SetPadding(FMargin(4.0f));
+	PinSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+	DeclineOfferButton = MakeButton(
+		WidgetTree,
+		TEXT("DeclineOffer"),
+		TEXT("DECLINE"),
+		AMSim::UITheme::EButton::Destructive,
+		12);
 	DeclineOfferButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::DeclineOffer);
-	AddVertical(Right, DeclineOfferButton);
-	AcceptButton = MakeButton(WidgetTree, TEXT("AcceptOffer"), TEXT("ACCEPT FIRST-FLIGHT OFFER"), true);
+	UHorizontalBoxSlot* DeclineSlot = ContextActions->AddChildToHorizontalBox(DeclineOfferButton);
+	DeclineSlot->SetPadding(FMargin(4.0f));
+	DeclineSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+	AcceptButton = MakeButton(
+		WidgetTree,
+		TEXT("AcceptOffer"),
+		TEXT("ACCEPT OFFER"),
+		AMSim::UITheme::EButton::Positive,
+		13);
 	AcceptButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::AcceptOffer);
-	AddVertical(Right, AcceptButton);
-	ScheduleButton = MakeButton(WidgetTree, TEXT("ScheduleFlight"), TEXT("SCHEDULE NEXT 5-MINUTE SLOT"), true);
+	UHorizontalBoxSlot* AcceptSlot = ContextActions->AddChildToHorizontalBox(AcceptButton);
+	AcceptSlot->SetPadding(FMargin(4.0f));
+	AcceptSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+	ScheduleButton = MakeButton(
+		WidgetTree,
+		TEXT("ScheduleFlight"),
+		TEXT("SCHEDULE FLIGHT"),
+		AMSim::UITheme::EButton::Primary,
+		13);
 	ScheduleButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::ScheduleFlight);
-	AddVertical(Right, ScheduleButton);
-	AddVertical(Right, MakeText(WidgetTree, TEXT("FlightHeader"), TEXT("FLIGHT OPERATIONS"), 14, Amber), 15.0f);
-	FlightText = MakeText(WidgetTree, TEXT("Flight"), TEXT("No active flight"), 20);
+	UHorizontalBoxSlot* ScheduleSlot = ContextActions->AddChildToHorizontalBox(ScheduleButton);
+	ScheduleSlot->SetPadding(FMargin(4.0f));
+	ScheduleSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+	AddVertical(Right, ActivityCard, 5.0f);
+
+	UBorder* FlightCard = MakeSurface(
+		WidgetTree,
+		TEXT("FlightCard"),
+		AMSim::UITheme::ESurface::Card,
+		FMargin(15.0f, 13.0f),
+		14.0f,
+		1.2f);
+	UVerticalBox* FlightColumn = WidgetTree->ConstructWidget<UVerticalBox>(
+		UVerticalBox::StaticClass(),
+		TEXT("FlightColumn"));
+	FlightCard->SetContent(FlightColumn);
+	AddVertical(
+		FlightColumn,
+		MakeText(
+			WidgetTree,
+			TEXT("FlightHeader"),
+			TEXT("FLIGHT OPERATIONS"),
+			11,
+			Amber,
+			true),
+		0.0f);
+	FlightText = MakeText(
+		WidgetTree,
+		TEXT("Flight"),
+		TEXT("No active flight"),
+		17,
+		White,
+		true);
 	FlightText->SetWrapTextAt(RailWrapWidth);
-	AddVertical(Right, FlightText);
+	AddVertical(FlightColumn, FlightText, 3.0f);
 	TimetableText = MakeText(
 		WidgetTree,
 		TEXT("Timetable"),
 		TEXT("No timetable entry. Slots use exact five-minute increments."),
-		15,
+		13,
 		Muted);
 	TimetableText->SetWrapTextAt(RailWrapWidth);
-	AddVertical(Right, TimetableText);
-	ServicesText = MakeText(WidgetTree, TEXT("Services"), TEXT("Inspection: --\nFuel: --"), 16, Muted);
+	AddVertical(FlightColumn, TimetableText, 3.0f);
+	ServicesText = MakeText(
+		WidgetTree,
+		TEXT("Services"),
+		TEXT("Inspection: --\nFuel: --"),
+		13,
+		Cyan,
+		true);
 	ServicesText->SetWrapTextAt(RailWrapWidth);
-	AddVertical(Right, ServicesText);
+	AddVertical(FlightColumn, ServicesText, 3.0f);
 	LedgerText = MakeText(
 		WidgetTree,
 		TEXT("Ledger"),
 		TEXT("LEDGER  No transactions"),
-		15,
+		12,
 		Muted);
 	LedgerText->SetWrapTextAt(RailWrapWidth);
-	AddVertical(Right, LedgerText);
-	RatingText = MakeText(WidgetTree, TEXT("Rating"), TEXT("Airport rating: 0"), 16, Cyan);
+	AddVertical(FlightColumn, LedgerText, 3.0f);
+	RatingText = MakeText(
+		WidgetTree,
+		TEXT("Rating"),
+		TEXT("Airport rating: 0"),
+		13,
+		Amber,
+		true);
 	RatingText->SetWrapTextAt(RailWrapWidth);
-	AddVertical(Right, RatingText);
+	AddVertical(FlightColumn, RatingText, 3.0f);
+	AddVertical(Right, FlightCard, 5.0f);
 	USizeBox* RightRailWidth = WidgetTree->ConstructWidget<USizeBox>(
 		USizeBox::StaticClass(),
 		TEXT("RightRailWidth"));
-	RightRailWidth->SetWidthOverride(380.0f / FMath::Max(InterfaceScale, 1.0f));
+	RightRailWidth->SetWidthOverride(320.0f / FMath::Max(InterfaceScale, 1.0f));
 	RightRailWidth->SetContent(RightPanel);
 	UHorizontalBoxSlot* RightSlot = Main->AddChildToHorizontalBox(RightRailWidth);
 	RightSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
@@ -572,7 +1032,12 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	}
 
 	UBorder* Footer = MakePanel(WidgetTree, TEXT("Footer"));
-	Footer->SetPadding(FMargin(20.0f, 10.0f));
+	AMSim::UITheme::StyleSurface(
+		Footer,
+		AMSim::UITheme::ESurface::Chrome,
+		FMargin(16.0f, 8.0f),
+		18.0f,
+		1.5f);
 	UVerticalBox* FooterColumn = WidgetTree->ConstructWidget<UVerticalBox>(
 		UVerticalBox::StaticClass(),
 		TEXT("FooterColumn"));
@@ -581,8 +1046,9 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		WidgetTree,
 		TEXT("RadioCaption"),
 		TEXT("RADIO  /  Captions are enabled for every operational call."),
-		17,
-		White);
+		bCompactLayout ? 12 : 14,
+		White,
+		true);
 	AddVertical(FooterColumn, CaptionText, 2.0f);
 	UHorizontalBox* Controls = WidgetTree->ConstructWidget<UHorizontalBox>(
 		UHorizontalBox::StaticClass(),
@@ -599,13 +1065,17 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		UButton* ObjectiveToggle = MakeButton(
 			WidgetTree,
 			TEXT("ObjectiveDrawerToggle"),
-			TEXT("OBJECTIVE"));
+			TEXT("OBJECTIVE"),
+			AMSim::UITheme::EButton::Tool,
+			12);
 		ObjectiveToggle->OnClicked.AddDynamic(this, &UAMSimRootScreen::ToggleObjectiveDrawer);
 		Controls->AddChildToHorizontalBox(ObjectiveToggle)->SetPadding(FMargin(3.0f));
 		UButton* OperationsToggle = MakeButton(
 			WidgetTree,
 			TEXT("OperationsDrawerToggle"),
-			TEXT("OPERATIONS"));
+			TEXT("OPERATIONS"),
+			AMSim::UITheme::EButton::Tool,
+			12);
 		OperationsToggle->OnClicked.AddDynamic(this, &UAMSimRootScreen::ToggleOperationsDrawer);
 		Controls->AddChildToHorizontalBox(OperationsToggle)->SetPadding(FMargin(3.0f));
 	}
@@ -613,28 +1083,69 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	{
 		AddVertical(FooterColumn, Controls, 2.0f);
 	}
-	UButton* Pause = MakeButton(WidgetTree, TEXT("Pause"), TEXT("PAUSE"));
+	UButton* Pause = MakeButton(
+		WidgetTree,
+		TEXT("Pause"),
+		TEXT("PAUSE"),
+		AMSim::UITheme::EButton::Tool,
+		12);
 	Pause->OnClicked.AddDynamic(this, &UAMSimRootScreen::PauseSimulation);
 	Controls->AddChildToHorizontalBox(Pause)->SetPadding(FMargin(3.0f));
-	UButton* SpeedOne = MakeButton(WidgetTree, TEXT("SpeedOne"), TEXT("1x"));
+	UButton* SpeedOne = MakeButton(
+		WidgetTree,
+		TEXT("SpeedOne"),
+		TEXT("1x"),
+		AMSim::UITheme::EButton::Quiet,
+		12);
 	SpeedOne->OnClicked.AddDynamic(this, &UAMSimRootScreen::SetSpeedOne);
 	Controls->AddChildToHorizontalBox(SpeedOne)->SetPadding(FMargin(3.0f));
-	UButton* SpeedTwo = MakeButton(WidgetTree, TEXT("SpeedTwo"), TEXT("2x"));
+	UButton* SpeedTwo = MakeButton(
+		WidgetTree,
+		TEXT("SpeedTwo"),
+		TEXT("2x"),
+		AMSim::UITheme::EButton::Quiet,
+		12);
 	SpeedTwo->OnClicked.AddDynamic(this, &UAMSimRootScreen::SetSpeedTwo);
 	Controls->AddChildToHorizontalBox(SpeedTwo)->SetPadding(FMargin(3.0f));
-	UButton* SpeedFour = MakeButton(WidgetTree, TEXT("SpeedFour"), TEXT("4x"));
+	UButton* SpeedFour = MakeButton(
+		WidgetTree,
+		TEXT("SpeedFour"),
+		TEXT("4x"),
+		AMSim::UITheme::EButton::Quiet,
+		12);
 	SpeedFour->OnClicked.AddDynamic(this, &UAMSimRootScreen::SetSpeedFour);
 	Controls->AddChildToHorizontalBox(SpeedFour)->SetPadding(FMargin(3.0f));
-	UButton* SpeedEight = MakeButton(WidgetTree, TEXT("SpeedEight"), TEXT("8x"));
+	UButton* SpeedEight = MakeButton(
+		WidgetTree,
+		TEXT("SpeedEight"),
+		TEXT("8x"),
+		AMSim::UITheme::EButton::Quiet,
+		12);
 	SpeedEight->OnClicked.AddDynamic(this, &UAMSimRootScreen::SetSpeedEight);
 	Controls->AddChildToHorizontalBox(SpeedEight)->SetPadding(FMargin(3.0f));
-	UButton* Save = MakeButton(WidgetTree, TEXT("Save"), TEXT("SAVE"));
+	UButton* Save = MakeButton(
+		WidgetTree,
+		TEXT("Save"),
+		TEXT("SAVE"),
+		AMSim::UITheme::EButton::Secondary,
+		12);
 	Save->OnClicked.AddDynamic(this, &UAMSimRootScreen::SaveGame);
 	Controls->AddChildToHorizontalBox(Save)->SetPadding(FMargin(16.0f, 3.0f, 3.0f, 3.0f));
-	UButton* Load = MakeButton(WidgetTree, TEXT("Load"), TEXT("LOAD"));
+	UButton* Load = MakeButton(
+		WidgetTree,
+		TEXT("Load"),
+		TEXT("LOAD"),
+		AMSim::UITheme::EButton::Secondary,
+		12);
 	Load->OnClicked.AddDynamic(this, &UAMSimRootScreen::LoadGame);
 	Controls->AddChildToHorizontalBox(Load)->SetPadding(FMargin(3.0f));
-	InteractionText = MakeText(WidgetTree, TEXT("Interaction"), TEXT("Ready."), 15, Muted);
+	InteractionText = MakeText(
+		WidgetTree,
+		TEXT("Interaction"),
+		TEXT("Ready."),
+		bCompactLayout ? 11 : 12,
+		Muted,
+		true);
 	InteractionText->SetJustification(ETextJustify::Right);
 	AddVertical(FooterColumn, InteractionText, 2.0f);
 	UVerticalBoxSlot* FooterSlot = Page->AddChildToVerticalBox(Footer);
@@ -932,8 +1443,8 @@ void UAMSimRootScreen::RefreshFromSimulation()
 	SetText(FundsText, CurrentViewState.Funds);
 	SetText(ObjectiveText, CurrentViewState.Objective);
 	SetText(StatusText, CurrentViewState.Status);
-	SetText(CauseText, TEXT("CAUSE  ") + CurrentViewState.Cause);
-	SetText(RemedyText, TEXT("NEXT  ") + CurrentViewState.Remedy);
+	SetText(CauseText, CurrentViewState.Cause);
+	SetText(RemedyText, TEXT("NEXT: ") + CurrentViewState.Remedy);
 	SetText(ProjectText, CurrentViewState.Project);
 	SetText(OfferText, CurrentViewState.Offer);
 	SetText(CompatibilityText, CurrentViewState.Compatibility);
@@ -943,6 +1454,60 @@ void UAMSimRootScreen::RefreshFromSimulation()
 	SetText(LedgerText, CurrentViewState.Ledger);
 	SetText(RatingText, CurrentViewState.Rating);
 	SetText(CaptionText, CurrentViewState.Caption);
+	const bool bShowConstraint =
+		Query.bInitialized &&
+		(!Query.Cause.IsEmpty() || !Query.Remedy.IsEmpty()) &&
+		Query.ConstructionStage != AMSim::EConstructionStage::Operational;
+	if (CauseText)
+	{
+		CauseText->SetVisibility(
+			bShowConstraint && !Query.Cause.IsEmpty()
+				? ESlateVisibility::Visible
+				: ESlateVisibility::Collapsed);
+	}
+	if (RemedyText)
+	{
+		RemedyText->SetVisibility(
+			bShowConstraint && !Query.Remedy.IsEmpty()
+				? ESlateVisibility::Visible
+				: ESlateVisibility::Collapsed);
+	}
+	if (CreateAirportTray)
+	{
+		CreateAirportTray->SetVisibility(
+			Query.bInitialized ? ESlateVisibility::Collapsed : ESlateVisibility::Visible);
+	}
+	if (CompatibilityText)
+	{
+		// Compatibility evidence is already presented in the contextual offer card.
+		// Keeping it in the rail duplicates copy and makes the persistent card unstable.
+		CompatibilityText->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	if (TimetableText)
+	{
+		TimetableText->SetVisibility(
+			State.Flight.Id.IsValid() ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+	}
+	if (ServicesText)
+	{
+		ServicesText->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	if (LedgerText)
+	{
+		LedgerText->SetVisibility(
+			Query.FlightState == AMSim::EFlightState::Completed &&
+			!State.Transactions.IsEmpty()
+				? ESlateVisibility::Visible
+				: ESlateVisibility::Collapsed);
+	}
+	if (RatingText)
+	{
+		RatingText->SetVisibility(
+			Query.FlightState == AMSim::EFlightState::Completed &&
+			!State.RatingContributions.IsEmpty()
+				? ESlateVisibility::Visible
+				: ESlateVisibility::Collapsed);
+	}
 	if (State.PhraseIntents.Num() > LastPhraseCount && SpeechProvider)
 	{
 		SpeechProvider->Speak(GetWorld(), State.PhraseIntents.Last().Caption);
@@ -961,29 +1526,25 @@ void UAMSimRootScreen::RefreshFromSimulation()
 		FString ContextStatus;
 		if (Query.FlightState == AMSim::EFlightState::Turnaround)
 		{
-			ContextHeader = TEXT("AIRCRAFT TURNAROUND  /  STAND A1");
+			ContextHeader = TEXT("AIRCRAFT TURNAROUND  •  STAND A1");
 			ContextBody = FString::Printf(
-				TEXT("%s is parked and protected on Stand A1."),
+				TEXT("%s  •  PARKED"),
 				State.Airframe.TailNumber.IsEmpty() ? TEXT("RB-021") : *State.Airframe.TailNumber);
-			ContextStatus = CurrentViewState.Services + TEXT("\nComplete both services before departure.");
+			ContextStatus = CurrentViewState.Services;
 		}
 		else if (Query.OfferState == AMSim::EOfferState::Available ||
 			Query.OfferState == AMSim::EOfferState::Accepted)
 		{
-			ContextHeader = TEXT("FIRST-FLIGHT OFFER  /  RIVERBEND FLYING CLUB");
-			ContextBody = TEXT("RIVERBEND 21   Light piston trainer   Local visit\n")
-				TEXT("RECOMMENDED SLOT  D1 00:10   Stand A1   45-minute turnaround");
-			ContextStatus = CurrentViewState.Compatibility +
-				TEXT("\nREWARD  600 Credits  |  5 Airport Points");
+			ContextHeader = TEXT("FIRST-FLIGHT OFFER  •  RIVERBEND");
+			ContextBody = TEXT("RIVERBEND 21  •  TRAINER  •  STAND A1");
+			ContextStatus = TEXT("D1 00:10  •  45 MIN  •  600 CR + 5 AP");
 		}
 		else if (Query.ConstructionStage >= AMSim::EConstructionStage::Funded &&
 			Query.ConstructionStage < AMSim::EConstructionStage::ReadyToOpen)
 		{
-			ContextHeader = TEXT("STARTER AIRFIELD  /  CONSTRUCTION");
-			ContextBody = CurrentViewState.Project +
-				TEXT("\nGrass runway 09/27   Taxiway A   Stand A1   Operations hut");
-			ContextStatus = TEXT("3,400 Credits funded  |  Full connected package\n") +
-				CurrentViewState.Status;
+			ContextHeader = TEXT("STARTER AIRFIELD  •  CONSTRUCTION");
+			ContextBody = TEXT("RUNWAY 09/27  •  TAXI A  •  STAND A1  •  HUT");
+			ContextStatus = TEXT("3,400 CR  •  ") + CurrentViewState.Status;
 		}
 		const bool bShowContext = !ContextHeader.IsEmpty();
 		ContextPanel->SetVisibility(
@@ -997,29 +1558,38 @@ void UAMSimRootScreen::RefreshFromSimulation()
 			{
 				const UUserInterfaceSettings* InterfaceSettings =
 					GetDefault<UUserInterfaceSettings>();
-				const bool bCompactContext = InterfaceSettings &&
-					InterfaceSettings->GetDPIScaleBasedOnSize(FIntPoint(1920, 1080)) >= 1.75f;
+				const float ContextScale = InterfaceSettings
+					? InterfaceSettings->GetDPIScaleBasedOnSize(FIntPoint(1920, 1080))
+					: 1.0f;
+				const bool bCompactContext = ContextScale >= 1.75f;
+				const bool bMediumContext = ContextScale >= 1.20f && !bCompactContext;
 				if (Query.FlightState == AMSim::EFlightState::Turnaround)
 				{
 					ContextSlot->SetAnchors(
 						bCompactContext
-							? FAnchors(0.04f, 0.04f, 0.72f, 0.60f)
-							: FAnchors(0.07f, 0.06f, 0.57f, 0.38f));
+							? FAnchors(0.04f, 0.04f, 0.72f, 0.42f)
+							: bMediumContext
+								? FAnchors(0.06f, 0.06f, 0.62f, 0.36f)
+							: FAnchors(0.07f, 0.07f, 0.56f, 0.27f));
 				}
 				else if (Query.OfferState == AMSim::EOfferState::Available ||
 					Query.OfferState == AMSim::EOfferState::Accepted)
 				{
 					ContextSlot->SetAnchors(
 						bCompactContext
-							? FAnchors(0.05f, 0.46f, 0.95f, 0.88f)
-							: FAnchors(0.10f, 0.52f, 0.90f, 0.82f));
+							? FAnchors(0.05f, 0.28f, 0.95f, 0.90f)
+							: bMediumContext
+								? FAnchors(0.08f, 0.45f, 0.92f, 0.89f)
+							: FAnchors(0.10f, 0.57f, 0.90f, 0.82f));
 				}
 				else
 				{
 					ContextSlot->SetAnchors(
 						bCompactContext
-							? FAnchors(0.04f, 0.52f, 0.72f, 0.93f)
-							: FAnchors(0.08f, 0.65f, 0.62f, 0.93f));
+							? FAnchors(0.04f, 0.52f, 0.72f, 0.88f)
+							: bMediumContext
+								? FAnchors(0.06f, 0.58f, 0.68f, 0.90f)
+							: FAnchors(0.08f, 0.70f, 0.62f, 0.89f));
 				}
 			}
 		}
@@ -1027,16 +1597,71 @@ void UAMSimRootScreen::RefreshFromSimulation()
 
 	if (CreateButton) CreateButton->SetIsEnabled(!CurrentViewState.bAirportInitialized);
 	if (AirportNameEntry) AirportNameEntry->SetIsReadOnly(CurrentViewState.bAirportInitialized);
-	if (BuildButton) BuildButton->SetIsEnabled(CurrentViewState.bCanBuild);
-	if (CancelBuildButton) CancelBuildButton->SetIsEnabled(CurrentViewState.bCanCancelBuild);
-	if (OpenButton) OpenButton->SetIsEnabled(CurrentViewState.bCanOpen);
-	if (CloseButton) CloseButton->SetIsEnabled(CurrentViewState.bCanClose);
-	if (PinOfferButton) PinOfferButton->SetIsEnabled(CurrentViewState.bCanPinOffer);
-	if (DeclineOfferButton) DeclineOfferButton->SetIsEnabled(CurrentViewState.bCanDeclineOffer);
-	if (AcceptButton) AcceptButton->SetIsEnabled(CurrentViewState.bCanAcceptOffer);
-	if (ScheduleButton) ScheduleButton->SetIsEnabled(CurrentViewState.bCanSchedule);
-	if (RecoveryButton) RecoveryButton->SetIsEnabled(CurrentViewState.bCanRequestRecovery);
+	if (BuildButton)
+	{
+		BuildButton->SetIsEnabled(CurrentViewState.bCanBuild);
+		BuildButton->SetVisibility(ESlateVisibility::Visible);
+	}
+	if (CancelBuildButton)
+	{
+		CancelBuildButton->SetIsEnabled(CurrentViewState.bCanCancelBuild);
+		CancelBuildButton->SetVisibility(
+			CurrentViewState.bCanCancelBuild ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+	}
+	if (OpenButton)
+	{
+		OpenButton->SetIsEnabled(CurrentViewState.bCanOpen);
+		OpenButton->SetVisibility(
+			CurrentViewState.bCanOpen ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+	}
+	if (CloseButton)
+	{
+		CloseButton->SetIsEnabled(CurrentViewState.bCanClose);
+		CloseButton->SetVisibility(
+			CurrentViewState.bCanClose ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+	}
+	if (PinOfferButton)
+	{
+		PinOfferButton->SetIsEnabled(CurrentViewState.bCanPinOffer);
+		PinOfferButton->SetVisibility(
+			Query.OfferState == AMSim::EOfferState::Available
+				? ESlateVisibility::Visible
+				: ESlateVisibility::Collapsed);
+	}
+	if (DeclineOfferButton)
+	{
+		DeclineOfferButton->SetIsEnabled(CurrentViewState.bCanDeclineOffer);
+		DeclineOfferButton->SetVisibility(
+			Query.OfferState == AMSim::EOfferState::Available
+				? ESlateVisibility::Visible
+				: ESlateVisibility::Collapsed);
+	}
+	if (AcceptButton)
+	{
+		AcceptButton->SetIsEnabled(CurrentViewState.bCanAcceptOffer);
+		AcceptButton->SetVisibility(
+			Query.OfferState == AMSim::EOfferState::Available
+				? ESlateVisibility::Visible
+				: ESlateVisibility::Collapsed);
+	}
+	if (ScheduleButton)
+	{
+		ScheduleButton->SetIsEnabled(CurrentViewState.bCanSchedule);
+		ScheduleButton->SetVisibility(
+			Query.OfferState == AMSim::EOfferState::Accepted
+				? ESlateVisibility::Visible
+				: ESlateVisibility::Collapsed);
+	}
+	if (RecoveryButton)
+	{
+		RecoveryButton->SetIsEnabled(CurrentViewState.bCanRequestRecovery);
+		RecoveryButton->SetVisibility(
+			CurrentViewState.bCanRequestRecovery
+				? ESlateVisibility::Visible
+				: ESlateVisibility::Collapsed);
+	}
 	LastPhraseCount = State.PhraseIntents.Num();
+	ForceLayoutPrepass();
 }
 
 void UAMSimRootScreen::SetInteractionMessage(const FString& Message, const bool bSucceeded)

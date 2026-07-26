@@ -1,15 +1,21 @@
 # Phase 1.5 Visual Review
 
 **Review date:** 2026-07-26  
-**Implementation state:** technically verified; final owner visual acceptance pending
+**Implementation state:** revised component-language candidate; final owner visual acceptance pending
+
+The owner rejected the first runtime comparison set as visually too primitive,
+specifically citing flat surfaces, missing rounded edges, excess copy, and weak
+consistency with the approved concepts. The evidence below is the corrective
+candidate, not an acceptance claim.
 
 ## Evidence set
 
 The ignored working evidence is under:
 
 - `AMSim/Saved/VisualReview/Phase1.5-Mockups`;
-- `AMSim/Saved/VisualReview/Phase1.5-Comparisons`;
-- `AMSim/Saved/Phase1/Scale-Phase15Final`.
+- `AMSim/Saved/VisualReview/Phase1.5-ComponentLanguage`;
+- `AMSim/Saved/VisualReview/Phase1.5-Comparisons-ComponentLanguage-Candidate`;
+- `AMSim/Saved/Phase1/Scale-Phase15-ComponentLanguageCandidate`.
 
 `scripts/ui/New-VisualComparison.ps1` creates an equivalent-state board and
 worksheet. `scripts/ui/Invoke-Phase15ScaleMatrix.ps1` captures the full Phase 1
@@ -19,16 +25,18 @@ journey at 1920x1080 and 100%, 125%, 150%, 175%, and 200% application scale.
 
 ### P15-01 — New airport overview
 
-The implementation now reserves the center for the world, uses stable dark
-slate rails, and keeps airport identity, time, funds, objective, and offer
-status in persistent regions.
+The implementation now reserves the center for the world and applies the same
+rounded navy/cyan component family to top chrome, rails, cards, fields, action
+trays, and footer controls. Airport creation is one contextual tray rather than
+a column of proof instructions.
 
 Highest-impact remaining differences:
 
 1. the concept has a curated river/road/forest parcel while the baseline uses
    one seamless grass surface;
-2. the concept uses an icon rail and illustrated location card;
-3. the implementation exposes more Phase 1 diagnostic text than the concept.
+2. the concept uses bespoke pictogram artwork and an illustrated location card;
+3. the implementation still uses the engine font rather than a final licensed
+   project type family.
 
 Intentional difference: until world-building tools exist, the empty parcel
 uses deterministic Paper2D terrain rather than inventing decorative simulation
@@ -54,9 +62,10 @@ feeds positions back into the deterministic simulation.
 
 ### P15-03 — Offer, compatibility, and timetable
 
-The offer state now receives a central contextual card with operator, aircraft
-type, recommended slot, stand, turnaround, compatibility, and reward. The
-persistent operations rail retains the actual Phase 1 actions.
+The offer state now receives one central rounded contextual card with identity
+and reward evidence separated into inner surfaces. Pin, decline, and accept
+actions use reusable quiet, destructive, and positive variants. Duplicated
+compatibility prose was removed from the persistent rail.
 
 Highest-impact remaining differences:
 
@@ -71,8 +80,9 @@ new scheduling data solely to imitate the mockup.
 ### P15-04 — Aircraft turnaround
 
 The approved Cessna source is present as a fictional yellow Riverbend aircraft
-on Stand A1, with protected selection/service markers and a contextual
-turnaround card. The aircraft remains presentation-only and selects from 16
+on Stand A1, with protected selection/service markers and a compact rounded
+turnaround card. Inspection and fuel are expressed as two short, independent
+status lines. The aircraft remains presentation-only and selects from 16
 reviewed headings.
 
 Highest-impact remaining differences:
@@ -99,16 +109,31 @@ motion.
    objective/operations drawers and a horizontally scrollable control strip.
 6. Reduced compact header/context density so text remains readable without
    consuming the world.
+7. Reopened the phase after the owner rejected the first runtime boards as too
+   primitive.
+8. Centralized rounded surfaces, typography, fields, status chips, and six
+   button variants in `AMSimUITheme`.
+9. Rebuilt the production shell and development component gallery from those
+   shared primitives, then removed persistent diagnostic and duplicated offer
+   copy.
+10. Added revision-triggered layout prepasses, true collapsed action rows, and
+    dedicated medium-scale context geometry after 125% and 150% captures exposed
+    clipping.
+11. Repeated the five-scale visual sweep from the exact corrective candidate
+    and generated four new equivalent-state comparison boards.
 
 ## Technical verification
 
 - `AMSimEditor` builds on Unreal Engine 5.8.0.
 - The project audit passes with the approved Phase 1.5 content review.
-- All 27 AMSim automation results complete with zero failures, skipped tests,
-  or in-process tests.
+- The final automation report contains zero failed, not-run, or in-process
+  tests and includes component-language coverage for rounded surfaces, outlines,
+  distinct action variants, and disabled treatment.
 - The deterministic rendered journey retains checksum
   `6583174326702355518`.
-- All five scale captures pass with zero 8x backlog.
+- The corrective 100%, 125%, 150%, 175%, and 200% captures pass with zero 8x
+  backlog. Medium layouts show all contextual actions without clipping, and
+  175-200% uses compact drawers.
 - Manual PIE inspection confirmed a visible OS cursor, hover/click behavior,
   focus restoration, and progression through the representative states.
 - A clean Shipping cook produces 267 packages with no missing presentation
@@ -120,8 +145,8 @@ motion.
 
 ## Acceptance boundary
 
-The implementation and validation loop are ready for owner review. Phase 1.5
-must not be marked complete until the owner accepts the four final comparison
-boards. Later illustrated environment detail, operator identity art, timetable
-grid depth, and service-worker animation remain bounded follow-on polish rather
-than hidden Phase 1.5 completion claims.
+The corrective candidate and validation loop are ready for owner review.
+Phase 1.5 must not be marked complete until the owner accepts the four revised
+comparison boards. Later illustrated environment detail, operator identity
+art, timetable grid depth, and service-worker animation remain explicit
+differences rather than hidden completion claims.

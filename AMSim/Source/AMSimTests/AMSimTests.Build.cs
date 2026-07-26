@@ -13,7 +13,8 @@ public class AMSimTests : ModuleRules
 			"AMSimUI",
 			"Core",
 			"CoreUObject",
-			"Engine"
+			"Engine",
+			"SlateCore"
 		});
 	}
 }

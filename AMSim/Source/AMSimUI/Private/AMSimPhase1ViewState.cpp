@@ -61,7 +61,7 @@ namespace AMSim
 			{
 			case EServiceTaskState::Unavailable: return TEXT("--");
 			case EServiceTaskState::Waiting: return TEXT("Waiting");
-			case EServiceTaskState::Active: return TEXT("In progress");
+			case EServiceTaskState::Active: return TEXT("Active");
 			case EServiceTaskState::Completed: return TEXT("Complete");
 			default: return TEXT("Unknown");
 			}
@@ -89,6 +89,23 @@ namespace AMSim
 				(TotalMinutes / 60) % 24,
 				TotalMinutes % 60);
 		}
+
+		FString CompactObjective(const FString& Objective)
+		{
+			if (Objective.StartsWith(TEXT("Build a grass runway")))
+			{
+				return TEXT("Build the starter airfield");
+			}
+			if (Objective.StartsWith(TEXT("Open the inspected runway")))
+			{
+				return TEXT("Review first-flight offer");
+			}
+			if (Objective.StartsWith(TEXT("Schedule the compatible visit")))
+			{
+				return TEXT("Complete the first turnaround");
+			}
+			return Objective;
+		}
 	}
 
 	FPhase1ViewState MakePhase1ViewState(
@@ -102,20 +119,20 @@ namespace AMSim
 
 		const int64 TotalMinutes = Query.GameTimeMilliseconds / 60000;
 		View.Clock = FString::Printf(
-			TEXT("DAY %lld  %02lld:%02lld  CLEAR  %s"),
+			TEXT("DAY %lld  •  %02lld:%02lld  •  CLEAR  •  %s"),
 			1 + TotalMinutes / (24 * 60),
 			(TotalMinutes / 60) % 24,
 			TotalMinutes % 60,
 			Query.bPaused ? TEXT("PAUSED") : *FString::Printf(TEXT("%dx"), State.SpeedMultiplier));
-		View.Funds = FString::Printf(TEXT("%lld Credits  |  %d AP"), Query.Credits, Query.AirportPoints);
-		View.Objective = Query.CurrentObjective;
+		View.Funds = FString::Printf(TEXT("%lld CR  •  %d AP"), Query.Credits, Query.AirportPoints);
+		View.Objective = CompactObjective(Query.CurrentObjective);
 		View.Status = Query.PrimaryStatus;
 		View.Cause = Query.Cause.IsEmpty() ? TEXT("No active constraint.") : Query.Cause;
 		View.Remedy = Query.Remedy.IsEmpty() ? TEXT("Choose an available action.") : Query.Remedy;
-		View.Project = TEXT("Starter airfield: ") + ConstructionName(Query.ConstructionStage);
+		View.Project = TEXT("STARTER PLAN\n") + ConstructionName(Query.ConstructionStage);
 		View.Offer = OfferName(Query.OfferState) + (State.Offer.bPinned ? TEXT("  /  PINNED") : TEXT(""));
 		View.Compatibility = Query.CompatibilitySummary.IsEmpty()
-			? TEXT("Complete the airfield to unlock the first-flight offer.")
+			? TEXT("Build and open the airfield to unlock offers.")
 			: Query.CompatibilitySummary;
 		View.Flight = FlightName(Query.FlightState);
 
@@ -123,18 +140,18 @@ namespace AMSim
 		{
 			const int64 Arrival = State.Flight.ScheduledArrivalGameMilliseconds;
 			View.Timetable = FString::Printf(
-				TEXT("RIVERBEND 21  /  %s arrival  /  Stand A1\nProtected %s to %s"),
+				TEXT("RIVERBEND 21  •  %s\nSTAND A1  •  PROTECTED %s–%s"),
 				*FormatGameTime(Arrival),
 				*FormatGameTime(State.Flight.StandOccupancyStartGameMilliseconds),
 				*FormatGameTime(State.Flight.StandOccupancyEndGameMilliseconds));
 		}
 		else
 		{
-			View.Timetable = TEXT("One recommended exact five-minute slot will appear after accepting the offer.");
+			View.Timetable = TEXT("No flight scheduled.");
 		}
 
 		View.Services = FString::Printf(
-			TEXT("INSPECT AIRCRAFT  %s   |   FUEL AIRCRAFT  %s"),
+			TEXT("INSPECTION  •  %s\nFUEL  •  %s"),
 			*ServiceName(Query.InspectionState),
 			*ServiceName(Query.FuelingState));
 		if (State.Transactions.IsEmpty())
@@ -171,8 +188,8 @@ namespace AMSim
 			RatingBreakdown.IsEmpty() ? TEXT("") : TEXT("  |  "),
 			*RatingBreakdown);
 		View.Caption = Query.LatestCaption.IsEmpty()
-			? TEXT("RADIO  /  Captions are enabled for every operational call.")
-			: TEXT("RADIO  /  ") + Query.LatestCaption;
+			? TEXT("RADIO  •  CAPTIONS ON")
+			: TEXT("RADIO  •  ") + Query.LatestCaption;
 
 		View.bCanBuild = Query.bInitialized && Query.ConstructionStage == EConstructionStage::None;
 		View.bCanCancelBuild =
@@ -190,4 +207,3 @@ namespace AMSim
 		return View;
 	}
 }
-

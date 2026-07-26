@@ -4,6 +4,7 @@
 #include "AMSimPlayerController.h"
 #include "AMSimPresentationProxyPool.h"
 #include "AMSimRootScreen.h"
+#include "AMSimUITheme.h"
 #include "AMSimWorldPresenter.h"
 #include "Camera/CameraComponent.h"
 #include "Misc/AutomationTest.h"
@@ -46,6 +47,40 @@ bool FAMSimOrthographicCameraTest::RunTest(const FString& Parameters)
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+	FAMSimPhase15ComponentLanguageTest,
+	"AMSim.Phase1_5.Presentation.ComponentLanguage",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FAMSimPhase15ComponentLanguageTest::RunTest(const FString& Parameters)
+{
+	const FSlateBrush Panel =
+		AMSim::UITheme::SurfaceBrush(AMSim::UITheme::ESurface::Panel);
+	const FButtonStyle Primary =
+		AMSim::UITheme::ButtonStyle(AMSim::UITheme::EButton::Primary);
+	const FButtonStyle Positive =
+		AMSim::UITheme::ButtonStyle(AMSim::UITheme::EButton::Positive);
+
+	TestEqual(
+		TEXT("Panel surfaces use rounded geometry"),
+		Panel.DrawAs,
+		ESlateBrushDrawType::RoundedBox);
+	TestTrue(
+		TEXT("Panel surfaces retain an outline"),
+		Panel.OutlineSettings.Width >= 1.0f);
+	TestEqual(
+		TEXT("Primary buttons use rounded geometry"),
+		Primary.Normal.DrawAs,
+		ESlateBrushDrawType::RoundedBox);
+	TestTrue(
+		TEXT("Positive and primary actions have distinct treatments"),
+		Positive.Normal.TintColor != Primary.Normal.TintColor);
+	TestTrue(
+		TEXT("Disabled controls remain visibly distinct"),
+		Primary.Disabled.TintColor != Primary.Normal.TintColor);
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 	FAMSimPhase15ViewStateTest,
 	"AMSim.Phase1_5.Presentation.ViewStateMapping",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
@@ -67,7 +102,7 @@ bool FAMSimPhase15ViewStateTest::RunTest(const FString& Parameters)
 	const AMSim::FPhase1ViewState View = AMSim::MakePhase1ViewState(Query, State);
 	TestEqual(TEXT("Revision is preserved"), View.Revision, Query.Revision);
 	TestEqual(TEXT("Airport name uses display casing"), View.AirportName, FString(TEXT("RIVERBEND FIELD")));
-	TestTrue(TEXT("Funds include player-facing units"), View.Funds.Contains(TEXT("1600 Credits")));
+	TestTrue(TEXT("Funds include player-facing units"), View.Funds.Contains(TEXT("1600 CR")));
 	TestTrue(TEXT("Construction status is mapped"), View.Project.Contains(TEXT("Safety inspection")));
 	TestFalse(TEXT("Inspection state cannot be reopened"), View.bCanOpen);
 	return true;

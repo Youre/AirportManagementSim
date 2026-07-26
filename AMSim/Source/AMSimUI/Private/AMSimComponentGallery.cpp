@@ -1,5 +1,6 @@
 #include "AMSimComponentGallery.h"
 
+#include "AMSimUITheme.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
 #include "Components/Button.h"
@@ -9,73 +10,126 @@
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
-#include "Styling/CoreStyle.h"
 
 namespace
 {
-	const FLinearColor GalleryBackground(0.006f, 0.014f, 0.021f, 1.0f);
-	const FLinearColor GalleryPanel(0.012f, 0.028f, 0.038f, 1.0f);
-	const FLinearColor GalleryPanelLight(0.024f, 0.064f, 0.078f, 1.0f);
-	const FLinearColor GalleryCyan(0.27f, 0.82f, 0.92f, 1.0f);
-	const FLinearColor GalleryAmber(0.96f, 0.68f, 0.22f, 1.0f);
-	const FLinearColor GalleryWhite(0.91f, 0.95f, 0.94f, 1.0f);
-	const FLinearColor GalleryMuted(0.57f, 0.68f, 0.69f, 1.0f);
-	const FLinearColor GalleryDanger(0.76f, 0.16f, 0.13f, 1.0f);
-
 	UTextBlock* GalleryText(
 		UWidgetTree* Tree,
 		const TCHAR* Name,
 		const FString& Value,
 		const int32 Size,
-		const FLinearColor& Color = GalleryWhite)
+		const FLinearColor& Color = AMSim::UITheme::White(),
+		const bool bBold = false)
 	{
 		UTextBlock* Text = Tree->ConstructWidget<UTextBlock>(UTextBlock::StaticClass(), Name);
 		Text->SetText(FText::FromString(Value));
-		Text->SetColorAndOpacity(FSlateColor(Color));
-		Text->SetFont(FCoreStyle::GetDefaultFontStyle(TEXT("Regular"), Size));
+		AMSim::UITheme::StyleText(Text, Size, Color, bBold, bBold);
 		Text->SetAutoWrapText(true);
 		return Text;
 	}
 
-	void AddGalleryItem(UVerticalBox* Parent, UWidget* Child, const float Padding = 5.0f)
+	void AddItem(UVerticalBox* Parent, UWidget* Child, const FMargin Padding = FMargin(0.0f, 5.0f))
 	{
 		UVerticalBoxSlot* Slot = Parent->AddChildToVerticalBox(Child);
-		Slot->SetPadding(FMargin(0.0f, Padding));
+		Slot->SetPadding(Padding);
 	}
 
-	UBorder* GalleryCard(UWidgetTree* Tree, const TCHAR* Name, UVerticalBox*& Content)
+	UBorder* Surface(
+		UWidgetTree* Tree,
+		const TCHAR* Name,
+		const AMSim::UITheme::ESurface Kind,
+		const FMargin Padding = FMargin(18.0f),
+		const float Radius = 16.0f)
 	{
-		UBorder* Card = Tree->ConstructWidget<UBorder>(UBorder::StaticClass(), Name);
-		Card->SetBrushColor(GalleryPanel);
-		Card->SetPadding(FMargin(20.0f));
-		Content = Tree->ConstructWidget<UVerticalBox>(
-			UVerticalBox::StaticClass(),
-			FName(*(FString(Name) + TEXT("Content"))));
-		Card->SetContent(Content);
-		return Card;
+		UBorder* Border = Tree->ConstructWidget<UBorder>(UBorder::StaticClass(), Name);
+		AMSim::UITheme::StyleSurface(Border, Kind, Padding, Radius, 1.5f);
+		return Border;
 	}
 
 	UButton* GalleryButton(
 		UWidgetTree* Tree,
 		const TCHAR* Name,
 		const FString& Label,
-		const FLinearColor& Normal,
+		const AMSim::UITheme::EButton Kind,
 		const bool bEnabled = true)
 	{
 		UButton* Button = Tree->ConstructWidget<UButton>(UButton::StaticClass(), Name);
-		FButtonStyle Style = Button->GetStyle();
-		Style.Normal.TintColor = FSlateColor(Normal);
-		Style.Hovered.TintColor = FSlateColor(GalleryCyan);
-		Style.Pressed.TintColor = FSlateColor(GalleryAmber);
-		Style.Disabled.TintColor = FSlateColor(FLinearColor(0.008f, 0.016f, 0.020f, 0.55f));
-		Button->SetStyle(Style);
-		Button->SetContent(GalleryText(
+		Button->SetStyle(AMSim::UITheme::ButtonStyle(Kind));
+		UTextBlock* LabelText = GalleryText(
 			Tree,
 			*(FString(Name) + TEXT("Label")),
 			Label,
-			16));
+			14,
+			AMSim::UITheme::White(),
+			true);
+		LabelText->SetJustification(ETextJustify::Center);
+		Button->SetContent(LabelText);
 		Button->SetIsEnabled(bEnabled);
 		return Button;
+	}
+
+	UBorder* StatusChip(
+		UWidgetTree* Tree,
+		const TCHAR* Name,
+		const FString& Label,
+		const AMSim::UITheme::ESurface Kind)
+	{
+		UBorder* Chip = Surface(Tree, Name, Kind, FMargin(11.0f, 7.0f), 10.0f);
+		UTextBlock* Text = GalleryText(
+			Tree,
+			*(FString(Name) + TEXT("Text")),
+			Label,
+			12,
+			AMSim::UITheme::White(),
+			true);
+		Text->SetJustification(ETextJustify::Center);
+		Chip->SetContent(Text);
+		return Chip;
+	}
+
+	UBorder* GalleryCard(
+		UWidgetTree* Tree,
+		const TCHAR* Name,
+		const FString& Eyebrow,
+		const FString& Heading,
+		const FString& Body,
+		const AMSim::UITheme::ESurface SurfaceKind = AMSim::UITheme::ESurface::Card)
+	{
+		UBorder* Card = Surface(Tree, Name, SurfaceKind, FMargin(18.0f, 15.0f), 16.0f);
+		UVerticalBox* Column = Tree->ConstructWidget<UVerticalBox>(
+			UVerticalBox::StaticClass(),
+			FName(*(FString(Name) + TEXT("Column"))));
+		Card->SetContent(Column);
+		AddItem(
+			Column,
+			GalleryText(
+				Tree,
+				*(FString(Name) + TEXT("Eyebrow")),
+				Eyebrow,
+				11,
+				AMSim::UITheme::Cyan(),
+				true),
+			FMargin());
+		AddItem(
+			Column,
+			GalleryText(
+				Tree,
+				*(FString(Name) + TEXT("Heading")),
+				Heading,
+				19,
+				AMSim::UITheme::White(),
+				true),
+			FMargin(0.0f, 4.0f));
+		AddItem(
+			Column,
+			GalleryText(
+				Tree,
+				*(FString(Name) + TEXT("Body")),
+				Body,
+				14,
+				AMSim::UITheme::Muted()),
+			FMargin(0.0f, 3.0f));
+		return Card;
 	}
 }
 
@@ -86,81 +140,158 @@ TSharedRef<SWidget> UAMSimComponentGallery::RebuildWidget()
 		return Super::RebuildWidget();
 	}
 
-	UBorder* Root = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("GalleryRoot"));
-	Root->SetBrushColor(GalleryBackground);
-	Root->SetPadding(FMargin(28.0f));
+	UBorder* Root = Surface(
+		WidgetTree,
+		TEXT("GalleryRoot"),
+		AMSim::UITheme::ESurface::Chrome,
+		FMargin(28.0f),
+		0.0f);
 	WidgetTree->RootWidget = Root;
-	UScrollBox* Scroll = WidgetTree->ConstructWidget<UScrollBox>(UScrollBox::StaticClass(), TEXT("GalleryScroll"));
+	UScrollBox* Scroll = WidgetTree->ConstructWidget<UScrollBox>(
+		UScrollBox::StaticClass(),
+		TEXT("GalleryScroll"));
 	Root->SetContent(Scroll);
-	UVerticalBox* Page = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("GalleryPage"));
+	UVerticalBox* Page = WidgetTree->ConstructWidget<UVerticalBox>(
+		UVerticalBox::StaticClass(),
+		TEXT("GalleryPage"));
 	Scroll->AddChild(Page);
 
-	AddGalleryItem(Page, GalleryText(
-		WidgetTree,
-		TEXT("GalleryTitle"),
-		TEXT("PHASE 1.5 COMPONENT GALLERY"),
-		30,
-		GalleryCyan));
-	AddGalleryItem(Page, GalleryText(
-		WidgetTree,
-		TEXT("GallerySubtitle"),
-		TEXT("Production states, interaction variants, color-independent labels, and long-text stress cases."),
-		16,
-		GalleryMuted));
+	AddItem(
+		Page,
+		GalleryText(
+			WidgetTree,
+			TEXT("GalleryTitle"),
+			TEXT("RIVERBEND UI KIT"),
+			30,
+			AMSim::UITheme::White(),
+			true),
+		FMargin());
+	AddItem(
+		Page,
+		GalleryText(
+			WidgetTree,
+			TEXT("GallerySubtitle"),
+			TEXT("Rounded production primitives for every airport-management screen."),
+			15,
+			AMSim::UITheme::Muted()),
+		FMargin(0.0f, 4.0f, 0.0f, 14.0f));
 
-	UVerticalBox* Buttons = nullptr;
-	AddGalleryItem(Page, GalleryCard(WidgetTree, TEXT("ButtonsCard"), Buttons), 14.0f);
-	AddGalleryItem(Buttons, GalleryText(WidgetTree, TEXT("ButtonsHeader"), TEXT("BUTTONS"), 14, GalleryAmber));
+	UBorder* ButtonSection = Surface(
+		WidgetTree,
+		TEXT("ButtonSection"),
+		AMSim::UITheme::ESurface::Panel);
+	UVerticalBox* ButtonColumn = WidgetTree->ConstructWidget<UVerticalBox>(
+		UVerticalBox::StaticClass(),
+		TEXT("ButtonColumn"));
+	ButtonSection->SetContent(ButtonColumn);
+	AddItem(
+		ButtonColumn,
+		GalleryText(
+			WidgetTree,
+			TEXT("ButtonHeader"),
+			TEXT("BUTTONS"),
+			12,
+			AMSim::UITheme::Amber(),
+			true),
+		FMargin());
 	UHorizontalBox* ButtonRow = WidgetTree->ConstructWidget<UHorizontalBox>(
 		UHorizontalBox::StaticClass(),
 		TEXT("ButtonRow"));
-	AddGalleryItem(Buttons, ButtonRow);
+	AddItem(ButtonColumn, ButtonRow, FMargin(0.0f, 7.0f));
 	for (UButton* Button : {
-		GalleryButton(WidgetTree, TEXT("Primary"), TEXT("PRIMARY ACTION"), FLinearColor(0.025f, 0.20f, 0.24f, 1.0f)),
-		GalleryButton(WidgetTree, TEXT("Secondary"), TEXT("SECONDARY"), GalleryPanelLight),
-		GalleryButton(WidgetTree, TEXT("Destructive"), TEXT("CANCEL PROJECT"), GalleryDanger),
-		GalleryButton(WidgetTree, TEXT("IconTool"), TEXT("[+] TOOL"), GalleryPanelLight),
-		GalleryButton(WidgetTree, TEXT("Disabled"), TEXT("DISABLED"), GalleryPanelLight, false)})
+		GalleryButton(WidgetTree, TEXT("Primary"), TEXT("SCHEDULE FLIGHT"), AMSim::UITheme::EButton::Primary),
+		GalleryButton(WidgetTree, TEXT("Positive"), TEXT("CREATE AIRPORT"), AMSim::UITheme::EButton::Positive),
+		GalleryButton(WidgetTree, TEXT("Secondary"), TEXT("PIN"), AMSim::UITheme::EButton::Secondary),
+		GalleryButton(WidgetTree, TEXT("Danger"), TEXT("CANCEL"), AMSim::UITheme::EButton::Destructive),
+		GalleryButton(WidgetTree, TEXT("Disabled"), TEXT("LOCKED"), AMSim::UITheme::EButton::Tool, false)})
 	{
-		ButtonRow->AddChildToHorizontalBox(Button)->SetPadding(FMargin(4.0f));
+		UHorizontalBoxSlot* RowSlot = ButtonRow->AddChildToHorizontalBox(Button);
+		RowSlot->SetPadding(FMargin(5.0f));
+		RowSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
 	}
+	AddItem(Page, ButtonSection, FMargin(0.0f, 7.0f));
 
-	UVerticalBox* Status = nullptr;
-	AddGalleryItem(Page, GalleryCard(WidgetTree, TEXT("StatusCard"), Status), 14.0f);
-	AddGalleryItem(Status, GalleryText(WidgetTree, TEXT("StatusHeader"), TEXT("STATUS CHIPS"), 14, GalleryAmber));
-	AddGalleryItem(Status, GalleryText(
+	UBorder* StatusSection = Surface(
 		WidgetTree,
-		TEXT("StatusValues"),
-		TEXT("[VALID] Connected package    [IN PROGRESS] Inspection    [BLOCKED] Stand occupied    [READY] Departure"),
-		18,
-		GalleryWhite));
-	AddGalleryItem(Status, GalleryText(
-		WidgetTree,
-		TEXT("StatusNote"),
-		TEXT("Every state is encoded by label and symbol as well as color."),
-		14,
-		GalleryMuted));
+		TEXT("StatusSection"),
+		AMSim::UITheme::ESurface::Panel);
+	UVerticalBox* StatusColumn = WidgetTree->ConstructWidget<UVerticalBox>(
+		UVerticalBox::StaticClass(),
+		TEXT("StatusColumn"));
+	StatusSection->SetContent(StatusColumn);
+	AddItem(
+		StatusColumn,
+		GalleryText(
+			WidgetTree,
+			TEXT("StatusHeader"),
+			TEXT("STATUS CHIPS"),
+			12,
+			AMSim::UITheme::Amber(),
+			true),
+		FMargin());
+	UHorizontalBox* StatusRow = WidgetTree->ConstructWidget<UHorizontalBox>(
+		UHorizontalBox::StaticClass(),
+		TEXT("StatusRow"));
+	AddItem(StatusColumn, StatusRow, FMargin(0.0f, 7.0f));
+	for (UBorder* Chip : {
+		StatusChip(WidgetTree, TEXT("ReadyChip"), TEXT("READY"), AMSim::UITheme::ESurface::Positive),
+		StatusChip(WidgetTree, TEXT("ProgressChip"), TEXT("IN PROGRESS"), AMSim::UITheme::ESurface::Chip),
+		StatusChip(WidgetTree, TEXT("WarningChip"), TEXT("CHECK REQUIRED"), AMSim::UITheme::ESurface::Warning),
+		StatusChip(WidgetTree, TEXT("BlockedChip"), TEXT("BLOCKED"), AMSim::UITheme::ESurface::Danger)})
+	{
+		UHorizontalBoxSlot* RowSlot = StatusRow->AddChildToHorizontalBox(Chip);
+		RowSlot->SetPadding(FMargin(5.0f));
+	}
+	AddItem(Page, StatusSection, FMargin(0.0f, 7.0f));
 
-	UVerticalBox* Cards = nullptr;
-	AddGalleryItem(Page, GalleryCard(WidgetTree, TEXT("CardsCard"), Cards), 14.0f);
-	AddGalleryItem(Cards, GalleryText(WidgetTree, TEXT("CardsHeader"), TEXT("CONTEXT CARDS"), 14, GalleryAmber));
-	AddGalleryItem(Cards, GalleryText(
+	UBorder* CardSection = Surface(
 		WidgetTree,
-		TEXT("ObjectiveCard"),
-		TEXT("ACTIVE OBJECTIVE\nBuild a grass runway, taxi connection, stand, access road, and operations hut."),
-		19));
-	AddGalleryItem(Cards, GalleryText(
-		WidgetTree,
-		TEXT("OfferCard"),
-		TEXT("FIRST-FLIGHT OFFER\nRiverbend 21  |  Light piston trainer  |  600 Credits + 5 AP"),
-		18,
-		GalleryCyan));
-	AddGalleryItem(Cards, GalleryText(
-		WidgetTree,
-		TEXT("LongTextCard"),
-		TEXT("LONG-TEXT STRESS\nThis representative localization string deliberately expands well beyond the concise English source so wrapping, vertical growth, and scanning rhythm remain reviewable at every supported scale."),
-		16,
-		GalleryMuted));
+		TEXT("CardSection"),
+		AMSim::UITheme::ESurface::Panel);
+	UVerticalBox* CardColumn = WidgetTree->ConstructWidget<UVerticalBox>(
+		UVerticalBox::StaticClass(),
+		TEXT("CardColumn"));
+	CardSection->SetContent(CardColumn);
+	AddItem(
+		CardColumn,
+		GalleryText(
+			WidgetTree,
+			TEXT("CardsHeader"),
+			TEXT("CARDS"),
+			12,
+			AMSim::UITheme::Amber(),
+			true),
+		FMargin());
+	UHorizontalBox* CardRow = WidgetTree->ConstructWidget<UHorizontalBox>(
+		UHorizontalBox::StaticClass(),
+		TEXT("CardRow"));
+	AddItem(CardColumn, CardRow, FMargin(0.0f, 7.0f));
+	for (UBorder* Card : {
+		GalleryCard(
+			WidgetTree,
+			TEXT("ObjectiveCard"),
+			TEXT("ACTIVE OBJECTIVE"),
+			TEXT("Open the airfield"),
+			TEXT("Complete the safety inspection, then open Runway 09/27.")),
+		GalleryCard(
+			WidgetTree,
+			TEXT("OfferCard"),
+			TEXT("FIRST-FLIGHT OFFER"),
+			TEXT("Riverbend 21"),
+			TEXT("Light trainer  •  Stand A1  •  600 CR + 5 AP"),
+			AMSim::UITheme::ESurface::RaisedCard),
+		GalleryCard(
+			WidgetTree,
+			TEXT("LongTextCard"),
+			TEXT("TEXT EXPANSION"),
+			TEXT("Representative long heading"),
+			TEXT("This localization stress case expands safely without replacing the concise production hierarchy."))})
+	{
+		UHorizontalBoxSlot* RowSlot = CardRow->AddChildToHorizontalBox(Card);
+		RowSlot->SetPadding(FMargin(5.0f));
+		RowSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+	}
+	AddItem(Page, CardSection, FMargin(0.0f, 7.0f));
 
 	return Super::RebuildWidget();
 }

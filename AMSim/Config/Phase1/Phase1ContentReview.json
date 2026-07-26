@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "reviewId": "CT02.Phase1_5.Cessna152Presentation.2026-07-26",
-  "reviewedUtc": "2026-07-26T13:10:00Z",
-  "scope": "Phase1PlayerFacingContent",
+  "reviewedUtc": "2026-07-26T18:00:00Z",
+  "scope": "Phase1PlayerFacingContentAndReusableUI",
   "aircraft": {
     "stableContentId": "Aircraft.LightPiston.Starter",
     "displayName": "Riverbend Trainer",
@@ -105,7 +105,27 @@
   "sourceFiles": [
     {
       "path": "AMSim/Source/AMSimUI/Private/AMSimRootScreen.cpp",
-      "sha256": "C06B02408B3CB771ADC5CE5BB69E79ACD406FD7052EBD5760BA9A6AFD8F04EF5"
+      "sha256": "964DD8690D01FE6D6890ADBAF70B443090CF7C33FD0B74C323FD0681442B04A6"
+    },
+    {
+      "path": "AMSim/Source/AMSimUI/Public/AMSimRootScreen.h",
+      "sha256": "B01B4082C3AEE8FEC67C9B20CFCDF0DEF324C1ECEFFD52DC513909FCD7E7D170"
+    },
+    {
+      "path": "AMSim/Source/AMSimUI/Public/AMSimUITheme.h",
+      "sha256": "5F0478A1DF8A0BFC395B06560C7D455A42068A2D6E2C26FB284F433840D2275F"
+    },
+    {
+      "path": "AMSim/Source/AMSimUI/Private/AMSimUITheme.cpp",
+      "sha256": "B52E20520CFF9CEA6462436E454D86184E61350A14A930D18126443EECA45C03"
+    },
+    {
+      "path": "AMSim/Source/AMSimUI/Private/AMSimComponentGallery.cpp",
+      "sha256": "E63491044CEA73C08597E31345B28B4E0475BA5599A0B1A7B867B73A7A9B0BAA"
+    },
+    {
+      "path": "AMSim/Source/AMSimUI/Private/AMSimPhase1ViewState.cpp",
+      "sha256": "BE8A55D923E6B2148D210704434706488115206FAE2A7C753EC9D8A8B8C20D78"
     },
     {
       "path": "AMSim/Source/AMSimUI/Private/AMSimWorldPresenter.cpp",

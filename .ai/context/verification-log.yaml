@@ -446,3 +446,43 @@ entries:
       0 TCP sockets and 0 forbidden file/text/receipt matches. Doctor exited 0
       with only known managed-template, lexical, legacy-ledger, and schema
       warnings plus an ignored Saved inspection artifact warning.
+  - timestamp: '2026-07-26T17:57:20.000000+00:00'
+    commit: a6dc2196f6e1ad6dba05a70624ae9bbdcf181a2c
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: Phase 1.5 corrective Development and Shipping package pipeline
+    result: failed
+    notes: The first package attempt was rejected when Unreal's local Zen
+      process disappeared between audit and cook, so AutomationTool could not
+      read its oplog. No project compile, audit, test, cook, or dependency
+      assertion failed. Restarted the local Zen store and reran the complete
+      package gate.
+  - timestamp: '2026-07-26T18:00:06.231671+00:00'
+    commit: a6dc2196f6e1ad6dba05a70624ae9bbdcf181a2c
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Phase 1.5 corrective component-language verification: reviews;
+      editor build; component gallery; project audit; full automation;
+      five-scale rendered matrix; clean Development and Shipping packages;
+      packaged smoke, launch, socket, and forbidden-dependency checks'
+    result: passed
+    notes: The centralized rounded UI theme, reduced-copy contextual layouts,
+      and responsive rail behavior compile in Unreal 5.8.0. The audit passed.
+      Automation reported 27 succeeded and 1 succeeded-with-warning record with
+      0 failed/not-run/in-process. Every 1920x1080 candidate capture from
+      100-200% passed with zero 8x backlog; the inspected 125% and 150% offer
+      and turnaround states have no clipped actions or service text. Clean
+      Development and Shipping cooks produced 267 packages. Packaged S01
+      passed at 1.732 ms p99 with checksum 6583174326702355518; Shipping stayed
+      alive for five seconds with 0 TCP sockets and 0 forbidden
+      file/text/receipt matches.
+  - timestamp: '2026-07-26T18:02:00.000000+00:00'
+    commit: a6dc2196f6e1ad6dba05a70624ae9bbdcf181a2c
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: python -m ai_project_init.cli doctor . --json
+    result: passed
+    notes: Exited 0. Only known managed-template, lexical-review,
+      legacy-ledger, project schema/version, and ignored Saved inspection
+      warnings remain; no structural error or new component-language evidence
+      conflict.

@@ -160,8 +160,10 @@ Shipping launcher/runtime paths.
   executable hashes. Elevated S15 records and revalidates the same package
   identity, preventing stale offline evidence from surviving a repackage.
 - The updated reference collector rehashed all four binaries before launch. Its
-  five-second development-host harness passed package identity and runtime
-  metrics at 1.816 ms p99, while correctly retaining `passed: false`.
+  five-second development-host harness ran from clean evidence commit
+  `9e89ca06f82d6dcb7b1ac16f206970205879c945`, passed package identity and runtime
+  metrics at 1.771 ms p99, and correctly retained `passed: false` because the
+  RTX 5090 host is unreviewed and the four-hour soak was not requested.
 - A minimal tester fixture and an all-positive rehearsal both retained
   `passed: false`; the latter failed only the deliberately absent formal-evidence
   attestation.

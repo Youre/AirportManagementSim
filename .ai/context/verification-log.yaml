@@ -287,3 +287,64 @@ entries:
     notes: Exited 0; only known managed-template, lexical review, legacy-ledger,
       and project-os schema/version warnings were reported. No structural error
       or new acceptance-tool conflict.
+  - timestamp: '2026-07-26T13:22:42.191465+00:00'
+    commit: 9e89ca06f82d6dcb7b1ac16f206970205879c945
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: .\scripts\phase1\Invoke-Phase1Pipeline.ps1 -SkipFirewall; elevated
+      Test-Phase1NetworkDenied.ps1; Test-Phase1Acceptance.ps1
+      -AllowIncompleteEvidence
+    result: passed
+    notes: 'UE 5.8.0 source 0e9b679: project/content audit; 25 executed automation
+      results with 0 failed/not-run/in-process; UI 100-200%; fresh Development/Shipping;
+      S01/save-load at 1.752 ms p99, 0.000/0.001 ms simulation median/p99, 7.524 ms
+      save, 501 MiB max, zero backlog; reviewed fictional Riverbend content lock;
+      exact four-binary identity; elevated S15 at 1.819 ms p99 with expected Development
+      trace listener only, zero Shipping TCP, and firewall cleanup. Aggregate passed
+      package/content/pipeline/network and named only the two external records false.'
+  - timestamp: '2026-07-26T13:22:42.630466+00:00'
+    commit: 9e89ca06f82d6dcb7b1ac16f206970205879c945
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: .\scripts\phase1\Test-Phase1ReferenceTier.ps1 -SoakSeconds 5
+      -TierAttestation Unreviewed -AllowIncompleteEvidence
+    result: passed
+    notes: Collector rehearsal ran from clean evidence commit 9e89ca0 against
+      package source 0e9b679; all four hashes, reference profile, runtime
+      metrics, and memory trend passed at 1.771 ms p99. It correctly retained
+      formal passed=false because the RTX 5090 host is unreviewed and the
+      four-hour soak was not requested.
+  - timestamp: '2026-07-26T13:22:43.056522+00:00'
+    commit: 9e89ca06f82d6dcb7b1ac16f206970205879c945
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: Phase 1 physical reference-tier four-hour measurement and
+      unassisted new-tester/audio/caption/fallback session
+    result: skipped
+    notes: No approved at-or-below-reference physical PC or genuinely new tester
+      is available in this task. These remain the only two formal Phase 1 close
+      locks; recorder scripts and exact-package enforcement are ready.
+  - timestamp: '2026-07-26T13:22:57.999848+00:00'
+    commit: 9e89ca06f82d6dcb7b1ac16f206970205879c945
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: python -m ai_project_init.cli doctor . --json (Phase 1
+      content/package closeout)
+    result: passed
+    notes: Exited 0. Only the known managed-template, lexical review, legacy
+      ledger, and project-os schema/version warnings remain; no structural error
+      or new content/package evidence conflict.
+  - timestamp: '2026-07-26T13:24:52.795758+00:00'
+    commit: 9e89ca06f82d6dcb7b1ac16f206970205879c945
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Phase 1 final local closeout: tester formal-boundary rehearsal, strict
+      aggregate fail-closed, parsers, hashes, links, secrets, and cleanup'
+    result: passed
+    notes: All-positive adult-proxy rehearsal matched the exact replacement
+      packages but remained passed=false without RecordFormalEvidence. Strict
+      aggregate without AllowIncompleteEvidence failed closed and named exactly
+      referenceTierPassed/testerAcceptancePassed. Seven Phase1 PowerShell
+      scripts, tracked JSON/YAML/UTF-8, 99 Markdown files with zero broken local
+      links, content/source/asset hashes, secret signatures, diff, firewall
+      cleanup, and process cleanup passed.

@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "scenarioId": "S02.SustainedGA",
+  "seed": 2709463078,
+  "specialization": "GeneralAviation",
+  "requiredOperatingDays": 14,
+  "flightsPerOperatingDay": 2,
+  "mustRemainSolvent": true,
+  "mustRemainLive": true,
+  "requiredSaveBoundaries": ["taxi", "turnaround", "weatherTransition"]
+}

@@ -933,6 +933,40 @@ namespace AMSim
 		return Hash;
 	}
 
+	bool FStarterAirfieldSimulation::ApplyExternalEconomyChange(
+		const FName Category,
+		const int64 AmountCredits,
+		const int32 AirportPoints,
+		const FString& Explanation,
+		const int64 CurrentGameMilliseconds)
+	{
+		if (!State.bInitialized ||
+			Category.IsNone() ||
+			Explanation.IsEmpty() ||
+			AirportPoints < 0 ||
+			(AmountCredits < 0 && State.Credits < -AmountCredits))
+		{
+			return false;
+		}
+
+		State.Credits += AmountCredits;
+		State.AirportPoints += AirportPoints;
+		State.LastUpdatedGameMilliseconds = CurrentGameMilliseconds;
+		RecordTransaction(Category, AmountCredits, Explanation, CurrentGameMilliseconds);
+		if (AirportPoints > 0)
+		{
+			EmitEvent(
+				EPhase1EventType::CapabilityAwarded,
+				{},
+				FString::Printf(
+					TEXT("%d Airport Points awarded: %s"),
+					AirportPoints,
+					*Explanation),
+				CurrentGameMilliseconds);
+		}
+		return true;
+	}
+
 	bool FStarterAirfieldSimulation::RestoreState(const FPhase1State& InState)
 	{
 		if (InState.MasterSeed == 0 ||

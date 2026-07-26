@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AMSimPhase1ViewState.h"
+#include "AMSimPhase2ViewState.h"
 #include "AMSimSpeechProvider.h"
 #include "CommonActivatableWidget.h"
 #include "Input/UIActionBindingHandle.h"
@@ -67,9 +68,45 @@ private:
 	void ToggleObjectiveDrawer();
 	UFUNCTION()
 	void ToggleOperationsDrawer();
+	UFUNCTION()
+	void InitializePhase2();
+	UFUNCTION()
+	void SelectGeneralAviation();
+	UFUNCTION()
+	void SelectFlightSchool();
+	UFUNCTION()
+	void SelectCharter();
+	UFUNCTION()
+	void AcceptPhase2Contract();
+	UFUNCTION()
+	void CancelPhase2Contract();
+	UFUNCTION()
+	void ReschedulePhase2Flight();
+	UFUNCTION()
+	void DispatchPhase2Service();
+	UFUNCTION()
+	void TogglePhase2Runway();
+	UFUNCTION()
+	void TowPhase2Aircraft();
+	UFUNCTION()
+	void RotatePhase2TeamZone();
+	UFUNCTION()
+	void PurchasePhase2Parcel();
+	UFUNCTION()
+	void StartPhase2Expansion();
+	UFUNCTION()
+	void RespondPhase2Incident();
 
 	void SubmitSpeed(int32 Multiplier);
 	void RefreshFromSimulation();
+	void SelectPhase2Specialization(AMSim::EAirportSpecialization Specialization);
+	bool SubmitPhase2Command(
+		AMSim::FPhase2Command Command,
+		const FString& SuccessMessage);
+	void RefreshPhase2Presentation(
+		const AMSim::FPhase2QuerySnapshot& Query,
+		const AMSim::FPhase2State& State,
+		const AMSim::FPhase1State& Phase1State);
 	void SetInteractionMessage(const FString& Message, bool bSucceeded);
 
 	UPROPERTY(Transient)
@@ -112,6 +149,18 @@ private:
 	TObjectPtr<UTextBlock> InteractionText;
 	UPROPERTY(Transient)
 	TObjectPtr<UTextBlock> AircraftLabel;
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> Phase2StatusText;
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> Phase2OperationsText;
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> Phase2WeatherText;
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> Phase2StaffText;
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> Phase2TenantText;
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> Phase2EconomyText;
 
 	UPROPERTY(Transient)
 	TObjectPtr<UBorder> RunwayVisual;
@@ -131,6 +180,12 @@ private:
 	TObjectPtr<UBorder> ObjectiveDrawer;
 	UPROPERTY(Transient)
 	TObjectPtr<UBorder> OperationsDrawer;
+	UPROPERTY(Transient)
+	TObjectPtr<UBorder> Phase1ActivityCard;
+	UPROPERTY(Transient)
+	TObjectPtr<UBorder> Phase1FlightCard;
+	UPROPERTY(Transient)
+	TObjectPtr<UBorder> Phase2Panel;
 	UPROPERTY(Transient)
 	TObjectPtr<UTextBlock> ContextHeaderText;
 	UPROPERTY(Transient)
@@ -162,9 +217,38 @@ private:
 	TObjectPtr<UButton> ScheduleButton;
 	UPROPERTY(Transient)
 	TObjectPtr<UButton> RecoveryButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> InitializePhase2Button;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> SelectGAButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> SelectSchoolButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> SelectCharterButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> AcceptPhase2ContractButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> CancelPhase2ContractButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> ReschedulePhase2FlightButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> DispatchPhase2ServiceButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> TogglePhase2RunwayButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> TowPhase2AircraftButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> RotatePhase2TeamZoneButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> PurchasePhase2ParcelButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> StartPhase2ExpansionButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> RespondPhase2IncidentButton;
 
 	TUniquePtr<IAMSimSpeechProvider> SpeechProvider;
 	AMSim::FPhase1ViewState CurrentViewState;
+	AMSim::FPhase2ViewState CurrentPhase2ViewState;
 	uint64 LastAppliedRevision = MAX_uint64;
 	int32 LastPhraseCount = 0;
 };

@@ -8,6 +8,7 @@ void UAMSimAirportSimulationSubsystem::Initialize(FSubsystemCollectionBase& Coll
 	Super::Initialize(Collection);
 	Simulation = MakeUnique<AMSim::FSimulation>(AMSim::GetPhase1Fixture().Seed);
 	NextPhase1CommandId = 1;
+	NextPhase2CommandId = 1;
 	AccumulatedGameMilliseconds = 0.0;
 	LastSimulationWorkMilliseconds = 0.0;
 	LastSimulationMilliseconds = 0;
@@ -17,6 +18,8 @@ void UAMSimAirportSimulationSubsystem::Initialize(FSubsystemCollectionBase& Coll
 void UAMSimAirportSimulationSubsystem::Deinitialize()
 {
 	Simulation.Reset();
+	NextPhase1CommandId = 1;
+	NextPhase2CommandId = 1;
 	AccumulatedGameMilliseconds = 0.0;
 	LastSimulationWorkMilliseconds = 0.0;
 	LastSimulationMilliseconds = 0;
@@ -115,6 +118,34 @@ AMSim::FPhase1QuerySnapshot UAMSimAirportSimulationSubsystem::GetPhase1Query() c
 	return Simulation->CreatePhase1QuerySnapshot();
 }
 
+AMSim::EPhase2CommandResult UAMSimAirportSimulationSubsystem::SubmitPhase2Command(
+	AMSim::FPhase2Command Command)
+{
+	check(Simulation);
+	if (!Command.Id.IsValid())
+	{
+		Command.Id = AMSim::FCommandId{NextPhase2CommandId++};
+	}
+	else
+	{
+		NextPhase2CommandId = FMath::Max(NextPhase2CommandId, Command.Id.Value + 1);
+	}
+
+	const AMSim::EPhase2CommandResult Result = Simulation->QueuePhase2Command(Command);
+	if (Result == AMSim::EPhase2CommandResult::Accepted)
+	{
+		Simulation->Step();
+		LastSimulationMilliseconds = Simulation->CreateDiagnostics().GameTimeMilliseconds;
+	}
+	return Result;
+}
+
+AMSim::FPhase2QuerySnapshot UAMSimAirportSimulationSubsystem::GetPhase2Query() const
+{
+	check(Simulation);
+	return Simulation->CreatePhase2QuerySnapshot();
+}
+
 AMSim::FSnapshot UAMSimAirportSimulationSubsystem::CreateSnapshot() const
 {
 	check(Simulation);
@@ -134,6 +165,12 @@ bool UAMSimAirportSimulationSubsystem::RestoreSnapshot(const AMSim::FSnapshot& S
 		? 0
 		: Snapshot.Phase1.Events.Last().Cause.Value;
 	NextPhase1CommandId = FMath::Max(NextPhase1CommandId, MaximumCommandId + 1);
+	const uint64 MaximumPhase2CommandId = Snapshot.Phase2.Events.IsEmpty()
+		? 0
+		: Snapshot.Phase2.Events.Last().Cause.Value;
+	NextPhase2CommandId = FMath::Max(
+		NextPhase2CommandId,
+		MaximumPhase2CommandId + 1);
 	return true;
 }
 

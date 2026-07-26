@@ -1,0 +1,8 @@
+{
+  "schema": 1,
+  "scenarioId": "S15.NetworkDeniedCleanPackage",
+  "networkRequired": false,
+  "requiredCookedAssetFamilies": ["UI", "Paper2D", "Phase2Definitions", "Phase2Aircraft"],
+  "forbiddenShippingDependencies": ["AMSimEditor", "AMSimTests", "UnrealMCP", "Python", "RemoteControl", "Toolset"],
+  "runtimeStringAssetLoadingAllowed": false
+}

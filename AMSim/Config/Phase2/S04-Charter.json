@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "scenarioId": "S04.Charter",
+  "seed": 2709463078,
+  "specialization": "Charter",
+  "requiredOperatingDays": 14,
+  "flightsPerOperatingDay": 1,
+  "mustRemainSolvent": true,
+  "mustRemainLive": true,
+  "requiredCapabilities": ["PAPI", "priorityTurnaround", "deicing"]
+}

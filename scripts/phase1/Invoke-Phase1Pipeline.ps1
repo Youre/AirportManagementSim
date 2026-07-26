@@ -243,6 +243,10 @@ if (-not $SkipScaleMatrix) {
             'va04-offer.png',
             'va05-turnaround.png',
             'phase1-complete.png',
+            'va06-weather.png',
+            'va06-incident.png',
+            'va07-progression.png',
+            'phase2-complete.png',
             'smoke-result.json'
         )) {
             Copy-Item `
@@ -418,7 +422,11 @@ $requiredProofs = @(
     'va02-construction.png',
     'va04-offer.png',
     'va05-turnaround.png',
-    'phase1-complete.png'
+    'phase1-complete.png',
+    'va06-weather.png',
+    'va06-incident.png',
+    'va07-progression.png',
+    'phase2-complete.png'
 )
 $packagedProofRoot = Join-Path $developmentExe.Directory.FullName 'AMSim\Saved\Phase1'
 foreach ($proofName in $requiredProofs) {

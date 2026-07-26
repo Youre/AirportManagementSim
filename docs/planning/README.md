@@ -4,7 +4,7 @@ This directory is the durable source of truth for planning the 2D, top-down airp
 
 ## Current planning stage
 
-The project is in **phased implementation**. `ideas.txt` remains the living concept source; the approved specification set defines implementable feature behavior, technical boundaries, initial tuning, verification, and phased integration. Phase 0 is complete. Phase 1 systems, content lock, package, and offline gates pass; visual fidelity and interaction polish remain active. The four-hour physical-tier soak and formal unassisted tester record are deferred to release hardening and do not block continued feature development. Work still enters only through its owning approved specifications and phase gate.
+The project is in **phased implementation**. `ideas.txt` remains the living concept source; the approved specification set defines implementable feature behavior, technical boundaries, initial tuning, verification, and phased integration. Phase 0, Phase 1, the accepted Phase 1.5 visual foundation, and [PI-04 Phase 2 living general aviation](50-production/phase-2-living-ga-implementation-plan.md) are complete. Phase 3 is the next roadmap phase but has not been opened. The four-hour physical-tier soak and formal unassisted tester record are deferred to release hardening and do not block continued feature development. Work still enters only through its owning approved specifications and phase gate.
 
 ## Directory map
 
@@ -75,6 +75,8 @@ The inventory confirms presence, format, dimensions, and source classification. 
 - [Phase 1 grass-airfield implementation plan](50-production/phase-1-grass-airfield-implementation-plan.md)
 - [Phase 1.5 visual-foundation plan](50-production/phase-1-5-visual-foundation-plan.md)
 - [Phase 1.5 visual review](50-production/phase-1-5-visual-review.md)
+- [Phase 2 living general-aviation implementation plan](50-production/phase-2-living-ga-implementation-plan.md)
+- [Phase 2 visual review](50-production/phase-2-visual-review.md)
 - [Phase 1 reference-hardware gate](50-production/phase-1-reference-hardware.md)
 - [Phase 1 unassisted new-tester protocol](50-production/phase-1-new-tester-protocol.md)
 - [Verification and requirements traceability](50-production/verification-traceability.md)

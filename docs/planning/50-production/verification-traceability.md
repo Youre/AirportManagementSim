@@ -2,7 +2,7 @@
 
 **Status:** Approved baseline  
 **Owner:** Requirements and verification  
-**Last updated:** 2026-07-25
+**Last updated:** 2026-07-26
 
 ## Purpose
 
@@ -116,11 +116,37 @@ Accepted residuals are metadata-only transitive editor plugin descriptors, the t
 | First traffic is timely and compatible | Immediate paused offer, exact five-minute slot, explicit Stand A1/buffers, and arrival timing pass |
 | Construction is authoritative and persistent | Proposal/stage/delivery/team/inspection/open/close/cancel tests and save matrix pass |
 | Aircraft operation is safe and deterministic | ATC, reservation, taxi, turnaround, readiness, replay, no-overlap, and intermediate-state catch-up assertions pass |
-| UI explains cause, remedy, compatibility, and reward | Query-backed rendered matrix passes 100–200%; 175–200% uses compact objective/operations drawers; four equivalent-state boards await final owner acceptance |
+| UI explains cause, remedy, compatibility, and reward | Query-backed rendered matrix passes 100–200%; 175–200% uses compact objective/operations drawers; the corrective four-board component-language baseline was accepted on 2026-07-26 |
 | Content is controlled | 20-asset catalog plus approved Phase 1.5 Cessna source master, checksum, fictional Riverbend livery, and 16 reviewed heading variants; later external aircraft still require separate review |
 | Save evolution is safe | Schema-1 migration, schema-2 boundary continuation, corruption/backup/future validation pass |
 | Performance meets a representative target | Development-host frame/simulation/save/memory budgets and short reference-profile harness pass; physical four-hour reference-tier run deferred to Phase 7 |
 | Product remains strict 2D and offline | Shipping asset/dependency/socket scans and elevated firewall-denied S15 pass; Development journey/save-load succeeds and Shipping observes zero TCP sockets |
+
+## Phase 2 implementation evidence
+
+[PI-04](phase-2-living-ga-implementation-plan.md) maps the living
+general-aviation slice to implementation work packages and evidence. Phase 2
+passed on 2026-07-26. The normative records are:
+
+- [Phase 2 verification record](../../../.ai/reviews/2026-07-26-phase-2-verification.md);
+- [Phase 2 architecture-impact review](../../../.ai/reviews/2026-07-26-phase-2-architecture-impact.md);
+- [Phase 2 adversarial review](../../../.ai/reviews/2026-07-26-phase-2-adversarial-review.md);
+- [Phase 2 visual review](phase-2-visual-review.md);
+- machine-readable local results at
+  `AMSim/Saved/Phase2/pipeline-result.json`.
+
+| Phase 2 claim | Evidence |
+| --- | --- |
+| Living traffic is persistent and concurrent | Seven persistent airframes across four roles, recurring flight instances, independent stands/reservations, visit/service history, and concurrent-flight assertions pass |
+| Contracts and timetable have explicit lifecycle | Identity-compatible acceptance, protected rescheduling, active-operation cancellation conflict, cancellation cost, runway compatibility, and remedy paths pass |
+| Services, vehicles, and staff are authoritative | Dependency-aware turnaround, four persistent vehicles, four teams, shift/zone/workload/morale state, exclusive-resource tests, dispatch, tow, and deicing pass |
+| Three airport identities are viable | GA, flight school, and charter each complete 14 deterministic operating days while solvent and live |
+| Growth and economy stay integrated | Parcel purchase, staged expansion, closures, inspection, itemized costs/rewards, ratings, achievements, and bounded recovery use the Phase 1 Credits/AP authority |
+| Weather and incidents are recoverable | Seeded condition cycle, cold/wet deicing, disabled-aircraft cause/response/containment/reopening, save continuation, and rating/economy effects pass |
+| Persistence evolves safely | Schema 3 round-trip plus retained schema-1/schema-2 migration, strong-ID/reference/lifecycle/count validation, and transient-boundary continuation pass |
+| Presentation remains query-backed and 2D | Revision-gated view state, pooled Paper2D aircraft/vehicle/incident/expansion proxies, all player commands, visible mouse policy, and the 100–200% matrix pass |
+| Content is controlled and cooked | Editor audit resolves 33 Phase 2 Primary Assets; direct Shipping IoStore inventory lists the same 33 names; zero external Phase 2 aircraft files and zero required 3D candidates |
+| Package remains clean and offline | Development integrated smoke passes; Shipping launches cleanly with zero TCP sockets and zero forbidden editor/test/MCP/Python/RemoteControl/Toolset matches |
 
 ## Visual reference mapping
 

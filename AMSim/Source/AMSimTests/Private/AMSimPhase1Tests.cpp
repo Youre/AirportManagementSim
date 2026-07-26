@@ -297,7 +297,7 @@ bool FAMSimPhase1SaveMigrationTest::RunTest(const FString& Parameters)
 	TestTrue(TEXT("Schema 2 snapshot serializes"), SerializeSnapshot(Simulation.CreateSnapshot(), Bytes));
 	FSnapshot Loaded;
 	TestTrue(TEXT("Schema 2 snapshot deserializes"), DeserializeSnapshot(Bytes, Loaded));
-	TestEqual(TEXT("Loaded snapshot is schema 2"), Loaded.SchemaVersion, static_cast<uint32>(2));
+	TestEqual(TEXT("Loaded snapshot is current schema"), Loaded.SchemaVersion, SnapshotSchemaVersion);
 
 	FSimulation Restored;
 	TestTrue(TEXT("Schema 2 snapshot restores"), Restored.RestoreSnapshot(Loaded));
@@ -320,7 +320,7 @@ bool FAMSimPhase1SaveMigrationTest::RunTest(const FString& Parameters)
 	TestTrue(TEXT("Schema 1 fixture serializes"), SerializeSnapshot(Schema1, Schema1Bytes));
 	FSnapshot Migrated;
 	TestTrue(TEXT("Schema 1 fixture migrates during load"), DeserializeSnapshot(Schema1Bytes, Migrated));
-	TestEqual(TEXT("Migrated schema is 2"), Migrated.SchemaVersion, static_cast<uint32>(2));
+	TestEqual(TEXT("Migrated schema is current"), Migrated.SchemaVersion, SnapshotSchemaVersion);
 	TestFalse(TEXT("Migration does not invent a completed airport"), Migrated.Phase1.bInitialized);
 	TestEqual(TEXT("Migration preserves master seed"), Migrated.Phase1.MasterSeed, static_cast<uint64>(77));
 	return true;

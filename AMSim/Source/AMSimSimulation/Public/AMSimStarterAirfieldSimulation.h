@@ -18,6 +18,12 @@ namespace AMSim
 		const FPhase1State& GetState() const { return State; }
 		const TArray<FPhase1Event>& GetEvents() const { return State.Events; }
 		bool RestoreState(const FPhase1State& InState);
+		bool ApplyExternalEconomyChange(
+			FName Category,
+			int64 AmountCredits,
+			int32 AirportPoints,
+			const FString& Explanation,
+			int64 CurrentGameMilliseconds);
 		void Reset(uint64 MasterSeed);
 
 	private:

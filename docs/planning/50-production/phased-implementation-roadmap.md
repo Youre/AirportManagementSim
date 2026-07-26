@@ -37,7 +37,7 @@ Deliver:
 
 ## Phase 1: Grass-airfield vertical slice
 
-**Status:** Systems implementation verified; visual and interaction polish active. Long-soak and formal unassisted acceptance are deferred to Phase 7. See [PI-03](phase-1-grass-airfield-implementation-plan.md) and the [verification record](../../../.ai/reviews/2026-07-26-phase-1-verification.md).
+**Status:** Complete through the accepted Phase 1.5 visual foundation. Long-soak and formal unassisted acceptance are deferred to Phase 7. See [PI-03](phase-1-grass-airfield-implementation-plan.md), [PI-03A](phase-1-5-visual-foundation-plan.md), and the [verification record](../../../.ai/reviews/2026-07-26-phase-1-verification.md).
 
 **Goal:** Starting from a parcel, build and operate one complete light-aircraft visit.
 
@@ -49,6 +49,8 @@ Journey: select temperate map -> build grass runway/taxi/stand/access -> number/
 
 ## Phase 2: Living general-aviation airport
 
+**Status:** Complete — verified on 2026-07-26. See [PI-04](phase-2-living-ga-implementation-plan.md) and the [verification record](../../../.ai/reviews/2026-07-26-phase-2-verification.md).
+
 Phase 2 begins after **Phase 1.5: Visual foundation and validation loop** closes. Phase 1.5 replaces the proof HUD/map with reusable CommonUI/UMG regions and a real Paper2D presentation, validates VA-01/02/04/05 at supported UI scales, and re-proves the clean packaged Phase 1 journey. See [PI-03A](phase-1-5-visual-foundation-plan.md).
 
 **Goal:** Sustained operations with multiple aircraft, staff, construction logistics, changing weather, and GA/flight-school/charter identity.
@@ -58,6 +60,8 @@ Add persistent airframes; recurring and training flights; runway configuration/P
 **Gate:** 14 simulated operating days remain deterministic and solvent for GA, flight school, and charter fixtures; save/load works during projects, taxiing, turnaround, weather change, and incident response.
 
 ## Phase 3: Terminal and landside vertical slice
+
+**Status:** Not opened.
 
 **Goal:** One complete departing and arriving passenger flight through a player-built terminal.
 

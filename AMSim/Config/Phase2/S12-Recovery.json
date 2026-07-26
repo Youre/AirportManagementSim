@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "scenarioId": "S12.Recovery",
+  "eligibilityMaximumCredits": 500,
+  "grantCredits": 1200,
+  "maximumGrants": 2,
+  "mustBeLabeled": true,
+  "mustPreserveRecurringContractObligations": true,
+  "permanentFailStateAllowed": false
+}

@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "scenarioId": "S09.WeatherAndDeicing",
+  "seed": 2709463078,
+  "forecastDays": 3,
+  "requiredCategories": ["Visual", "Wet", "LowCloud", "ColdWet", "StrongCrosswind"],
+  "coldWetRequiresDeicing": true,
+  "mustReplayFromSeed": true,
+  "requiredSaveBoundaries": ["forecastChange", "deicing"]
+}

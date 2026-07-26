@@ -1,6 +1,7 @@
 #include "AMSimProjectAuditCommandlet.h"
 #include "AMSimImportManifestValidator.h"
 #include "AMSimPhase1Content.h"
+#include "AMSimPhase2Content.h"
 #include "Dom/JsonObject.h"
 #include "Engine/AssetManager.h"
 #include "Misc/ConfigCacheIni.h"
@@ -216,6 +217,126 @@ int32 UAMSimProjectAuditCommandlet::Main(const FString& Params)
 		bPassed = false;
 	}
 
+	AssetManager.ScanPathsForPrimaryAssets(
+		TEXT("AMSimPhase2"),
+		{TEXT("/Game/Phase2/Definitions")},
+		UAMSimPhase2Definition::StaticClass(),
+		false);
+	AssetManager.ScanPathsForPrimaryAssets(
+		TEXT("AMSimP2Aircraft"),
+		{TEXT("/Game/Phase2/Aircraft")},
+		UAMSimPhase2AircraftDefinition::StaticClass(),
+		false);
+	const FAMSimPhase2CatalogValidation Phase2Catalog =
+		FAMSimPhase2ContentCatalog::ValidateLoadedCatalog();
+	for (const FString& Error : Phase2Catalog.Errors)
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s"), *Error);
+	}
+	bPassed &= Phase2Catalog.bValid;
+	UE_LOG(
+		LogTemp,
+		Display,
+		TEXT("Phase 2 catalog: %d Primary Assets; required definitions %s."),
+		Phase2Catalog.Assets.Num(),
+		Phase2Catalog.bValid ? TEXT("resolved") : TEXT("missing or invalid"));
+
+	const FString Phase2ConfigDirectory =
+		FPaths::Combine(FPaths::ProjectConfigDir(), TEXT("Phase2"));
+	TSharedPtr<FJsonObject> Phase2Manifest;
+	if (LoadJsonObject(
+		FPaths::Combine(Phase2ConfigDirectory, TEXT("Phase2ContentManifest.json")),
+		Phase2Manifest))
+	{
+		const bool bPhase2ManifestValid =
+			Phase2Manifest->GetIntegerField(TEXT("externalAircraftFilesCopied")) == 0 &&
+			Phase2Manifest->GetIntegerField(TEXT("required3DGameplayAssets")) == 0 &&
+			!Phase2Manifest->GetBoolField(TEXT("runtimeStringAssetLoadingAllowed")) &&
+			Phase2Manifest->GetIntegerField(TEXT("requiredPrimaryAssetCount")) ==
+				FAMSimPhase2ContentCatalog::RequiredContentIds().Num() &&
+			Phase2Manifest->GetStringField(TEXT("contentReviewId")) ==
+				TEXT("CT02.Phase2.InternalRoster.2026-07-26");
+		if (!bPhase2ManifestValid)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Phase 2 content manifest violates the 2D internal-content lock."));
+			bPassed = false;
+		}
+	}
+	else
+	{
+		bPassed = false;
+	}
+
+	TSharedPtr<FJsonObject> Phase2Review;
+	if (LoadJsonObject(
+		FPaths::Combine(Phase2ConfigDirectory, TEXT("Phase2ContentReview.json")),
+		Phase2Review))
+	{
+		const TSharedPtr<FJsonObject>* Checks = nullptr;
+		const TArray<TSharedPtr<FJsonValue>>* AircraftRoles = nullptr;
+		bool bPhase2ReviewValid =
+			Phase2Review->GetStringField(TEXT("reviewId")) ==
+				TEXT("CT02.Phase2.InternalRoster.2026-07-26") &&
+			Phase2Review->GetBoolField(TEXT("passed")) &&
+			Phase2Review->GetStringField(TEXT("runtimeDimension")) == TEXT("2D") &&
+			Phase2Review->GetIntegerField(TEXT("externalSourceFilesCopied")) == 0 &&
+			Phase2Review->TryGetArrayField(TEXT("aircraftRoles"), AircraftRoles) &&
+			AircraftRoles->Num() == 4 &&
+			Phase2Review->TryGetObjectField(TEXT("checks"), Checks);
+		if (bPhase2ReviewValid)
+		{
+			for (const TCHAR* CheckName : {
+				TEXT("stableIdsPreserved"),
+				TEXT("fictionalOperatorsAndLiveriesConfirmed"),
+				TEXT("dimensionsAndCapabilitiesReviewed"),
+				TEXT("directionalCoverageAtLeast16"),
+				TEXT("colorIndependentSilhouettesRequired"),
+				TEXT("aviationTerminologyReviewed"),
+				TEXT("childReadableTerminologyReviewed"),
+				TEXT("noRequired3DGameplayAsset"),
+				TEXT("noExternalAircraftSourceCopied")})
+			{
+				bool bCheckPassed = false;
+				if (!(*Checks)->TryGetBoolField(CheckName, bCheckPassed) || !bCheckPassed)
+				{
+					bPhase2ReviewValid = false;
+					break;
+				}
+			}
+		}
+		if (!bPhase2ReviewValid)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Phase 2 content review is incomplete or failed."));
+			bPassed = false;
+		}
+	}
+	else
+	{
+		bPassed = false;
+	}
+
+	for (const TCHAR* FixtureName : {
+		TEXT("S02-SustainedGA.json"),
+		TEXT("S03-FlightSchool.json"),
+		TEXT("S04-Charter.json"),
+		TEXT("S09-WeatherDeicing.json"),
+		TEXT("S10-BasicIncident.json"),
+		TEXT("S11-ConstructionClosure.json"),
+		TEXT("S12-Recovery.json"),
+		TEXT("S15-OfflinePackage.json")})
+	{
+		TSharedPtr<FJsonObject> Phase2Fixture;
+		if (!LoadJsonObject(
+			FPaths::Combine(Phase2ConfigDirectory, FixtureName),
+			Phase2Fixture) ||
+			Phase2Fixture->GetIntegerField(TEXT("schema")) != 1 ||
+			Phase2Fixture->GetStringField(TEXT("scenarioId")).IsEmpty())
+		{
+			UE_LOG(LogTemp, Error, TEXT("Phase 2 fixture is invalid: %s"), FixtureName);
+			bPassed = false;
+		}
+	}
+
 	FString ManifestPath;
 	if (FParse::Value(*Params, TEXT("Manifest="), ManifestPath))
 	{
@@ -237,6 +358,6 @@ int32 UAMSimProjectAuditCommandlet::Main(const FString& Params)
 		}
 	}
 
-	UE_LOG(LogTemp, Display, TEXT("AMSim Phase 1 project audit: %s"), bPassed ? TEXT("PASSED") : TEXT("FAILED"));
+	UE_LOG(LogTemp, Display, TEXT("AMSim Phase 0-2 project audit: %s"), bPassed ? TEXT("PASSED") : TEXT("FAILED"));
 	return bPassed ? 0 : 1;
 }

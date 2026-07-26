@@ -486,3 +486,53 @@ entries:
       legacy-ledger, project schema/version, and ignored Saved inspection
       warnings remain; no structural error or new component-language evidence
       conflict.
+  - timestamp: '2026-07-26T19:19:29.000000+00:00'
+    commit: 90251c9a38a7eecd1e02e21ad9dd01222508fd66
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: Phase 2 initial full AMSim automation after lifecycle coverage
+    result: failed
+    notes: The new lifecycle test selected the first accepted flight after it
+      had already entered approach, so reschedule and cancellation correctly
+      rejected it. The deterministic fixture was corrected to leave a real
+      preparation window before the first daily arrival. Focused Phase 2 then
+      passed 6 of 6.
+  - timestamp: '2026-07-26T19:27:00.000000+00:00'
+    commit: 90251c9a38a7eecd1e02e21ad9dd01222508fd66
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: Direct UnrealPak -List inspection of initial Phase 2 Shipping
+      IoStore
+    result: failed
+    notes: The executable and integrated smoke passed, but the indexed container
+      retained 267 packages and zero Phase 2 definition assets. Asset Manager
+      scanning alone had not rooted the new bounded catalog. Added
+      /Game/Phase2 to DirectoriesToAlwaysCook and made the Phase 2 pipeline
+      compare source and IoStore asset names.
+  - timestamp: '2026-07-26T19:35:11.2537838+00:00'
+    commit: 90251c9a38a7eecd1e02e21ad9dd01222508fd66
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Final Phase 2 gate: editor build; Phase 0-2 audit; focused and
+      full automation; 100-200% rendered matrix; integrated save/load smoke;
+      clean Development and Shipping packages; IoStore asset inventory;
+      socket, dependency, runtime-load, and 2D scans'
+    result: passed
+    notes: Audit resolved 20 Phase 1 and 33 Phase 2 assets. Full automation
+      reported 33 succeeded and 1 succeeded-with-warning with zero
+      failed/not-run/in-process. All five scales passed at 1.433-1.490 ms p99
+      with zero 8x backlog. Packaged smoke reached day 8 with 24 completed
+      flights, resolved incident, operational expansion, schema-3
+      continuation, 1.754 ms p99, and checksum 4077945290392220792. Shipping
+      contains 300 packages including all 33 Phase 2 assets, observes zero TCP
+      sockets, and has zero forbidden, runtime string-load, or required 3D
+      matches.
+  - timestamp: '2026-07-26T19:37:58.3861531+00:00'
+    commit: 90251c9a38a7eecd1e02e21ad9dd01222508fd66
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: python -m ai_project_init.cli doctor . --json
+    result: passed
+    notes: Exited 0. Only the known ignored Saved artifact, managed-template,
+      lexical-review, legacy-ledger, and project schema/version warnings
+      remain; no structural error or Phase 2 evidence conflict.

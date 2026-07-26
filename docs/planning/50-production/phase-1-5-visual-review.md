@@ -1,12 +1,12 @@
 # Phase 1.5 Visual Review
 
 **Review date:** 2026-07-26  
-**Implementation state:** revised component-language candidate; final owner visual acceptance pending
+**Implementation state:** accepted and complete
 
 The owner rejected the first runtime comparison set as visually too primitive,
 specifically citing flat surfaces, missing rounded edges, excess copy, and weak
-consistency with the approved concepts. The evidence below is the corrective
-candidate, not an acceptance claim.
+consistency with the approved concepts. The corrective evidence below was
+accepted on 2026-07-26 as the reusable Phase 1.5 visual baseline.
 
 ## Evidence set
 
@@ -143,10 +143,9 @@ motion.
 - The Shipping runtime remains alive through the five-second launch check.
 - Forbidden Shipping file, text, and receipt matches are all zero.
 
-## Acceptance boundary
+## Acceptance record
 
-The corrective candidate and validation loop are ready for owner review.
-Phase 1.5 must not be marked complete until the owner accepts the four revised
-comparison boards. Later illustrated environment detail, operator identity
-art, timetable grid depth, and service-worker animation remain explicit
-differences rather than hidden completion claims.
+The owner accepted the corrective component language and authorized Phase 2 on
+2026-07-26. Phase 1.5 is complete. Later illustrated environment detail,
+operator identity art, timetable grid depth, and service-worker animation
+remain explicit follow-on scope rather than hidden Phase 1.5 claims.

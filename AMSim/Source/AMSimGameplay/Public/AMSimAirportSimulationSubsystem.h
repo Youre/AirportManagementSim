@@ -19,7 +19,9 @@ public:
 	AMSim::FSimulation& GetSimulation();
 	const AMSim::FSimulation& GetSimulation() const;
 	AMSim::EPhase1CommandResult SubmitPhase1Command(AMSim::FPhase1Command Command);
+	AMSim::EPhase2CommandResult SubmitPhase2Command(AMSim::FPhase2Command Command);
 	AMSim::FPhase1QuerySnapshot GetPhase1Query() const;
+	AMSim::FPhase2QuerySnapshot GetPhase2Query() const;
 	AMSim::FSnapshot CreateSnapshot() const;
 	bool RestoreSnapshot(const AMSim::FSnapshot& Snapshot);
 	int64 GetRecommendedStarterArrivalTime() const;
@@ -30,6 +32,7 @@ public:
 private:
 	TUniquePtr<AMSim::FSimulation> Simulation;
 	uint64 NextPhase1CommandId = 1;
+	uint64 NextPhase2CommandId = 1;
 	double AccumulatedGameMilliseconds = 0.0;
 	double LastSimulationWorkMilliseconds = 0.0;
 	int64 LastSimulationMilliseconds = 0;

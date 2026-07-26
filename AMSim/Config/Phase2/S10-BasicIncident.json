@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "scenarioId": "S10.BasicIncident",
+  "seed": 2709463078,
+  "incident": "DisabledAircraft",
+  "triggerOperatingDay": 7,
+  "catastrophic": false,
+  "requiredStages": ["Reported", "ResponseDispatched", "Contained", "Cleanup", "Resolved"],
+  "requiredSaveBoundaries": ["Reported", "ResponseDispatched", "Contained", "Cleanup"]
+}

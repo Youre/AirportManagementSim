@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "owningPhase": "Phase2",
+  "contentReviewId": "CT02.Phase2.InternalRoster.2026-07-26",
+  "externalAircraftFilesCopied": 0,
+  "sourcePolicy": "ProjectAuthoredEditable2D",
+  "requiredPrimaryAssetCount": 33,
+  "aircraftPrimaryAssetCount": 4,
+  "runtimeStringAssetLoadingAllowed": false,
+  "required3DGameplayAssets": 0
+}

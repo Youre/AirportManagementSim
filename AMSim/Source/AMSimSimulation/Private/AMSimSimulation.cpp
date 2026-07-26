@@ -19,6 +19,7 @@ namespace AMSim
 	FSimulation::FSimulation(const uint64 InMasterSeed)
 		: MasterSeed(InMasterSeed == 0 ? 1 : InMasterSeed)
 		, Phase1(MasterSeed)
+		, Phase2(MasterSeed)
 	{
 	}
 
@@ -38,7 +39,20 @@ namespace AMSim
 
 	EPhase1CommandResult FSimulation::QueuePhase1Command(const FPhase1Command& Command)
 	{
+		if (Command.Type == EPhase1CommandType::CloseAirport &&
+			Phase2.GetState().bInitialized)
+		{
+			return EPhase1CommandResult::RejectedInvalidState;
+		}
 		return Phase1.QueueCommand(Command, Clock.GetGameTimeMilliseconds());
+	}
+
+	EPhase2CommandResult FSimulation::QueuePhase2Command(const FPhase2Command& Command)
+	{
+		return Phase2.QueueCommand(
+			Command,
+			Clock.GetGameTimeMilliseconds(),
+			Phase1.GetState());
 	}
 
 	void FSimulation::Step()
@@ -54,6 +68,7 @@ namespace AMSim
 		PendingCommands.Reset();
 		Clock.AdvanceSteps(1);
 		Phase1.Step(Clock.GetGameTimeMilliseconds());
+		Phase2.Step(Clock.GetGameTimeMilliseconds(), Phase1);
 		++Revision;
 	}
 
@@ -97,6 +112,11 @@ namespace AMSim
 		return Phase1.CreateQuerySnapshot(Revision, Clock.GetGameTimeMilliseconds());
 	}
 
+	FPhase2QuerySnapshot FSimulation::CreatePhase2QuerySnapshot() const
+	{
+		return Phase2.CreateQuerySnapshot(Revision, Clock.GetGameTimeMilliseconds());
+	}
+
 	FSimulationDiagnostics FSimulation::CreateDiagnostics() const
 	{
 		return {
@@ -120,6 +140,7 @@ namespace AMSim
 		Snapshot.GameTimeMilliseconds = Clock.GetGameTimeMilliseconds();
 		Snapshot.Entities = Entities;
 		Snapshot.Phase1 = Phase1.GetState();
+		Snapshot.Phase2 = Phase2.GetState();
 		return Snapshot;
 	}
 
@@ -155,6 +176,11 @@ namespace AMSim
 		{
 			return false;
 		}
+		FLivingAirportSimulation RestoredPhase2(Candidate.MasterSeed);
+		if (!RestoredPhase2.RestoreState(Candidate.Phase2, Candidate.Phase1))
+		{
+			return false;
+		}
 
 		MasterSeed = Candidate.MasterSeed;
 		NextEntityId = Candidate.NextEntityId;
@@ -163,6 +189,7 @@ namespace AMSim
 		Clock = RestoredClock;
 		Entities = MoveTemp(RestoredEntities);
 		Phase1 = MoveTemp(RestoredPhase1);
+		Phase2 = MoveTemp(RestoredPhase2);
 		PendingCommands.Reset();
 		Events.Reset();
 		return true;
@@ -182,6 +209,8 @@ namespace AMSim
 		}
 		const uint64 Phase1Checksum = Phase1.CalculateChecksum();
 		HashBytes(Hash, &Phase1Checksum, sizeof(Phase1Checksum));
+		const uint64 Phase2Checksum = Phase2.CalculateChecksum();
+		HashBytes(Hash, &Phase2Checksum, sizeof(Phase2Checksum));
 		return Hash;
 	}
 

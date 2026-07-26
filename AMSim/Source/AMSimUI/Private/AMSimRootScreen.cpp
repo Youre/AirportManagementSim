@@ -886,6 +886,7 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		FMargin(15.0f, 13.0f),
 		14.0f,
 		1.2f);
+	Phase1ActivityCard = ActivityCard;
 	UVerticalBox* ActivityColumn = WidgetTree->ConstructWidget<UVerticalBox>(
 		UVerticalBox::StaticClass(),
 		TEXT("ActivityColumn"));
@@ -960,6 +961,7 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		FMargin(15.0f, 13.0f),
 		14.0f,
 		1.2f);
+	Phase1FlightCard = FlightCard;
 	UVerticalBox* FlightColumn = WidgetTree->ConstructWidget<UVerticalBox>(
 		UVerticalBox::StaticClass(),
 		TEXT("FlightColumn"));
@@ -1018,6 +1020,248 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	RatingText->SetWrapTextAt(RailWrapWidth);
 	AddVertical(FlightColumn, RatingText, 3.0f);
 	AddVertical(Right, FlightCard, 5.0f);
+
+	Phase2Panel = MakeSurface(
+		WidgetTree,
+		TEXT("LivingAirportCard"),
+		AMSim::UITheme::ESurface::RaisedCard,
+		FMargin(15.0f, 13.0f),
+		16.0f,
+		1.5f);
+	UVerticalBox* Phase2Column = WidgetTree->ConstructWidget<UVerticalBox>(
+		UVerticalBox::StaticClass(),
+		TEXT("LivingAirportColumn"));
+	Phase2Panel->SetContent(Phase2Column);
+	AddVertical(
+		Phase2Column,
+		MakeText(
+			WidgetTree,
+			TEXT("LivingAirportHeader"),
+			TEXT("LIVING AIRPORT"),
+			12,
+			Cyan,
+			true),
+		0.0f);
+	Phase2StatusText = MakeText(
+		WidgetTree,
+		TEXT("LivingAirportStatus"),
+		TEXT("Complete the first visit to unlock."),
+		17,
+		White,
+		true,
+		true);
+	AddVertical(Phase2Column, Phase2StatusText, 3.0f);
+	Phase2OperationsText = MakeText(
+		WidgetTree,
+		TEXT("LivingAirportOperations"),
+		TEXT("Fleet and timetable"),
+		13,
+		Amber,
+		true);
+	Phase2WeatherText = MakeText(
+		WidgetTree,
+		TEXT("LivingAirportWeather"),
+		TEXT("Forecast unavailable"),
+		12,
+		Muted);
+	Phase2StaffText = MakeText(
+		WidgetTree,
+		TEXT("LivingAirportStaff"),
+		TEXT("Staff and vehicles"),
+		12,
+		Cyan);
+	Phase2TenantText = MakeText(
+		WidgetTree,
+		TEXT("LivingAirportTenant"),
+		TEXT("Choose an identity"),
+		12,
+		White);
+	Phase2EconomyText = MakeText(
+		WidgetTree,
+		TEXT("LivingAirportEconomy"),
+		TEXT("Shared airport ledger"),
+		12,
+		Muted);
+	for (UTextBlock* Detail : {
+		Phase2OperationsText,
+		Phase2WeatherText,
+		Phase2StaffText,
+		Phase2TenantText,
+		Phase2EconomyText})
+	{
+		Detail->SetWrapTextAt(RailWrapWidth);
+		AddVertical(Phase2Column, Detail, 2.0f);
+	}
+	InitializePhase2Button = MakeButton(
+		WidgetTree,
+		TEXT("InitializeLivingAirport"),
+		TEXT("START PHASE 2"),
+		AMSim::UITheme::EButton::Positive,
+		13);
+	InitializePhase2Button->OnClicked.AddDynamic(
+		this,
+		&UAMSimRootScreen::InitializePhase2);
+	AddVertical(Phase2Column, InitializePhase2Button, 5.0f);
+
+	auto AddPhase2ActionRow = [Phase2Column](
+		UHorizontalBox* Row,
+		UButton* First,
+		UButton* Second)
+	{
+		UHorizontalBoxSlot* FirstSlot = Row->AddChildToHorizontalBox(First);
+		FirstSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+		FirstSlot->SetPadding(FMargin(0.0f, 0.0f, 3.0f, 0.0f));
+		if (Second)
+		{
+			UHorizontalBoxSlot* SecondSlot = Row->AddChildToHorizontalBox(Second);
+			SecondSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+			SecondSlot->SetPadding(FMargin(3.0f, 0.0f, 0.0f, 0.0f));
+		}
+		AddVertical(Phase2Column, Row, 3.0f);
+	};
+	SelectGAButton = MakeButton(
+		WidgetTree,
+		TEXT("SelectGA"),
+		TEXT("GA"),
+		AMSim::UITheme::EButton::Quiet,
+		11);
+	SelectGAButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::SelectGeneralAviation);
+	SelectSchoolButton = MakeButton(
+		WidgetTree,
+		TEXT("SelectSchool"),
+		TEXT("SCHOOL"),
+		AMSim::UITheme::EButton::Quiet,
+		11);
+	SelectSchoolButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::SelectFlightSchool);
+	SelectCharterButton = MakeButton(
+		WidgetTree,
+		TEXT("SelectCharter"),
+		TEXT("CHARTER"),
+		AMSim::UITheme::EButton::Quiet,
+		11);
+	SelectCharterButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::SelectCharter);
+	AcceptPhase2ContractButton = MakeButton(
+		WidgetTree,
+		TEXT("AcceptLivingContract"),
+		TEXT("ACCEPT"),
+		AMSim::UITheme::EButton::Positive,
+		11);
+	AcceptPhase2ContractButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimRootScreen::AcceptPhase2Contract);
+	CancelPhase2ContractButton = MakeButton(
+		WidgetTree,
+		TEXT("CancelLivingContract"),
+		TEXT("END"),
+		AMSim::UITheme::EButton::Destructive,
+		11);
+	CancelPhase2ContractButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimRootScreen::CancelPhase2Contract);
+	ReschedulePhase2FlightButton = MakeButton(
+		WidgetTree,
+		TEXT("RescheduleLivingFlight"),
+		TEXT("RESLOT"),
+		AMSim::UITheme::EButton::Secondary,
+		11);
+	ReschedulePhase2FlightButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimRootScreen::ReschedulePhase2Flight);
+	DispatchPhase2ServiceButton = MakeButton(
+		WidgetTree,
+		TEXT("DispatchLivingService"),
+		TEXT("DISPATCH"),
+		AMSim::UITheme::EButton::Primary,
+		11);
+	DispatchPhase2ServiceButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimRootScreen::DispatchPhase2Service);
+	TogglePhase2RunwayButton = MakeButton(
+		WidgetTree,
+		TEXT("ToggleLivingRunway"),
+		TEXT("RUNWAY"),
+		AMSim::UITheme::EButton::Tool,
+		11);
+	TogglePhase2RunwayButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimRootScreen::TogglePhase2Runway);
+	TowPhase2AircraftButton = MakeButton(
+		WidgetTree,
+		TEXT("TowLivingAircraft"),
+		TEXT("TOW"),
+		AMSim::UITheme::EButton::Tool,
+		11);
+	TowPhase2AircraftButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimRootScreen::TowPhase2Aircraft);
+	RotatePhase2TeamZoneButton = MakeButton(
+		WidgetTree,
+		TEXT("RotateLivingTeamZone"),
+		TEXT("ZONE"),
+		AMSim::UITheme::EButton::Tool,
+		11);
+	RotatePhase2TeamZoneButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimRootScreen::RotatePhase2TeamZone);
+	PurchasePhase2ParcelButton = MakeButton(
+		WidgetTree,
+		TEXT("PurchaseLivingParcel"),
+		TEXT("BUY LAND"),
+		AMSim::UITheme::EButton::Secondary,
+		11);
+	PurchasePhase2ParcelButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimRootScreen::PurchasePhase2Parcel);
+	StartPhase2ExpansionButton = MakeButton(
+		WidgetTree,
+		TEXT("StartLivingExpansion"),
+		TEXT("EXPAND"),
+		AMSim::UITheme::EButton::Primary,
+		11);
+	StartPhase2ExpansionButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimRootScreen::StartPhase2Expansion);
+	RespondPhase2IncidentButton = MakeButton(
+		WidgetTree,
+		TEXT("RespondLivingIncident"),
+		TEXT("RESPOND"),
+		AMSim::UITheme::EButton::Destructive,
+		11);
+	RespondPhase2IncidentButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimRootScreen::RespondPhase2Incident);
+
+	UHorizontalBox* IdentityRow = WidgetTree->ConstructWidget<UHorizontalBox>(
+		UHorizontalBox::StaticClass(),
+		TEXT("LivingIdentityRow"));
+	AddPhase2ActionRow(IdentityRow, SelectGAButton, SelectSchoolButton);
+	AddVertical(Phase2Column, SelectCharterButton, 3.0f);
+	UHorizontalBox* ContractRow = WidgetTree->ConstructWidget<UHorizontalBox>(
+		UHorizontalBox::StaticClass(),
+		TEXT("LivingContractRow"));
+	AddPhase2ActionRow(ContractRow, AcceptPhase2ContractButton, DispatchPhase2ServiceButton);
+	UHorizontalBox* ScheduleLifecycleRow =
+		WidgetTree->ConstructWidget<UHorizontalBox>(
+			UHorizontalBox::StaticClass(),
+			TEXT("LivingScheduleLifecycleRow"));
+	AddPhase2ActionRow(
+		ScheduleLifecycleRow,
+		ReschedulePhase2FlightButton,
+		CancelPhase2ContractButton);
+	UHorizontalBox* AirsideRow = WidgetTree->ConstructWidget<UHorizontalBox>(
+		UHorizontalBox::StaticClass(),
+		TEXT("LivingAirsideRow"));
+	AddPhase2ActionRow(AirsideRow, TogglePhase2RunwayButton, TowPhase2AircraftButton);
+	UHorizontalBox* GrowthRow = WidgetTree->ConstructWidget<UHorizontalBox>(
+		UHorizontalBox::StaticClass(),
+		TEXT("LivingGrowthRow"));
+	AddPhase2ActionRow(GrowthRow, PurchasePhase2ParcelButton, StartPhase2ExpansionButton);
+	UHorizontalBox* ReadinessRow = WidgetTree->ConstructWidget<UHorizontalBox>(
+		UHorizontalBox::StaticClass(),
+		TEXT("LivingReadinessRow"));
+	AddPhase2ActionRow(ReadinessRow, RotatePhase2TeamZoneButton, RespondPhase2IncidentButton);
+	Phase2Panel->SetVisibility(ESlateVisibility::Collapsed);
+	AddVertical(Right, Phase2Panel, 5.0f);
 	USizeBox* RightRailWidth = WidgetTree->ConstructWidget<USizeBox>(
 		USizeBox::StaticClass(),
 		TEXT("RightRailWidth"));
@@ -1296,10 +1540,21 @@ void UAMSimRootScreen::ScheduleFlight()
 
 void UAMSimRootScreen::RequestRecovery()
 {
+	UAMSimAirportSimulationSubsystem* Subsystem =
+		GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>();
+	if (Subsystem->GetPhase2Query().bInitialized)
+	{
+		AMSim::FPhase2Command Phase2Command;
+		Phase2Command.Type = AMSim::EPhase2CommandType::RequestRecovery;
+		SubmitPhase2Command(
+			Phase2Command,
+			TEXT("Phase 2 continuity grant recorded in the shared ledger."));
+		return;
+	}
 	AMSim::FPhase1Command Command;
 	Command.Type = AMSim::EPhase1CommandType::RequestRecovery;
 	const bool bAccepted =
-		GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>()->SubmitPhase1Command(Command) ==
+		Subsystem->SubmitPhase1Command(Command) ==
 		AMSim::EPhase1CommandResult::Accepted;
 	SetInteractionMessage(
 		bAccepted ? TEXT("Recovery assistance granted and recorded.") : TEXT("Recovery is not currently eligible."),
@@ -1424,6 +1679,8 @@ void UAMSimRootScreen::RefreshFromSimulation()
 	}
 	const AMSim::FPhase1QuerySnapshot Query = Subsystem->GetPhase1Query();
 	const AMSim::FPhase1State& State = Subsystem->GetSimulation().GetPhase1State();
+	const AMSim::FPhase2QuerySnapshot Phase2Query = Subsystem->GetPhase2Query();
+	const AMSim::FPhase2State& Phase2State = Subsystem->GetSimulation().GetPhase2State();
 	if (LastAppliedRevision == Query.Revision)
 	{
 		return;
@@ -1516,6 +1773,7 @@ void UAMSimRootScreen::RefreshFromSimulation()
 	for (TActorIterator<AAMSimWorldPresenter> It(GetWorld()); It; ++It)
 	{
 		It->ApplySnapshot(Query);
+		It->ApplyPhase2Snapshot(Phase2Query, Phase2State);
 		break;
 	}
 
@@ -1660,6 +1918,7 @@ void UAMSimRootScreen::RefreshFromSimulation()
 				? ESlateVisibility::Visible
 				: ESlateVisibility::Collapsed);
 	}
+	RefreshPhase2Presentation(Phase2Query, Phase2State, State);
 	LastPhraseCount = State.PhraseIntents.Num();
 	ForceLayoutPrepass();
 }

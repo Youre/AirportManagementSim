@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "scenarioId": "S03.FlightSchool",
+  "seed": 2709463078,
+  "specialization": "FlightSchool",
+  "requiredOperatingDays": 14,
+  "flightsPerOperatingDay": 3,
+  "mustRemainSolvent": true,
+  "mustRemainLive": true,
+  "requiredSaveBoundaries": ["concurrentFlights", "staffQueue", "serviceQueue"]
+}

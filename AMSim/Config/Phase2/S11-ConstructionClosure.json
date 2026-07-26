@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "scenarioId": "S11.ConstructionClosure",
+  "parcel": "Parcel.EastMeadow",
+  "purchaseCostCredits": 750,
+  "projectCostCredits": 900,
+  "closure": "EastTaxiSpur",
+  "runwayRemainsAvailable": true,
+  "requiredStages": ["Funded", "Delivery", "Building", "Inspection", "Operational"]
+}

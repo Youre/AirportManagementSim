@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AMSimPhase1Types.h"
+#include "AMSimPhase2Types.h"
 #include "GameFramework/Actor.h"
 #include "AMSimWorldPresenter.generated.h"
 
@@ -17,9 +18,15 @@ public:
 	AAMSimWorldPresenter();
 
 	void ApplySnapshot(const AMSim::FPhase1QuerySnapshot& Query);
+	void ApplyPhase2Snapshot(
+		const AMSim::FPhase2QuerySnapshot& Query,
+		const AMSim::FPhase2State& State);
 	uint64 GetLastAppliedRevision() const { return LastAppliedRevision; }
 	bool HasRequiredPresentationAssets() const;
 	static int32 GetHeadingIndex(AMSim::EFlightState FlightState);
+	static int32 GetPhase2HeadingIndex(AMSim::EPhase2FlightState FlightState);
+	int32 GetActivePhase2AircraftProxyCount() const;
+	int32 GetActivePhase2VehicleProxyCount() const;
 
 private:
 	UPaperSpriteComponent* CreateSpriteComponent(
@@ -58,6 +65,14 @@ private:
 	TObjectPtr<UPaperSpriteComponent> InspectionMarker;
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UPaperSpriteComponent> FuelMarker;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase2Aircraft;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase2Vehicles;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPaperSpriteComponent> ExpansionOverlay;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPaperSpriteComponent> IncidentOverlay;
 
 	UPROPERTY()
 	TObjectPtr<UPaperSprite> TerrainSprite;
@@ -79,5 +94,5 @@ private:
 	TArray<TObjectPtr<UPaperSprite>> AircraftHeadingSprites;
 
 	uint64 LastAppliedRevision = MAX_uint64;
+	uint64 LastAppliedPhase2Revision = MAX_uint64;
 };
-

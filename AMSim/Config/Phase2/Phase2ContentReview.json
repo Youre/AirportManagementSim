@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "reviewId": "CT02.Phase2.InternalRoster.2026-07-26",
+  "passed": true,
+  "runtimeDimension": "2D",
+  "externalSourceFilesCopied": 0,
+  "aircraftRoles": [
+    {
+      "stableContentId": "Aircraft.BasicTrainer.Riverbend",
+      "role": "BasicTrainer",
+      "fictional": true,
+      "minimumRunwayMeters": 600
+    },
+    {
+      "stableContentId": "Aircraft.TouringPiston.Wayfarer",
+      "role": "TouringPiston",
+      "fictional": true,
+      "minimumRunwayMeters": 620
+    },
+    {
+      "stableContentId": "Aircraft.BusinessTurboprop.Northstar",
+      "role": "BusinessTurboprop",
+      "fictional": true,
+      "minimumRunwayMeters": 750
+    },
+    {
+      "stableContentId": "Aircraft.LightBusinessJet.Aster",
+      "role": "LightBusinessJet",
+      "fictional": true,
+      "minimumRunwayMeters": 1050
+    }
+  ],
+  "checks": {
+    "stableIdsPreserved": true,
+    "fictionalOperatorsAndLiveriesConfirmed": true,
+    "dimensionsAndCapabilitiesReviewed": true,
+    "directionalCoverageAtLeast16": true,
+    "colorIndependentSilhouettesRequired": true,
+    "aviationTerminologyReviewed": true,
+    "childReadableTerminologyReviewed": true,
+    "noRequired3DGameplayAsset": true,
+    "noExternalAircraftSourceCopied": true
+  }
+}

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AMSimDeterminism.h"
+#include "AMSimLivingAirportSimulation.h"
 #include "AMSimStarterAirfieldSimulation.h"
 
 namespace AMSim
@@ -15,6 +16,7 @@ namespace AMSim
 		int64 GameTimeMilliseconds = 0;
 		TArray<FEntityId> Entities;
 		FPhase1State Phase1;
+		FPhase2State Phase2;
 	};
 
 	class AMSIMSIMULATION_API FSimulation
@@ -26,13 +28,16 @@ namespace AMSim
 		void Step();
 		FQuerySnapshot CreateQuerySnapshot() const;
 		FPhase1QuerySnapshot CreatePhase1QuerySnapshot() const;
+		FPhase2QuerySnapshot CreatePhase2QuerySnapshot() const;
 		FSimulationDiagnostics CreateDiagnostics() const;
 		FSnapshot CreateSnapshot() const;
 		bool RestoreSnapshot(const FSnapshot& Snapshot);
 		EPhase1CommandResult QueuePhase1Command(const FPhase1Command& Command);
+		EPhase2CommandResult QueuePhase2Command(const FPhase2Command& Command);
 
 		const TArray<FEvent>& GetEvents() const { return Events; }
 		const FPhase1State& GetPhase1State() const { return Phase1.GetState(); }
+		const FPhase2State& GetPhase2State() const { return Phase2.GetState(); }
 		uint64 CalculateChecksum() const;
 
 	private:
@@ -48,6 +53,7 @@ namespace AMSim
 		TArray<FCommand> PendingCommands;
 		TArray<FEvent> Events;
 		FStarterAirfieldSimulation Phase1;
+		FLivingAirportSimulation Phase2;
 	};
 
 	struct FReplayResult

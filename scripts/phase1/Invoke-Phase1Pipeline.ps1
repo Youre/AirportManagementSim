@@ -65,6 +65,25 @@ function Reset-GeneratedDirectory {
     New-Item -ItemType Directory -Path $resolvedTarget -Force | Out-Null
 }
 
+function New-PackageEvidenceEntry {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Path
+    )
+
+    $fullPath = [System.IO.Path]::GetFullPath($Path)
+    $exists = Test-Path -LiteralPath $fullPath -PathType Leaf
+    return [ordered]@{
+        path = $fullPath
+        exists = $exists
+        actualSha256 = if ($exists) {
+            (Get-FileHash -LiteralPath $fullPath -Algorithm SHA256).Hash.ToUpperInvariant()
+        } else {
+            ''
+        }
+    }
+}
+
 function Start-PackagedGame {
     param(
         [Parameter(Mandatory)][System.IO.FileInfo]$Launcher,
@@ -420,6 +439,35 @@ if ($required3DAssets.Count -ne 0) {
 }
 
 New-Item -ItemType Directory -Path $savedRoot -Force | Out-Null
+$developmentRuntimePath = Join-Path `
+    $developmentExe.Directory.FullName `
+    'AMSim\Binaries\Win64\AMSim.exe'
+$shippingRuntimePath = Join-Path `
+    $shippingExe.Directory.FullName `
+    'AMSim\Binaries\Win64\AMSim-Win64-Shipping.exe'
+$sourceCommit = (& git -C $repoRoot rev-parse HEAD).Trim()
+if ($LASTEXITCODE -ne 0 -or $sourceCommit -notmatch '^[0-9a-fA-F]{40}$') {
+    throw 'Unable to resolve the Phase 1 pipeline source commit.'
+}
+$sourceTreeStatus = @(& git -C $repoRoot status --porcelain --untracked-files=all)
+if ($LASTEXITCODE -ne 0) {
+    throw 'Unable to inspect the Phase 1 pipeline source tree.'
+}
+$packageEvidence = [ordered]@{
+    packageRoot = $packageRoot
+    packageSourceCommit = $sourceCommit
+    sourceTreeClean = $sourceTreeStatus.Count -eq 0
+    packages = [ordered]@{
+        developmentLauncher = New-PackageEvidenceEntry -Path $developmentExe.FullName
+        developmentRuntime = New-PackageEvidenceEntry -Path $developmentRuntimePath
+        shippingLauncher = New-PackageEvidenceEntry -Path $shippingExe.FullName
+        shippingRuntime = New-PackageEvidenceEntry -Path $shippingRuntimePath
+    }
+}
+$packageEvidence.passed = @(
+    $packageEvidence.packages.Values |
+        Where-Object { -not $_.exists }
+).Count -eq 0
 $result = [ordered]@{
     schema = 1
     generatedUtc = [DateTime]::UtcNow.ToString('o')
@@ -438,6 +486,7 @@ $result = [ordered]@{
     scaleMatrix = $scaleResults
     developmentPackage = $developmentExe.FullName
     shippingPackage = $shippingExe.FullName
+    packageIdentity = $packageEvidence
     packagedSmoke = $packagedSmoke.Result
     firewallApplied = -not $SkipFirewall
     networkDeniedVerified = -not $SkipFirewall

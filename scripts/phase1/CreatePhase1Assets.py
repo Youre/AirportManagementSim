@@ -64,7 +64,7 @@ for asset_name, stable_id, display_name, facility_type, cost, minimum_length in 
         "Starter Grass Runway",
         "GrassRunway",
         1600,
-        400,
+        600,
     ),
     (
         "DA_Facility_GrassTaxiway_Starter",
@@ -125,15 +125,22 @@ create_data_asset(
     {
         **identity(
             "Aircraft.LightPiston.Starter",
-            "Riverbend Light Piston",
+            "Riverbend Trainer",
             "phase1.aircraft.light_piston_starter",
         ),
-        "length_centimeters": 720,
-        "wingspan_centimeters": 1000,
-        "minimum_runway_meters": 400,
+        "provenance": "InternalApproved",
+        "length_centimeters": 830,
+        "wingspan_centimeters": 1100,
+        "minimum_runway_meters": 600,
+        "maximum_occupants": 4,
         "grass_runway_compatible": True,
         "requires_inspection": True,
         "requires_fuel": True,
+        "heading_direction_count": 16,
+        "smooth_rotation_approved": True,
+        "fictional_livery_approved": True,
+        "accuracy_review_id": "CT02.Phase1.RiverbendTrainer.2026-07-26",
+        "registration_format": "RB-### (fictional)",
     },
 )
 
@@ -146,6 +153,7 @@ create_data_asset(
             "Riverbend Flying Club",
             "phase1.operator.riverbend_flying_club",
         ),
+        "provenance": "InternalApproved",
         "call_sign_prefix": "Riverbend",
         "fictional_brand_approved": True,
     },
@@ -227,7 +235,14 @@ for asset_name, stable_id, display_name, definition_kind, attributes in [
         "Presentation.GrassAirfield",
         "Grass Airfield 2D Presentation",
         "PresentationDescriptor",
-        {"Dimension": "2D", "AircraftArt": "InternalVectorSilhouette"},
+        {
+            "Dimension": "2D",
+            "AircraftArt": "InternalDirectionalVectorSilhouette",
+            "HeadingDirections": "16",
+            "SmoothRotationApproved": "true",
+            "AccessibilityScaleMode": "OversizedIcon",
+            "ContentReviewId": "CT02.Phase1.RiverbendTrainer.2026-07-26",
+        },
     ),
 ]:
     create_data_asset(
@@ -238,6 +253,11 @@ for asset_name, stable_id, display_name, definition_kind, attributes in [
                 stable_id,
                 display_name,
                 f"phase1.{stable_id.lower()}",
+            ),
+            **(
+                {"provenance": "InternalApproved"}
+                if stable_id == "Presentation.GrassAirfield"
+                else {}
             ),
             "definition_kind": definition_kind,
             "attributes": attributes,

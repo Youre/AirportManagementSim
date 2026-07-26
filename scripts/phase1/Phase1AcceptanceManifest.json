@@ -4,6 +4,10 @@
   "engine": "5.8.0",
   "platform": "Win64",
   "packageSourceCommit": "cdb1ad16e11a5b5a10fbb5a39072886242c9451b",
+  "contentReview": {
+    "relativePath": "AMSim/Config/Phase1/Phase1ContentReview.json",
+    "sha256": "8CC56CCDED7E41BD72D7155607AC0A90DE88E6670B016D30C0AF11DC79FB7AD5"
+  },
   "packages": {
     "developmentLauncher": {
       "relativePath": "Development/Windows/AMSim.exe",

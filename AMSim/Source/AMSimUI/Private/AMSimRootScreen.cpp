@@ -1,5 +1,6 @@
 #include "AMSimRootScreen.h"
 
+#include "AMSimAircraftPresentation.h"
 #include "AMSimAirportSimulationSubsystem.h"
 #include "AMSimGameInstanceSubsystem.h"
 #include "AMSimPhase1Fixture.h"
@@ -399,16 +400,22 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	AircraftMarker = WidgetTree->ConstructWidget<UCanvasPanel>(
 		UCanvasPanel::StaticClass(),
 		TEXT("AircraftMarker"));
-	PlaceCanvas(Map, AircraftMarker, FAnchors(0.03f, 0.20f), FMargin(0.0f, 0.0f, 46.0f, 46.0f));
+	PlaceCanvas(Map, AircraftMarker, FAnchors(0.03f, 0.20f), FMargin(0.0f, 0.0f, 54.0f, 54.0f));
+	AircraftMarker->SetRenderTransformPivot(FVector2D(0.5f, 0.5f));
 	UBorder* Wings = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("AircraftWings"));
 	Wings->SetBrushColor(Cyan);
-	PlaceCanvas(AircraftMarker, Wings, FAnchors(0.06f, 0.40f, 0.94f, 0.60f));
+	PlaceCanvas(AircraftMarker, Wings, FAnchors(0.05f, 0.36f, 0.95f, 0.56f));
 	UBorder* Fuselage = WidgetTree->ConstructWidget<UBorder>(
 		UBorder::StaticClass(),
 		TEXT("AircraftFuselage"));
 	Fuselage->SetBrushColor(Cyan);
-	PlaceCanvas(AircraftMarker, Fuselage, FAnchors(0.42f, 0.06f, 0.58f, 0.94f));
-	AircraftLabel = MakeText(WidgetTree, TEXT("AircraftLabel"), TEXT("N982RB"), 13, White);
+	PlaceCanvas(AircraftMarker, Fuselage, FAnchors(0.43f, 0.03f, 0.57f, 0.95f));
+	UBorder* Tailplane = WidgetTree->ConstructWidget<UBorder>(
+		UBorder::StaticClass(),
+		TEXT("AircraftTailplane"));
+	Tailplane->SetBrushColor(Cyan);
+	PlaceCanvas(AircraftMarker, Tailplane, FAnchors(0.25f, 0.76f, 0.75f, 0.89f));
+	AircraftLabel = MakeText(WidgetTree, TEXT("AircraftLabel"), TEXT("RB-021"), 13, White);
 	PlaceCanvas(Map, AircraftLabel, FAnchors(0.03f, 0.27f, 0.17f, 0.32f));
 	if (bStackedLayout)
 	{
@@ -903,6 +910,8 @@ void UAMSimRootScreen::RefreshFromSimulation()
 	if (bAircraftVisible)
 	{
 		AircraftLabel->SetText(FText::FromString(State.Airframe.TailNumber));
+		AircraftMarker->SetRenderTransformAngle(
+			AMSim::GetPhase1AircraftPresentationHeadingDegrees(Query.FlightState));
 		float X = 0.03f;
 		float Y = 0.20f;
 		if (Query.FlightState >= AMSim::EFlightState::Approach &&

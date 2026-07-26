@@ -1,0 +1,141 @@
+{
+  "schema": 1,
+  "reviewId": "CT02.Phase1.RiverbendTrainer.2026-07-26",
+  "reviewedUtc": "2026-07-26T13:10:00Z",
+  "scope": "Phase1PlayerFacingContent",
+  "aircraft": {
+    "stableContentId": "Aircraft.LightPiston.Starter",
+    "displayName": "Riverbend Trainer",
+    "identityTreatment": "FictionalLightPistonTrainer",
+    "realModelClaimed": false,
+    "lengthMeters": 8.3,
+    "wingspanMeters": 11.0,
+    "maximumOccupants": 4,
+    "minimumGrassRunwayMeters": 600,
+    "starterRunwayLengthMeters": 600,
+    "starterRunwayWidthMeters": 20,
+    "compatibleSurface": "Grass",
+    "requiredServices": [
+      "Inspection",
+      "Fuel"
+    ],
+    "registration": "RB-021",
+    "registrationTreatment": "DeliberatelyFictionalNonJurisdictional",
+    "accuracyDisposition": "ApprovedFictionalTrainerEnvelope"
+  },
+  "operator": {
+    "stableContentId": "Operator.RiverbendFlyingClub",
+    "displayName": "Riverbend Flying Club",
+    "callSignPrefix": "Riverbend",
+    "fictionalBrand": true,
+    "realOperatorImitated": false,
+    "liveryTreatment": "FictionalCyanDirectionalSilhouette"
+  },
+  "visual": {
+    "source": "ProjectAuthoredProceduralVector",
+    "externalSourceFilesCopied": 0,
+    "runtimeDimension": "2D",
+    "components": [
+      "Fuselage",
+      "MainWing",
+      "Tailplane"
+    ],
+    "headingDirectionCount": 16,
+    "smoothRotationApproved": true,
+    "colorIndependentDirection": true,
+    "accessibilityScaleMode": "OversizedIcon",
+    "realTradeDressUsed": false
+  },
+  "radioCaptions": {
+    "Radio.ArrivalContact": "Riverbend Tower, Riverbend 21, inbound for landing.",
+    "Radio.LandingClearance": "Riverbend 21, Runway 09 cleared to land.",
+    "Radio.TaxiRoute": "Riverbend 21, taxi via Taxiway A to Stand A1.",
+    "Radio.TaxiDeparture": "Riverbend 21, taxi via Taxiway A, hold short of Runway 09.",
+    "Radio.TakeoffClearance": "Riverbend 21, Runway 09 cleared for takeoff."
+  },
+  "referenceSources": [
+    {
+      "authority": "Textron Aviation",
+      "url": "https://txtav.com/en/piston/cessna-skyhawk",
+      "use": "Reference envelope for a contemporary four-place light trainer: published dimensions and takeoff/landing distances. No model identity, art, branding, or livery is reused."
+    },
+    {
+      "authority": "Federal Aviation Administration",
+      "url": "https://www.faa.gov/air_traffic/publications/atpubs/pcg_html/glossary-c.html",
+      "use": "Controller terminology for cleared-to-land and cleared-for-takeoff captions."
+    },
+    {
+      "authority": "Federal Aviation Administration",
+      "url": "https://www.faa.gov/licenses_certificates/aircraft_certification/aircraft_registry/forming_nnumber/",
+      "use": "Registration-format boundary; the fictional RB-021 identifier deliberately makes no United States N-number claim."
+    }
+  ],
+  "derivedAssets": [
+    {
+      "path": "AMSim/Content/Phase1/Definitions/DA_Aircraft_LightPiston_Starter.uasset",
+      "sha256": "598091992C4C565F439E107D1A2FA8F4A96554F1D5719D2DBA528C171F39C15B"
+    },
+    {
+      "path": "AMSim/Content/Phase1/Definitions/DA_Operator_RiverbendFlyingClub.uasset",
+      "sha256": "F232B5AD822914732023B62272F5CCBFA39A110360FEED1CC2813F57CDD62FFB"
+    },
+    {
+      "path": "AMSim/Content/Phase1/Definitions/DA_Facility_GrassRunway_Starter.uasset",
+      "sha256": "E06414BB01F1ED13852C49FBDEE404F54B2CCF6120F4254EDF3193283D593D6B"
+    },
+    {
+      "path": "AMSim/Content/Phase1/CoreDefinitions/DA_Presentation_GrassAirfield.uasset",
+      "sha256": "089ED8D1391A2DCC45A5CEDE7AEE169575FA54651FBD3EC21E854AA261D801A0"
+    }
+  ],
+  "sourceFiles": [
+    {
+      "path": "AMSim/Source/AMSimUI/Private/AMSimRootScreen.cpp",
+      "sha256": "847DF85E10DE2C5779D8D9C73590B628A9F56098C8B2FEFBE9361294EF66DCAC"
+    },
+    {
+      "path": "AMSim/Source/AMSimUI/Public/AMSimAircraftPresentation.h",
+      "sha256": "98716F3D4D7325CC94439901DFFC571E7748211C8BEEF7F4320D6985CF8290CB"
+    },
+    {
+      "path": "AMSim/Source/AMSimSimulation/Private/AMSimStarterAirfieldSimulation.cpp",
+      "sha256": "6D6FF9A93451D029041EE96028D5DFD24533ABDC98CE89442AA176EEB6396FAB"
+    },
+    {
+      "path": "AMSim/Source/AMSimSimulation/Private/AMSimPhase1Fixture.cpp",
+      "sha256": "30786640EF5B55447F8E8150FB939DD690FF46C15CA34E0E6CB28307111D590E"
+    },
+    {
+      "path": "AMSim/Source/AMSimGameplay/Public/AMSimPhase1Content.h",
+      "sha256": "969394E66C3F0B92B1DC54B988544E0E6C4EC57F8E73556555BD26D6F4F82C6E"
+    },
+    {
+      "path": "AMSim/Source/AMSimGameplay/Private/AMSimPhase1Content.cpp",
+      "sha256": "41D97E552799E97DA7DAE94580CF26A67FC4DC57D6984DCCCEB2317BB2EE08A2"
+    },
+    {
+      "path": "scripts/phase1/CreatePhase1Assets.py",
+      "sha256": "8EE3AD9B1ED3F293B774DB0B3902A1AA4BA634B490C09354B5C52E1B49B829A2"
+    }
+  ],
+  "checks": {
+    "stableIdsPreserved": true,
+    "projectAuthoredSourceConfirmed": true,
+    "externalSourceFilesCopiedIsZero": true,
+    "fictionalAircraftIdentityConfirmed": true,
+    "fictionalOperatorAndLiveryConfirmed": true,
+    "dimensionsAndCapabilityReviewed": true,
+    "directionalCoverageReviewed": true,
+    "colorIndependentSilhouetteReviewed": true,
+    "registrationTreatmentReviewed": true,
+    "aviationTerminologyReviewed": true,
+    "childReadableTerminologyReviewed": true,
+    "noRequired3DGameplayAsset": true
+  },
+  "limitations": [
+    "Values are a rounded game compatibility envelope and are not real-world operational guidance.",
+    "The oversized icon improves readability and does not represent physical clearance dimensions.",
+    "Phase 1 supports one fictional trainer role; a real aircraft roster remains a later reviewed phase."
+  ],
+  "passed": true
+}

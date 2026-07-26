@@ -108,6 +108,41 @@ FAMSimPhase1CatalogValidation FAMSimPhase1ContentCatalog::ValidateLoadedCatalog(
 					TEXT("Content %s has invalid identity, text, phase, or provenance."),
 					*AssetId.ToString()));
 			}
+			if (const UAMSimAircraftDefinition* Aircraft =
+				Cast<UAMSimAircraftDefinition>(Definition))
+			{
+				if (Aircraft->Provenance != TEXT("InternalApproved") ||
+					Aircraft->LengthCentimeters != 830 ||
+					Aircraft->WingspanCentimeters != 1100 ||
+					Aircraft->MinimumRunwayMeters != 600 ||
+					Aircraft->MaximumOccupants != 4 ||
+					!Aircraft->bGrassRunwayCompatible ||
+					!Aircraft->bRequiresInspection ||
+					!Aircraft->bRequiresFuel ||
+					Aircraft->HeadingDirectionCount < 16 ||
+					!Aircraft->bSmoothRotationApproved ||
+					!Aircraft->bFictionalLiveryApproved ||
+					Aircraft->AccuracyReviewId !=
+						TEXT("CT02.Phase1.RiverbendTrainer.2026-07-26") ||
+					Aircraft->RegistrationFormat != TEXT("RB-### (fictional)"))
+				{
+					Result.Errors.Add(FString::Printf(
+						TEXT("Aircraft content %s does not match the approved Phase 1 content lock."),
+						*AssetId.ToString()));
+				}
+			}
+			if (const UAMSimOperatorDefinition* Operator =
+				Cast<UAMSimOperatorDefinition>(Definition))
+			{
+				if (Operator->Provenance != TEXT("InternalApproved") ||
+					Operator->CallSignPrefix != TEXT("Riverbend") ||
+					!Operator->bFictionalBrandApproved)
+				{
+					Result.Errors.Add(FString::Printf(
+						TEXT("Operator content %s does not match the approved fictional brand lock."),
+						*AssetId.ToString()));
+				}
+			}
 		}
 	}
 

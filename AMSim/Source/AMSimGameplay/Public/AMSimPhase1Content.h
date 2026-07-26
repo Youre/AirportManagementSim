@@ -83,13 +83,16 @@ class AMSIMGAMEPLAY_API UAMSimAircraftDefinition final : public UAMSimPhase1Defi
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Aircraft")
-	int32 LengthCentimeters = 720;
+	int32 LengthCentimeters = 830;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Aircraft")
-	int32 WingspanCentimeters = 1000;
+	int32 WingspanCentimeters = 1100;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Aircraft")
-	int32 MinimumRunwayMeters = 400;
+	int32 MinimumRunwayMeters = 600;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Aircraft")
+	int32 MaximumOccupants = 4;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Aircraft")
 	bool bGrassRunwayCompatible = true;
@@ -99,6 +102,21 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Aircraft")
 	bool bRequiresFuel = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Aircraft")
+	int32 HeadingDirectionCount = 16;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Aircraft")
+	bool bSmoothRotationApproved = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Aircraft")
+	bool bFictionalLiveryApproved = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Aircraft")
+	FName AccuracyReviewId = TEXT("CT02.Phase1.RiverbendTrainer.2026-07-26");
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Aircraft")
+	FString RegistrationFormat = TEXT("RB-### (fictional)");
 
 	virtual FPrimaryAssetType GetDefinitionType() const override;
 };

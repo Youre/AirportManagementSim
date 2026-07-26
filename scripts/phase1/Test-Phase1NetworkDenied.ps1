@@ -1,15 +1,23 @@
 [CmdletBinding()]
 param(
-    [string]$PackageRoot = ''
+    [string]$PackageRoot = '',
+    [string]$ManifestPath = ''
 )
 
 $ErrorActionPreference = 'Stop'
 $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
+. (Join-Path $PSScriptRoot 'Phase1Acceptance.Common.ps1')
 $packageRoot = if ($PackageRoot) {
     [System.IO.Path]::GetFullPath($PackageRoot)
 } else {
     Join-Path $repoRoot 'AMSim\Saved\Phase1Packages'
 }
+$manifestPath = if ($ManifestPath) {
+    [System.IO.Path]::GetFullPath($ManifestPath)
+} else {
+    Join-Path $PSScriptRoot 'Phase1AcceptanceManifest.json'
+}
+$manifest = Get-Phase1AcceptanceManifest -Path $manifestPath
 $resultDirectory = Join-Path $repoRoot 'AMSim\Saved\Phase1'
 $resultPath = Join-Path $resultDirectory 'network-denied-result.json'
 
@@ -35,6 +43,12 @@ $shippingExe = Get-ChildItem `
     Select-Object -First 1
 if (-not $developmentExe -or -not $shippingExe) {
     throw 'Development and Shipping Phase 1 packages must exist first.'
+}
+$packageIdentity = Get-Phase1PackageIdentity `
+    -PackageRoot $packageRoot `
+    -Manifest $manifest
+if (-not $packageIdentity.passed) {
+    throw 'The Phase 1 packages do not match the acceptance manifest.'
 }
 
 function Start-PackagedGame {
@@ -157,6 +171,7 @@ try {
     [ordered]@{
         schema = 1
         generatedUtc = [DateTime]::UtcNow.ToString('o')
+        packageIdentity = $packageIdentity
         firewallDirections = @('Inbound', 'Outbound')
         firewallProfiles = 'Any'
         development = [ordered]@{

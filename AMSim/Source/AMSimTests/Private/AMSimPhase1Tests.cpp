@@ -1,3 +1,4 @@
+#include "AMSimAircraftPresentation.h"
 #include "AMSimPhase1Fixture.h"
 #include "AMSimSimulation.h"
 #include "AMSimSnapshotSerialization.h"
@@ -166,6 +167,27 @@ bool FAMSimPhase1FixtureTest::RunTest(const FString& Parameters)
 			Fixture.MinimumContingencyPercent);
 	TestTrue(TEXT("Definition catalog validates"), ValidatePhase1FixtureDefinitions().bValid);
 	TestTrue(TEXT("Default starter proposal validates"), ValidateStarterPlan(CreateDefaultStarterPlan()).bValid);
+	const FStarterPlanProposal DefaultPlan = CreateDefaultStarterPlan();
+	TestEqual(
+		TEXT("Reviewed starter runway is exactly 600 m"),
+		DefaultPlan.RunwayEnd.X - DefaultPlan.RunwayStart.X,
+		static_cast<int64>(60000));
+	TestEqual(
+		TEXT("Starter runway is 20 m wide"),
+		DefaultPlan.RunwayWidthCentimeters,
+		2000);
+
+	FStarterPlanProposal TooShort = DefaultPlan;
+	TooShort.RunwayEnd.X -= 100;
+	const FPhase1Validation TooShortResult = ValidateStarterPlan(TooShort);
+	TestFalse(TEXT("A 599 m starter runway is rejected"), TooShortResult.bValid);
+	TestEqual(
+		TEXT("Short runway reason is stable"),
+		TooShortResult.ReasonCode,
+		FName(TEXT("Build.Runway.TooSmall")));
+	TestTrue(
+		TEXT("Short runway remedy names the reviewed minimum"),
+		TooShortResult.Remedy.Contains(TEXT("600 m")));
 
 	FStarterPlanProposal Outside = CreateDefaultStarterPlan();
 	Outside.OperationsHutCenter.X = 110000;
@@ -236,6 +258,10 @@ bool FAMSimPhase1JourneyTest::RunTest(const FString& Parameters)
 	const FPhase1State& State = Simulation.GetPhase1State();
 	TestEqual(TEXT("First visit completes"), State.Flight.State, EFlightState::Completed);
 	TestEqual(TEXT("Airframe visit history persists"), State.Airframe.VisitCount, 1);
+	TestEqual(
+		TEXT("Airframe uses the approved fictional registration"),
+		State.Airframe.TailNumber,
+		FString(TEXT("RB-021")));
 	TestTrue(TEXT("Inspection completed"), State.Flight.Inspection == EServiceTaskState::Completed);
 	TestTrue(TEXT("Fueling completed"), State.Flight.Fueling == EServiceTaskState::Completed);
 	TestTrue(TEXT("Reward recognized once"), State.Flight.bRewardRecognized);
@@ -610,10 +636,24 @@ bool FAMSimPhase1MovementSafetyTest::RunTest(const FString& Parameters)
 	TestTrue(TEXT("Takeoff observed"), ObservedStates.Contains(EFlightState::Takeoff));
 
 	TSet<FName> PhraseIds;
+	const TMap<FName, FString> ExpectedCaptions = {
+		{TEXT("Radio.ArrivalContact"), TEXT("Riverbend Tower, Riverbend 21, inbound for landing.")},
+		{TEXT("Radio.LandingClearance"), TEXT("Riverbend 21, Runway 09 cleared to land.")},
+		{TEXT("Radio.TaxiRoute"), TEXT("Riverbend 21, taxi via Taxiway A to Stand A1.")},
+		{TEXT("Radio.TaxiDeparture"), TEXT("Riverbend 21, taxi via Taxiway A, hold short of Runway 09.")},
+		{TEXT("Radio.TakeoffClearance"), TEXT("Riverbend 21, Runway 09 cleared for takeoff.")}
+	};
 	for (const FPhraseIntentRecord& Phrase : Simulation.GetPhase1State().PhraseIntents)
 	{
 		PhraseIds.Add(Phrase.PhraseId);
 		TestFalse(TEXT("Every phrase has a caption"), Phrase.Caption.IsEmpty());
+		if (const FString* ExpectedCaption = ExpectedCaptions.Find(Phrase.PhraseId))
+		{
+			TestEqual(
+				*FString::Printf(TEXT("Reviewed caption: %s"), *Phrase.PhraseId.ToString()),
+				Phrase.Caption,
+				*ExpectedCaption);
+		}
 	}
 	for (const FName RequiredPhrase : {
 		FName(TEXT("Radio.ArrivalContact")),
@@ -625,6 +665,29 @@ bool FAMSimPhase1MovementSafetyTest::RunTest(const FString& Parameters)
 		TestTrue(
 			*FString::Printf(TEXT("Required phrase emitted: %s"), *RequiredPhrase.ToString()),
 			PhraseIds.Contains(RequiredPhrase));
+	}
+
+	const TMap<EFlightState, float> ExpectedHeadings = {
+		{EFlightState::Scheduled, 135.0f},
+		{EFlightState::Inbound, 135.0f},
+		{EFlightState::Approach, 135.0f},
+		{EFlightState::Landing, 90.0f},
+		{EFlightState::RunwayRoll, 90.0f},
+		{EFlightState::TaxiIn, 135.0f},
+		{EFlightState::Parked, 180.0f},
+		{EFlightState::Turnaround, 180.0f},
+		{EFlightState::Ready, 180.0f},
+		{EFlightState::TaxiOut, 45.0f},
+		{EFlightState::Takeoff, 90.0f},
+		{EFlightState::Outbound, 90.0f}
+	};
+	for (const TPair<EFlightState, float>& Pair : ExpectedHeadings)
+	{
+		const float Heading = GetPhase1AircraftPresentationHeadingDegrees(Pair.Key);
+		TestEqual(TEXT("Aircraft proxy heading follows flight state"), Heading, Pair.Value);
+		TestTrue(
+			TEXT("Aircraft heading lies on the approved 16-direction grid"),
+			FMath::IsNearlyZero(FMath::Fmod(Heading, 22.5f)));
 	}
 	return true;
 }

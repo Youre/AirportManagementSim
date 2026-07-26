@@ -333,7 +333,7 @@ namespace AMSim
 			ChangeConstructionStage(
 				EConstructionStage::Operational,
 				CurrentGameMilliseconds,
-				TEXT("Runway 09, Taxi A, and Stand A1 are open."));
+				TEXT("Runway 09, Taxiway A, and Stand A1 are open."));
 			for (FFacilityRecord& Facility : State.Facilities)
 			{
 				Facility.bOpen = true;
@@ -344,7 +344,7 @@ namespace AMSim
 			State.Offer.AircraftContentId = Fixture.AircraftId;
 			State.Offer.OperatorContentId = Fixture.OperatorId;
 			State.Offer.CompatibilitySummary =
-				TEXT("Compatible: 500 m grass runway, Taxi A, Stand A1, inspection, and fuel available.");
+				TEXT("Compatible: 600 m grass runway, Taxiway A, Stand A1, inspection, and fuel available.");
 			State.Offer.RewardCredits = Fixture.FlightRewardCredits;
 			State.Offer.bPinned = false;
 			EmitEvent(
@@ -424,7 +424,7 @@ namespace AMSim
 			State.Airframe.Id = {AllocateDomainId()};
 			State.Airframe.AircraftContentId = Fixture.AircraftId;
 			State.Airframe.OperatorContentId = Fixture.OperatorId;
-			State.Airframe.TailNumber = TEXT("N-RB21");
+			State.Airframe.TailNumber = TEXT("RB-021");
 			State.Airframe.HistorySummary = TEXT("First visit scheduled.");
 			State.Flight.Id = {AllocateDomainId()};
 			State.Flight.ContractId = State.Offer.ContractId;
@@ -629,7 +629,7 @@ namespace AMSim
 			QueuePhrase(
 				TEXT("Radio.ArrivalContact"),
 				TEXT("Riverbend 21"),
-				TEXT("Riverbend 21, Riverbend traffic, inbound for Runway 09."),
+				TEXT("Riverbend Tower, Riverbend 21, inbound for landing."),
 				1,
 				CurrentGameMilliseconds);
 		}
@@ -637,8 +637,8 @@ namespace AMSim
 		{
 			QueuePhrase(
 				TEXT("Radio.LandingClearance"),
-				TEXT("Airport Radio"),
-				TEXT("Riverbend 21, Runway 09 clear to land."),
+				TEXT("Riverbend Tower"),
+				TEXT("Riverbend 21, Runway 09 cleared to land."),
 				2,
 				CurrentGameMilliseconds);
 		}
@@ -646,8 +646,8 @@ namespace AMSim
 		{
 			QueuePhrase(
 				TEXT("Radio.TaxiRoute"),
-				TEXT("Airport Radio"),
-				TEXT("Riverbend 21, taxi via Taxi A to Stand A1."),
+				TEXT("Riverbend Tower"),
+				TEXT("Riverbend 21, taxi via Taxiway A to Stand A1."),
 				1,
 				CurrentGameMilliseconds);
 		}
@@ -686,8 +686,8 @@ namespace AMSim
 		{
 			QueuePhrase(
 				TEXT("Radio.TaxiDeparture"),
-				TEXT("Airport Radio"),
-				TEXT("Riverbend 21, taxi via Taxi A and hold short Runway 09."),
+				TEXT("Riverbend Tower"),
+				TEXT("Riverbend 21, taxi via Taxiway A, hold short of Runway 09."),
 				2,
 				CurrentGameMilliseconds);
 		}
@@ -695,8 +695,8 @@ namespace AMSim
 		{
 			QueuePhrase(
 				TEXT("Radio.TakeoffClearance"),
-				TEXT("Airport Radio"),
-				TEXT("Riverbend 21, Runway 09 clear for takeoff."),
+				TEXT("Riverbend Tower"),
+				TEXT("Riverbend 21, Runway 09 cleared for takeoff."),
 				2,
 				CurrentGameMilliseconds);
 		}

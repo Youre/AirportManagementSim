@@ -2,6 +2,7 @@
 param(
     [string]$PackageRoot = '',
     [string]$ManifestPath = '',
+    [string]$ContentReviewPath = '',
     [string]$PipelineResultPath = '',
     [string]$NetworkDeniedResultPath = '',
     [string]$ReferenceTierResultPath = '',
@@ -65,6 +66,10 @@ $packageRoot = Resolve-OptionalPath `
 $manifestPath = Resolve-OptionalPath `
     -Provided $ManifestPath `
     -Default (Join-Path $PSScriptRoot 'Phase1AcceptanceManifest.json')
+$manifest = Get-Phase1AcceptanceManifest -Path $manifestPath
+$contentReviewPath = Resolve-OptionalPath `
+    -Provided $ContentReviewPath `
+    -Default (Join-Path $repoRoot $manifest.contentReview.relativePath)
 $pipelineResultPath = Resolve-OptionalPath `
     -Provided $PipelineResultPath `
     -Default (Join-Path $repoRoot 'AMSim\Saved\Phase1\pipeline-result.json')
@@ -81,14 +86,129 @@ $outputPath = Resolve-OptionalPath `
     -Provided $OutputPath `
     -Default (Join-Path $repoRoot 'AMSim\Saved\Phase1\acceptance-result.json')
 
-$manifest = Get-Phase1AcceptanceManifest -Path $manifestPath
 $packageIdentity = Get-Phase1PackageIdentity `
     -PackageRoot $packageRoot `
     -Manifest $manifest
+$contentReview = Read-EvidenceFile -Path $contentReviewPath
 $pipeline = Read-EvidenceFile -Path $pipelineResultPath
 $networkDenied = Read-EvidenceFile -Path $networkDeniedResultPath
 $referenceTier = Read-EvidenceFile -Path $referenceTierResultPath
 $testerAcceptance = Read-EvidenceFile -Path $testerAcceptanceResultPath
+
+$contentReviewHashPassed =
+    $null -ne $contentReview -and
+    (Get-FileHash -LiteralPath $contentReviewPath -Algorithm SHA256).Hash -ceq
+        $manifest.contentReview.sha256
+$contentSourceFilesPassed =
+    $null -ne $contentReview -and
+    @($contentReview.sourceFiles).Count -ge 7
+if ($contentSourceFilesPassed) {
+    $repoPrefix = $repoRoot.TrimEnd('\') + '\'
+    foreach ($sourceFile in $contentReview.sourceFiles) {
+        $sourcePath = [System.IO.Path]::GetFullPath(
+            (Join-Path $repoRoot ($sourceFile.path -replace '/', '\')))
+        if (
+            -not $sourcePath.StartsWith(
+                $repoPrefix,
+                [StringComparison]::OrdinalIgnoreCase) -or
+            -not (Test-Path -LiteralPath $sourcePath -PathType Leaf) -or
+            (Get-FileHash -LiteralPath $sourcePath -Algorithm SHA256).Hash -cne
+                $sourceFile.sha256
+        ) {
+            $contentSourceFilesPassed = $false
+            break
+        }
+    }
+}
+$contentDerivedAssetsPassed =
+    $null -ne $contentReview -and
+    @($contentReview.derivedAssets).Count -eq 4
+if ($contentDerivedAssetsPassed) {
+    $repoPrefix = $repoRoot.TrimEnd('\') + '\'
+    foreach ($derivedAsset in $contentReview.derivedAssets) {
+        $assetPath = [System.IO.Path]::GetFullPath(
+            (Join-Path $repoRoot ($derivedAsset.path -replace '/', '\')))
+        if (
+            -not $assetPath.StartsWith(
+                $repoPrefix,
+                [StringComparison]::OrdinalIgnoreCase) -or
+            -not (Test-Path -LiteralPath $assetPath -PathType Leaf) -or
+            (Get-FileHash -LiteralPath $assetPath -Algorithm SHA256).Hash -cne
+                $derivedAsset.sha256
+        ) {
+            $contentDerivedAssetsPassed = $false
+            break
+        }
+    }
+}
+$contentSourceCommitPassed = $false
+if (
+    $contentSourceFilesPassed -and
+    $contentDerivedAssetsPassed -and
+    $manifest.packageSourceCommit -match '^[0-9a-fA-F]{40}$'
+) {
+    $diffArguments = @(
+        '-C',
+        $repoRoot,
+        'diff',
+        '--quiet',
+        $manifest.packageSourceCommit,
+        '--'
+    ) + @(
+        @($contentReview.sourceFiles) + @($contentReview.derivedAssets) |
+            ForEach-Object { $_.path }
+    )
+    & git @diffArguments
+    $contentSourceCommitPassed = $LASTEXITCODE -eq 0
+}
+$requiredContentChecks = @(
+    'stableIdsPreserved',
+    'projectAuthoredSourceConfirmed',
+    'externalSourceFilesCopiedIsZero',
+    'fictionalAircraftIdentityConfirmed',
+    'fictionalOperatorAndLiveryConfirmed',
+    'dimensionsAndCapabilityReviewed',
+    'directionalCoverageReviewed',
+    'colorIndependentSilhouetteReviewed',
+    'registrationTreatmentReviewed',
+    'aviationTerminologyReviewed',
+    'childReadableTerminologyReviewed',
+    'noRequired3DGameplayAsset'
+)
+$contentChecksPassed = $null -ne $contentReview
+if ($contentChecksPassed) {
+    foreach ($name in $requiredContentChecks) {
+        if ($contentReview.checks.$name -ne $true) {
+            $contentChecksPassed = $false
+            break
+        }
+    }
+}
+$contentReviewPassed = $null -ne $contentReview -and (Test-AllTrue -Values @(
+    $contentReview.schema -eq 1
+    $contentReview.reviewId -eq 'CT02.Phase1.RiverbendTrainer.2026-07-26'
+    $contentReview.aircraft.stableContentId -eq 'Aircraft.LightPiston.Starter'
+    $contentReview.aircraft.realModelClaimed -eq $false
+    $contentReview.aircraft.lengthMeters -eq 8.3
+    $contentReview.aircraft.wingspanMeters -eq 11.0
+    $contentReview.aircraft.maximumOccupants -eq 4
+    $contentReview.aircraft.minimumGrassRunwayMeters -eq 600
+    $contentReview.aircraft.registration -eq 'RB-021'
+    $contentReview.operator.stableContentId -eq 'Operator.RiverbendFlyingClub'
+    $contentReview.operator.fictionalBrand
+    $contentReview.operator.realOperatorImitated -eq $false
+    $contentReview.visual.externalSourceFilesCopied -eq 0
+    $contentReview.visual.runtimeDimension -eq '2D'
+    $contentReview.visual.headingDirectionCount -ge 16
+    $contentReview.visual.smoothRotationApproved
+    $contentReview.visual.colorIndependentDirection
+    $contentReviewHashPassed
+    $contentSourceFilesPassed
+    $contentDerivedAssetsPassed
+    $contentSourceCommitPassed
+    $contentChecksPassed
+    $contentReview.passed
+))
 
 $expectedScalePercents = @(100, 125, 150, 175, 200)
 $scaleMatrixPassed =
@@ -133,6 +253,33 @@ $pipelinePassed = $null -ne $pipeline -and (Test-AllTrue -Values @(
     $pipeline.required3DAssetCandidates -eq 0
     $pipeline.passed
 ))
+$pipelinePackagePassed = $null -ne $pipeline -and (Test-AllTrue -Values @(
+    $pipeline.packageIdentity.packageSourceCommit -ceq $manifest.packageSourceCommit
+    $pipeline.packageIdentity.sourceTreeClean
+    $pipeline.packageIdentity.packages.developmentLauncher.actualSha256 -ceq
+        $manifest.packages.developmentLauncher.sha256
+    $pipeline.packageIdentity.packages.developmentRuntime.actualSha256 -ceq
+        $manifest.packages.developmentRuntime.sha256
+    $pipeline.packageIdentity.packages.shippingLauncher.actualSha256 -ceq
+        $manifest.packages.shippingLauncher.sha256
+    $pipeline.packageIdentity.packages.shippingRuntime.actualSha256 -ceq
+        $manifest.packages.shippingRuntime.sha256
+    $pipeline.packageIdentity.passed
+))
+$pipelinePassed = $pipelinePassed -and $pipelinePackagePassed
+$networkDeniedPackagePassed =
+    $null -ne $networkDenied -and
+    $networkDenied.packageIdentity.packageSourceCommit -ceq
+        $manifest.packageSourceCommit -and
+    $networkDenied.packageIdentity.packages.developmentLauncher.actualSha256 -ceq
+        $manifest.packages.developmentLauncher.sha256 -and
+    $networkDenied.packageIdentity.packages.developmentRuntime.actualSha256 -ceq
+        $manifest.packages.developmentRuntime.sha256 -and
+    $networkDenied.packageIdentity.packages.shippingLauncher.actualSha256 -ceq
+        $manifest.packages.shippingLauncher.sha256 -and
+    $networkDenied.packageIdentity.packages.shippingRuntime.actualSha256 -ceq
+        $manifest.packages.shippingRuntime.sha256 -and
+    $networkDenied.packageIdentity.passed
 $networkDeniedPassed = $null -ne $networkDenied -and (Test-AllTrue -Values @(
     $networkDenied.schema -eq 1
     @($networkDenied.firewallDirections).Count -eq 2
@@ -146,6 +293,7 @@ $networkDeniedPassed = $null -ne $networkDenied -and (Test-AllTrue -Values @(
     $networkDenied.development.expectedDeveloperTraceListenerOnly
     $networkDenied.shipping.cleanLaunchSeconds -ge 5
     $networkDenied.shipping.tcpSocketObservations -eq 0
+    $networkDeniedPackagePassed
     $networkDenied.passed
 ))
 
@@ -281,6 +429,7 @@ $testerAcceptancePassed = $null -ne $testerAcceptance -and (Test-AllTrue -Values
 
 $checks = [ordered]@{
     packageIdentityPassed = [bool]$packageIdentity.passed
+    contentReviewPassed = $contentReviewPassed
     pipelinePassed = $pipelinePassed
     networkDeniedPassed = $networkDeniedPassed
     referenceTierPassed = $referenceTierPassed
@@ -299,6 +448,7 @@ $result = [ordered]@{
     packageSourceCommit = $manifest.packageSourceCommit
     evidence = [ordered]@{
         manifest = $manifestPath
+        contentReview = $contentReviewPath
         pipeline = $pipelineResultPath
         networkDenied = $networkDeniedResultPath
         referenceTier = $referenceTierResultPath

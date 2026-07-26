@@ -21,6 +21,13 @@ function Get-Phase1AcceptanceManifest {
     ) {
         throw "Invalid Phase 1 acceptance manifest header: $fullPath"
     }
+    if (
+        -not $manifest.contentReview -or
+        [string]::IsNullOrWhiteSpace($manifest.contentReview.relativePath) -or
+        $manifest.contentReview.sha256 -notmatch '^[0-9a-fA-F]{64}$'
+    ) {
+        throw "Invalid content-review entry in $fullPath"
+    }
 
     $requiredPackages = @(
         'developmentLauncher',

@@ -26,7 +26,7 @@ namespace AMSim
 		FDefinition MakeDefinition(
 			const TCHAR* StableId,
 			const TCHAR* Tag,
-			const EProvenanceStatus Provenance = EProvenanceStatus::InternalPrototype)
+			const EProvenanceStatus Provenance = EProvenanceStatus::Approved)
 		{
 			FDefinition Definition;
 			Definition.StableId = StableId;
@@ -65,7 +65,7 @@ namespace AMSim
 	{
 		FStarterPlanProposal Proposal;
 		Proposal.RunwayStart = {20000, 40000};
-		Proposal.RunwayEnd = {70000, 40000};
+		Proposal.RunwayEnd = {80000, 40000};
 		Proposal.RunwayWidthCentimeters = 2000;
 		Proposal.TaxiStart = {45000, 40000};
 		Proposal.TaxiEnd = {45000, 55000};
@@ -82,12 +82,12 @@ namespace AMSim
 		FPhase1Validation Result;
 		Result.QuotedCost = Fixture.StarterPlanCost;
 		if (Proposal.RunwayWidthCentimeters < 1800 ||
-			DistanceSquared(Proposal.RunwayStart, Proposal.RunwayEnd) < 40000ll * 40000ll)
+			DistanceSquared(Proposal.RunwayStart, Proposal.RunwayEnd) < 60000ll * 60000ll)
 		{
 			Result.Result = EPhase1CommandResult::RejectedInvalidGeometry;
 			Result.ReasonCode = TEXT("Build.Runway.TooSmall");
 			Result.Cause = TEXT("The grass runway is too short or narrow for the starter aircraft.");
-			Result.Remedy = TEXT("Use a runway at least 400 m long and 18 m wide.");
+			Result.Remedy = TEXT("Use a runway at least 600 m long and 18 m wide.");
 			return Result;
 		}
 

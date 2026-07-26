@@ -2,6 +2,8 @@
   "schema": 1,
   "manifestId": "ContentManifest.Phase1.StarterGrassAirfield",
   "owningPhase": "Phase1",
+  "contentReviewId": "CT02.Phase1.RiverbendTrainer.2026-07-26",
+  "contentReviewStatus": "ApprovedPhase1",
   "entries": [
     {
       "contentId": "Map.TemperateStarter",
@@ -14,15 +16,19 @@
     {
       "contentId": "Aircraft.LightPiston.Starter",
       "kind": "Aircraft",
-      "provenance": "InternalPrototype",
+      "provenance": "InternalApproved",
       "rightsState": "InternalApproved",
       "source": "ProjectAuthored",
-      "localizationKey": "Aircraft.LightPiston.Starter.Name"
+      "localizationKey": "Aircraft.LightPiston.Starter.Name",
+      "accuracyReviewId": "CT02.Phase1.RiverbendTrainer.2026-07-26",
+      "identityTreatment": "FictionalLightPistonTrainer",
+      "liveryTreatment": "FictionalCyanDirectionalSilhouette",
+      "headingDirectionCount": 16
     },
     {
       "contentId": "Operator.RiverbendFlyingClub",
       "kind": "Operator",
-      "provenance": "InternalPrototype",
+      "provenance": "InternalApproved",
       "rightsState": "FictionalApproved",
       "source": "ProjectAuthored",
       "localizationKey": "Operator.RiverbendFlyingClub.Name"
@@ -158,7 +164,7 @@
     {
       "contentId": "Presentation.GrassAirfield",
       "kind": "PresentationDescriptor",
-      "provenance": "InternalPrototype",
+      "provenance": "InternalApproved",
       "rightsState": "InternalApproved",
       "source": "ProjectAuthored",
       "localizationKey": "Presentation.GrassAirfield.Name"

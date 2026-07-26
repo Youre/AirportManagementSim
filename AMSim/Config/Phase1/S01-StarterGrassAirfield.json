@@ -7,6 +7,8 @@
   "startingCredits": 5000,
   "startingAirportPoints": 0,
   "starterPlan": {
+    "runwayLengthMeters": 600,
+    "runwayWidthMeters": 20,
     "runwayCost": 1600,
     "taxiConnectionCost": 500,
     "standCost": 450,
@@ -26,6 +28,11 @@
   "firstFlight": {
     "aircraftContentId": "Aircraft.LightPiston.Starter",
     "operatorContentId": "Operator.RiverbendFlyingClub",
+    "aircraftLengthMeters": 8.3,
+    "aircraftWingspanMeters": 11.0,
+    "maximumOccupants": 4,
+    "fictionalRegistration": "RB-021",
+    "accuracyReviewId": "CT02.Phase1.RiverbendTrainer.2026-07-26",
     "offerAppearsImmediatelyAtReadiness": true,
     "timetableIncrementGameMinutes": 5,
     "assignedStandDefinitionId": "Facility.GAStand.Starter",

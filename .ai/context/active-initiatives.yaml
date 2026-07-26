@@ -18,4 +18,4 @@ project_initiatives:
     title: Build the grass-airfield vertical slice
     status: active
     source: docs/planning/50-production/phase-1-grass-airfield-implementation-plan.md
-    next_outcome: Complete elevated S15, physical reference-tier, and unassisted tester/audio/comprehension acceptance records
+    next_outcome: Complete physical reference-tier and unassisted tester/audio/comprehension acceptance records

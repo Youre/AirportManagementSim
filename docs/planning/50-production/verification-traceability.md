@@ -116,7 +116,7 @@ Accepted residuals are metadata-only transitive editor plugin descriptors, the t
 | Content is controlled | 20-asset catalog, internal 2D provenance, and zero copied external aircraft pass |
 | Save evolution is safe | Schema-1 migration, schema-2 boundary continuation, corruption/backup/future validation pass |
 | Performance meets a representative target | Development-host frame/simulation/save/memory budgets and reference-profile collector pass; physical four-hour reference-tier run pending |
-| Product remains strict 2D and offline | Shipping asset/dependency/socket scans pass; elevated firewall-denied S15 pending |
+| Product remains strict 2D and offline | Shipping asset/dependency/socket scans and elevated firewall-denied S15 pass; Development journey/save-load succeeds and Shipping observes zero TCP sockets |
 
 ## Visual reference mapping
 

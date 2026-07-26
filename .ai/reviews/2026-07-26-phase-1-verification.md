@@ -30,8 +30,12 @@
 | Shipping dependency scan | 0 forbidden file, text, or receipt matches |
 | 2D content boundary | Only `.uasset`/`.umap`; 0 required 3D candidates |
 | Socket observation | 0 unexpected Development; 0 Shipping |
+| Elevated network-denied S15 | Passed; Development journey/save-load, expected local trace listener only, 0 Shipping TCP sockets, temporary rules removed |
 
-The machine-readable aggregate is generated at `AMSim/Saved/Phase1/pipeline-result.json`. Scale captures are generated under `AMSim/Saved/Phase1/Scale/<percent>/`; final packages are generated under `AMSim/Saved/Phase1Packages/`.
+The machine-readable aggregate is generated at `AMSim/Saved/Phase1/pipeline-result.json`;
+elevated S15 is generated at `AMSim/Saved/Phase1/network-denied-result.json`.
+Scale captures are generated under `AMSim/Saved/Phase1/Scale/<percent>/`; final
+packages are generated under `AMSim/Saved/Phase1Packages/`.
 
 ## Final development-host package measurement
 
@@ -105,13 +109,28 @@ Written 2D, accessibility, value, and behavior requirements take precedence over
   correctly reported formal acceptance false because this host is unreviewed and
   the four-hour soak was not requested.
 
+## Elevated network-denied S15
+
+At `2026-07-26T07:22:54.5810261Z`, Windows Firewall applied temporary inbound
+and outbound block rules on every profile to the exact final Development and
+Shipping launcher/runtime paths.
+
+- Development completed S01 and save/load continuation at 1.140 ms p99 frame
+  time with zero 8x backlog.
+- Its 49 sampled TCP observations were only the expected local Development trace
+  listener; no unexpected socket was observed.
+- Shipping remained running for five seconds and produced zero TCP observations.
+- The tested package hashes match the final package identity table above.
+- The script exited 0, wrote `passed: true`, removed all eight temporary rules,
+  and left no packaged process running.
+
 ## External phase-close evidence still required
 
-1. Run `scripts/phase1/Test-Phase1NetworkDenied.ps1` from elevated PowerShell against the final packages.
-2. Run `scripts/phase1/Test-Phase1ReferenceTier.ps1 -TierAttestation AtOrBelowApprovedTier`
+1. Run `scripts/phase1/Test-Phase1ReferenceTier.ps1 -TierAttestation AtOrBelowApprovedTier`
    on a physical machine meeting or falling below the approved reference tier.
-3. Complete the
+2. Complete the
    [unassisted new-tester protocol](../../docs/planning/50-production/phase-1-new-tester-protocol.md),
    including audible local speech and caption/local-cue fallback.
 
-Until those records pass, Phase 1 implementation is verified but the formal phase gate remains open.
+Until those two records pass, Phase 1 implementation and offline boundary are
+verified but the formal phase gate remains open.

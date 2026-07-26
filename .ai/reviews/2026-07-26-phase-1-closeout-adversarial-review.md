@@ -41,10 +41,12 @@ captions, and forced fallback comprehension.
 
 ### External evidence remains external
 
-The UAC request for S15 was canceled; no result file or firewall change exists.
-The current RTX 5090 host is not the approved physical tier, and no unassisted
-tester record exists. Those gates remain open and are not inferred from automated
-or developer-host evidence.
+The first UAC request for S15 was canceled and was correctly retained as skipped.
+A user-requested retry subsequently passed against the final package hashes with
+exact-executable inbound/outbound denial and complete rule cleanup. The current
+RTX 5090 host is still not the approved physical tier, and no unassisted tester
+record exists. Those two gates remain open and are not inferred from automated or
+developer-host evidence.
 
 ## Accepted warning
 

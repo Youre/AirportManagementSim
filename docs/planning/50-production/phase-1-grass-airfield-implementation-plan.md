@@ -5,7 +5,7 @@
 **Last updated:** 2026-07-26
 **Roadmap phase:** Phase 1
 
-Implementation evidence is recorded in the [Phase 1 verification record](../../../.ai/reviews/2026-07-26-phase-1-verification.md). The final code/package gates pass on the development host. Formal closure still requires elevated network-denied S15, physical reference-tier measurement, and the [unassisted new-tester/audio/comprehension protocol](phase-1-new-tester-protocol.md).
+Implementation evidence is recorded in the [Phase 1 verification record](../../../.ai/reviews/2026-07-26-phase-1-verification.md). The final code/package gates and elevated network-denied S15 pass. Formal closure still requires physical reference-tier measurement and the [unassisted new-tester/audio/comprehension protocol](phase-1-new-tester-protocol.md).
 
 ## Purpose
 

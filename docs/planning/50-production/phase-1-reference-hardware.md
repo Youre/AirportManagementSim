@@ -73,6 +73,9 @@ and periodic memory samples.
 
 Formal acceptance also requires a clean Git worktree so the recorded commit,
 package hashes, and source state are unambiguous.
+Before launching, the collector requires all four Development/Shipping binaries
+to match `scripts/phase1/Phase1AcceptanceManifest.json`; a rebuilt or modified
+package cannot reuse the recorded package identity.
 
 The soak passes when maximum process memory remains below 4 GiB and the
 last-quarter memory-sample median is no more than 64 MiB above the first-quarter
@@ -92,3 +95,7 @@ Phase 1 performance closes only after
 `AMSim/Saved/Phase1/reference-tier-result.json` names a physical machine meeting
 or falling below this tier and reports `passed: true`. Until then, performance
 status is `development-host passed; reference-tier pending`.
+
+When the reference-tier and tester records both pass, run
+`.\scripts\phase1\Test-Phase1Acceptance.ps1`. The aggregate result must report
+`passed: true` before the Phase 1 planning status changes to complete.

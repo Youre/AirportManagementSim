@@ -100,27 +100,59 @@ The human gate passes only when:
 Any failed item keeps the gate open. Record the observation and owning follow-up;
 do not reinterpret assistance as an unassisted pass.
 
-## Acceptance record template
+## Acceptance record
 
-```text
-Session ID:
-Date/time and timezone:
-Tester band: 5-7 / 8-10 / adult proxy
-Package launcher/runtime SHA-256:
-Display and UI scale:
-Journey completed:
-Elapsed minutes:
-Gameplay hints:
-Save/load recognized:
-Compatibility answer:
-Route/stand answer:
-Service answer:
-Reward answer:
-Audible local speech confirmed:
-Equivalent caption confirmed:
-Forced fallback cue confirmed:
-Fallback caption understood:
-Blocking observations:
-Facilitator attestation:
-Result: PASS / FAIL
+Use the repository recorder after the session. It validates all four final package
+hashes against
+`scripts/phase1/Phase1AcceptanceManifest.json`, records only bounded
+privacy-safe fields, and writes
+`AMSim/Saved/Phase1/tester-acceptance-result.json`.
+
+The facilitator sets a switch only after directly confirming that item. For a
+child-band session, also set `ParentGuardianConsentConfirmed`. Replace the
+example session ID and timestamps; do not put a tester name into the session ID.
+
+```powershell
+$acceptance = @{
+    SessionId = 'session-001'
+    TesterBand = 'adult proxy'
+    SessionStarted = '2026-07-26T13:00:00-04:00'
+    SessionEnded = '2026-07-26T13:25:00-04:00'
+    GameplayHints = 0
+    FirstTimeTesterConfirmed = $true
+    EmptySaveSlotConfirmed = $true
+    AudioOutputPrechecked = $true
+    ProtocolHiddenFromTester = $true
+    NoPersonalMediaCaptured = $true
+    JourneyCompleted = $true
+    SaveLoadRecognized = $true
+    CompatibilityUnderstood = $true
+    RouteStandUnderstood = $true
+    ServicesUnderstood = $true
+    RewardUnderstood = $true
+    AudibleLocalSpeechConfirmed = $true
+    EquivalentCaptionConfirmed = $true
+    ForcedFallbackCueConfirmed = $true
+    FallbackCaptionUnderstood = $true
+    NoBlockingObservations = $true
+    FacilitatorAttested = $true
+    RecordFormalEvidence = $true
+}
+.\scripts\phase1\New-Phase1TesterAcceptanceRecord.ps1 @acceptance
 ```
+
+If the session has a blocking observation, omit `NoBlockingObservations` and
+provide bounded non-personal identifiers such as
+`-BlockingObservationCodes UI-READABILITY -FollowUpReferences FOLLOWUP-01`.
+Add `-AllowFailedEvidence` so the failed record is preserved without converting
+it to a pass. A rehearsal must omit `RecordFormalEvidence`; even if every other
+field is true, it remains non-certifying.
+
+After both external records exist, run:
+
+```powershell
+.\scripts\phase1\Test-Phase1Acceptance.ps1
+```
+
+Phase 1 closes only when
+`AMSim/Saved/Phase1/acceptance-result.json` reports `passed: true`.

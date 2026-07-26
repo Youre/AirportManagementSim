@@ -5,16 +5,23 @@ param(
     [int]$SoakSeconds = 14400,
     [ValidateSet('Unreviewed', 'AtOrBelowApprovedTier')]
     [string]$TierAttestation = 'Unreviewed',
+    [string]$ManifestPath = '',
     [string]$OutputPath = '',
     [switch]$AllowIncompleteEvidence
 )
 
 $ErrorActionPreference = 'Stop'
 $repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
+. (Join-Path $PSScriptRoot 'Phase1Acceptance.Common.ps1')
 $packageRoot = if ($PackageRoot) {
     [System.IO.Path]::GetFullPath($PackageRoot)
 } else {
     Join-Path $repoRoot 'AMSim\Saved\Phase1Packages'
+}
+$manifestPath = if ($ManifestPath) {
+    [System.IO.Path]::GetFullPath($ManifestPath)
+} else {
+    Join-Path $PSScriptRoot 'Phase1AcceptanceManifest.json'
 }
 $outputPath = if ($OutputPath) {
     [System.IO.Path]::GetFullPath($OutputPath)
@@ -75,22 +82,17 @@ function Start-PackagedGame {
     throw "Packaged child process did not start: $innerPath"
 }
 
-$developmentExe = Get-ChildItem `
-    -LiteralPath (Join-Path $packageRoot 'Development') `
-    -Filter 'AMSim.exe' `
-    -File `
-    -Recurse |
-    Where-Object { $_.FullName -notmatch '\\AMSim\\Binaries\\Win64\\' } |
-    Select-Object -First 1
-$developmentInnerExe = if ($developmentExe) {
-    Get-Item -LiteralPath (
-        Join-Path $developmentExe.Directory.FullName 'AMSim\Binaries\Win64\AMSim.exe')
-} else {
-    $null
+$manifest = Get-Phase1AcceptanceManifest -Path $manifestPath
+$packageIdentity = Get-Phase1PackageIdentity `
+    -PackageRoot $packageRoot `
+    -Manifest $manifest
+if (-not $packageIdentity.passed) {
+    throw 'The exact final Phase 1 Development and Shipping packages must exist before reference-tier measurement.'
 }
-if (-not $developmentExe -or -not $developmentInnerExe) {
-    throw 'The final Phase 1 Development package must exist before reference-tier measurement.'
-}
+$developmentExe = Get-Item -LiteralPath (
+    $packageIdentity.packages.developmentLauncher.path)
+$developmentInnerExe = Get-Item -LiteralPath (
+    $packageIdentity.packages.developmentRuntime.path)
 
 $os = Get-CimInstance Win32_OperatingSystem
 $computerSystem = Get-CimInstance Win32_ComputerSystem
@@ -194,6 +196,7 @@ $formalSoakPassed =
     $memoryTrendPassed
 $tierAttestationPassed = $TierAttestation -eq 'AtOrBelowApprovedTier'
 $passed =
+    $packageIdentity.passed -and
     $metricsPassed -and
     $formalSoakPassed -and
     $tierAttestationPassed -and
@@ -205,6 +208,9 @@ $result = [ordered]@{
     scenario = 'S01.StarterGrassAirfield.ReferenceTier'
     sourceCommit = $commit
     sourceTreeClean = $sourceTreeClean
+    acceptanceManifest = $manifestPath
+    packageSourceCommit = $manifest.packageSourceCommit
+    packageIdentity = $packageIdentity
     package = [ordered]@{
         root = $packageRoot
         launcher = $developmentExe.FullName
@@ -270,6 +276,7 @@ $result = [ordered]@{
     }
     metrics = $smokeResult
     checks = [ordered]@{
+        packageIdentityPassed = [bool]$packageIdentity.passed
         tierAttestationPassed = $tierAttestationPassed
         sourceTreeClean = $sourceTreeClean
         metricsPassed = $metricsPassed
@@ -278,13 +285,11 @@ $result = [ordered]@{
     passed = $passed
 }
 
-$outputDirectory = Split-Path -Parent $outputPath
-New-Item -ItemType Directory -Path $outputDirectory -Force | Out-Null
-$result | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $outputPath -Encoding utf8
+$writtenPath = Write-Phase1Json -Value $result -Path $outputPath
 
 if (-not $passed -and -not $AllowIncompleteEvidence) {
-    throw "Reference-tier Phase 1 acceptance did not pass. Review $outputPath"
+    throw "Reference-tier Phase 1 acceptance did not pass. Review $writtenPath"
 }
 
-Write-Host "Reference-tier Phase 1 result: $outputPath"
+Write-Host "Reference-tier Phase 1 result: $writtenPath"
 Write-Host "Passed: $passed"

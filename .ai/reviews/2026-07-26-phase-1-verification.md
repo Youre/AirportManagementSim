@@ -124,6 +124,23 @@ Shipping launcher/runtime paths.
 - The script exited 0, wrote `passed: true`, removed all eight temporary rules,
   and left no packaged process running.
 
+## Acceptance-record enforcement
+
+- `Phase1AcceptanceManifest.json` binds the closeout to package source commit
+  `cdb1ad16e11a5b5a10fbb5a39072886242c9451b` and the four hashes above.
+- The updated reference collector rehashed all four binaries before launch. Its
+  five-second development-host harness passed package identity and runtime
+  metrics at 1.816 ms p99, while correctly retaining `passed: false`.
+- A minimal tester fixture and an all-positive rehearsal both retained
+  `passed: false`; the latter failed only the deliberately absent formal-evidence
+  attestation.
+- The strict aggregate passed exact package identity, the full pipeline, and
+  elevated network-denied S15. With no certifying external records, it reported
+  exactly `referenceTierPassed` and `testerAcceptancePassed` as false.
+- Calling the aggregate without `-AllowIncompleteEvidence` wrote the same false
+  result and exited with failure. The switch affects exit handling only and
+  cannot turn an incomplete result into acceptance.
+
 ## External phase-close evidence still required
 
 1. Run `scripts/phase1/Test-Phase1ReferenceTier.ps1 -TierAttestation AtOrBelowApprovedTier`
@@ -131,6 +148,8 @@ Shipping launcher/runtime paths.
 2. Complete the
    [unassisted new-tester protocol](../../docs/planning/50-production/phase-1-new-tester-protocol.md),
    including audible local speech and caption/local-cue fallback.
+3. Run `scripts/phase1/Test-Phase1Acceptance.ps1` and require
+   `AMSim/Saved/Phase1/acceptance-result.json` to report `passed: true`.
 
 Until those two records pass, Phase 1 implementation and offline boundary are
 verified but the formal phase gate remains open.

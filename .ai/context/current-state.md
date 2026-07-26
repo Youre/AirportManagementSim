@@ -17,7 +17,7 @@ Next verification command:
 - On an eligible physical PC: `.\scripts\phase1\Test-Phase1ReferenceTier.ps1 -TierAttestation AtOrBelowApprovedTier`
 
 Last verification:
-- 2026-07-26 UTC: elevated Phase 1 S15 passed against the final packages with inbound/outbound firewall denial on all profiles, Development journey/save-load continuity, zero unexpected Development sockets, zero Shipping sockets, and complete temporary-rule cleanup.
+- 2026-07-26 UTC: the strict Phase 1 aggregate revalidated exact package identity, pipeline, and elevated network-denied evidence; it correctly reports only the physical reference-tier and formal tester records as missing or failed.
 <!-- ai-project-init:end managed -->
 
 ## Project-specific state
@@ -55,6 +55,9 @@ Verification note:
 - The 100%, 125%, 150%, 175%, and 200% rendered UI matrix passes; 175–200% uses stacked full-width scrolling.
 - Shipping has zero forbidden file/text/receipt matches, zero observed TCP sockets, and zero required 3D gameplay candidates. Development has zero unexpected socket observations beyond the local trace listener.
 - Phase 1 elevated S15 passed against the final package hashes: the Development journey and save/load completed with only the expected local trace listener, Shipping observed zero TCP sockets during its five-second clean launch, and all eight temporary firewall rules were removed.
-- The portable reference-tier collector passes its five-second harness check, applies the documented profile, and deliberately reports formal acceptance false on the unreviewed RTX 5090 host.
+- The exact four-binary Phase 1 package identity is tracked in `scripts/phase1/Phase1AcceptanceManifest.json`; both external recorders and the final aggregate independently enforce it.
+- The portable reference-tier collector passes its five-second harness check, validates exact package identity, applies the documented profile, and deliberately reports formal acceptance false on the unreviewed RTX 5090 host.
+- The privacy-safe tester recorder requires explicit first-time-session, consent where applicable, precondition, journey, comprehension, audio/caption/fallback, no-blocker, facilitator, and formal-evidence attestations. Non-certifying rehearsals cannot pass.
+- The strict Phase 1 aggregate currently passes package identity, pipeline, and network-denied checks and reports only `referenceTierPassed` and `testerAcceptancePassed` false.
 - Phase 1 formal closure remains pending physical reference-tier results and an unassisted tester/audio/comprehension review.
 - Until `ai-init` is installed on `PATH`, run the CLI module with the skill source on `PYTHONPATH`.

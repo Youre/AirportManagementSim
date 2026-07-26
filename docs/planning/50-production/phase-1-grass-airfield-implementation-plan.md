@@ -286,6 +286,12 @@ Phase 1 closes only when:
 9. the clean Shipping package runs `S01`/`S15` with network denied and without editor/MCP/test dependencies or required 3D gameplay assets;
 10. VA-01, VA-02, VA-04, and VA-05 comparisons, accessibility checks, and known differences are recorded.
 
+The exact final binary identity is tracked in
+`scripts/phase1/Phase1AcceptanceManifest.json`. After the physical-tier and
+unassisted-tester records exist, run
+`.\scripts\phase1\Test-Phase1Acceptance.ps1`; the phase stays open unless its
+machine-readable aggregate reports `passed: true`.
+
 ## Explicit non-goals
 
 Phase 1 does not add:

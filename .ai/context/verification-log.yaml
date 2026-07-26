@@ -262,3 +262,28 @@ entries:
       backlog and only the expected local trace listener; Shipping launched 5
       seconds with zero TCP observations; final package hashes matched; script
       exited 0; all eight rules and packaged processes cleaned up.
+  - timestamp: '2026-07-26T12:48:36.526107+00:00'
+    commit: f3976909d87a760ee545af9c73a1d5c5bb62d475
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Phase 1 acceptance enforcement: exact package identity, PowerShell AST,
+      non-certifying tester boundaries, updated five-second reference harness, strict
+      aggregate, JSON/Markdown/link/diff/secret checks'
+    result: passed
+    notes: All four final hashes matched cdb1ad1; 6 Phase1 PowerShell scripts
+      parsed; incomplete and all-positive rehearsal tester records could not
+      certify; updated reference harness passed identity and metrics at 1.816 ms
+      p99 while remaining non-certifying; aggregate passed package/pipeline/S15
+      and named only referenceTierPassed/testerAcceptancePassed false; 5 JSON
+      files and 97 Markdown files validated with zero broken links; diff and
+      secret-signature checks passed.
+  - timestamp: '2026-07-26T12:48:47.781617+00:00'
+    commit: f3976909d87a760ee545af9c73a1d5c5bb62d475
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: python -m ai_project_init.cli doctor . --json (Phase 1 acceptance
+      enforcement)
+    result: passed
+    notes: Exited 0; only known managed-template, lexical review, legacy-ledger,
+      and project-os schema/version warnings were reported. No structural error
+      or new acceptance-tool conflict.

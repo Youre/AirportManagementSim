@@ -53,3 +53,33 @@ developer-host evidence.
 The automation report has one success-with-warning: the Phase 0 backup-recovery
 fixture intentionally removes the current snapshot, so the failed first read is
 expected before backup load succeeds.
+
+## Resumed-goal evidence review
+
+### A text template could be completed ambiguously
+
+The tester protocol now uses a bounded JSON recorder. It accepts only an
+anonymous identifier, tester band, timestamps, booleans, and non-personal
+observation/follow-up codes. A child-band pass requires consent attestation. It
+does not accept names, prose notes, audio, images, contact details, or save data.
+
+### A rehearsal could be mistaken for external evidence
+
+The recorder requires an explicit `RecordFormalEvidence` attestation. Without
+it, every other positive criterion still produces `passed: false` and
+`evidenceKind: non-certifying-record`. Failed real sessions can be preserved but
+cannot pass.
+
+### Evidence could refer to a different package
+
+The reference collector and tester recorder hash the Development launcher,
+Development runtime, Shipping launcher, and Shipping runtime against the
+tracked acceptance manifest. The aggregate independently rehashes the local
+packages and rechecks the hashes embedded in both external records.
+
+### An incomplete aggregate could be reported as closure
+
+The strict aggregate exits with failure unless package identity, pipeline,
+network-denied, physical reference-tier, and formal tester checks all pass.
+`-AllowIncompleteEvidence` changes only the command exit behavior; the JSON
+continues to report `passed: false` and names each missing or failed gate.

@@ -48,3 +48,17 @@ a verified no-skip defect and is not acceptable.
 - all five UI scales and the final Development/Shipping package pipeline pass;
 - packaged smoke records the reference profile and 1x simulation percentiles;
 - the reference-tier script completes a five-second non-certifying harness run.
+
+## External-acceptance evidence hardening
+
+The resumed closeout adds no runtime module, content, save, simulation, UI, or
+packaging behavior. `scripts/phase1/Phase1AcceptanceManifest.json` is the tracked
+identity contract for the exact four final binaries. A shared PowerShell helper
+validates those paths and hashes; the reference collector and privacy-safe
+tester recorder consume that contract. The aggregate acceptance validator reads
+the existing pipeline/network evidence plus the two external records and owns
+the sole machine-readable final decision.
+
+This keeps evidence ownership outside the game and preserves all architectural
+invariants above. A package rebuild requires a new reviewed identity manifest
+and rerun of package-bound evidence; no source or save migration is involved.

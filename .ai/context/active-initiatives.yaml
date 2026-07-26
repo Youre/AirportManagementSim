@@ -16,6 +16,6 @@ project_initiatives:
     next_outcome: Preserve its deterministic, save, 2D, offline, and Shipping boundaries in Phase 1
   - id: phase-1-grass-airfield
     title: Build the grass-airfield vertical slice
-    status: pending
-    source: docs/planning/50-production/phased-implementation-roadmap.md
-    next_outcome: Complete Phase 1 discovery and architecture-impact review for the end-to-end light-aircraft visit
+    status: active
+    source: docs/planning/50-production/phase-1-grass-airfield-implementation-plan.md
+    next_outcome: Complete elevated S15, physical reference-tier, and unassisted tester/audio/comprehension acceptance records

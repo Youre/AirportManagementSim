@@ -2,7 +2,7 @@
 
 **Status:** Approved baseline  
 **Owner:** Production and integration  
-**Last updated:** 2026-07-25
+**Last updated:** 2026-07-26
 
 ## Purpose
 
@@ -37,7 +37,7 @@ Deliver:
 
 ## Phase 1: Grass-airfield vertical slice
 
-**Status:** Next — discovery and architecture-impact review have not started.
+**Status:** Implementation verified — external phase gate pending. See [PI-03](phase-1-grass-airfield-implementation-plan.md) and the [verification record](../../../.ai/reviews/2026-07-26-phase-1-verification.md).
 
 **Goal:** Starting from a parcel, build and operate one complete light-aircraft visit.
 

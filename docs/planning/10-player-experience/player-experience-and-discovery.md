@@ -86,7 +86,8 @@ No save grants gameplay advantages to another save.
 
 - Starting guidance cards: 3
 - Maximum active suggested objectives: 3
-- First-aircraft target after opening: within 3 game minutes if a compatible runway and stand exist
+- Starter offer target after readiness: immediate while paused
+- First-aircraft target after the player confirms its schedule: within 3 game minutes
 - Recovery assistance trigger: no affordable unlocked revenue-producing action and projected income below essential needs for 10 game minutes
 - Context-help text target: no more than 45 words per card
 - Critical alert reading target: one sentence plus one action button

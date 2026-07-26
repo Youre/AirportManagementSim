@@ -17,7 +17,8 @@ This document supplies coherent initial tunable values so implementation and tes
 | Timetable increment | 5 game minutes |
 | Locked operations horizon | 30 game minutes |
 | Suggested objectives | Maximum 3 |
-| First guided flight target | Within 3 game minutes after readiness |
+| Starter offer after readiness | Immediate while paused |
+| First guided flight target | Within 3 game minutes after schedule confirmation |
 | Logical-agent target | 10,000 |
 | Simultaneously visible agent target | 2,000 |
 | On-map aircraft target | 150 |
@@ -71,4 +72,3 @@ Near-term weather forecast covers 6 game hours with high confidence; trend forec
 ## Balance validation
 
 Before a phase closes, automated headless scenarios must verify solvency and progression for GA, flight school, charter, cargo, passenger, and mixed paths. Playtests then measure first-flight time, explanation comprehension, idle time, recovery use, Major-capability time, and dominant strategies. Any change that violates recoverability or path viability requires specification review, not a silent tuning edit.
-

@@ -1,0 +1,178 @@
+{
+  "schema": 1,
+  "manifestId": "ContentManifest.Phase1.StarterGrassAirfield",
+  "owningPhase": "Phase1",
+  "entries": [
+    {
+      "contentId": "Map.TemperateStarter",
+      "kind": "Map",
+      "provenance": "InternalPrototype",
+      "rightsState": "InternalApproved",
+      "source": "ProjectAuthored",
+      "localizationKey": "Map.TemperateStarter.Name"
+    },
+    {
+      "contentId": "Aircraft.LightPiston.Starter",
+      "kind": "Aircraft",
+      "provenance": "InternalPrototype",
+      "rightsState": "InternalApproved",
+      "source": "ProjectAuthored",
+      "localizationKey": "Aircraft.LightPiston.Starter.Name"
+    },
+    {
+      "contentId": "Operator.RiverbendFlyingClub",
+      "kind": "Operator",
+      "provenance": "InternalPrototype",
+      "rightsState": "FictionalApproved",
+      "source": "ProjectAuthored",
+      "localizationKey": "Operator.RiverbendFlyingClub.Name"
+    },
+    {
+      "contentId": "Facility.GrassRunway.Starter",
+      "kind": "Facility",
+      "provenance": "InternalPrototype",
+      "rightsState": "InternalApproved",
+      "source": "ProjectAuthored",
+      "localizationKey": "Facility.GrassRunway.Starter.Name"
+    },
+    {
+      "contentId": "Facility.GrassTaxiway.Starter",
+      "kind": "Network",
+      "provenance": "InternalPrototype",
+      "rightsState": "InternalApproved",
+      "source": "ProjectAuthored",
+      "localizationKey": "Facility.GrassTaxiway.Starter.Name"
+    },
+    {
+      "contentId": "Facility.GAStand.Starter",
+      "kind": "Facility",
+      "provenance": "InternalPrototype",
+      "rightsState": "InternalApproved",
+      "source": "ProjectAuthored",
+      "localizationKey": "Facility.GAStand.Starter.Name"
+    },
+    {
+      "contentId": "Facility.OperationsHut.Starter",
+      "kind": "Facility",
+      "provenance": "InternalPrototype",
+      "rightsState": "InternalApproved",
+      "source": "ProjectAuthored",
+      "localizationKey": "Facility.OperationsHut.Starter.Name"
+    },
+    {
+      "contentId": "Facility.AccessConnection.Starter",
+      "kind": "Network",
+      "provenance": "InternalPrototype",
+      "rightsState": "InternalApproved",
+      "source": "ProjectAuthored",
+      "localizationKey": "Facility.AccessConnection.Starter.Name"
+    },
+    {
+      "contentId": "Facility.MarkingsWindsock.Starter",
+      "kind": "Facility",
+      "provenance": "InternalPrototype",
+      "rightsState": "InternalApproved",
+      "source": "ProjectAuthored",
+      "localizationKey": "Facility.MarkingsWindsock.Starter.Name"
+    },
+    {
+      "contentId": "Balance.Phase1.Starter",
+      "kind": "BalanceProfile",
+      "provenance": "InternalPrototype",
+      "rightsState": "InternalApproved",
+      "source": "ProjectAuthored",
+      "localizationKey": "Balance.Phase1.Starter.Name"
+    },
+    {
+      "contentId": "Recipe.StarterAirfield",
+      "kind": "ConstructionRecipe",
+      "provenance": "InternalPrototype",
+      "rightsState": "InternalApproved",
+      "source": "ProjectAuthored",
+      "localizationKey": "Recipe.StarterAirfield.Name"
+    },
+    {
+      "contentId": "StaffRole.Construction",
+      "kind": "StaffRole",
+      "provenance": "InternalPrototype",
+      "rightsState": "InternalApproved",
+      "source": "ProjectAuthored",
+      "localizationKey": "StaffRole.Construction.Name"
+    },
+    {
+      "contentId": "StaffRole.Ramp",
+      "kind": "StaffRole",
+      "provenance": "InternalPrototype",
+      "rightsState": "InternalApproved",
+      "source": "ProjectAuthored",
+      "localizationKey": "StaffRole.Ramp.Name"
+    },
+    {
+      "contentId": "StaffRole.Fueling",
+      "kind": "StaffRole",
+      "provenance": "InternalPrototype",
+      "rightsState": "InternalApproved",
+      "source": "ProjectAuthored",
+      "localizationKey": "StaffRole.Fueling.Name"
+    },
+    {
+      "contentId": "Offer.FirstFlight",
+      "kind": "Offer",
+      "provenance": "InternalPrototype",
+      "rightsState": "InternalApproved",
+      "source": "ProjectAuthored",
+      "localizationKey": "Offer.FirstFlight.Name"
+    },
+    {
+      "contentId": "Service.Inspection",
+      "kind": "ServiceTask",
+      "provenance": "InternalPrototype",
+      "rightsState": "InternalApproved",
+      "source": "ProjectAuthored",
+      "localizationKey": "Service.Inspection.Name"
+    },
+    {
+      "contentId": "Service.Fueling",
+      "kind": "ServiceTask",
+      "provenance": "InternalPrototype",
+      "rightsState": "InternalApproved",
+      "source": "ProjectAuthored",
+      "localizationKey": "Service.Fueling.Name"
+    },
+    {
+      "contentId": "Objective.FirstFlight",
+      "kind": "Objective",
+      "provenance": "InternalPrototype",
+      "rightsState": "InternalApproved",
+      "source": "ProjectAuthored",
+      "localizationKey": "Objective.FirstFlight.Name"
+    },
+    {
+      "contentId": "Weather.TemperateClear",
+      "kind": "WeatherProfile",
+      "provenance": "InternalPrototype",
+      "rightsState": "InternalApproved",
+      "source": "ProjectAuthored",
+      "localizationKey": "Weather.TemperateClear.Name"
+    },
+    {
+      "contentId": "Presentation.GrassAirfield",
+      "kind": "PresentationDescriptor",
+      "provenance": "InternalPrototype",
+      "rightsState": "InternalApproved",
+      "source": "ProjectAuthored",
+      "localizationKey": "Presentation.GrassAirfield.Name"
+    },
+    {
+      "contentId": "Audio.RadioCue.Local",
+      "kind": "AudioFallback",
+      "provenance": "InternalPrototype",
+      "rightsState": "InternalApproved",
+      "source": "GeneratedInRuntime",
+      "localizationKey": "Audio.RadioCue.Local.Name"
+    }
+  ],
+  "externalAircraftFilesCopied": 0,
+  "candidateSource": "C:\\Users\\dave\\Documents\\Joes_Game\\dist\\assets",
+  "candidateCopyPolicy": "RequiresCompletedCT01ManifestAndReview"
+}

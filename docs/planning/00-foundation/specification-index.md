@@ -98,6 +98,7 @@ The [Concept Art Reference Set](../30-content-and-assets/concept-art/README.md) 
 | --- | --- | --- |
 | PI-01 | [Phased Implementation and Integration Roadmap](../50-production/phased-implementation-roadmap.md) | Phase order, dependencies, gates, vertical slices |
 | PI-02 | [Verification and Requirements Traceability](../50-production/verification-traceability.md) | Concept coverage, test ownership, exit evidence |
+| PI-03 | [Phase 1 Grass-Airfield Implementation Plan](../50-production/phase-1-grass-airfield-implementation-plan.md) | Phase 1 scope, architecture, work packages, and exit evidence |
 
 ## Shared identifiers and interfaces
 

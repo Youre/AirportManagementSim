@@ -1,4 +1,5 @@
 #include "AMSimSimulation.h"
+#include "AMSimSnapshotSerialization.h"
 
 namespace AMSim
 {
@@ -17,6 +18,7 @@ namespace AMSim
 
 	FSimulation::FSimulation(const uint64 InMasterSeed)
 		: MasterSeed(InMasterSeed == 0 ? 1 : InMasterSeed)
+		, Phase1(MasterSeed)
 	{
 	}
 
@@ -34,6 +36,11 @@ namespace AMSim
 		return ECommandResult::Accepted;
 	}
 
+	EPhase1CommandResult FSimulation::QueuePhase1Command(const FPhase1Command& Command)
+	{
+		return Phase1.QueueCommand(Command, Clock.GetGameTimeMilliseconds());
+	}
+
 	void FSimulation::Step()
 	{
 		PendingCommands.Sort([](const FCommand& Left, const FCommand& Right)
@@ -46,6 +53,7 @@ namespace AMSim
 		}
 		PendingCommands.Reset();
 		Clock.AdvanceSteps(1);
+		Phase1.Step(Clock.GetGameTimeMilliseconds());
 		++Revision;
 	}
 
@@ -84,6 +92,11 @@ namespace AMSim
 		return {Revision, Clock.GetGameTimeMilliseconds(), Entities, CalculateChecksum()};
 	}
 
+	FPhase1QuerySnapshot FSimulation::CreatePhase1QuerySnapshot() const
+	{
+		return Phase1.CreateQuerySnapshot(Revision, Clock.GetGameTimeMilliseconds());
+	}
+
 	FSimulationDiagnostics FSimulation::CreateDiagnostics() const
 	{
 		return {
@@ -98,49 +111,58 @@ namespace AMSim
 
 	FSnapshot FSimulation::CreateSnapshot() const
 	{
-		return {
-			SnapshotSchemaVersion,
-			MasterSeed,
-			NextEntityId,
-			NextEventSequence,
-			Revision,
-			Clock.GetGameTimeMilliseconds(),
-			Entities
-		};
+		FSnapshot Snapshot;
+		Snapshot.SchemaVersion = SnapshotSchemaVersion;
+		Snapshot.MasterSeed = MasterSeed;
+		Snapshot.NextEntityId = NextEntityId;
+		Snapshot.NextEventSequence = NextEventSequence;
+		Snapshot.Revision = Revision;
+		Snapshot.GameTimeMilliseconds = Clock.GetGameTimeMilliseconds();
+		Snapshot.Entities = Entities;
+		Snapshot.Phase1 = Phase1.GetState();
+		return Snapshot;
 	}
 
 	bool FSimulation::RestoreSnapshot(const FSnapshot& Snapshot)
 	{
-		if (Snapshot.SchemaVersion != SnapshotSchemaVersion ||
-			Snapshot.MasterSeed == 0 ||
-			Snapshot.NextEntityId == 0 ||
-			Snapshot.NextEventSequence == 0)
+		FSnapshot Candidate = Snapshot;
+		if (!MigrateSnapshotToCurrent(Candidate) ||
+			Candidate.MasterSeed == 0 ||
+			Candidate.NextEntityId == 0 ||
+			Candidate.NextEventSequence == 0)
 		{
 			return false;
 		}
 		FSimulationClock RestoredClock;
-		if (!RestoredClock.Restore(Snapshot.GameTimeMilliseconds, Snapshot.Revision))
+		if (!RestoredClock.Restore(Candidate.GameTimeMilliseconds, Candidate.Revision))
 		{
 			return false;
 		}
-		TArray<FEntityId> RestoredEntities = Snapshot.Entities;
+		TArray<FEntityId> RestoredEntities = Candidate.Entities;
 		RestoredEntities.Sort([](const FEntityId Left, const FEntityId Right) { return Left.Value < Right.Value; });
 		uint64 PreviousId = 0;
 		for (const FEntityId Entity : RestoredEntities)
 		{
-			if (!Entity.IsValid() || Entity.Value == PreviousId || Entity.Value >= Snapshot.NextEntityId)
+			if (!Entity.IsValid() || Entity.Value == PreviousId || Entity.Value >= Candidate.NextEntityId)
 			{
 				return false;
 			}
 			PreviousId = Entity.Value;
 		}
 
-		MasterSeed = Snapshot.MasterSeed;
-		NextEntityId = Snapshot.NextEntityId;
-		NextEventSequence = Snapshot.NextEventSequence;
-		Revision = Snapshot.Revision;
+		FStarterAirfieldSimulation RestoredPhase1(Candidate.MasterSeed);
+		if (!RestoredPhase1.RestoreState(Candidate.Phase1))
+		{
+			return false;
+		}
+
+		MasterSeed = Candidate.MasterSeed;
+		NextEntityId = Candidate.NextEntityId;
+		NextEventSequence = Candidate.NextEventSequence;
+		Revision = Candidate.Revision;
 		Clock = RestoredClock;
 		Entities = MoveTemp(RestoredEntities);
+		Phase1 = MoveTemp(RestoredPhase1);
 		PendingCommands.Reset();
 		Events.Reset();
 		return true;
@@ -158,6 +180,8 @@ namespace AMSim
 		{
 			HashBytes(Hash, &Entity.Value, sizeof(Entity.Value));
 		}
+		const uint64 Phase1Checksum = Phase1.CalculateChecksum();
+		HashBytes(Hash, &Phase1Checksum, sizeof(Phase1Checksum));
 		return Hash;
 	}
 

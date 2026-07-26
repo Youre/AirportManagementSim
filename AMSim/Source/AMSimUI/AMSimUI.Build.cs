@@ -15,6 +15,7 @@ public class AMSimUI : ModuleRules
 			"Engine",
 			"EnhancedInput",
 			"Paper2D",
+			"TextToSpeech",
 			"UMG"
 		});
 		PrivateDependencyModuleNames.AddRange(new[] { "InputCore", "Slate", "SlateCore" });

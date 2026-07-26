@@ -13,6 +13,7 @@ public class AMSimEditor : ModuleRules
 			"Core",
 			"CoreUObject",
 			"Engine",
+			"Json",
 			"UnrealEd"
 		});
 	}

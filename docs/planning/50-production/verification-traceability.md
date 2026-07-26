@@ -94,6 +94,28 @@ The measurement host was a CORSAIR VENGEANCE i5200 with Windows 11 Pro build 262
 
 Accepted residuals are metadata-only transitive editor plugin descriptors, the temporary use of `/Engine/Maps/Entry`, the Development-only local trace listener, and the absence of a pre-schema-1 migration fixture. None places editor code, network behavior, or unapproved aircraft content in Shipping. Phase 1 owns the project-map replacement; its first authoritative schema change owns a migration fixture.
 
+## Phase 1 implementation evidence
+
+[PI-03](phase-1-grass-airfield-implementation-plan.md) maps the grass-airfield slice to implementation work packages and evidence. Implementation verification passed on 2026-07-26; the formal phase gate remains open for external evidence. The normative records are:
+
+- [Phase 1 verification record](../../../.ai/reviews/2026-07-26-phase-1-verification.md);
+- [Phase 1 implementation architecture-impact review](../../../.ai/reviews/2026-07-26-phase-1-implementation-architecture-impact.md);
+- [Phase 1 implementation adversarial review](../../../.ai/reviews/2026-07-26-phase-1-implementation-adversarial-review.md);
+- machine-readable local results at `AMSim/Saved/Phase1/pipeline-result.json`.
+
+| Phase 1 claim | Current evidence |
+| --- | --- |
+| Fresh save reaches first complete visit | Headless and rendered/package `S01` pass; unassisted tester pending |
+| Starter plan is affordable and recoverable | 3,400 Credits, 32% contingency, ledger reconciliation, cancellation/refund, and zero-credit recovery pass |
+| First traffic is timely and compatible | Immediate paused offer, exact five-minute slot, explicit Stand A1/buffers, and arrival timing pass |
+| Construction is authoritative and persistent | Proposal/stage/delivery/team/inspection/open/close/cancel tests and save matrix pass |
+| Aircraft operation is safe and deterministic | ATC, reservation, taxi, turnaround, readiness, replay, and no-overlap assertions pass |
+| UI explains cause, remedy, compatibility, and reward | Query-backed rendered matrix passes 100–200%; new-tester comprehension pending |
+| Content is controlled | 20-asset catalog, internal 2D provenance, and zero copied external aircraft pass |
+| Save evolution is safe | Schema-1 migration, schema-2 boundary continuation, corruption/backup/future validation pass |
+| Performance meets a representative target | Development-host budgets pass; physical reference-tier run pending |
+| Product remains strict 2D and offline | Shipping asset/dependency/socket scans pass; elevated firewall-denied S15 pending |
+
 ## Visual reference mapping
 
 | Reference | Owning surfaces | First comparison gate |

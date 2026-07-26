@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "scenarioId": "S01.StarterGrassAirfield",
+  "seed": "11684030530412666515",
+  "mapId": "Map.TemperateStarter",
+  "airportId": 1,
+  "startingCredits": 5000,
+  "startingAirportPoints": 0,
+  "starterPlan": {
+    "runwayCost": 1600,
+    "taxiConnectionCost": 500,
+    "standCost": 450,
+    "accessCost": 300,
+    "operationsHutCost": 400,
+    "markingsAndWindsockCost": 150,
+    "totalCost": 3400,
+    "maximumCost": 3500,
+    "minimumContingencyPercent": 30
+  },
+  "construction": {
+    "deliveryAtGameMilliseconds": 30000,
+    "buildingAtGameMilliseconds": 60000,
+    "inspectionAtGameMilliseconds": 90000,
+    "readyToOpenAtGameMilliseconds": 120000
+  },
+  "firstFlight": {
+    "aircraftContentId": "Aircraft.LightPiston.Starter",
+    "operatorContentId": "Operator.RiverbendFlyingClub",
+    "offerAppearsImmediatelyAtReadiness": true,
+    "timetableIncrementGameMinutes": 5,
+    "assignedStandDefinitionId": "Facility.GAStand.Starter",
+    "arrivalBufferGameMinutes": 1,
+    "departureBufferGameMinutes": 1,
+    "maximumArrivalDelayAfterScheduleGameMinutes": 3,
+    "completionRewardCredits": 600,
+    "completionAirportPoints": 5
+  },
+  "expectedJourney": [
+    "CreateAirport",
+    "CommitStarterPlan",
+    "AdvanceConstruction",
+    "OpenAirport",
+    "AcceptStarterOffer",
+    "ScheduleStarterFlight",
+    "AdvanceArrivalAndTurnaround",
+    "CompleteDeparture",
+    "SaveAndLoad"
+  ],
+  "requiredAssertions": [
+    "starter_plan_total_lte_3500",
+    "starter_contingency_gte_30_percent",
+    "offer_immediate_while_paused",
+    "arrival_within_3_game_minutes_after_schedule",
+    "runway_taxi_stand_service_compatible",
+    "stand_assignment_and_buffers_are_authoritative",
+    "cancel_refund_close_reopen_pin_decline_contracts",
+    "inspection_and_fueling_complete_before_departure",
+    "transaction_ledger_reconciles",
+    "airframe_identity_persists",
+    "save_load_checksum_matches",
+    "zero_credit_airfield_recovers",
+    "shipping_network_denied",
+    "no_required_3d_gameplay_asset"
+  ]
+}

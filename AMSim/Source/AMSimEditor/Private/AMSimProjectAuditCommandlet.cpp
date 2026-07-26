@@ -1,8 +1,35 @@
 #include "AMSimProjectAuditCommandlet.h"
 #include "AMSimImportManifestValidator.h"
+#include "AMSimPhase1Content.h"
+#include "Dom/JsonObject.h"
+#include "Engine/AssetManager.h"
 #include "Misc/ConfigCacheIni.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Parse.h"
+#include "Misc/Paths.h"
+#include "Serialization/JsonReader.h"
+#include "Serialization/JsonSerializer.h"
+#include "UObject/Package.h"
+
+namespace
+{
+	bool LoadJsonObject(const FString& Path, TSharedPtr<FJsonObject>& Output)
+	{
+		FString Json;
+		if (!FFileHelper::LoadFileToString(Json, *Path))
+		{
+			UE_LOG(LogTemp, Error, TEXT("Could not read JSON artifact: %s"), *Path);
+			return false;
+		}
+		const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Json);
+		if (!FJsonSerializer::Deserialize(Reader, Output) || !Output.IsValid())
+		{
+			UE_LOG(LogTemp, Error, TEXT("Could not parse JSON artifact: %s"), *Path);
+			return false;
+		}
+		return true;
+	}
+}
 
 UAMSimProjectAuditCommandlet::UAMSimProjectAuditCommandlet()
 {
@@ -21,7 +48,98 @@ int32 UAMSimProjectAuditCommandlet::Main(const FString& Params)
 	GConfig->GetBool(TEXT("/Script/Engine.RendererSettings"), TEXT("r.Substrate"), bSubstrate, GEngineIni);
 	if (bRayTracing || bSubstrate)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Phase 0 audit failed: 3D renderer features are enabled."));
+		UE_LOG(LogTemp, Error, TEXT("Project audit failed: disallowed 3D renderer features are enabled."));
+		bPassed = false;
+	}
+
+	UAssetManager& AssetManager = UAssetManager::Get();
+	AssetManager.ScanPathsForPrimaryAssets(
+		TEXT("AMSimPhase1"),
+		{TEXT("/Game/Phase1/CoreDefinitions")},
+		UAMSimPhase1Definition::StaticClass(),
+		false);
+	for (const TPair<FPrimaryAssetType, UClass*>& Type : {
+		TPair<FPrimaryAssetType, UClass*>(TEXT("AMSimMap"), UAMSimMapDefinition::StaticClass()),
+		TPair<FPrimaryAssetType, UClass*>(TEXT("AMSimFacility"), UAMSimFacilityDefinition::StaticClass()),
+		TPair<FPrimaryAssetType, UClass*>(TEXT("AMSimAircraft"), UAMSimAircraftDefinition::StaticClass()),
+		TPair<FPrimaryAssetType, UClass*>(TEXT("AMSimOperator"), UAMSimOperatorDefinition::StaticClass())})
+	{
+		AssetManager.ScanPathsForPrimaryAssets(
+			Type.Key,
+			{TEXT("/Game/Phase1/Definitions")},
+			Type.Value,
+			false);
+	}
+	const FAMSimPhase1CatalogValidation Catalog =
+		FAMSimPhase1ContentCatalog::ValidateLoadedCatalog();
+	for (const FString& Error : Catalog.Errors)
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s"), *Error);
+	}
+	bPassed &= Catalog.bValid;
+	UE_LOG(
+		LogTemp,
+		Display,
+		TEXT("Phase 1 catalog: %d Primary Assets; required definitions %s."),
+		Catalog.Assets.Num(),
+		Catalog.bValid ? TEXT("resolved") : TEXT("missing or invalid"));
+
+	if (!FPackageName::DoesPackageExist(TEXT("/Game/Maps/L_TemperateStarter")))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Project-owned Phase 1 map is missing."));
+		bPassed = false;
+	}
+
+	const FString Phase1ConfigDirectory =
+		FPaths::Combine(FPaths::ProjectConfigDir(), TEXT("Phase1"));
+	TSharedPtr<FJsonObject> Fixture;
+	if (LoadJsonObject(
+		FPaths::Combine(Phase1ConfigDirectory, TEXT("S01-StarterGrassAirfield.json")),
+		Fixture))
+	{
+		const TSharedPtr<FJsonObject>* StarterPlan = nullptr;
+		const TSharedPtr<FJsonObject>* FirstFlight = nullptr;
+		const bool bFixtureValid =
+			Fixture->GetStringField(TEXT("scenarioId")) == TEXT("S01.StarterGrassAirfield") &&
+			Fixture->GetStringField(TEXT("mapId")) == TEXT("Map.TemperateStarter") &&
+			Fixture->TryGetObjectField(TEXT("starterPlan"), StarterPlan) &&
+			(*StarterPlan)->GetIntegerField(TEXT("totalCost")) <= 3500 &&
+			(*StarterPlan)->GetIntegerField(TEXT("minimumContingencyPercent")) >= 30 &&
+			Fixture->TryGetObjectField(TEXT("firstFlight"), FirstFlight) &&
+			(*FirstFlight)->GetBoolField(TEXT("offerAppearsImmediatelyAtReadiness")) &&
+			(*FirstFlight)->GetIntegerField(TEXT("maximumArrivalDelayAfterScheduleGameMinutes")) <= 3;
+		if (!bFixtureValid)
+		{
+			UE_LOG(LogTemp, Error, TEXT("S01 fixture violates Phase 1 cost, timing, or identity gates."));
+			bPassed = false;
+		}
+	}
+	else
+	{
+		bPassed = false;
+	}
+
+	TSharedPtr<FJsonObject> ContentManifest;
+	if (LoadJsonObject(
+		FPaths::Combine(Phase1ConfigDirectory, TEXT("Phase1ContentManifest.json")),
+		ContentManifest))
+	{
+		const TArray<TSharedPtr<FJsonValue>>* Entries = nullptr;
+		const bool bManifestValid =
+			ContentManifest->GetIntegerField(TEXT("externalAircraftFilesCopied")) == 0 &&
+			ContentManifest->TryGetArrayField(TEXT("entries"), Entries) &&
+			Entries->Num() >= FAMSimPhase1ContentCatalog::RequiredContentIds().Num();
+		if (!bManifestValid)
+		{
+			UE_LOG(
+				LogTemp,
+				Error,
+				TEXT("Phase 1 content manifest is incomplete or records unapproved external copies."));
+			bPassed = false;
+		}
+	}
+	else
+	{
 		bPassed = false;
 	}
 
@@ -46,6 +164,6 @@ int32 UAMSimProjectAuditCommandlet::Main(const FString& Params)
 		}
 	}
 
-	UE_LOG(LogTemp, Display, TEXT("AMSim Phase 0 project audit: %s"), bPassed ? TEXT("PASSED") : TEXT("FAILED"));
+	UE_LOG(LogTemp, Display, TEXT("AMSim Phase 1 project audit: %s"), bPassed ? TEXT("PASSED") : TEXT("FAILED"));
 	return bPassed ? 0 : 1;
 }

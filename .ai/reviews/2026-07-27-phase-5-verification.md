@@ -1,6 +1,6 @@
 # Phase 5 Verification Review
 
-**Status:** Engineering gates passed; owner accelerated acceptance open  
+**Status:** Engineering gates passed; owner accelerated acceptance open
 **Date:** 2026-07-27  
 **Scope:** PI-08 cargo and specialization breadth
 

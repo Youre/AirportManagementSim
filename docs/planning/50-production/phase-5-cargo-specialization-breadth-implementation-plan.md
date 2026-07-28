@@ -1,6 +1,6 @@
 # PI-08: Phase 5 Cargo and Specialization Breadth
 
-**Status:** Implementation and technical verification complete; owner accelerated acceptance open  
+**Status:** Implementation and technical verification complete; owner accelerated acceptance open
 **Owner:** Simulation, gameplay, presentation, and content  
 **Approved:** 2026-07-27  
 **Completed:** 2026-07-27  

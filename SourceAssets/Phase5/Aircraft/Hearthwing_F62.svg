@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <g id="shadow" opacity=".24" transform="translate(8 10)">
+    <path fill="#07151d" d="M242 20h28l16 153 153 82v34l-148-25-8 128 65 48v27l-92-22-92 22v-27l65-48-8-128-148 25v-34l153-82z"/>
+  </g>
+  <g id="airframe">
+    <path fill="#edf4f0" stroke="#102d39" stroke-width="9" stroke-linejoin="round" d="M242 20h28l16 153 153 82v34l-148-25-8 128 65 48v27l-92-22-92 22v-27l65-48-8-128-148 25v-34l153-82z"/>
+    <path fill="#cbd9d4" d="M243 31h26l10 164-23 36-23-36z"/>
+  </g>
+  <g id="engines" fill="#123844" stroke="#07151d" stroke-width="5">
+    <ellipse cx="170" cy="258" rx="30" ry="48"/>
+    <ellipse cx="342" cy="258" rx="30" ry="48"/>
+    <ellipse cx="170" cy="258" rx="17" ry="31" fill="#f0a329"/>
+    <ellipse cx="342" cy="258" rx="17" ry="31" fill="#f0a329"/>
+  </g>
+  <g id="livery">
+    <path fill="#0a5266" d="M243 40h26l9 122-22 39-22-39z"/>
+    <path fill="#1ab8ca" d="M227 207 82 266v14l147-24zM285 207l145 59v14l-147-24z"/>
+    <path fill="#f0a329" d="m230 375 26 23 26-23-3 46-23 14-23-14z"/>
+    <path fill="#102d39" d="M164 442h184v15H164z"/>
+  </g>
+  <g id="details" fill="#102d39">
+    <path d="M241 63h30l4 43h-38z"/>
+    <circle cx="216" cy="260" r="9"/>
+    <circle cx="296" cy="260" r="9"/>
+    <path d="M234 315h44v14h-44z"/>
+    <path d="M234 344h44v14h-44z"/>
+  </g>
+</svg>

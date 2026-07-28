@@ -1,0 +1,15 @@
+{
+  "source": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase4.5\\Generated\\ui-icon-thumbnail-atlas-source.png",
+  "output": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase4.5\\Generated\\ui-icon-thumbnail-atlas-alpha.png",
+  "sampled_key_rgb": [
+    229,
+    11,
+    232
+  ],
+  "threshold": 78.0,
+  "feather": 48.0,
+  "pixels": 1572516,
+  "transparent_pixels": 992164,
+  "partial_pixels": 4174,
+  "opaque_pixels": 576178
+}

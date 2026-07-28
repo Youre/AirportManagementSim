@@ -8,7 +8,7 @@
 #include "PaperSpriteComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
-namespace
+namespace AMSimWorldPresenterPrivate
 {
 	UPaperSprite* FindSprite(const TCHAR* ObjectPath)
 	{
@@ -17,7 +17,84 @@ namespace
 	}
 
 	constexpr float SpritePlaneRoll = -90.0f;
+
+	enum class EOperationsSprite : int32
+	{
+		FuelTruck,
+		BaggageTug,
+		BaggageCartTrain,
+		OperationsVan,
+		FireRescueTruck,
+		ConstructionTruck,
+		ShuttleBus,
+		Taxi,
+		RentalCar,
+		Deicer,
+		RampWorker,
+		ConstructionWorker,
+		SecurityOfficer,
+		TerminalAgent,
+		PassengerFamily,
+		Passenger,
+		Suitcase,
+		SafetyCones,
+		PortableStairs,
+		PushbackTug,
+		Count
+	};
+
+	enum class ETerminalSprite : int32
+	{
+		CheckInDesk,
+		BagDropDesk,
+		SecurityScanner,
+		QueueBarriers,
+		GatePodium,
+		SeatingCluster,
+		BaggageConveyor,
+		SortingTable,
+		BaggageCart,
+		ReclaimCarousel,
+		InformationDesk,
+		RestroomBlock,
+		EntranceDoors,
+		SecureDoor,
+		PartitionWall,
+		CurbsideShelter,
+		BusStopShelter,
+		ParkingKiosk,
+		TerminalFloor,
+		SecureFloor,
+		CautionHatch,
+		DirectionArrow,
+		AccessibleRoute,
+		ProtectionZone,
+		Count
+	};
+
+	enum class ESiteSprite : int32
+	{
+		RunwayAsphalt,
+		TaxiwayAsphalt,
+		ApronStand,
+		AccessRoad,
+		RegionalTerminal,
+		GAHangars,
+		OperationsStation,
+		FuelFarm,
+		ParkingLot,
+		BusTaxiBay,
+		RailPlatform,
+		DropoffIsland,
+		TreeCluster,
+		LandscapeCluster,
+		PerimeterGate,
+		ApronFixtures,
+		Count
+	};
 }
+
+using namespace AMSimWorldPresenterPrivate;
 
 AAMSimWorldPresenter::AAMSimWorldPresenter()
 {
@@ -36,6 +113,26 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 	Selection = CreateSpriteComponent(TEXT("Selection"), 70);
 	InspectionMarker = CreateSpriteComponent(TEXT("InspectionMarker"), 72, FLinearColor(0.45f, 0.82f, 0.54f, 0.55f));
 	FuelMarker = CreateSpriteComponent(TEXT("FuelMarker"), 72, FLinearColor(0.32f, 0.83f, 0.91f, 0.55f));
+	TurnaroundFuelTruck =
+		CreateSpriteComponent(TEXT("TurnaroundFuelTruck"), 73);
+	TurnaroundRampWorker =
+		CreateSpriteComponent(TEXT("TurnaroundRampWorker"), 74);
+	TurnaroundSafetyCones =
+		CreateSpriteComponent(TEXT("TurnaroundSafetyCones"), 71);
+	TurnaroundSafetyZone =
+		CreateSpriteComponent(TEXT("TurnaroundSafetyZone"), 68);
+	for (int32 Index = 0; Index < 2; ++Index)
+	{
+		TurnaroundApproachPaths.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("TurnaroundApproachPath%d"), Index),
+			69 + Index));
+	}
+	for (int32 Index = 0; Index < 4; ++Index)
+	{
+		Phase1ConstructionProxies.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("Phase1ConstructionProxy%d"), Index),
+			54 + Index));
+	}
 	for (int32 Index = 0; Index < 4; ++Index)
 	{
 		Phase2Aircraft.Add(CreateSpriteComponent(
@@ -50,6 +147,10 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 		TEXT("Phase2ExpansionOverlay"),
 		35,
 		FLinearColor(0.25f, 0.78f, 0.86f, 0.38f));
+	ExpansionClosureOverlay = CreateSpriteComponent(
+		TEXT("Phase2ExpansionClosureOverlay"),
+		37,
+		FLinearColor(0.96f, 0.34f, 0.27f, 0.72f));
 	IncidentOverlay = CreateSpriteComponent(
 		TEXT("Phase2IncidentOverlay"),
 		80,
@@ -73,29 +174,36 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 		Phase3DepartureFlow.Add(CreateSpriteComponent(
 			*FString::Printf(TEXT("Phase3DepartureFlow%d"), Index),
 			52,
-			FLinearColor(0.24f, 0.83f, 0.91f, 0.74f)));
+			FLinearColor(0.05f, 0.75f, 0.92f, 0.96f)));
 		Phase3BaggageFlow.Add(CreateSpriteComponent(
 			*FString::Printf(TEXT("Phase3BaggageFlow%d"), Index),
 			51,
-			FLinearColor(0.91f, 0.55f, 0.18f, 0.68f)));
+			FLinearColor(0.95f, 0.45f, 0.05f, 0.94f)));
 	}
 	for (int32 Index = 0; Index < 5; ++Index)
 	{
 		Phase3ArrivalFlow.Add(CreateSpriteComponent(
 			*FString::Printf(TEXT("Phase3ArrivalFlow%d"), Index),
 			53,
-			FLinearColor(0.76f, 0.42f, 0.92f, 0.72f)));
+			FLinearColor(0.67f, 0.25f, 0.90f, 0.94f)));
 		Phase3AccessibleFlow.Add(CreateSpriteComponent(
 			*FString::Printf(TEXT("Phase3AccessibleFlow%d"), Index),
 			56,
-			FLinearColor(0.96f, 0.82f, 0.27f, 0.92f)));
+			FLinearColor(0.98f, 0.75f, 0.08f, 0.98f)));
+	}
+	for (int32 Index = 0; Index < 20; ++Index)
+	{
+		Phase3AccessibleDashes.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("Phase3AccessibleDash%d"), Index),
+			57,
+			FLinearColor(1.0f, 0.88f, 0.12f, 1.0f)));
 	}
 	for (int32 Index = 0; Index < 4; ++Index)
 	{
 		Phase3LandsideFlow.Add(CreateSpriteComponent(
 			*FString::Printf(TEXT("Phase3LandsideFlow%d"), Index),
 			50,
-			FLinearColor(0.32f, 0.75f, 0.38f, 0.76f)));
+			FLinearColor(0.12f, 0.72f, 0.30f, 0.96f)));
 	}
 	for (int32 Index = 0; Index < 8; ++Index)
 	{
@@ -104,6 +212,19 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 			49,
 			FLinearColor(0.20f, 0.58f, 0.72f, 0.80f)));
 	}
+	for (int32 Index = 0; Index < 4; ++Index)
+	{
+		Phase3BaggageExceptionRoute.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("Phase3BaggageExceptionRoute%d"), Index),
+			55,
+			FLinearColor(0.76f, 0.42f, 0.18f, 0.62f)));
+	}
+	Phase3BaggageExceptionZone = CreateSpriteComponent(
+		TEXT("Phase3BaggageExceptionZone"),
+		54);
+	Phase3BaggageExceptionStation = CreateSpriteComponent(
+		TEXT("Phase3BaggageExceptionStation"),
+		58);
 	for (int32 Index = 0; Index < 3; ++Index)
 	{
 		Phase3Congestion.Add(CreateSpriteComponent(
@@ -149,13 +270,97 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 		TEXT("Phase3Aircraft"),
 		67,
 		FLinearColor(0.92f, 0.58f, 0.22f, 1.0f));
+	for (int32 Index = 0; Index < 23; ++Index)
+	{
+		Phase3Props.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("Phase3Prop%d"), Index),
+			43 + Index % 4));
+	}
+	for (int32 Index = 0;
+		Index < static_cast<int32>(ESiteSprite::Count);
+		++Index)
+	{
+		MatureSite.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("MatureSite%d"), Index),
+			Index < 4 ? 8 + Index : 38 + (Index % 8)));
+	}
+	for (int32 Index = 0; Index < 6; ++Index)
+	{
+		MatureTaxiConnectors.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("MatureTaxiConnector%d"), Index),
+			12 + Index));
+	}
+	for (int32 Index = 0; Index < 7; ++Index)
+	{
+		MatureLandsideLinks.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("MatureLandsideLink%d"), Index),
+			11 + Index));
+	}
+	for (int32 Index = 0; Index < 10; ++Index)
+	{
+		MatureLandscapeClusters.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("MatureLandscapeCluster%d"), Index),
+			36 + Index % 2));
+	}
+	for (int32 Index = 0; Index < 3; ++Index)
+	{
+		MatureAircraft.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("MatureAircraft%d"), Index),
+			63 + Index));
+	}
+	MatureSelection = CreateSpriteComponent(
+		TEXT("MatureSelection"),
+		75,
+		FLinearColor(0.29f, 0.86f, 0.94f, 0.92f));
+	for (int32 Index = 0; Index < 8; ++Index)
+	{
+		MatureGroundVehicles.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("MatureGroundVehicle%d"), Index),
+			66 + Index % 3));
+	}
+	for (int32 Index = 0; Index < 18; ++Index)
+	{
+		MaturePeople.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("MaturePerson%d"), Index),
+			70 + Index % 3));
+	}
+	for (int32 Index = 0; Index < 8; ++Index)
+	{
+		MatureBags.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("MatureBag%d"), Index),
+			69));
+	}
 	Phase4WeatherOverlay = CreateSpriteComponent(
 		TEXT("Phase4WeatherOverlay"),
 		76,
-		FLinearColor(0.20f, 0.43f, 0.55f, 0.26f));
+		FLinearColor(0.03f, 0.14f, 0.22f, 0.52f));
+	for (int32 Index = 0; Index < 3; ++Index)
+	{
+		Phase4WetSurfaces.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("Phase4WetSurface%d"), Index),
+			47 + Index,
+			FLinearColor(0.48f, 0.74f, 0.84f, 0.36f)));
+	}
+	for (int32 Index = 0; Index < 54; ++Index)
+	{
+		Phase4RainStreaks.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("Phase4RainStreak%d"), Index),
+			77,
+			FLinearColor(0.68f, 0.90f, 0.98f, 0.68f)));
+	}
 	Phase4IncidentRunway = CreateSpriteComponent(
 		TEXT("Phase4IncidentRunway"),
 		78);
+	Phase4AffectedAircraft = CreateSpriteComponent(
+		TEXT("Phase4AffectedAircraft"),
+		85);
+	for (int32 Index = 0; Index < 8; ++Index)
+	{
+		Phase4ClosureHatch.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("Phase4ClosureHatch%d"), Index),
+			81,
+			FLinearColor(0.96f, 0.25f, 0.18f, 0.86f)));
+	}
 	for (int32 Index = 0; Index < 4; ++Index)
 	{
 		Phase4RunwayClosure.Add(CreateSpriteComponent(
@@ -170,6 +375,13 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 			79,
 			FLinearColor(0.96f, 0.25f, 0.18f, 0.90f)));
 	}
+	for (int32 Index = 0; Index < 6; ++Index)
+	{
+		Phase4EmergencyRouteSegments.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("Phase4EmergencyRouteSegment%d"), Index),
+			78,
+			FLinearColor(0.96f, 0.22f, 0.16f, 0.82f)));
+	}
 	for (int32 Index = 0; Index < 3; ++Index)
 	{
 		Phase4ResponseVehicles.Add(CreateSpriteComponent(
@@ -177,7 +389,47 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 			82 + Index,
 			Index == 0
 				? FLinearColor(0.95f, 0.23f, 0.18f, 1.0f)
-				: FLinearColor(0.98f, 0.78f, 0.20f, 1.0f)));
+					: FLinearColor(0.98f, 0.78f, 0.20f, 1.0f)));
+	}
+	Phase4ProtectionZone = CreateSpriteComponent(
+		TEXT("Phase4ProtectionZone"),
+		80);
+	for (int32 Index = 0; Index < 4; ++Index)
+	{
+		Phase5WarehouseZones.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("Phase5WarehouseZone%d"), Index),
+			42 + Index));
+	}
+	for (int32 Index = 0; Index < 12; ++Index)
+	{
+		Phase5CargoStacks.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("Phase5CargoStack%d"), Index),
+			58 + Index % 3));
+	}
+	for (int32 Index = 0; Index < 5; ++Index)
+	{
+		Phase5CargoVehicles.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("Phase5CargoVehicle%d"), Index),
+			68 + Index % 3));
+	}
+	for (int32 Index = 0; Index < 7; ++Index)
+	{
+		Phase5CargoRoutes.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("Phase5CargoRoute%d"), Index),
+			57,
+			FLinearColor(0.10f, 0.78f, 0.84f, 0.76f)));
+	}
+	for (int32 Index = 0; Index < 18; ++Index)
+	{
+		Phase5EventArea.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("Phase5EventProxy%d"), Index),
+			72 + Index % 3));
+	}
+	for (int32 Index = 0; Index < 2; ++Index)
+	{
+		Phase5Freighters.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("Phase5Freighter%d"), Index),
+			67 + Index));
 	}
 
 	TerrainSprite = FindSprite(TEXT("/Game/Phase1/Presentation/Sprites/Surfaces/S_TemperateGrass.S_TemperateGrass"));
@@ -197,6 +449,132 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 			Index);
 		AircraftHeadingSprites.Add(FindSprite(*Path));
 	}
+	static const TCHAR* OperationsSpriteNames[] = {
+		TEXT("FuelTruck"),
+		TEXT("BaggageTug"),
+		TEXT("BaggageCartTrain"),
+		TEXT("OperationsVan"),
+		TEXT("FireRescueTruck"),
+		TEXT("ConstructionTruck"),
+		TEXT("ShuttleBus"),
+		TEXT("Taxi"),
+		TEXT("RentalCar"),
+		TEXT("Deicer"),
+		TEXT("RampWorker"),
+		TEXT("ConstructionWorker"),
+		TEXT("SecurityOfficer"),
+		TEXT("TerminalAgent"),
+		TEXT("PassengerFamily"),
+		TEXT("Passenger"),
+		TEXT("Suitcase"),
+		TEXT("SafetyCones"),
+		TEXT("PortableStairs"),
+		TEXT("PushbackTug")};
+	static_assert(
+		UE_ARRAY_COUNT(OperationsSpriteNames) ==
+			static_cast<int32>(EOperationsSprite::Count));
+	for (const TCHAR* SpriteName : OperationsSpriteNames)
+	{
+		const FString Path = FString::Printf(
+			TEXT("/Game/Phase45/Presentation/Sprites/Operations/S_%s.S_%s"),
+			SpriteName,
+			SpriteName);
+		OperationsSprites.Add(FindSprite(*Path));
+	}
+	static const TCHAR* TerminalSpriteNames[] = {
+		TEXT("CheckInDesk"),
+		TEXT("BagDropDesk"),
+		TEXT("SecurityScanner"),
+		TEXT("QueueBarriers"),
+		TEXT("GatePodium"),
+		TEXT("SeatingCluster"),
+		TEXT("BaggageConveyor"),
+		TEXT("SortingTable"),
+		TEXT("BaggageCart"),
+		TEXT("ReclaimCarousel"),
+		TEXT("InformationDesk"),
+		TEXT("RestroomBlock"),
+		TEXT("EntranceDoors"),
+		TEXT("SecureDoor"),
+		TEXT("PartitionWall"),
+		TEXT("CurbsideShelter"),
+		TEXT("BusStopShelter"),
+		TEXT("ParkingKiosk"),
+		TEXT("TerminalFloor"),
+		TEXT("SecureFloor"),
+		TEXT("CautionHatch"),
+		TEXT("DirectionArrow"),
+		TEXT("AccessibleRoute"),
+		TEXT("ProtectionZone")};
+	static_assert(
+		UE_ARRAY_COUNT(TerminalSpriteNames) ==
+			static_cast<int32>(ETerminalSprite::Count));
+	for (const TCHAR* SpriteName : TerminalSpriteNames)
+	{
+		const FString Path = FString::Printf(
+			TEXT("/Game/Phase45/Presentation/Sprites/Terminal/S_%s.S_%s"),
+			SpriteName,
+			SpriteName);
+		TerminalSprites.Add(FindSprite(*Path));
+	}
+	static const TCHAR* SiteSpriteNames[] = {
+		TEXT("RunwayAsphalt"),
+		TEXT("TaxiwayAsphalt"),
+		TEXT("ApronStand"),
+		TEXT("AccessRoad"),
+		TEXT("RegionalTerminal"),
+		TEXT("GAHangars"),
+		TEXT("OperationsStation"),
+		TEXT("FuelFarm"),
+		TEXT("ParkingLot"),
+		TEXT("BusTaxiBay"),
+		TEXT("RailPlatform"),
+		TEXT("DropoffIsland"),
+		TEXT("TreeCluster"),
+		TEXT("LandscapeCluster"),
+		TEXT("PerimeterGate"),
+		TEXT("ApronFixtures")};
+	static_assert(
+		UE_ARRAY_COUNT(SiteSpriteNames) ==
+			static_cast<int32>(ESiteSprite::Count));
+	for (const TCHAR* SpriteName : SiteSpriteNames)
+	{
+		const FString Path = FString::Printf(
+			TEXT("/Game/Phase45/Presentation/Sprites/Site/S_%s.S_%s"),
+			SpriteName,
+			SpriteName);
+		SiteSprites.Add(FindSprite(*Path));
+	}
+	Phase5FreighterSprites.Add(FindSprite(
+		TEXT("/Game/Phase5/Presentation/Sprites/Aircraft/S_Riverlark_F28.S_Riverlark_F28")));
+	Phase5FreighterSprites.Add(FindSprite(
+		TEXT("/Game/Phase5/Presentation/Sprites/Aircraft/S_Hearthwing_F62.S_Hearthwing_F62")));
+	const auto OperationSprite =
+		[this](const EOperationsSprite Sprite)
+		{
+			return OperationsSprites[
+				static_cast<int32>(Sprite)].Get();
+		};
+	const auto TerminalSprite =
+		[this](const ETerminalSprite Sprite)
+		{
+			return TerminalSprites[
+				static_cast<int32>(Sprite)].Get();
+		};
+	const auto SiteSprite =
+		[this](const ESiteSprite Sprite)
+		{
+			return SiteSprites[
+				static_cast<int32>(Sprite)].Get();
+		};
+	FinalizePhase1OperationsPresentation(
+		OperationSprite(EOperationsSprite::ConstructionTruck),
+		OperationSprite(EOperationsSprite::ConstructionWorker),
+		OperationSprite(EOperationsSprite::SafetyCones),
+		TerminalSprite(ETerminalSprite::ProtectionZone),
+		OperationSprite(EOperationsSprite::FuelTruck),
+		OperationSprite(EOperationsSprite::RampWorker),
+		TerminalSprite(ETerminalSprite::DirectionArrow));
 
 	ConfigureSprite(Terrain, TerrainSprite, FVector(0.0, 0.0, 0.0), FVector(100.0, 1.0, 100.0));
 	Terrain->SetSpriteColor(FLinearColor(0.25f, 0.34f, 0.22f, 1.0f));
@@ -221,9 +599,17 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 			FVector(8.0, 1.0, 8.0));
 		ConfigureSprite(
 			Phase2Vehicles[Index],
-			WhiteSprite,
+			OperationSprite(
+				Index == 0
+					? EOperationsSprite::FuelTruck
+					: Index == 1
+						? EOperationsSprite::BaggageTug
+						: Index == 2
+							? EOperationsSprite::OperationsVan
+							: EOperationsSprite::PushbackTug),
 			FVector(-39000.0, 20000.0 + Index * 6000.0, 64.0 + Index),
-			FVector(1.8, 1.0, 3.0));
+			FVector(5.0, 1.0, 5.0));
+		Phase2Vehicles[Index]->SetSpriteColor(FLinearColor::White);
 		Phase2Aircraft[Index]->SetVisibility(false);
 		Phase2Vehicles[Index]->SetVisibility(false);
 	}
@@ -252,17 +638,13 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 	{
 		ConfigureSprite(
 			Phase3Floor[Index],
-			WhiteSprite,
+			TerminalSprite(
+				Index == 1
+					? ETerminalSprite::SecureFloor
+					: ETerminalSprite::TerminalFloor),
 			FloorLocations[Index],
-			FloorScales[Index]);
-		Phase3Floor[Index]->SetSpriteColor(
-			Index == 0
-				? FLinearColor(0.20f, 0.23f, 0.21f, 1.0f)
-				: Index == 1
-					? FLinearColor(0.07f, 0.20f, 0.23f, 1.0f)
-					: Index == 2
-						? FLinearColor(0.24f, 0.22f, 0.17f, 1.0f)
-						: FLinearColor(0.09f, 0.11f, 0.11f, 1.0f));
+			FloorScales[Index] * 0.055);
+		Phase3Floor[Index]->SetSpriteColor(FLinearColor::White);
 	}
 	const FVector RoomScales[] = {
 		FVector(70.0, 1.0, 42.0),
@@ -279,75 +661,24 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 	{
 		ConfigureSprite(
 			Phase3Rooms[Index],
-			WhiteSprite,
+			TerminalSprite(
+				Index == 2 || Index == 3 || Index == 4
+					? ETerminalSprite::SecureFloor
+					: ETerminalSprite::TerminalFloor),
 			RoomLocations[Index],
 			RoomScales[Index]);
 		const FLinearColor RoomPalette[] = {
-			FLinearColor(0.30f, 0.34f, 0.27f, 1.0f),
-			FLinearColor(0.42f, 0.36f, 0.24f, 1.0f),
-			FLinearColor(0.16f, 0.38f, 0.42f, 1.0f),
-			FLinearColor(0.20f, 0.43f, 0.47f, 1.0f),
-			FLinearColor(0.17f, 0.39f, 0.46f, 1.0f),
-			FLinearColor(0.35f, 0.23f, 0.43f, 1.0f),
-			FLinearColor(0.45f, 0.32f, 0.15f, 1.0f),
-			FLinearColor(0.37f, 0.25f, 0.46f, 1.0f),
-			FLinearColor(0.25f, 0.38f, 0.30f, 1.0f),
-			FLinearColor(0.20f, 0.23f, 0.23f, 1.0f)};
+			FLinearColor(0.88f, 0.92f, 0.82f, 1.0f),
+			FLinearColor(0.94f, 0.87f, 0.72f, 1.0f),
+			FLinearColor(0.65f, 0.88f, 0.91f, 1.0f),
+			FLinearColor(0.70f, 0.91f, 0.93f, 1.0f),
+			FLinearColor(0.66f, 0.85f, 0.90f, 1.0f),
+			FLinearColor(0.84f, 0.72f, 0.90f, 1.0f),
+			FLinearColor(0.95f, 0.82f, 0.61f, 1.0f),
+			FLinearColor(0.86f, 0.74f, 0.91f, 1.0f),
+			FLinearColor(0.79f, 0.90f, 0.80f, 1.0f),
+			FLinearColor(0.72f, 0.78f, 0.76f, 1.0f)};
 		Phase3Rooms[Index]->SetSpriteColor(RoomPalette[Index]);
-	}
-	const FVector DeparturePoints[] = {
-		FVector(-27000.0, -25000.0, 52.0),
-		FVector(-12000.0, -24000.0, 52.0),
-		FVector(0.0, -15000.0, 52.0),
-		FVector(5000.0, -3000.0, 52.0),
-		FVector(17000.0, -8000.0, 52.0),
-		FVector(27000.0, -20000.0, 52.0)};
-	const FVector ArrivalPoints[] = {
-		FVector(27000.0, 7000.0, 53.0),
-		FVector(6000.0, 11000.0, 53.0),
-		FVector(-11000.0, 7000.0, 53.0),
-		FVector(-17000.0, -9000.0, 53.0),
-		FVector(-27000.0, -25000.0, 53.0)};
-	const FVector BaggagePoints[] = {
-		FVector(-2000.0, -21000.0, 51.0),
-		FVector(3000.0, -9000.0, 51.0),
-		FVector(5000.0, 8000.0, 51.0),
-		FVector(12000.0, 16000.0, 51.0),
-		FVector(-4000.0, 10000.0, 51.0),
-		FVector(-16000.0, -10000.0, 51.0)};
-	for (int32 Index = 0; Index < Phase3DepartureFlow.Num(); ++Index)
-	{
-		ConfigureSprite(
-			Phase3DepartureFlow[Index],
-			WhiteSprite,
-			DeparturePoints[Index],
-			FVector(Index % 2 == 0 ? 45.0 : 75.0, 1.0, 3.2));
-		ConfigureSprite(
-			Phase3BaggageFlow[Index],
-			WhiteSprite,
-			BaggagePoints[Index],
-			FVector(54.0, 1.0, 2.7));
-	}
-	for (int32 Index = 0; Index < Phase3ArrivalFlow.Num(); ++Index)
-	{
-		ConfigureSprite(
-			Phase3ArrivalFlow[Index],
-			WhiteSprite,
-			ArrivalPoints[Index],
-			FVector(58.0, 1.0, 3.2));
-		ConfigureSprite(
-			Phase3AccessibleFlow[Index],
-			WhiteSprite,
-			DeparturePoints[Index],
-			FVector(26.0, 1.0, 1.3));
-	}
-	for (int32 Index = 0; Index < Phase3LandsideFlow.Num(); ++Index)
-	{
-		ConfigureSprite(
-			Phase3LandsideFlow[Index],
-			WhiteSprite,
-			FVector(-35000.0, -33000.0 + Index * 18000.0, 50.0),
-			FVector(66.0, 1.0, 3.2));
 	}
 	for (int32 Index = 0; Index < Phase3SecurityBoundary.Num(); ++Index)
 	{
@@ -375,27 +706,45 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 	{
 		ConfigureSprite(
 			Phase3Passengers[Index],
-			WhiteSprite,
+			OperationSprite(
+				Index % 11 == 0
+					? EOperationsSprite::PassengerFamily
+					: EOperationsSprite::Passenger),
 			FVector::ZeroVector,
-			FVector(3.2, 1.0, 3.2));
+			FVector(2.7, 1.0, 2.7));
+		Phase3Passengers[Index]->SetSpriteColor(FLinearColor::White);
 	}
 	for (int32 Index = 0; Index < Phase3Bags.Num(); ++Index)
 	{
 		ConfigureSprite(
 			Phase3Bags[Index],
-			WhiteSprite,
+			OperationSprite(EOperationsSprite::Suitcase),
 			FVector::ZeroVector,
-			FVector(2.4, 1.0, 1.8));
+			FVector(1.35, 1.0, 1.35));
+		Phase3Bags[Index]->SetSpriteColor(FLinearColor::White);
 	}
+	const EOperationsSprite Phase3VehicleSprites[] = {
+		EOperationsSprite::Taxi,
+		EOperationsSprite::ShuttleBus,
+		EOperationsSprite::RentalCar,
+		EOperationsSprite::BaggageTug,
+		EOperationsSprite::BaggageCartTrain,
+		EOperationsSprite::OperationsVan};
+	const FVector Phase3VehicleLocations[] = {
+		FVector(-18000.0, -23000.0, 58.0),
+		FVector(-18000.0, -6000.0, 59.0),
+		FVector(-23000.0, -18000.0, 60.0),
+		FVector(5000.0, -5500.0, 61.0),
+		FVector(5000.0, 6500.0, 62.0),
+		FVector(8000.0, 25000.0, 63.0)};
 	for (int32 Index = 0; Index < Phase3Vehicles.Num(); ++Index)
 	{
 		ConfigureSprite(
 			Phase3Vehicles[Index],
-			WhiteSprite,
-			FVector(-35000.0, -31000.0 + Index * 13000.0, 58.0 + Index),
-			Index == 5
-				? FVector(28.0, 1.0, 8.0)
-				: FVector(14.0, 1.0, 7.0));
+			OperationSprite(Phase3VehicleSprites[Index]),
+			Phase3VehicleLocations[Index],
+			FVector(6.5, 1.0, 6.5));
+		Phase3Vehicles[Index]->SetSpriteColor(FLinearColor::White);
 	}
 	for (int32 Index = 0; Index < Phase3Staff.Num(); ++Index)
 	{
@@ -407,79 +756,429 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 					: FVector(5000.0, 16000.0, 74.0);
 		ConfigureSprite(
 			Phase3Staff[Index],
-			WhiteSprite,
+			OperationSprite(
+				Index < 4
+					? EOperationsSprite::SecurityOfficer
+					: Index < 8
+						? EOperationsSprite::TerminalAgent
+						: EOperationsSprite::RampWorker),
 			WorkArea + FVector(
 				(Index % 4) * 900.0,
 				(Index % 2) * 900.0,
 				0.0),
-			FVector(2.0, 1.0, 2.8));
+			FVector(2.8, 1.0, 2.8));
+		Phase3Staff[Index]->SetSpriteColor(FLinearColor::White);
+	}
+	const FVector PropLocations[] = {
+		FVector(-6000.0, -24000.0, 43.0),
+		FVector(3000.0, -24000.0, 44.0),
+		FVector(0.0, -3000.0, 45.0),
+		FVector(-5000.0, -3000.0, 44.0),
+		FVector(23000.0, -16000.0, 45.0),
+		FVector(17000.0, -8000.0, 44.0),
+		FVector(3000.0, 7000.0, 43.0),
+		FVector(5000.0, 15500.0, 44.0),
+		FVector(12000.0, 15500.0, 45.0),
+		FVector(-16000.0, -10000.0, 44.0),
+		FVector(-22000.0, -22000.0, 45.0),
+		FVector(10000.0, -5000.0, 43.0),
+		FVector(-27000.0, -25000.0, 44.0),
+		FVector(6000.0, 4500.0, 45.0),
+		FVector(-8000.0, 6000.0, 43.0),
+		FVector(-35000.0, -10000.0, 44.0),
+		FVector(-35000.0, 9000.0, 45.0),
+		FVector(-35000.0, -27000.0, 43.0),
+		FVector(-5000.0, -12000.0, 44.0),
+		FVector(0.0, -3000.0, 43.0),
+		FVector(27000.0, -21000.0, 45.0),
+		FVector(-10000.0, -20000.0, 45.0),
+		FVector(2000.0, -5000.0, 46.0)};
+	for (int32 Index = 0; Index < Phase3Props.Num(); ++Index)
+	{
+		const bool bFloorMarking =
+			Index >= static_cast<int32>(
+				ETerminalSprite::TerminalFloor);
+		ConfigureSprite(
+			Phase3Props[Index],
+			TerminalSprite(static_cast<ETerminalSprite>(Index)),
+			PropLocations[Index],
+			bFloorMarking
+				? FVector(7.0, 1.0, 7.0)
+				: FVector(7.5, 1.0, 7.5));
+		Phase3Props[Index]->SetSpriteColor(FLinearColor::White);
+	}
+	FinalizeTerminalPresentation(
+		TerminalSprite(ETerminalSprite::DirectionArrow),
+		WhiteSprite,
+		TerminalSprite(ETerminalSprite::SecureDoor),
+		TerminalSprite(ETerminalSprite::PartitionWall),
+		TerminalSprite(ETerminalSprite::CautionHatch),
+		TerminalSprite(ETerminalSprite::SortingTable));
+	const FVector MatureSiteLocations[] = {
+		FVector(32000.0, 0.0, 8.0),
+		FVector(21000.0, 0.0, 9.0),
+		FVector(7000.0, 0.0, 10.0),
+		FVector(-34000.0, 0.0, 11.0),
+		FVector(-7500.0, 0.0, 40.0),
+		FVector(7000.0, -31000.0, 41.0),
+		FVector(7000.0, 30000.0, 42.0),
+		FVector(1000.0, 42000.0, 43.0),
+		FVector(-23500.0, -25000.0, 44.0),
+		FVector(-22500.0, -4000.0, 45.0),
+		FVector(-24000.0, 27000.0, 44.0),
+		FVector(-13500.0, 8000.0, 43.0),
+		FVector(40500.0, -41000.0, 39.0),
+		FVector(40500.0, 41000.0, 39.0),
+		FVector(-35000.0, -41000.0, 42.0),
+		FVector(7000.0, 21000.0, 46.0)};
+	const FVector MatureSiteScales[] = {
+		FVector(82.0, 1.0, 13.0),
+		FVector(76.0, 1.0, 10.0),
+		FVector(34.0, 1.0, 30.0),
+		FVector(78.0, 1.0, 9.0),
+		FVector(25.0, 1.0, 25.0),
+		FVector(22.0, 1.0, 22.0),
+		FVector(15.0, 1.0, 15.0),
+		FVector(14.0, 1.0, 14.0),
+		FVector(20.0, 1.0, 20.0),
+		FVector(18.0, 1.0, 18.0),
+		FVector(20.0, 1.0, 20.0),
+		FVector(18.0, 1.0, 18.0),
+		FVector(14.0, 1.0, 14.0),
+		FVector(12.0, 1.0, 12.0),
+		FVector(13.0, 1.0, 13.0),
+		FVector(13.0, 1.0, 13.0)};
+	static_assert(
+		UE_ARRAY_COUNT(MatureSiteLocations) ==
+			static_cast<int32>(ESiteSprite::Count));
+	static_assert(
+		UE_ARRAY_COUNT(MatureSiteScales) ==
+			static_cast<int32>(ESiteSprite::Count));
+	for (int32 Index = 0; Index < MatureSite.Num(); ++Index)
+	{
+		ConfigureSprite(
+			MatureSite[Index],
+			SiteSprite(static_cast<ESiteSprite>(Index)),
+			MatureSiteLocations[Index],
+			MatureSiteScales[Index]);
+		MatureSite[Index]->SetSpriteColor(FLinearColor::White);
+		MatureSite[Index]->SetVisibility(false);
+	}
+	for (const int32 RotatedIndex : {
+		static_cast<int32>(ESiteSprite::RunwayAsphalt),
+		static_cast<int32>(ESiteSprite::TaxiwayAsphalt),
+		static_cast<int32>(ESiteSprite::AccessRoad)})
+	{
+		const FQuat FlatOrientation =
+			FRotator(0.0f, 0.0f, SpritePlaneRoll).Quaternion();
+		const FQuat LocalInPlaneRotation(
+			FVector::YAxisVector,
+			FMath::DegreesToRadians(90.0f));
+		MatureSite[RotatedIndex]->SetRelativeRotation(
+			(FlatOrientation * LocalInPlaneRotation).Rotator());
+	}
+	FinalizeIncidentPresentation(
+		SiteSprite(ESiteSprite::RunwayAsphalt),
+		SiteSprite(ESiteSprite::TaxiwayAsphalt),
+		SiteSprite(ESiteSprite::ApronStand));
+	FinalizePhase5Presentation(
+		Phase5FreighterSprites[0],
+		Phase5FreighterSprites[1]);
+	const FVector AirsideLinkLocations[] = {
+		FVector(14500.0, -26000.0, 12.0),
+		FVector(14500.0, 26000.0, 13.0),
+		FVector(14500.0, 0.0, 14.0),
+		FVector(7000.0, -21000.0, 15.0),
+		FVector(7000.0, 21000.0, 16.0),
+		FVector(0.0, 0.0, 17.0)};
+	const FVector AirsideLinkScales[] = {
+		FVector(26.0, 1.0, 8.0),
+		FVector(26.0, 1.0, 8.0),
+		FVector(22.0, 1.0, 8.0),
+		FVector(18.0, 1.0, 7.0),
+		FVector(18.0, 1.0, 7.0),
+		FVector(18.0, 1.0, 6.0)};
+	for (int32 Index = 0; Index < MatureTaxiConnectors.Num(); ++Index)
+	{
+		ConfigureSprite(
+			MatureTaxiConnectors[Index],
+			SiteSprite(ESiteSprite::TaxiwayAsphalt),
+			AirsideLinkLocations[Index],
+			AirsideLinkScales[Index]);
+		MatureTaxiConnectors[Index]->SetVisibility(false);
+	}
+	const FVector LandsideLinkLocations[] = {
+		FVector(-15500.0, -18000.0, 12.0),
+		FVector(-15500.0, 18000.0, 13.0),
+		FVector(-28500.0, -31000.0, 14.0),
+		FVector(-28500.0, -12000.0, 15.0),
+		FVector(-28500.0, 8000.0, 16.0),
+		FVector(-28500.0, 27000.0, 17.0),
+		FVector(-17500.0, 6000.0, 18.0)};
+	for (int32 Index = 0; Index < MatureLandsideLinks.Num(); ++Index)
+	{
+		ConfigureSprite(
+			MatureLandsideLinks[Index],
+			SiteSprite(ESiteSprite::AccessRoad),
+			LandsideLinkLocations[Index],
+			FVector(
+				Index < 2 ? 22.0 : 18.0,
+				1.0,
+				Index < 2 ? 5.5 : 5.0));
+		MatureLandsideLinks[Index]->SetVisibility(false);
+	}
+	const FVector LandscapeLocations[] = {
+		FVector(39000.0, -26000.0, 36.0),
+		FVector(39000.0, -8000.0, 36.0),
+		FVector(39000.0, 12000.0, 36.0),
+		FVector(39000.0, 30000.0, 36.0),
+		FVector(23000.0, -43000.0, 36.0),
+		FVector(22000.0, 43000.0, 36.0),
+		FVector(-5000.0, -43000.0, 36.0),
+		FVector(-6000.0, 43000.0, 36.0),
+		FVector(-36000.0, -25000.0, 36.0),
+		FVector(-36000.0, 30000.0, 36.0)};
+	for (int32 Index = 0; Index < MatureLandscapeClusters.Num(); ++Index)
+	{
+		ConfigureSprite(
+			MatureLandscapeClusters[Index],
+			SiteSprite(
+				Index % 3 == 0
+					? ESiteSprite::LandscapeCluster
+					: ESiteSprite::TreeCluster),
+			LandscapeLocations[Index],
+			FVector(
+				7.0f + static_cast<float>(Index % 3) * 1.5f,
+				1.0f,
+				7.0f + static_cast<float>(Index % 3) * 1.5f));
+		MatureLandscapeClusters[Index]->SetVisibility(false);
+	}
+	const FVector MatureAircraftLocations[] = {
+		FVector(7000.0, -9000.0, 63.0),
+		FVector(7000.0, 9000.0, 64.0),
+		FVector(23000.0, -28000.0, 65.0)};
+	const float MatureAircraftScales[] = {12.0f, 11.0f, 13.0f};
+	for (int32 Index = 0; Index < MatureAircraft.Num(); ++Index)
+	{
+		const int32 HeadingIndex = Index * 4;
+		ConfigureSprite(
+			MatureAircraft[Index],
+			AircraftHeadingSprites.IsValidIndex(HeadingIndex)
+				? AircraftHeadingSprites[HeadingIndex]
+				: WhiteSprite,
+			MatureAircraftLocations[Index],
+			FVector(
+				MatureAircraftScales[Index],
+				1.0,
+				MatureAircraftScales[Index]));
+		MatureAircraft[Index]->SetVisibility(false);
+	}
+	ConfigureSprite(
+		MatureSelection,
+		SelectionSprite,
+		FVector(7000.0, -9000.0, 75.0),
+		FVector(16.0f, 1.0f, 16.0f));
+	MatureSelection->SetVisibility(false);
+	const EOperationsSprite MatureVehicleSprites[] = {
+		EOperationsSprite::BaggageTug,
+		EOperationsSprite::BaggageCartTrain,
+		EOperationsSprite::FuelTruck,
+		EOperationsSprite::OperationsVan,
+		EOperationsSprite::ShuttleBus,
+		EOperationsSprite::Taxi,
+		EOperationsSprite::RentalCar,
+		EOperationsSprite::FireRescueTruck};
+	const FVector MatureVehicleLocations[] = {
+		FVector(8500.0, -10000.0, 66.0),
+		FVector(8500.0, 10000.0, 67.0),
+		FVector(7000.0, 24000.0, 68.0),
+		FVector(6000.0, 33000.0, 69.0),
+		FVector(-23000.0, -5000.0, 66.0),
+		FVector(-25500.0, -21000.0, 67.0),
+		FVector(-26000.0, 10000.0, 68.0),
+		FVector(10000.0, 30000.0, 69.0)};
+	for (int32 Index = 0; Index < MatureGroundVehicles.Num(); ++Index)
+	{
+		ConfigureSprite(
+			MatureGroundVehicles[Index],
+			OperationSprite(MatureVehicleSprites[Index]),
+			MatureVehicleLocations[Index],
+			FVector(5.5f, 1.0f, 5.5f));
+		MatureGroundVehicles[Index]->SetVisibility(false);
+	}
+	const FVector MaturePeopleAreas[] = {
+		FVector(-10500.0, -12000.0, 70.0),
+		FVector(-10500.0, 0.0, 70.0),
+		FVector(-10500.0, 12000.0, 70.0),
+		FVector(7000.0, -12000.0, 70.0),
+		FVector(7000.0, 12000.0, 70.0),
+		FVector(-22000.0, -5000.0, 70.0)};
+	for (int32 Index = 0; Index < MaturePeople.Num(); ++Index)
+	{
+		const FVector Base = MaturePeopleAreas[Index % UE_ARRAY_COUNT(MaturePeopleAreas)];
+		const FVector Offset(
+			(Index / UE_ARRAY_COUNT(MaturePeopleAreas)) * 950.0,
+			(Index % 3) * 800.0,
+			static_cast<double>(Index % 3));
+		ConfigureSprite(
+			MaturePeople[Index],
+			OperationSprite(
+				Index % 7 == 0
+					? EOperationsSprite::PassengerFamily
+					: Index % 5 == 0
+						? EOperationsSprite::RampWorker
+						: EOperationsSprite::Passenger),
+			Base + Offset,
+			FVector(1.8f, 1.0f, 1.8f));
+		MaturePeople[Index]->SetVisibility(false);
+	}
+	for (int32 Index = 0; Index < MatureBags.Num(); ++Index)
+	{
+		ConfigureSprite(
+			MatureBags[Index],
+			OperationSprite(EOperationsSprite::Suitcase),
+			FVector(
+				6500.0 + (Index % 4) * 750.0,
+				-5000.0 + (Index / 4) * 10000.0,
+				69.0 + Index % 2),
+			FVector(1.1f, 1.0f, 1.1f));
+		MatureBags[Index]->SetVisibility(false);
 	}
 	ConfigureSprite(
 		Phase3Aircraft,
 		AircraftHeadingSprites.IsValidIndex(0)
 			? AircraftHeadingSprites[0]
 			: WhiteSprite,
-		FVector(33000.0, -22000.0, 67.0),
+		FVector(33000.0, -28600.0, 67.0),
 		FVector(15.0, 1.0, 15.0));
 	ConfigureSprite(
 		Phase4WeatherOverlay,
 		WhiteSprite,
 		FVector(0.0, 0.0, 76.0),
-		FVector(520.0, 1.0, 520.0));
+		FVector(900.0, 1.0, 650.0));
+	for (int32 Index = 0; Index < Phase4RainStreaks.Num(); ++Index)
+	{
+		ConfigureSprite(
+			Phase4RainStreaks[Index],
+			WhiteSprite,
+			FVector(
+				-47000.0 + (Index % 12) * 8500.0,
+				-40000.0 + (Index / 12) * 20000.0,
+				77.0),
+			FVector(
+				18.0f + static_cast<float>(Index % 5) * 2.6f,
+				1.0f,
+				0.8f + static_cast<float>(Index % 3) * 0.16f));
+		Phase4RainStreaks[Index]->SetRelativeRotation(
+			FRotator(0.0f, -12.0f, SpritePlaneRoll));
+		Phase4RainStreaks[Index]->SetVisibility(false);
+	}
 	ConfigureSprite(
 		Phase4IncidentRunway,
 		RunwaySprite,
 		FVector(27000.0, 0.0, 78.0),
 		FVector(2.8, 1.0, 45.0));
 	Phase4IncidentRunway->SetVisibility(false);
+	ConfigureSprite(
+		Phase4AffectedAircraft,
+		AircraftHeadingSprites.IsValidIndex(4)
+			? AircraftHeadingSprites[4]
+			: WhiteSprite,
+		FVector(24000.0, -21000.0, 85.0),
+		FVector(14.0f, 1.0f, 14.0f));
+	Phase4AffectedAircraft->SetSpriteColor(
+		FLinearColor(0.92f, 0.93f, 0.96f, 1.0f));
+	Phase4AffectedAircraft->SetVisibility(false);
+	for (int32 Index = 0; Index < Phase4ClosureHatch.Num(); ++Index)
+	{
+		ConfigureSprite(
+			Phase4ClosureHatch[Index],
+			TerminalSprite(ETerminalSprite::ProtectionZone),
+			FVector(
+				20500.0 + (Index % 2) * 5500.0,
+				-28500.0 + (Index / 2) * 5000.0,
+				81.0 + Index % 2),
+			FVector(6.2f, 1.0f, 6.2f));
+		Phase4ClosureHatch[Index]->SetVisibility(false);
+	}
 	const FVector ClosureLocations[] = {
-		FVector(27000.0, -35000.0, 81.0),
-		FVector(27000.0, -30000.0, 81.0),
-		FVector(23500.0, -32500.0, 81.0),
-		FVector(30500.0, -32500.0, 81.0)};
-	const FVector ClosureScales[] = {
-		FVector(24.0, 1.0, 2.2),
-		FVector(24.0, 1.0, 2.2),
-		FVector(2.2, 1.0, 24.0),
-		FVector(2.2, 1.0, 24.0)};
+		FVector(24000.0, -30000.0, 82.0),
+		FVector(24000.0, -12000.0, 82.0),
+		FVector(17000.0, -21000.0, 82.0),
+		FVector(31000.0, -21000.0, 82.0)};
 	for (int32 Index = 0; Index < Phase4RunwayClosure.Num(); ++Index)
 	{
 		ConfigureSprite(
 			Phase4RunwayClosure[Index],
-			WhiteSprite,
+			OperationSprite(EOperationsSprite::SafetyCones),
 			ClosureLocations[Index],
-			ClosureScales[Index]);
+			FVector(5.8, 1.0, 5.8));
+		Phase4RunwayClosure[Index]->SetSpriteColor(
+			FLinearColor::White);
 		Phase4RunwayClosure[Index]->SetVisibility(false);
 	}
 	const FVector RouteLocations[] = {
-		FVector(-27000.0, 10000.0, 79.0),
-		FVector(-18000.0, 3000.0, 79.0),
-		FVector(-9000.0, -5000.0, 79.0),
-		FVector(0.0, -12000.0, 79.0),
-		FVector(9000.0, -20000.0, 79.0),
-		FVector(18000.0, -28000.0, 79.0),
-		FVector(25000.0, -32500.0, 79.0)};
+		FVector(-15000.0, 28000.0, 79.0),
+		FVector(-8000.0, 20000.0, 79.0),
+		FVector(-2000.0, 12000.0, 79.0),
+		FVector(4000.0, 4000.0, 79.0),
+		FVector(10000.0, -4000.0, 79.0),
+		FVector(16000.0, -12000.0, 79.0),
+		FVector(22000.0, -18000.0, 79.0)};
 	for (int32 Index = 0; Index < Phase4EmergencyRoute.Num(); ++Index)
 	{
 		ConfigureSprite(
 			Phase4EmergencyRoute[Index],
-			WhiteSprite,
+			TerminalSprite(ETerminalSprite::DirectionArrow),
 			RouteLocations[Index],
-			FVector(28.0, 1.0, 2.8));
+			FVector(8.0f, 1.0f, 8.0f));
 		Phase4EmergencyRoute[Index]->SetVisibility(false);
+	}
+	for (int32 Index = 0;
+		Index < Phase4EmergencyRouteSegments.Num();
+		++Index)
+	{
+		const FVector Start = RouteLocations[Index];
+		const FVector End = RouteLocations[Index + 1];
+		const FVector Delta = End - Start;
+		const float RouteLength = FVector2D(Delta.X, Delta.Y).Size();
+		ConfigureSprite(
+			Phase4EmergencyRouteSegments[Index],
+			WhiteSprite,
+			(Start + End) * 0.5,
+			FVector(RouteLength / 200.0f, 1.0f, 2.2f));
+		const float RouteAngle = FMath::RadiansToDegrees(
+			FMath::Atan2(Delta.Y, Delta.X));
+		Phase4EmergencyRouteSegments[Index]->SetRelativeRotation(
+			FRotator(0.0f, RouteAngle, SpritePlaneRoll));
+		Phase4EmergencyRouteSegments[Index]->SetVisibility(false);
 	}
 	for (int32 Index = 0; Index < Phase4ResponseVehicles.Num(); ++Index)
 	{
+		const EOperationsSprite ResponseSprite =
+			Index == 0
+				? EOperationsSprite::PushbackTug
+				: Index == 1
+					? EOperationsSprite::FireRescueTruck
+					: EOperationsSprite::OperationsVan;
 		ConfigureSprite(
 			Phase4ResponseVehicles[Index],
-			WhiteSprite,
+			OperationSprite(ResponseSprite),
 			FVector(
-				-22000.0 + Index * 22000.0,
-				6000.0 - Index * 18000.0,
+				-8000.0 + Index * 12000.0,
+				18000.0 - Index * 14000.0,
 				82.0 + Index),
-			FVector(12.0, 1.0, 5.0));
+			FVector(9.5f, 1.0f, 9.5f));
+		Phase4ResponseVehicles[Index]->SetSpriteColor(
+			FLinearColor::White);
 		Phase4ResponseVehicles[Index]->SetVisibility(false);
 	}
+	ConfigureSprite(
+		Phase4ProtectionZone,
+		TerminalSprite(ETerminalSprite::ProtectionZone),
+		FVector(24000.0, -21000.0, 80.0),
+		FVector(10.0f, 1.0f, 10.0f));
+	Phase4ProtectionZone->SetVisibility(false);
 	Phase4WeatherOverlay->SetVisibility(false);
 	ConfigureSprite(
 		ExpansionOverlay,
@@ -487,11 +1186,17 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 		FVector(-35000.0, 38000.0, 35.0),
 		FVector(10.0, 1.0, 8.0));
 	ConfigureSprite(
+		ExpansionClosureOverlay,
+		TerminalSprite(ETerminalSprite::ProtectionZone),
+		FVector(-24000.0, 18000.0, 38.0),
+		FVector(9.0, 1.0, 2.2));
+	ConfigureSprite(
 		IncidentOverlay,
 		SelectionSprite,
 		FVector(-32000.0, 23000.0, 80.0),
 		FVector(3.2, 1.0, 3.2));
 	ExpansionOverlay->SetVisibility(false);
+	ExpansionClosureOverlay->SetVisibility(false);
 	IncidentOverlay->SetVisibility(false);
 
 	SetFacilitiesVisible(false, false);
@@ -534,7 +1239,36 @@ bool AAMSimWorldPresenter::HasRequiredPresentationAssets() const
 	return TerrainSprite && RunwaySprite && TaxiSprite && StandSprite && WhiteSprite &&
 		HutSprite && WindsockSprite && SelectionSprite &&
 		AircraftHeadingSprites.Num() == 16 &&
-		Algo::AllOf(AircraftHeadingSprites, [](const UPaperSprite* Sprite) { return Sprite != nullptr; });
+		Algo::AllOf(
+			AircraftHeadingSprites,
+			[](const UPaperSprite* Sprite)
+				{
+					return Sprite != nullptr;
+				}) &&
+		OperationsSprites.Num() ==
+			static_cast<int32>(EOperationsSprite::Count) &&
+		Algo::AllOf(
+			OperationsSprites,
+			[](const UPaperSprite* Sprite)
+				{
+					return Sprite != nullptr;
+				}) &&
+		TerminalSprites.Num() ==
+			static_cast<int32>(ETerminalSprite::Count) &&
+		Algo::AllOf(
+			TerminalSprites,
+			[](const UPaperSprite* Sprite)
+				{
+					return Sprite != nullptr;
+				}) &&
+		SiteSprites.Num() ==
+			static_cast<int32>(ESiteSprite::Count) &&
+		Algo::AllOf(
+			SiteSprites,
+			[](const UPaperSprite* Sprite)
+				{
+					return Sprite != nullptr;
+				});
 }
 
 int32 AAMSimWorldPresenter::GetHeadingIndex(const AMSim::EFlightState FlightState)
@@ -691,6 +1425,10 @@ void AAMSimWorldPresenter::ApplyPhase2Snapshot(
 		State.Expansion.Stage == AMSim::EExpansionStage::Operational
 			? FLinearColor::White
 			: FLinearColor(0.25f, 0.78f, 0.86f, 0.38f));
+	ExpansionClosureOverlay->SetVisibility(
+		Query.bInitialized &&
+		State.Expansion.Stage != AMSim::EExpansionStage::None &&
+		State.Expansion.Stage != AMSim::EExpansionStage::Operational);
 	IncidentOverlay->SetVisibility(
 		Query.bInitialized &&
 		State.Incident.Id.IsValid() &&
@@ -718,6 +1456,13 @@ void AAMSimWorldPresenter::ApplyPhase3Snapshot(
 	bPhase3RoutesConnected =
 		Query.RequiredConnectionCount > 0 &&
 		Query.ConnectedCount == Query.RequiredConnectionCount;
+	bPhase3BaggageExceptionActive =
+		State.Bags.ContainsByPredicate(
+			[](const AMSim::FBagRecord& Bag)
+			{
+				return Bag.JourneyState ==
+					AMSim::EBagJourneyState::Exception;
+			});
 	SetPhase3WorldVisible(bShowWorld);
 	if (!bShowWorld)
 	{
@@ -738,8 +1483,29 @@ void AAMSimWorldPresenter::ApplyPhase3Snapshot(
 		Component->SetVisibility(false);
 	}
 	ExpansionOverlay->SetVisibility(false);
+	ExpansionClosureOverlay->SetVisibility(false);
 	IncidentOverlay->SetVisibility(false);
 	Terrain->SetSpriteColor(FLinearColor(0.20f, 0.30f, 0.23f, 1.0f));
+	const FLinearColor SecurityBoundaryTint =
+		Query.bSecurityIntegrityValid
+			? FLinearColor::White
+			: FLinearColor(1.0f, 0.42f, 0.36f, 1.0f);
+	for (UPaperSpriteComponent* Component : Phase3SecurityBoundary)
+	{
+		Component->SetSpriteColor(SecurityBoundaryTint);
+	}
+	const FLinearColor ExceptionRouteTint =
+		bPhase3BaggageExceptionActive
+			? FLinearColor(1.0f, 0.32f, 0.25f, 1.0f)
+			: FLinearColor(0.76f, 0.42f, 0.18f, 0.62f);
+	for (UPaperSpriteComponent* Component : Phase3BaggageExceptionRoute)
+	{
+		Component->SetSpriteColor(ExceptionRouteTint);
+	}
+	Phase3BaggageExceptionZone->SetSpriteColor(
+		bPhase3BaggageExceptionActive
+			? FLinearColor(1.0f, 0.30f, 0.22f, 0.88f)
+			: FLinearColor(0.72f, 0.46f, 0.24f, 0.52f));
 
 	int32 PassengerProxyIndex = 0;
 	for (const AMSim::FPassengerRecord& Passenger : State.Passengers)
@@ -788,17 +1554,17 @@ void AAMSimWorldPresenter::ApplyPhase3Snapshot(
 		const int32 LocalIndex = PassengerProxyIndex;
 		Base.X += (LocalIndex % 8) * 900.0;
 		Base.Y += ((LocalIndex / 8) % 8) * 900.0;
+		Base.Y *= 1.30;
 		UPaperSpriteComponent* Proxy = Phase3Passengers[PassengerProxyIndex];
 		Proxy->SetRelativeLocation(Base);
 		Proxy->SetSpriteColor(
 			Passenger.bRequiresAccessibleRoute
-				? FLinearColor(0.98f, 0.82f, 0.25f, 1.0f)
-				: Passenger.Direction == AMSim::EPassengerDirection::Departing
-					? FLinearColor(0.74f, 0.94f, 0.96f, 1.0f)
-					: FLinearColor(0.83f, 0.66f, 0.96f, 1.0f));
-		Proxy->SetVisibility(true);
+				? FLinearColor(1.0f, 0.92f, 0.58f, 1.0f)
+				: FLinearColor::White);
+		Proxy->SetVisibility(!bMatureOverviewMode);
 		++PassengerProxyIndex;
 	}
+	Phase3PassengerAvailableCount = PassengerProxyIndex;
 	for (; PassengerProxyIndex < Phase3Passengers.Num(); ++PassengerProxyIndex)
 	{
 		Phase3Passengers[PassengerProxyIndex]->SetVisibility(false);
@@ -831,55 +1597,167 @@ void AAMSimWorldPresenter::ApplyPhase3Snapshot(
 		case AMSim::EBagJourneyState::Collected:
 			Base = FVector(-16000.0, -10000.0, 65.0);
 			break;
+		case AMSim::EBagJourneyState::Exception:
+			Base = FVector(20500.0, 16500.0, 65.0);
+			break;
 		default:
 			Base = FVector(5000.0, 18000.0, 65.0);
 			break;
 		}
 		Base.X += (BagProxyIndex % 9) * 600.0;
 		Base.Y += ((BagProxyIndex / 9) % 4) * 560.0;
+		Base.Y *= 1.30;
 		UPaperSpriteComponent* Proxy = Phase3Bags[BagProxyIndex];
 		Proxy->SetRelativeLocation(Base);
 		Proxy->SetSpriteColor(
 			Bag.JourneyState == AMSim::EBagJourneyState::Exception
-				? FLinearColor(0.95f, 0.20f, 0.16f, 1.0f)
-				: FLinearColor(0.96f, 0.63f, 0.20f, 1.0f));
-		Proxy->SetVisibility(true);
+				? FLinearColor(1.0f, 0.48f, 0.42f, 1.0f)
+				: FLinearColor::White);
+		Proxy->SetVisibility(!bMatureOverviewMode);
 		++BagProxyIndex;
 	}
+	Phase3BagAvailableCount = BagProxyIndex;
 	for (; BagProxyIndex < Phase3Bags.Num(); ++BagProxyIndex)
 	{
 		Phase3Bags[BagProxyIndex]->SetVisibility(false);
 	}
-	Phase3Aircraft->SetVisibility(
+	bPhase3AircraftAvailable =
 		State.Flight.Id.IsValid() &&
-		State.Flight.State != AMSim::EPhase3FlightState::Completed);
+		State.Flight.State != AMSim::EPhase3FlightState::Completed;
+	Phase3Aircraft->SetVisibility(
+		!bMatureOverviewMode && bPhase3AircraftAvailable);
 	RefreshPhase3OverlayVisibility();
+	RefreshIncidentPresentationVisibility();
 }
 
 void AAMSimWorldPresenter::ApplyPhase4Snapshot(
 	const AMSim::FPhase4QuerySnapshot& Query,
 	const AMSim::FPhase4State& State)
 {
-	if (LastAppliedPhase4Revision == Query.Revision)
-	{
-		return;
-	}
-	LastAppliedPhase4Revision = Query.Revision;
 	const bool bIncidentActive =
 		Query.bInitialized &&
 		Query.IncidentLifecycle >= AMSim::EPhase4IncidentLifecycle::Alerted &&
 		Query.IncidentLifecycle < AMSim::EPhase4IncidentLifecycle::Recovered;
+	bIncidentPresentationMode = bIncidentActive;
 	bPhase4IncidentWorldVisible = bIncidentActive;
-	Phase4WeatherOverlay->SetVisibility(bIncidentActive);
-	Phase4IncidentRunway->SetVisibility(bIncidentActive);
+	bPhase4RunwayClosed =
+		bIncidentActive && State.Incident.bRunwayClosed;
+	bPhase4RouteVisible =
+		bIncidentActive && State.Incident.bTowDispatched;
+	bPhase4ProtectionVisible =
+		bIncidentActive && State.Incident.bAreaProtected;
+	if (bIncidentActive)
+	{
+		SetMatureOverviewMode(true);
+	}
+	if (LastAppliedPhase4Revision == Query.Revision)
+	{
+		RefreshIncidentPresentationVisibility();
+		return;
+	}
+	LastAppliedPhase4Revision = Query.Revision;
+	MatureAircraftAvailableCount = FMath::Clamp(
+		Query.FlightCount - Query.CompletedFlightCount,
+		0,
+		MatureAircraft.Num());
+	for (int32 Index = 0; Index < MatureAircraft.Num(); ++Index)
+	{
+		MatureAircraft[Index]->SetVisibility(
+			bPhase3WorldVisible &&
+			bMatureOverviewMode &&
+			Index < MatureAircraftAvailableCount);
+	}
+	MatureGroundVehicleAvailableCount =
+		Query.bInitialized
+			? FMath::Clamp(
+				4 + Query.AcceptedContractCount,
+				0,
+				MatureGroundVehicles.Num())
+			: 0;
+	MaturePeopleAvailableCount =
+		Query.bInitialized
+			? FMath::Clamp(
+				(State.BorderProcesses.Num() + State.Connections.Num() + 11) /
+					12,
+				0,
+				MaturePeople.Num())
+			: 0;
+	MatureBagAvailableCount =
+		Query.bInitialized
+			? FMath::Clamp(
+				(State.TransferBags.Num() + 3) / 4,
+				0,
+				MatureBags.Num())
+			: 0;
+	for (int32 Index = 0; Index < MatureGroundVehicles.Num(); ++Index)
+	{
+		MatureGroundVehicles[Index]->SetVisibility(
+			bPhase3WorldVisible &&
+			bMatureOverviewMode &&
+			Index < MatureGroundVehicleAvailableCount);
+	}
+	for (int32 Index = 0; Index < MaturePeople.Num(); ++Index)
+	{
+		MaturePeople[Index]->SetVisibility(
+			bPhase3WorldVisible &&
+			bMatureOverviewMode &&
+			Index < MaturePeopleAvailableCount);
+	}
+	for (int32 Index = 0; Index < MatureBags.Num(); ++Index)
+	{
+		MatureBags[Index]->SetVisibility(
+			bPhase3WorldVisible &&
+			bMatureOverviewMode &&
+			Index < MatureBagAvailableCount);
+	}
+	Phase4WeatherOverlay->SetVisibility(false);
+	for (UPaperSpriteComponent* Component : Phase4RainStreaks)
+	{
+		Component->SetVisibility(bIncidentActive);
+	}
+	Phase4IncidentRunway->SetVisibility(
+		bIncidentActive && !bMatureOverviewMode);
+	for (UPaperSpriteComponent* Component : MatureSite)
+	{
+		Component->SetSpriteColor(
+			bIncidentActive
+				? FLinearColor(0.72f, 0.82f, 0.86f, 1.0f)
+				: FLinearColor::White);
+	}
+	for (UPaperSpriteComponent* Component : MatureTaxiConnectors)
+	{
+		Component->SetSpriteColor(
+			bIncidentActive
+				? FLinearColor(0.68f, 0.78f, 0.83f, 1.0f)
+				: FLinearColor::White);
+	}
+	for (UPaperSpriteComponent* Component : MatureLandsideLinks)
+	{
+		Component->SetSpriteColor(
+			bIncidentActive
+				? FLinearColor(0.62f, 0.72f, 0.78f, 1.0f)
+				: FLinearColor::White);
+	}
+	for (UPaperSpriteComponent* Component : MatureLandscapeClusters)
+	{
+		Component->SetSpriteColor(
+			bIncidentActive
+				? FLinearColor(0.48f, 0.62f, 0.61f, 1.0f)
+				: FLinearColor::White);
+	}
 	const bool bRunwayClosed =
 		bIncidentActive && State.Incident.bRunwayClosed;
 	IncidentOverlay->SetRelativeLocation(
-		FVector(27000.0, -32500.0, 83.0));
-	IncidentOverlay->SetRelativeScale3D(FVector(5.0, 1.0, 5.0));
+		FVector(24000.0, -21000.0, 84.0));
+	IncidentOverlay->SetRelativeScale3D(FVector(12.0, 1.0, 12.0));
 	IncidentOverlay->SetSpriteColor(
 		FLinearColor(0.96f, 0.25f, 0.18f, 0.92f));
 	IncidentOverlay->SetVisibility(bRunwayClosed);
+	Phase4AffectedAircraft->SetVisibility(bIncidentActive);
+	for (UPaperSpriteComponent* Component : Phase4ClosureHatch)
+	{
+		Component->SetVisibility(bRunwayClosed);
+	}
 	for (UPaperSpriteComponent* Component : Phase4RunwayClosure)
 	{
 		Component->SetVisibility(bRunwayClosed);
@@ -887,6 +1765,10 @@ void AAMSimWorldPresenter::ApplyPhase4Snapshot(
 	const bool bRouteVisible =
 		bIncidentActive && State.Incident.bTowDispatched;
 	for (UPaperSpriteComponent* Component : Phase4EmergencyRoute)
+	{
+		Component->SetVisibility(bRouteVisible);
+	}
+	for (UPaperSpriteComponent* Component : Phase4EmergencyRouteSegments)
 	{
 		Component->SetVisibility(bRouteVisible);
 	}
@@ -899,10 +1781,13 @@ void AAMSimWorldPresenter::ApplyPhase4Snapshot(
 				: State.Incident.bAreaProtected);
 		Phase4ResponseVehicles[Index]->SetVisibility(bVisible);
 	}
-	if (bIncidentActive)
-	{
-		Terrain->SetSpriteColor(FLinearColor(0.16f, 0.26f, 0.23f, 1.0f));
-	}
+	Phase4ProtectionZone->SetVisibility(
+		bIncidentActive && State.Incident.bAreaProtected);
+	Terrain->SetSpriteColor(
+		bIncidentActive
+			? FLinearColor(0.11f, 0.20f, 0.20f, 1.0f)
+			: FLinearColor(0.20f, 0.30f, 0.23f, 1.0f));
+	RefreshIncidentPresentationVisibility();
 }
 
 void AAMSimWorldPresenter::SetPhase3OverlayMode(const int32 Mode)
@@ -911,48 +1796,12 @@ void AAMSimWorldPresenter::SetPhase3OverlayMode(const int32 Mode)
 	RefreshPhase3OverlayVisibility();
 }
 
-void AAMSimWorldPresenter::SetPhase3WorldVisible(const bool bVisible)
-{
-	bPhase3WorldVisible = bVisible;
-	for (UPaperSpriteComponent* Component : Phase3Floor)
-	{
-		Component->SetVisibility(bVisible);
-	}
-	for (UPaperSpriteComponent* Component : Phase3Rooms)
-	{
-		Component->SetVisibility(bVisible);
-	}
-	for (UPaperSpriteComponent* Component : Phase3SecurityBoundary)
-	{
-		Component->SetVisibility(bVisible);
-	}
-	for (UPaperSpriteComponent* Component : Phase3Congestion)
-	{
-		Component->SetVisibility(false);
-	}
-	for (UPaperSpriteComponent* Component : Phase3Passengers)
-	{
-		Component->SetVisibility(false);
-	}
-	for (UPaperSpriteComponent* Component : Phase3Bags)
-	{
-		Component->SetVisibility(false);
-	}
-	for (UPaperSpriteComponent* Component : Phase3Vehicles)
-	{
-		Component->SetVisibility(bVisible);
-	}
-	for (UPaperSpriteComponent* Component : Phase3Staff)
-	{
-		Component->SetVisibility(bVisible);
-	}
-	Phase3Aircraft->SetVisibility(false);
-	RefreshPhase3OverlayVisibility();
-}
-
 void AAMSimWorldPresenter::RefreshPhase3OverlayVisibility()
 {
-	const bool bRouteReady = bPhase3WorldVisible && bPhase3RoutesConnected;
+	const bool bRouteReady =
+		bPhase3WorldVisible &&
+		bPhase3RoutesConnected &&
+		!bMatureOverviewMode;
 	const bool bAll = Phase3OverlayMode == 0;
 	const auto SetFamilyVisible =
 		[bRouteReady](const TArray<TObjectPtr<UPaperSpriteComponent>>& Family,
@@ -977,12 +1826,22 @@ void AAMSimWorldPresenter::RefreshPhase3OverlayVisibility()
 		Phase3BaggageFlow,
 		bAll || Phase3OverlayMode == 3);
 	SetFamilyVisible(
+		Phase3BaggageExceptionRoute,
+		bAll || Phase3OverlayMode == 3);
+	SetFamilyVisible(
 		Phase3AccessibleFlow,
+		bAll || Phase3OverlayMode == 4);
+	SetFamilyVisible(
+		Phase3AccessibleDashes,
 		bAll || Phase3OverlayMode == 4);
 	for (UPaperSpriteComponent* Component : Phase3Congestion)
 	{
 		Component->SetVisibility(bRouteReady && (bAll || Phase3OverlayMode == 1));
 	}
+	const bool bShowExceptionBranch =
+		bRouteReady && (bAll || Phase3OverlayMode == 3);
+	Phase3BaggageExceptionZone->SetVisibility(bShowExceptionBranch);
+	Phase3BaggageExceptionStation->SetVisibility(bShowExceptionBranch);
 }
 
 int32 AAMSimWorldPresenter::GetActivePhase2AircraftProxyCount() const
@@ -1035,6 +1894,16 @@ int32 AAMSimWorldPresenter::GetActivePhase4ResponseProxyCount() const
 			});
 }
 
+int32 AAMSimWorldPresenter::GetActiveMatureSiteProxyCount() const
+{
+	return Algo::CountIf(
+		MatureSite,
+		[](const UPaperSpriteComponent* Component)
+			{
+				return Component && Component->IsVisible();
+			});
+}
+
 void AAMSimWorldPresenter::SetFacilitiesVisible(const bool bVisible, const bool bOperational)
 {
 	for (UPaperSpriteComponent* Component : {Runway, Taxiway, Stand, Access, OperationsHut, Windsock})
@@ -1059,8 +1928,7 @@ void AAMSimWorldPresenter::SetAircraftState(const AMSim::FPhase1QuerySnapshot& Q
 	Selection->SetVisibility(bVisible);
 	if (!bVisible)
 	{
-		InspectionMarker->SetVisibility(false);
-		FuelMarker->SetVisibility(false);
+		RefreshPhase1OperationsPresentation(Query);
 		return;
 	}
 
@@ -1089,6 +1957,9 @@ void AAMSimWorldPresenter::SetAircraftState(const AMSim::FPhase1QuerySnapshot& Q
 	Selection->SetRelativeLocation(FVector(Position.X, Position.Y, 70.0));
 
 	const bool bTurnaround = Query.FlightState == AMSim::EFlightState::Turnaround;
-	InspectionMarker->SetVisibility(bTurnaround && Query.InspectionState == AMSim::EServiceTaskState::Active);
-	FuelMarker->SetVisibility(bTurnaround && Query.FuelingState == AMSim::EServiceTaskState::Active);
+	Aircraft->SetRelativeScale3D(FVector(
+		bTurnaround ? 13.0 : 10.0,
+		1.0,
+		bTurnaround ? 13.0 : 10.0));
+	RefreshPhase1OperationsPresentation(Query);
 }

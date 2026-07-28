@@ -18,6 +18,7 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	UCameraComponent* GetCamera() const { return Camera; }
+	void SetCloseOperationsMode(bool bEnabled);
 
 private:
 	void PanUp();
@@ -26,6 +27,10 @@ private:
 	void PanRight();
 	void Zoom(const struct FInputActionValue& Value);
 	void Pan(FVector Direction);
+
+	bool bCloseOperationsMode = false;
+	FVector ManagementCameraLocation = FVector::ZeroVector;
+	float ManagementOrthoWidth = 105000.0f;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UCameraComponent> Camera;

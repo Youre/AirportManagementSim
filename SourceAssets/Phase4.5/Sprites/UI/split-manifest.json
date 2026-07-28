@@ -1,0 +1,347 @@
+{
+  "source": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase4.5\\Generated\\ui-icon-thumbnail-atlas-alpha.png",
+  "source_sha256": "b855f833215a2fc5dfab87c4b5278820d1f1c65ce09e6cae9831bdd738129f90",
+  "grid": [
+    4,
+    4
+  ],
+  "padding": 12,
+  "sprites": [
+    {
+      "name": "Build",
+      "cell": 0,
+      "source_box": [
+        0,
+        0,
+        314,
+        314
+      ],
+      "alpha_bounds": [
+        65,
+        67,
+        308,
+        294
+      ],
+      "dimensions": [
+        267,
+        251
+      ],
+      "sha256": "0982b1b057fcd5733006166ec7947a6326d1292cac4de0d2d551febdcca8443d"
+    },
+    {
+      "name": "Routes",
+      "cell": 1,
+      "source_box": [
+        314,
+        0,
+        627,
+        314
+      ],
+      "alpha_bounds": [
+        45,
+        74,
+        276,
+        292
+      ],
+      "dimensions": [
+        255,
+        242
+      ],
+      "sha256": "fd07604250c110bc9634cc61b8354913dd07f3c235cdd958f21958d352e67ad0"
+    },
+    {
+      "name": "Timetable",
+      "cell": 2,
+      "source_box": [
+        627,
+        0,
+        940,
+        314
+      ],
+      "alpha_bounds": [
+        35,
+        61,
+        267,
+        294
+      ],
+      "dimensions": [
+        256,
+        257
+      ],
+      "sha256": "bd4155823271a057e50fcd07397a43ebd24734cb844c63dfab0c039472bc4dfe"
+    },
+    {
+      "name": "Staff",
+      "cell": 3,
+      "source_box": [
+        940,
+        0,
+        1254,
+        314
+      ],
+      "alpha_bounds": [
+        38,
+        62,
+        225,
+        312
+      ],
+      "dimensions": [
+        211,
+        274
+      ],
+      "sha256": "6d18524c0dcbe9f89de01d0dfc5d80544d75d3de85cd7f37b3647e58b81b6dbc"
+    },
+    {
+      "name": "Overlays",
+      "cell": 4,
+      "source_box": [
+        0,
+        314,
+        314,
+        627
+      ],
+      "alpha_bounds": [
+        66,
+        44,
+        290,
+        291
+      ],
+      "dimensions": [
+        248,
+        271
+      ],
+      "sha256": "7c8bd29fa3b1c68949eb11d34959a4af5f50c18940fb9580a34c76ff4775850b"
+    },
+    {
+      "name": "Alerts",
+      "cell": 5,
+      "source_box": [
+        314,
+        314,
+        627,
+        627
+      ],
+      "alpha_bounds": [
+        61,
+        51,
+        247,
+        285
+      ],
+      "dimensions": [
+        210,
+        258
+      ],
+      "sha256": "85fa291c0877750ae13e9ab206f64811b9c57f2c9dcb3bf98c2fad4932c65caf"
+    },
+    {
+      "name": "Flights",
+      "cell": 6,
+      "source_box": [
+        627,
+        314,
+        940,
+        627
+      ],
+      "alpha_bounds": [
+        17,
+        44,
+        242,
+        282
+      ],
+      "dimensions": [
+        249,
+        262
+      ],
+      "sha256": "e44fe73a89595e22100a390511c114f2e58ffde6b51cfb30a25422cc82e88ff6"
+    },
+    {
+      "name": "Projects",
+      "cell": 7,
+      "source_box": [
+        940,
+        314,
+        1254,
+        627
+      ],
+      "alpha_bounds": [
+        17,
+        45,
+        241,
+        297
+      ],
+      "dimensions": [
+        248,
+        276
+      ],
+      "sha256": "64acf09b5ec1b73f5fe5a6c918fb5743936e8128b5d1543db85d2a93f6609338"
+    },
+    {
+      "name": "Weather",
+      "cell": 8,
+      "source_box": [
+        0,
+        627,
+        314,
+        940
+      ],
+      "alpha_bounds": [
+        62,
+        34,
+        291,
+        256
+      ],
+      "dimensions": [
+        253,
+        246
+      ],
+      "sha256": "a3bd6faebdd189ad7b213bd465d4cfd0817b32aa8298f0d5966110c14c4c740f"
+    },
+    {
+      "name": "Services",
+      "cell": 9,
+      "source_box": [
+        314,
+        627,
+        627,
+        940
+      ],
+      "alpha_bounds": [
+        19,
+        78,
+        313,
+        240
+      ],
+      "dimensions": [
+        318,
+        186
+      ],
+      "sha256": "1eeb73391f8df130f3570e166eae6361d0ddf2da53c806e803243ceacd1fe3e2"
+    },
+    {
+      "name": "Passengers",
+      "cell": 10,
+      "source_box": [
+        627,
+        627,
+        940,
+        940
+      ],
+      "alpha_bounds": [
+        0,
+        46,
+        313,
+        248
+      ],
+      "dimensions": [
+        337,
+        226
+      ],
+      "sha256": "2fd0dfaf2ad392f8911f7c4fce96252819b63a9afa1fe73c177476899fc51f59"
+    },
+    {
+      "name": "Baggage",
+      "cell": 11,
+      "source_box": [
+        940,
+        627,
+        1254,
+        940
+      ],
+      "alpha_bounds": [
+        0,
+        41,
+        256,
+        313
+      ],
+      "dimensions": [
+        280,
+        296
+      ],
+      "sha256": "443f484908226258c88b4e36795f289e6c429afdcd7048ac736b266a135801a5"
+    },
+    {
+      "name": "GeneralAviation",
+      "cell": 12,
+      "source_box": [
+        0,
+        940,
+        314,
+        1254
+      ],
+      "alpha_bounds": [
+        47,
+        16,
+        291,
+        240
+      ],
+      "dimensions": [
+        268,
+        248
+      ],
+      "sha256": "933bb79e74679f370e35bfff83f3f69b8cfb784754bdbc71624d101603b1209e"
+    },
+    {
+      "name": "FlightSchool",
+      "cell": 13,
+      "source_box": [
+        314,
+        940,
+        627,
+        1254
+      ],
+      "alpha_bounds": [
+        20,
+        23,
+        313,
+        262
+      ],
+      "dimensions": [
+        317,
+        263
+      ],
+      "sha256": "69ad7b0f7edd02e945b1fe22b86d083df604e87006a27bfac6b90f5d5654bfc9"
+    },
+    {
+      "name": "Charter",
+      "cell": 14,
+      "source_box": [
+        627,
+        940,
+        940,
+        1254
+      ],
+      "alpha_bounds": [
+        0,
+        26,
+        313,
+        240
+      ],
+      "dimensions": [
+        337,
+        238
+      ],
+      "sha256": "93e706ac8e3e2e446bef23ddb9fda135a2a284c0a97dc43eebe4f2cd3c0c36c4"
+    },
+    {
+      "name": "MixedAirport",
+      "cell": 15,
+      "source_box": [
+        940,
+        940,
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        0,
+        0,
+        257,
+        255
+      ],
+      "dimensions": [
+        281,
+        279
+      ],
+      "sha256": "2f5ea448692c2f8d8e81098aea74de43ed3974e68f87ccf85ae6c1fe7f5f6baa"
+    }
+  ]
+}

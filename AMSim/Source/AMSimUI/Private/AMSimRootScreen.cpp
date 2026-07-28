@@ -2,9 +2,12 @@
 
 #include "AMSimAircraftPresentation.h"
 #include "AMSimAirportSimulationSubsystem.h"
+#include "AMSimCameraPawn.h"
+#include "AMSimConstructionProposalView.h"
 #include "AMSimGameInstanceSubsystem.h"
 #include "AMSimPhase1Fixture.h"
 #include "AMSimTerminalView.h"
+#include "AMSimTurnaroundView.h"
 #include "AMSimUITheme.h"
 #include "Blueprint/WidgetTree.h"
 #include "Blueprint/UserWidget.h"
@@ -31,7 +34,7 @@
 #include "Styling/CoreStyle.h"
 #include "UObject/ConstructorHelpers.h"
 
-namespace
+namespace AMSimRootScreenPrivate
 {
 	const FLinearColor Background = AMSim::UITheme::Navy900();
 	const FLinearColor Panel = AMSim::UITheme::Navy800();
@@ -273,6 +276,8 @@ namespace
 	}
 }
 
+using namespace AMSimRootScreenPrivate;
+
 UAMSimRootScreen::UAMSimRootScreen(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -482,7 +487,7 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		TEXT("BUILD"),
 		AMSim::UITheme::EButton::Primary,
 		14);
-	BuildButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::CommitStarterPlan);
+	BuildButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::ToggleConstructionProposal);
 	AddVertical(Left, BuildButton);
 	for (const TPair<const TCHAR*, const TCHAR*>& Tool : {
 		TPair<const TCHAR*, const TCHAR*>(TEXT("ScheduleTool"), TEXT("SCHEDULE")),
@@ -801,6 +806,19 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	AddVertical(ContextColumn, ContextActions, 4.0f);
 	ContextPanel->SetVisibility(ESlateVisibility::Hidden);
 	PlaceCanvas(Map, ContextPanel, FAnchors(0.10f, 0.61f, 0.90f, 0.95f));
+	ConstructionProposalView =
+		WidgetTree->ConstructWidget<UAMSimConstructionProposalView>(
+			UAMSimConstructionProposalView::StaticClass(),
+			TEXT("ConstructionProposalView"));
+	PlaceCanvas(
+		Map,
+		ConstructionProposalView,
+		FAnchors(0.0f, 0.0f, 1.0f, 1.0f));
+	TurnaroundView =
+		WidgetTree->ConstructWidget<UAMSimTurnaroundView>(
+			UAMSimTurnaroundView::StaticClass(),
+			TEXT("TurnaroundView"));
+	PlaceCanvas(Map, TurnaroundView, FAnchors(0.04f, 0.05f, 0.96f, 0.28f));
 	UHorizontalBoxSlot* MapSlot = Main->AddChildToHorizontalBox(MapPanel);
 	MapSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
 
@@ -1431,145 +1449,6 @@ void UAMSimRootScreen::NativeDestruct()
 	Super::NativeDestruct();
 }
 
-void UAMSimRootScreen::CreateAirport()
-{
-	AMSim::FPhase1Command Command;
-	Command.Type = AMSim::EPhase1CommandType::CreateAirport;
-	Command.AirportName = AirportNameEntry
-		? AirportNameEntry->GetText().ToString().TrimStartAndEnd()
-		: TEXT("Riverbend Field");
-	Command.MapId = AMSim::GetPhase1Fixture().MapId;
-	const bool bAccepted =
-		GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>()->SubmitPhase1Command(Command) ==
-		AMSim::EPhase1CommandResult::Accepted;
-	SetInteractionMessage(
-		bAccepted ? TEXT("Airport identity created.") : TEXT("Enter a valid airport name."),
-		bAccepted);
-}
-
-void UAMSimRootScreen::CommitStarterPlan()
-{
-	AMSim::FPhase1Command Command;
-	Command.Type = AMSim::EPhase1CommandType::CommitStarterPlan;
-	Command.Proposal = AMSim::CreateDefaultStarterPlan();
-	const bool bAccepted =
-		GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>()->SubmitPhase1Command(Command) ==
-		AMSim::EPhase1CommandResult::Accepted;
-	SetInteractionMessage(
-		bAccepted ? TEXT("Starter airfield funded; delivery is underway.") : TEXT("Starter plan was rejected."),
-		bAccepted);
-}
-
-void UAMSimRootScreen::CancelStarterPlan()
-{
-	AMSim::FPhase1Command Command;
-	Command.Type = AMSim::EPhase1CommandType::CancelStarterPlan;
-	const bool bAccepted =
-		GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>()->SubmitPhase1Command(Command) ==
-		AMSim::EPhase1CommandResult::Accepted;
-	SetInteractionMessage(
-		bAccepted ? TEXT("Project cancelled before delivery; 3,400 Credits refunded.")
-			: TEXT("The project can only be cancelled before materials arrive."),
-		bAccepted);
-}
-
-void UAMSimRootScreen::OpenAirport()
-{
-	AMSim::FPhase1Command Command;
-	Command.Type = AMSim::EPhase1CommandType::OpenAirport;
-	const bool bAccepted =
-		GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>()->SubmitPhase1Command(Command) ==
-		AMSim::EPhase1CommandResult::Accepted;
-	SetInteractionMessage(
-		bAccepted ? TEXT("Riverbend Field is open.") : TEXT("Opening prerequisites are not complete."),
-		bAccepted);
-}
-
-void UAMSimRootScreen::CloseAirport()
-{
-	AMSim::FPhase1Command Command;
-	Command.Type = AMSim::EPhase1CommandType::CloseAirport;
-	const bool bAccepted =
-		GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>()->SubmitPhase1Command(Command) ==
-		AMSim::EPhase1CommandResult::Accepted;
-	SetInteractionMessage(
-		bAccepted ? TEXT("Airfield closed safely.") : TEXT("Complete the active visit before closing."),
-		bAccepted);
-}
-
-void UAMSimRootScreen::PinOffer()
-{
-	AMSim::FPhase1Command Command;
-	Command.Type = AMSim::EPhase1CommandType::PinStarterOffer;
-	const bool bAccepted =
-		GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>()->SubmitPhase1Command(Command) ==
-		AMSim::EPhase1CommandResult::Accepted;
-	SetInteractionMessage(
-		bAccepted ? TEXT("Offer pinned for review.") : TEXT("Only an available offer can be pinned."),
-		bAccepted);
-}
-
-void UAMSimRootScreen::DeclineOffer()
-{
-	AMSim::FPhase1Command Command;
-	Command.Type = AMSim::EPhase1CommandType::DeclineStarterOffer;
-	const bool bAccepted =
-		GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>()->SubmitPhase1Command(Command) ==
-		AMSim::EPhase1CommandResult::Accepted;
-	SetInteractionMessage(
-		bAccepted ? TEXT("Offer declined. Close and reopen for a fresh starter offer.")
-			: TEXT("Only an available offer can be declined."),
-		bAccepted);
-}
-
-void UAMSimRootScreen::AcceptOffer()
-{
-	AMSim::FPhase1Command Command;
-	Command.Type = AMSim::EPhase1CommandType::AcceptStarterOffer;
-	const bool bAccepted =
-		GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>()->SubmitPhase1Command(Command) ==
-		AMSim::EPhase1CommandResult::Accepted;
-	SetInteractionMessage(bAccepted ? TEXT("First-flight contract accepted.") : TEXT("Offer could not be accepted."), bAccepted);
-}
-
-void UAMSimRootScreen::ScheduleFlight()
-{
-	UAMSimAirportSimulationSubsystem* Subsystem =
-		GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>();
-	AMSim::FPhase1Command Command;
-	Command.Type = AMSim::EPhase1CommandType::ScheduleStarterFlight;
-	Command.RequestedStandDefinitionId = TEXT("Facility.GAStand.Starter");
-	Command.ScheduledArrivalGameMilliseconds = Subsystem->GetRecommendedStarterArrivalTime();
-	const bool bAccepted =
-		Subsystem->SubmitPhase1Command(Command) == AMSim::EPhase1CommandResult::Accepted;
-	SetInteractionMessage(
-		bAccepted ? TEXT("Arrival scheduled in the next five-minute slot.") : TEXT("Schedule selection was rejected."),
-		bAccepted);
-}
-
-void UAMSimRootScreen::RequestRecovery()
-{
-	UAMSimAirportSimulationSubsystem* Subsystem =
-		GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>();
-	if (Subsystem->GetPhase2Query().bInitialized)
-	{
-		AMSim::FPhase2Command Phase2Command;
-		Phase2Command.Type = AMSim::EPhase2CommandType::RequestRecovery;
-		SubmitPhase2Command(
-			Phase2Command,
-			TEXT("Phase 2 continuity grant recorded in the shared ledger."));
-		return;
-	}
-	AMSim::FPhase1Command Command;
-	Command.Type = AMSim::EPhase1CommandType::RequestRecovery;
-	const bool bAccepted =
-		Subsystem->SubmitPhase1Command(Command) ==
-		AMSim::EPhase1CommandResult::Accepted;
-	SetInteractionMessage(
-		bAccepted ? TEXT("Recovery assistance granted and recorded.") : TEXT("Recovery is not currently eligible."),
-		bAccepted);
-}
-
 void UAMSimRootScreen::PauseSimulation()
 {
 	AMSim::FPhase1Command Command;
@@ -1691,14 +1570,36 @@ void UAMSimRootScreen::RefreshFromSimulation()
 	const AMSim::FPhase2QuerySnapshot Phase2Query = Subsystem->GetPhase2Query();
 	const AMSim::FPhase2State& Phase2State = Subsystem->GetSimulation().GetPhase2State();
 	const AMSim::FPhase3QuerySnapshot Phase3Query = Subsystem->GetPhase3Query();
+	const bool bOperationalEvidence =
+		FParse::Param(
+			FCommandLine::Get(),
+			TEXT("AMSimPhase45OperationalEvidence"));
+	const bool bShowPhase2ClosureProof =
+		bOperationalEvidence &&
+		Phase2State.Expansion.Stage != AMSim::EExpansionStage::None &&
+		Phase2State.Expansion.Stage != AMSim::EExpansionStage::Operational;
+	for (TActorIterator<AAMSimCameraPawn> It(GetWorld()); It; ++It)
+	{
+		It->SetCloseOperationsMode(
+			Query.FlightState == AMSim::EFlightState::Turnaround);
+	}
 	if (TerminalView)
 	{
 		TerminalView->RefreshFromSimulation();
+		if (bShowPhase2ClosureProof)
+		{
+			TerminalView->SetVisibility(ESlateVisibility::Collapsed);
+		}
+	}
+	if (TurnaroundView)
+	{
+		TurnaroundView->RefreshFromSimulation();
 	}
 	if (Phase1Page)
 	{
 		Phase1Page->SetVisibility(
-			Phase3Query.bUnlocked || Phase3Query.bInitialized
+			(Phase3Query.bUnlocked || Phase3Query.bInitialized) &&
+			!bShowPhase2ClosureProof
 				? ESlateVisibility::Collapsed
 				: ESlateVisibility::Visible);
 	}
@@ -1708,6 +1609,21 @@ void UAMSimRootScreen::RefreshFromSimulation()
 	}
 	LastAppliedRevision = Query.Revision;
 	CurrentViewState = AMSim::MakePhase1ViewState(Query, State);
+	if (ConstructionProposalView)
+	{
+		const bool bAutomatedProposalProof =
+			FParse::Param(FCommandLine::Get(), TEXT("AMSimPhase45ConstructionProof"));
+		if (bAutomatedProposalProof &&
+			CurrentViewState.bCanBuild &&
+			!ConstructionProposalView->IsProposalOpen())
+		{
+			ConstructionProposalView->OpenProposal();
+		}
+		else if (!CurrentViewState.bCanBuild)
+		{
+			ConstructionProposalView->CloseProposal();
+		}
+	}
 
 	const auto SetText = [](UTextBlock* Widget, const FString& Value)
 	{
@@ -1830,7 +1746,9 @@ void UAMSimRootScreen::RefreshFromSimulation()
 			ContextBody = TEXT("RUNWAY 09/27  •  TAXI A  •  STAND A1  •  HUT");
 			ContextStatus = TEXT("3,400 CR  •  ") + CurrentViewState.Status;
 		}
-		const bool bShowContext = !ContextHeader.IsEmpty();
+		const bool bShowContext =
+			!ContextHeader.IsEmpty() &&
+			Query.FlightState != AMSim::EFlightState::Turnaround;
 		ContextPanel->SetVisibility(
 			bShowContext ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 		if (bShowContext)

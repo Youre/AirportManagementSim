@@ -14,7 +14,9 @@ class UEditableTextBox;
 class UTextBlock;
 class UUserWidget;
 class UVerticalBox;
+class UAMSimConstructionProposalView;
 class UAMSimTerminalView;
+class UAMSimTurnaroundView;
 
 UCLASS(Blueprintable)
 class AMSIMUI_API UAMSimRootScreen : public UCommonActivatableWidget
@@ -36,6 +38,8 @@ private:
 	void CreateAirport();
 	UFUNCTION()
 	void CommitStarterPlan();
+	UFUNCTION()
+	void ToggleConstructionProposal();
 	UFUNCTION()
 	void CancelStarterPlan();
 	UFUNCTION()
@@ -165,6 +169,10 @@ private:
 	TObjectPtr<UTextBlock> Phase2EconomyText;
 	UPROPERTY(Transient)
 	TObjectPtr<UAMSimTerminalView> TerminalView;
+	UPROPERTY(Transient)
+	TObjectPtr<UAMSimConstructionProposalView> ConstructionProposalView;
+	UPROPERTY(Transient)
+	TObjectPtr<UAMSimTurnaroundView> TurnaroundView;
 	UPROPERTY(Transient)
 	TObjectPtr<UVerticalBox> Phase1Page;
 

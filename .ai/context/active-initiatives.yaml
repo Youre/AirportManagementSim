@@ -24,3 +24,13 @@ project_initiatives:
     status: acceptance
     source: docs/planning/50-production/phase-1-5-visual-foundation-plan.md
     next_outcome: Owner accepts P15-01 through P15-04 or requests one bounded visual revision
+  - id: phase-4-5-visual-content
+    title: Establish the concept-derived visual-content baseline
+    status: complete
+    source: docs/planning/50-production/phase-4-5-visual-content-remediation-plan.md
+    next_outcome: Continue bounded aesthetic polish alongside later phases
+  - id: phase-5-cargo-breadth
+    title: Complete cargo and specialization breadth
+    status: complete
+    source: docs/planning/50-production/phase-5-cargo-specialization-breadth-implementation-plan.md
+    next_outcome: Preserve Phase 5 contracts while planning Phase 6 Major capability

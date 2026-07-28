@@ -4,7 +4,7 @@
 **Authority:** Normative index for implementation planning  
 **Concept source:** `ideas.txt`  
 **Engine baseline:** Unreal Engine 5.8, Windows desktop, offline single-player  
-**Last updated:** 2026-07-25
+**Last updated:** 2026-07-27
 
 ## Purpose
 
@@ -75,6 +75,7 @@ All documents in this index are approved implementation baselines. Numeric defau
 | CT-02 | [Aircraft and Operator Content Catalog](../30-content-and-assets/aircraft-operator-content.md) | Initial aircraft roster, fictional operators, liveries |
 | CT-03 | [Radio, Audio, and Offline Speech](../30-content-and-assets/radio-audio-speech.md) | Phrase generation, local TTS, captions, caching |
 | CT-04 | [Maps, Brands, Text, and Content Authoring](../30-content-and-assets/maps-brands-content-authoring.md) | Curated content, localization-ready text, validation |
+| CT-05 | [Visual Content Requirements](../30-content-and-assets/visual-content-requirements.md) | Concept-derived visible content, composed surfaces, world/UI linkage, visual acceptance |
 
 The [Concept Art Reference Set](../30-content-and-assets/concept-art/README.md) is approved supporting evidence for visual validation. It is subordinate to the written specifications and is not a source of numerical gameplay rules or shippable assets.
 
@@ -102,6 +103,8 @@ The [Concept Art Reference Set](../30-content-and-assets/concept-art/README.md) 
 | PI-04 | [Phase 2 Living General-Aviation Implementation Plan](../50-production/phase-2-living-ga-implementation-plan.md) | Phase 2 scope, architecture, work packages, and exit evidence |
 | PI-05 | [Phase 3 Terminal and Landside Implementation Plan](../50-production/phase-3-terminal-landside-implementation-plan.md) | Phase 3 terminal, passenger, baggage, security, landside, presentation, and exit evidence |
 | PI-06 | [Phase 4 Regional Scheduled Airport Implementation Plan](../50-production/phase-4-regional-scheduled-airport-implementation-plan.md) | Phase 4 recurring timetable, connections, border, disruption, presentation, and exit evidence |
+| PI-07 | [Phase 4.5 Visual Content Remediation](../50-production/phase-4-5-visual-content-remediation-plan.md) | Cross-phase implementation of CT-05 before Phase 5 opens |
+| PI-08 | [Phase 5 Cargo and Specialization Breadth](../50-production/phase-5-cargo-specialization-breadth-implementation-plan.md) | Cargo, independent Advanced paths, providers, concessions, events, schema 6, presentation, and exit evidence |
 
 ## Shared identifiers and interfaces
 

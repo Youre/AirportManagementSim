@@ -20,6 +20,12 @@ AAMSimHUD::AAMSimHUD()
 			false,
 			TEXT("Production root screen /Game/UI/Screens/WBP_AMSimRootScreen is missing; using the native audit fallback."));
 	}
+	static ConstructorHelpers::FClassFinder<UUserWidget> Gallery(
+		TEXT("/Game/Developer/Phase15/WBP_AMSimComponentGallery"));
+	if (Gallery.Succeeded())
+	{
+		DevelopmentGalleryClass = Gallery.Class;
+	}
 #endif
 }
 
@@ -31,11 +37,10 @@ void AAMSimHUD::BeginPlay()
 #if !UE_BUILD_SHIPPING
 		if (FParse::Param(FCommandLine::Get(), TEXT("AMSimComponentGallery")))
 		{
-			UClass* GalleryClass = LoadClass<UUserWidget>(
-				nullptr,
-				TEXT("/Game/Developer/Phase15/WBP_AMSimComponentGallery.WBP_AMSimComponentGallery_C"));
-			DevelopmentGallery = GalleryClass
-				? CreateWidget<UUserWidget>(Controller, GalleryClass)
+			DevelopmentGallery = DevelopmentGalleryClass
+				? CreateWidget<UUserWidget>(
+					Controller,
+					DevelopmentGalleryClass)
 				: nullptr;
 			if (DevelopmentGallery)
 			{

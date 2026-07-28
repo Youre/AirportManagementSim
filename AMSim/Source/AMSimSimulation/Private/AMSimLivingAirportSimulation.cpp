@@ -30,6 +30,10 @@ namespace AMSim
 
 		FName RequiredRoleForService(const FName ServiceId)
 		{
+			if (ServiceId == TEXT("Service.CargoHandling"))
+			{
+				return TEXT("StaffRole.CargoHandling");
+			}
 			if (ServiceId == TEXT("Service.Inspection"))
 			{
 				return TEXT("StaffRole.Maintenance");
@@ -64,6 +68,120 @@ namespace AMSim
 	FLivingAirportSimulation::FLivingAirportSimulation(const uint64 MasterSeed)
 	{
 		Reset(MasterSeed);
+	}
+
+	void FLivingAirportSimulation::EnsureCargoServiceResources(
+		const int64 CurrentGameMilliseconds)
+	{
+		if (!State.bInitialized)
+		{
+			return;
+		}
+		const TArray<FName> CargoVehicleIds = {
+			TEXT("Vehicle.Cargo.Forklift"),
+			TEXT("Vehicle.Cargo.DollyTug"),
+			TEXT("Vehicle.Cargo.DeliveryTruck"),
+			TEXT("Vehicle.Cargo.HighLoader"),
+			TEXT("Vehicle.Cargo.SupportUnit")};
+		for (const FName VehicleId : CargoVehicleIds)
+		{
+			if (!State.Vehicles.ContainsByPredicate(
+				[VehicleId](const FPhase2VehicleRecord& Vehicle)
+				{
+					return Vehicle.VehicleContentId == VehicleId;
+				}))
+			{
+				FPhase2VehicleRecord Vehicle;
+				Vehicle.Id = {AllocateDomainId()};
+				Vehicle.VehicleContentId = VehicleId;
+				Vehicle.CapabilityId = TEXT("Service.CargoHandling");
+				Vehicle.HomeDepotId = TEXT("Facility.Cargo.EquipmentBay");
+				Vehicle.State = EPhase2VehicleState::AtDepot;
+				Vehicle.StateChangedAtGameMilliseconds =
+					CurrentGameMilliseconds;
+				State.Vehicles.Add(Vehicle);
+			}
+		}
+		for (int32 TeamIndex = 1; TeamIndex <= CargoVehicleIds.Num();
+			++TeamIndex)
+		{
+			const FName ZoneId(*FString::Printf(
+				TEXT("Zone.Cargo.Team%d"),
+				TeamIndex));
+			if (!State.Teams.ContainsByPredicate(
+				[ZoneId](const FPhase2StaffTeamRecord& Team)
+				{
+					return Team.RoleId == TEXT("StaffRole.CargoHandling") &&
+						Team.ZoneId == ZoneId;
+				}))
+			{
+				FPhase2StaffTeamRecord Team;
+				Team.Id = {AllocateDomainId()};
+				Team.RoleId = TEXT("StaffRole.CargoHandling");
+				Team.ZoneId = ZoneId;
+				Team.TeamSize = 4;
+				Team.WorkloadPercent = 20;
+				Team.MoralePercent = 85;
+				Team.bOnShift = true;
+				State.Teams.Add(Team);
+			}
+		}
+	}
+
+	FServiceTaskId FLivingAirportSimulation::RegisterExternalServiceTask(
+		const FName OwnerDomain,
+		const uint64 OwnerId,
+		const FName OperationId,
+		const int32 Quantity,
+		const int64 DurationMilliseconds,
+		const int64 CurrentGameMilliseconds)
+	{
+		if (!State.bInitialized ||
+			OwnerDomain.IsNone() ||
+			OwnerId == 0 ||
+			OperationId.IsNone() ||
+			Quantity <= 0 ||
+			DurationMilliseconds <= 0)
+		{
+			return {};
+		}
+		const FPhase2ServiceTaskRecord* Existing =
+			State.ServiceTasks.FindByPredicate(
+				[OwnerDomain, OwnerId, OperationId](
+					const FPhase2ServiceTaskRecord& Task)
+				{
+					return Task.OwnerDomain == OwnerDomain &&
+						Task.OwnerId == OwnerId &&
+						Task.OperationId == OperationId;
+				});
+		if (Existing)
+		{
+			return Existing->Id;
+		}
+		EnsureCargoServiceResources(CurrentGameMilliseconds);
+		FPhase2ServiceTaskRecord Task;
+		Task.Id = {AllocateDomainId()};
+		Task.ServiceId = TEXT("Service.CargoHandling");
+		Task.OwnerDomain = OwnerDomain;
+		Task.OwnerId = OwnerId;
+		Task.OperationId = OperationId;
+		Task.Quantity = Quantity;
+		Task.State = EPhase2ServiceState::Queued;
+		Task.StateChangedAtGameMilliseconds = CurrentGameMilliseconds;
+		Task.DurationMilliseconds = DurationMilliseconds;
+		State.ServiceTasks.Add(Task);
+		return Task.Id;
+	}
+
+	bool FLivingAirportSimulation::IsServiceTaskComplete(
+		const FServiceTaskId TaskId) const
+	{
+		const FPhase2ServiceTaskRecord* Task = State.ServiceTasks.FindByPredicate(
+			[TaskId](const FPhase2ServiceTaskRecord& Candidate)
+			{
+				return Candidate.Id == TaskId;
+			});
+		return Task && Task->State == EPhase2ServiceState::Completed;
 	}
 
 	void FLivingAirportSimulation::Reset(const uint64 MasterSeed)

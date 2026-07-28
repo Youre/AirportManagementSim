@@ -32,3 +32,11 @@ Mix groups are radio, aircraft, ground vehicles, terminal ambience, weather, con
 
 Tests must prove deterministic intent creation, token formatting, cache identity, deduplication, priority queueing, captions-first behavior, silent fallback, no network dependency, save/load of pending critical calls, and intelligibility at supported game speeds. Human review covers authentic terminology and child comprehension.
 
+## Supporting production artifact
+
+The [Riverbend Airport Suno v5.5 Music Prompt Kit](suno-v5-5-music-prompt-kit.md),
+[rockabilly companion](suno-v5-5-rockabilly-music-prompt-kit.md), and
+[retro-flight companion](suno-v5-5-retro-flight-music-prompt-kit.md) are draft
+prompt banks for optional instrumental music exploration. They do not alter
+this specification's offline speech, captions-first, mixing, or shipping-rights
+requirements.

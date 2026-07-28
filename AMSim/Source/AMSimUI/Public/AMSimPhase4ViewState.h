@@ -39,7 +39,17 @@ namespace AMSim
 		bool bCanRenew = false;
 	};
 
+	struct AMSIMUI_API FPhase4FlightCardViewState
+	{
+		FString Status;
+		FString RiskLabel;
+		bool bWarning = false;
+		bool bPositive = false;
+	};
+
 	AMSIMUI_API FPhase4ViewState MakePhase4ViewState(
 		const FPhase4QuerySnapshot& Query,
 		const FPhase4State& State);
+	AMSIMUI_API FPhase4FlightCardViewState MakePhase4FlightCardViewState(
+		const FPhase4FlightRecord& Flight);
 }

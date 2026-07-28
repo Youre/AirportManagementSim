@@ -1,0 +1,461 @@
+{
+  "artifacts": [
+    {
+      "exists": true,
+      "media_type": null,
+      "notes": "Planned workflow graph.",
+      "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\workflow\\workflow_plan.json",
+      "role": "plan",
+      "sha256": "543b8a80f1441c8d7c030cde30d3f24863d44600c7282e0e8f43472f3ad6f769",
+      "size_bytes": 11930,
+      "stage": null
+    },
+    {
+      "exists": true,
+      "media_type": null,
+      "notes": "Workflow run manifest.",
+      "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\workflow\\run_manifest.json",
+      "role": "run_manifest",
+      "sha256": "0c6db6c57c0805a351c928ca4152b300eedd37e0e5874bae306d00ec2a9af204",
+      "size_bytes": 1051,
+      "stage": null
+    },
+    {
+      "exists": false,
+      "media_type": "application/json",
+      "notes": "ingest output `input_package`.",
+      "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\ingest\\input_package.json",
+      "role": "input_package",
+      "sha256": null,
+      "size_bytes": null,
+      "stage": "ingest"
+    },
+    {
+      "exists": false,
+      "media_type": "application/json",
+      "notes": "ingest output `run_manifest`.",
+      "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\ingest\\run_manifest.json",
+      "role": "run_manifest",
+      "sha256": null,
+      "size_bytes": null,
+      "stage": "ingest"
+    },
+    {
+      "exists": false,
+      "media_type": "application/json",
+      "notes": "analyze output `structural_analysis`.",
+      "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\analyze\\structural\\structural_analysis.json",
+      "role": "structural_analysis",
+      "sha256": null,
+      "size_bytes": null,
+      "stage": "analyze"
+    },
+    {
+      "exists": false,
+      "media_type": "application/json",
+      "notes": "analyze output `run_manifest`.",
+      "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\analyze\\structural\\run_manifest.json",
+      "role": "run_manifest",
+      "sha256": null,
+      "size_bytes": null,
+      "stage": "analyze"
+    },
+    {
+      "exists": false,
+      "media_type": "application/json",
+      "notes": "vectorize output `vector_manifest`.",
+      "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\vectorize\\vector\\vector_manifest.json",
+      "role": "vector_manifest",
+      "sha256": null,
+      "size_bytes": null,
+      "stage": "vectorize"
+    },
+    {
+      "exists": false,
+      "media_type": "image/svg+xml",
+      "notes": "vectorize output `raw_svg`.",
+      "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\vectorize\\vector\\raw.svg",
+      "role": "svg",
+      "sha256": null,
+      "size_bytes": null,
+      "stage": "vectorize"
+    },
+    {
+      "exists": false,
+      "media_type": "application/json",
+      "notes": "vectorize output `run_manifest`.",
+      "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\vectorize\\vector\\run_manifest.json",
+      "role": "run_manifest",
+      "sha256": null,
+      "size_bytes": null,
+      "stage": "vectorize"
+    },
+    {
+      "exists": false,
+      "media_type": "application/json",
+      "notes": "cleanup output `cleanup_manifest`.",
+      "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\cleanup\\cleanup\\cleanup_manifest.json",
+      "role": "cleanup_manifest",
+      "sha256": null,
+      "size_bytes": null,
+      "stage": "cleanup"
+    },
+    {
+      "exists": false,
+      "media_type": "image/svg+xml",
+      "notes": "cleanup output `cleaned_svg`.",
+      "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\cleanup\\cleanup\\cleaned.svg",
+      "role": "svg",
+      "sha256": null,
+      "size_bytes": null,
+      "stage": "cleanup"
+    },
+    {
+      "exists": false,
+      "media_type": "application/json",
+      "notes": "cleanup output `run_manifest`.",
+      "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\cleanup\\cleanup\\run_manifest.json",
+      "role": "run_manifest",
+      "sha256": null,
+      "size_bytes": null,
+      "stage": "cleanup"
+    },
+    {
+      "exists": false,
+      "media_type": "application/json",
+      "notes": "segment output `segmentation_manifest`.",
+      "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\segment\\segmentation\\segmentation_manifest.json",
+      "role": "segmentation_manifest",
+      "sha256": null,
+      "size_bytes": null,
+      "stage": "segment"
+    },
+    {
+      "exists": false,
+      "media_type": "image/svg+xml",
+      "notes": "segment output `layered_svg`.",
+      "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\segment\\segmentation\\layered.svg",
+      "role": "svg",
+      "sha256": null,
+      "size_bytes": null,
+      "stage": "segment"
+    },
+    {
+      "exists": false,
+      "media_type": "application/json",
+      "notes": "segment output `run_manifest`.",
+      "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\segment\\segmentation\\run_manifest.json",
+      "role": "run_manifest",
+      "sha256": null,
+      "size_bytes": null,
+      "stage": "segment"
+    },
+    {
+      "exists": false,
+      "media_type": "application/json",
+      "notes": "mesh output `interaction_mesh`.",
+      "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\mesh\\mesh\\interaction_mesh.json",
+      "role": "interaction_mesh",
+      "sha256": null,
+      "size_bytes": null,
+      "stage": "mesh"
+    },
+    {
+      "exists": false,
+      "media_type": "image/svg+xml",
+      "notes": "mesh output `mesh_preview_svg`.",
+      "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\mesh\\mesh\\mesh_preview.svg",
+      "role": "svg",
+      "sha256": null,
+      "size_bytes": null,
+      "stage": "mesh"
+    },
+    {
+      "exists": false,
+      "media_type": "application/json",
+      "notes": "mesh output `run_manifest`.",
+      "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\mesh\\mesh\\run_manifest.json",
+      "role": "run_manifest",
+      "sha256": null,
+      "size_bytes": null,
+      "stage": "mesh"
+    },
+    {
+      "exists": false,
+      "media_type": "application/json",
+      "notes": "export output `export_package`.",
+      "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\export\\runtime\\export_package.json",
+      "role": "export_package",
+      "sha256": null,
+      "size_bytes": null,
+      "stage": "export"
+    },
+    {
+      "exists": false,
+      "media_type": "image/svg+xml",
+      "notes": "export output `runtime_svg`.",
+      "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\export\\runtime\\vgc.svg",
+      "role": "svg",
+      "sha256": null,
+      "size_bytes": null,
+      "stage": "export"
+    },
+    {
+      "exists": false,
+      "media_type": "application/zip",
+      "notes": "export output `runtime_bundle_zip`.",
+      "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\export\\runtime_bundle.zip",
+      "role": "zip",
+      "sha256": null,
+      "size_bytes": null,
+      "stage": "export"
+    },
+    {
+      "exists": false,
+      "media_type": "application/json",
+      "notes": "export output `run_manifest`.",
+      "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\export\\runtime\\run_manifest.json",
+      "role": "run_manifest",
+      "sha256": null,
+      "size_bytes": null,
+      "stage": "export"
+    }
+  ],
+  "created_at": "2026-07-28T03:01:26+00:00",
+  "dry_run": false,
+  "entry_decision": {
+    "explicit_entry_path": true,
+    "fidelity_profile": "topology",
+    "input_mode": "text",
+    "rationale": "Explicit entry path supplied by caller.",
+    "selected_entry_path": "text_generation",
+    "source_kind": "text"
+  },
+  "entry_path": "text_generation",
+  "from_stage": "ingest",
+  "input_mode": "text",
+  "metrics": {
+    "artifact_count": 22,
+    "dry_run": false,
+    "executed_stage_count": 0,
+    "failed_stage_count": 1,
+    "planned_stage_count": 7,
+    "skipped_stage_count": 6,
+    "total_duration_seconds": 0.079
+  },
+  "next_phase": "WEB-104",
+  "run_id": "freighters",
+  "schema_version": "0.1",
+  "stages": [
+    {
+      "command": [
+        "C:\\Users\\dave\\anaconda3\\python.exe",
+        "C:\\Users\\dave\\Documents\\custom-skills\\skills\\vector-graphic-composer\\scripts\\vgc_ingest.py",
+        "--intent",
+        "top-down orthographic fictional regional cargo aircraft set with a compact feeder freighter and larger regional freighter, Riverbend navy cyan amber liveries, transparent background, editable semantic layers, no text, no 3D perspective",
+        "--entry-path",
+        "text_generation",
+        "--out",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\ingest"
+      ],
+      "completed_at": "2026-07-28T03:01:26+00:00",
+      "duration_seconds": 0.079,
+      "input_refs": {
+        "intent": "top-down orthographic fictional regional cargo aircraft set with a compact feeder freighter and larger regional freighter, Riverbend navy cyan amber liveries, transparent background, editable semantic layers, no text, no 3D perspective"
+      },
+      "notes": "Stage failed with return code 1.",
+      "output_refs": {
+        "input_package": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\ingest\\input_package.json",
+        "run_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\ingest\\run_manifest.json"
+      },
+      "returncode": 1,
+      "stage": "ingest",
+      "started_at": "2026-07-28T03:01:26+00:00",
+      "status": "failed",
+      "stderr_tail": "Traceback (most recent call last):\n  File \"C:\\Users\\dave\\Documents\\custom-skills\\skills\\vector-graphic-composer\\scripts\\vgc_ingest.py\", line 15, in <module>\n    import cv2\nModuleNotFoundError: No module named 'cv2'",
+      "stdout_tail": "",
+      "warnings": []
+    },
+    {
+      "command": [
+        "C:\\Users\\dave\\anaconda3\\python.exe",
+        "C:\\Users\\dave\\Documents\\custom-skills\\skills\\vector-graphic-composer\\scripts\\vgc_analyze.py",
+        "--input-package",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\ingest\\input_package.json",
+        "--out",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\analyze",
+        "--fidelity-profile",
+        "topology"
+      ],
+      "completed_at": null,
+      "duration_seconds": null,
+      "input_refs": {
+        "fidelity_profile": "topology",
+        "input_package": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\ingest\\input_package.json"
+      },
+      "notes": "Stage planned by VGC orchestrator.",
+      "output_refs": {
+        "run_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\analyze\\structural\\run_manifest.json",
+        "structural_analysis": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\analyze\\structural\\structural_analysis.json"
+      },
+      "returncode": null,
+      "stage": "analyze",
+      "started_at": null,
+      "status": "planned",
+      "stderr_tail": "",
+      "stdout_tail": "",
+      "warnings": []
+    },
+    {
+      "command": [
+        "C:\\Users\\dave\\anaconda3\\python.exe",
+        "C:\\Users\\dave\\Documents\\custom-skills\\skills\\vector-graphic-composer\\scripts\\vgc_vectorize.py",
+        "--structural-analysis",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\analyze\\structural\\structural_analysis.json",
+        "--out",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\vectorize",
+        "--fidelity-profile",
+        "topology"
+      ],
+      "completed_at": null,
+      "duration_seconds": null,
+      "input_refs": {
+        "fidelity_profile": "topology",
+        "structural_analysis": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\analyze\\structural\\structural_analysis.json"
+      },
+      "notes": "Stage planned by VGC orchestrator.",
+      "output_refs": {
+        "raw_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\vectorize\\vector\\raw.svg",
+        "run_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\vectorize\\vector\\run_manifest.json",
+        "vector_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\vectorize\\vector\\vector_manifest.json"
+      },
+      "returncode": null,
+      "stage": "vectorize",
+      "started_at": null,
+      "status": "planned",
+      "stderr_tail": "",
+      "stdout_tail": "",
+      "warnings": []
+    },
+    {
+      "command": [
+        "C:\\Users\\dave\\anaconda3\\python.exe",
+        "C:\\Users\\dave\\Documents\\custom-skills\\skills\\vector-graphic-composer\\scripts\\vgc_cleanup.py",
+        "--vector-manifest",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\vectorize\\vector\\vector_manifest.json",
+        "--out",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\cleanup",
+        "--fidelity-profile",
+        "topology"
+      ],
+      "completed_at": null,
+      "duration_seconds": null,
+      "input_refs": {
+        "fidelity_profile": "topology",
+        "vector_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\vectorize\\vector\\vector_manifest.json"
+      },
+      "notes": "Stage planned by VGC orchestrator.",
+      "output_refs": {
+        "cleaned_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\cleanup\\cleanup\\cleaned.svg",
+        "cleanup_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\cleanup\\cleanup\\cleanup_manifest.json",
+        "run_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\cleanup\\cleanup\\run_manifest.json"
+      },
+      "returncode": null,
+      "stage": "cleanup",
+      "started_at": null,
+      "status": "planned",
+      "stderr_tail": "",
+      "stdout_tail": "",
+      "warnings": []
+    },
+    {
+      "command": [
+        "C:\\Users\\dave\\anaconda3\\python.exe",
+        "C:\\Users\\dave\\Documents\\custom-skills\\skills\\vector-graphic-composer\\scripts\\vgc_segment.py",
+        "--cleanup-manifest",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\cleanup\\cleanup\\cleanup_manifest.json",
+        "--out",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\segment"
+      ],
+      "completed_at": null,
+      "duration_seconds": null,
+      "input_refs": {
+        "cleanup_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\cleanup\\cleanup\\cleanup_manifest.json"
+      },
+      "notes": "Stage planned by VGC orchestrator.",
+      "output_refs": {
+        "layered_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\segment\\segmentation\\layered.svg",
+        "run_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\segment\\segmentation\\run_manifest.json",
+        "segmentation_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\segment\\segmentation\\segmentation_manifest.json"
+      },
+      "returncode": null,
+      "stage": "segment",
+      "started_at": null,
+      "status": "planned",
+      "stderr_tail": "",
+      "stdout_tail": "",
+      "warnings": []
+    },
+    {
+      "command": [
+        "C:\\Users\\dave\\anaconda3\\python.exe",
+        "C:\\Users\\dave\\Documents\\custom-skills\\skills\\vector-graphic-composer\\scripts\\vgc_mesh.py",
+        "--segmentation-manifest",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\segment\\segmentation\\segmentation_manifest.json",
+        "--out",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\mesh"
+      ],
+      "completed_at": null,
+      "duration_seconds": null,
+      "input_refs": {
+        "segmentation_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\segment\\segmentation\\segmentation_manifest.json"
+      },
+      "notes": "Stage planned by VGC orchestrator.",
+      "output_refs": {
+        "interaction_mesh": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\mesh\\mesh\\interaction_mesh.json",
+        "mesh_preview_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\mesh\\mesh\\mesh_preview.svg",
+        "run_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\mesh\\mesh\\run_manifest.json"
+      },
+      "returncode": null,
+      "stage": "mesh",
+      "started_at": null,
+      "status": "planned",
+      "stderr_tail": "",
+      "stdout_tail": "",
+      "warnings": []
+    },
+    {
+      "command": [
+        "C:\\Users\\dave\\anaconda3\\python.exe",
+        "C:\\Users\\dave\\Documents\\custom-skills\\skills\\vector-graphic-composer\\scripts\\vgc_export.py",
+        "--interaction-mesh",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\mesh\\mesh\\interaction_mesh.json",
+        "--out",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\export"
+      ],
+      "completed_at": null,
+      "duration_seconds": null,
+      "input_refs": {
+        "interaction_mesh": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\mesh\\mesh\\interaction_mesh.json"
+      },
+      "notes": "Stage planned by VGC orchestrator.",
+      "output_refs": {
+        "export_package": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\export\\runtime\\export_package.json",
+        "run_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\export\\runtime\\run_manifest.json",
+        "runtime_bundle_zip": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\export\\runtime_bundle.zip",
+        "runtime_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase5\\VGC\\freighters\\stages\\export\\runtime\\vgc.svg"
+      },
+      "returncode": null,
+      "stage": "export",
+      "started_at": null,
+      "status": "planned",
+      "stderr_tail": "",
+      "stdout_tail": "",
+      "warnings": []
+    }
+  ],
+  "to_stage": "export",
+  "warnings": [
+    "Stage failed with return code 1."
+  ]
+}

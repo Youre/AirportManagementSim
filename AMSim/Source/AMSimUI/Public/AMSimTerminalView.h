@@ -9,6 +9,7 @@ class UButton;
 class UCanvasPanel;
 class UProgressBar;
 class UTextBlock;
+class UTexture2D;
 class UAMSimRegionalOperationsView;
 
 UCLASS()
@@ -17,7 +18,12 @@ class AMSIMUI_API UAMSimTerminalView final : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	UAMSimTerminalView(const FObjectInitializer& ObjectInitializer);
 	void RefreshFromSimulation();
+	bool HasRequiredPassengerIdentityArt() const
+	{
+		return PassengerFamilyTexture != nullptr;
+	}
 
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
@@ -108,6 +114,8 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<UTextBlock> OverlayText;
 	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> BaggageExceptionLabelText;
+	UPROPERTY(Transient)
 	TObjectPtr<UProgressBar> StepProgress;
 	UPROPERTY(Transient)
 	TObjectPtr<UProgressBar> ConfidenceProgress;
@@ -128,6 +136,8 @@ private:
 	TObjectPtr<UButton> AssistanceButton;
 	UPROPERTY(Transient)
 	TObjectPtr<UButton> BaggageButton;
+	UPROPERTY()
+	TObjectPtr<UTexture2D> PassengerFamilyTexture;
 
 	AMSim::FPhase3ViewState ViewState;
 	int32 OverlayMode = 0;

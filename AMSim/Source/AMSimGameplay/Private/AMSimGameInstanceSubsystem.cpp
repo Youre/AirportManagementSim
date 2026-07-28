@@ -135,6 +135,12 @@ void UAMSimGameInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collectio
 	}
 	bPhase4SmokeRequested =
 		FParse::Param(FCommandLine::Get(), TEXT("AMSimPhase4Smoke"));
+	bPhase45ConstructionProofRequested =
+		FParse::Param(FCommandLine::Get(), TEXT("AMSimPhase45ConstructionProof"));
+	bPhase45OperationalEvidenceRequested =
+		FParse::Param(
+			FCommandLine::Get(),
+			TEXT("AMSimPhase45OperationalEvidence"));
 	if (FParse::Param(FCommandLine::Get(), TEXT("AMSimPhase1Smoke")) ||
 		bPhase4SmokeRequested)
 	{
@@ -159,6 +165,7 @@ void UAMSimGameInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collectio
 		IFileManager::Get().MakeDirectory(*ProofDirectory, true);
 		for (const TCHAR* ProofName : {
 			TEXT("va01-new-airport.png"),
+			TEXT("va02-construction-proposal.png"),
 			TEXT("va02-construction.png"),
 			TEXT("va04-offer.png"),
 			TEXT("va05-turnaround.png"),
@@ -170,7 +177,9 @@ void UAMSimGameInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collectio
 			TEXT("va03-terminal-passenger-flow.png"),
 			TEXT("phase3-complete.png"),
 			TEXT("va04-regional-timetable.png"),
+			TEXT("va04-locked-horizon.png"),
 			TEXT("va06-regional-incident.png"),
+			TEXT("va02-affected-closure.png"),
 			TEXT("phase4-complete.png"),
 			TEXT("smoke-result.json")})
 		{
@@ -434,8 +443,16 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 			IFileManager::Get().FileExists(*FPaths::Combine(ProofDirectory, TEXT("phase2-complete.png"))) &&
 			IFileManager::Get().FileExists(*FPaths::Combine(ProofDirectory, TEXT("va03-terminal-passenger-flow.png"))) &&
 			IFileManager::Get().FileExists(*FPaths::Combine(ProofDirectory, TEXT("phase3-complete.png"))) &&
+			(!bPhase45OperationalEvidenceRequested ||
+			 IFileManager::Get().FileExists(*FPaths::Combine(
+				 ProofDirectory,
+				 TEXT("va02-affected-closure.png")))) &&
 			(!bPhase4SmokeRequested ||
 				(IFileManager::Get().FileExists(*FPaths::Combine(ProofDirectory, TEXT("va04-regional-timetable.png"))) &&
+				 (!bPhase45OperationalEvidenceRequested ||
+				  IFileManager::Get().FileExists(*FPaths::Combine(
+					  ProofDirectory,
+					  TEXT("va04-locked-horizon.png")))) &&
 				 IFileManager::Get().FileExists(*FPaths::Combine(ProofDirectory, TEXT("va06-regional-incident.png"))) &&
 				 IFileManager::Get().FileExists(*FPaths::Combine(ProofDirectory, TEXT("phase4-complete.png")))));
 		const bool bStatePassed =
@@ -618,6 +635,32 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 			Create.AirportName = TEXT("Riverbend Field");
 			Create.MapId = AMSim::GetPhase1Fixture().MapId;
 			Submit(MoveTemp(Create));
+			if (bPhase45ConstructionProofRequested)
+			{
+				Phase1SmokeStage = 40;
+			}
+			else
+			{
+				AMSim::FPhase1Command Build;
+				Build.Type = AMSim::EPhase1CommandType::CommitStarterPlan;
+				Build.Proposal = AMSim::CreateDefaultStarterPlan();
+				Submit(MoveTemp(Build));
+				SetSpeed(1);
+				Phase1SmokeStage = 2;
+			}
+		}
+		break;
+	case 40:
+		++Phase1ProposalSettleFrames;
+		if (Phase1ProposalSettleFrames >= 3)
+		{
+			RequestProof(TEXT("va02-construction-proposal.png"));
+			Phase1SmokeStage = 41;
+		}
+		break;
+	case 41:
+		if (ProofReady())
+		{
 			AMSim::FPhase1Command Build;
 			Build.Type = AMSim::EPhase1CommandType::CommitStarterPlan;
 			Build.Proposal = AMSim::CreateDefaultStarterPlan();
@@ -672,8 +715,12 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 		if (Query.FlightState == AMSim::EFlightState::Turnaround)
 		{
 			Pause();
-			RequestProof(TEXT("va05-turnaround.png"));
-			Phase1SmokeStage = 7;
+			++Phase1TurnaroundSettleFrames;
+			if (Phase1TurnaroundSettleFrames >= 2)
+			{
+				RequestProof(TEXT("va05-turnaround.png"));
+				Phase1SmokeStage = 7;
+			}
 		}
 		break;
 	case 7:
@@ -778,6 +825,23 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 		}
 		break;
 	case 11:
+		if (ProofReady())
+		{
+			SetSpeed(8);
+			Phase1SmokeStage =
+				bPhase45OperationalEvidenceRequested ? 42 : 12;
+		}
+		break;
+	case 42:
+		if (SimulationSubsystem->GetPhase2Query().ExpansionStage ==
+			AMSim::EExpansionStage::Building)
+		{
+			Pause();
+			RequestProof(TEXT("va02-affected-closure.png"));
+			Phase1SmokeStage = 43;
+		}
+		break;
+	case 43:
 		if (ProofReady())
 		{
 			SetSpeed(8);
@@ -1016,6 +1080,29 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 			Confirm.RequestedGateId = TEXT("R1");
 			Confirm.bConfirmWarning = true;
 			SubmitPhase4(MoveTemp(Confirm));
+			if (bPhase45OperationalEvidenceRequested)
+			{
+				Phase4IncidentSettleFrames = 0;
+				Phase1SmokeStage = 44;
+			}
+			else
+			{
+				SetSpeed(8);
+				Phase1SmokeStage = 24;
+			}
+		}
+		break;
+	case 44:
+		++Phase4IncidentSettleFrames;
+		if (Phase4IncidentSettleFrames >= 2)
+		{
+			RequestProof(TEXT("va04-locked-horizon.png"));
+			Phase1SmokeStage = 45;
+		}
+		break;
+	case 45:
+		if (ProofReady())
+		{
 			SetSpeed(8);
 			Phase1SmokeStage = 24;
 		}
@@ -1034,15 +1121,34 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 				Response.Type = Type;
 				SubmitPhase4(MoveTemp(Response));
 			}
-			RequestProof(TEXT("va06-regional-incident.png"));
+			Phase4IncidentSettleFrames = 0;
 			Phase1SmokeStage = 25;
 		}
 		break;
 	case 25:
+		++Phase4IncidentSettleFrames;
+		if (Phase4IncidentSettleFrames >= 2)
+		{
+			AMSim::FPhase4Command Protect;
+			Protect.Type =
+				AMSim::EPhase4CommandType::ProtectIncidentArea;
+			SubmitPhase4(MoveTemp(Protect));
+			Phase4IncidentSettleFrames = 0;
+			Phase1SmokeStage = 26;
+		}
+		break;
+	case 26:
+		++Phase4IncidentSettleFrames;
+		if (Phase4IncidentSettleFrames >= 2)
+		{
+			RequestProof(TEXT("va06-regional-incident.png"));
+			Phase1SmokeStage = 27;
+		}
+		break;
+	case 27:
 		if (ProofReady())
 		{
 			for (const AMSim::EPhase4CommandType Type : {
-				AMSim::EPhase4CommandType::ProtectIncidentArea,
 				AMSim::EPhase4CommandType::ReviewIncidentCause,
 				AMSim::EPhase4CommandType::ApplyRecoveryPlan})
 			{
@@ -1071,10 +1177,10 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 				SimulationSubsystem->GetSimulation().CalculateChecksum() ==
 					Phase1SmokeChecksum;
 			SetSpeed(8);
-			Phase1SmokeStage = 26;
+			Phase1SmokeStage = 28;
 		}
 		break;
-	case 26:
+	case 28:
 		if (SimulationSubsystem->GetPhase4Query().CurrentOperatingDay == 7)
 		{
 			Pause();
@@ -1082,11 +1188,19 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 			Renew.Type =
 				AMSim::EPhase4CommandType::AcceptTenantRenewal;
 			SubmitPhase4(MoveTemp(Renew));
-			RequestProof(TEXT("phase4-complete.png"));
-			Phase1SmokeStage = 27;
+			Phase4CompleteSettleFrames = 0;
+			Phase1SmokeStage = 29;
 		}
 		break;
-	case 27:
+	case 29:
+		++Phase4CompleteSettleFrames;
+		if (Phase4CompleteSettleFrames >= 2)
+		{
+			RequestProof(TEXT("phase4-complete.png"));
+			Phase1SmokeStage = 30;
+		}
+		break;
+	case 30:
 		if (ProofReady())
 		{
 			Phase1SmokeChecksum =

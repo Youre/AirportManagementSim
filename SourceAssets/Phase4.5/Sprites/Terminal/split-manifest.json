@@ -1,0 +1,515 @@
+{
+  "source": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase4.5\\Generated\\terminal-content-atlas-alpha.png",
+  "source_sha256": "c94de5abd4fa2ca0b5a935abfe21a9b1b35d3f62355de8d9888b2e28e354157f",
+  "grid": [
+    6,
+    4
+  ],
+  "padding": 12,
+  "sprites": [
+    {
+      "name": "CheckInDesk",
+      "cell": 0,
+      "source_box": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "alpha_bounds": [
+        51,
+        79,
+        233,
+        199
+      ],
+      "dimensions": [
+        206,
+        144
+      ],
+      "sha256": "65e4cb7b3b32de2bb8a3f518b2bbe780b820f6576568197d984395590037bda6"
+    },
+    {
+      "name": "BagDropDesk",
+      "cell": 1,
+      "source_box": [
+        256,
+        0,
+        512,
+        256
+      ],
+      "alpha_bounds": [
+        58,
+        84,
+        243,
+        209
+      ],
+      "dimensions": [
+        209,
+        149
+      ],
+      "sha256": "cea0954bfbc273067a1f2741450989608848299d231ae7915a6adb04b5df4290"
+    },
+    {
+      "name": "SecurityScanner",
+      "cell": 2,
+      "source_box": [
+        512,
+        0,
+        768,
+        256
+      ],
+      "alpha_bounds": [
+        76,
+        43,
+        208,
+        214
+      ],
+      "dimensions": [
+        156,
+        195
+      ],
+      "sha256": "2efb82ffff125013f776ac03f7f6b4cecf11df3e910ee54b854a88f771d72f29"
+    },
+    {
+      "name": "QueueBarriers",
+      "cell": 3,
+      "source_box": [
+        768,
+        0,
+        1024,
+        256
+      ],
+      "alpha_bounds": [
+        37,
+        63,
+        203,
+        208
+      ],
+      "dimensions": [
+        190,
+        169
+      ],
+      "sha256": "7f666210641fcf5bbb4d568376cde174579935d316d9bac3775b2c12be2b2cb8"
+    },
+    {
+      "name": "GatePodium",
+      "cell": 4,
+      "source_box": [
+        1024,
+        0,
+        1280,
+        256
+      ],
+      "alpha_bounds": [
+        39,
+        71,
+        256,
+        209
+      ],
+      "dimensions": [
+        241,
+        162
+      ],
+      "sha256": "fbe9d9261f42fa8244be4e8a25fb0823024705e6679b437bf891ec5f13f47209"
+    },
+    {
+      "name": "SeatingCluster",
+      "cell": 5,
+      "source_box": [
+        1280,
+        0,
+        1536,
+        256
+      ],
+      "alpha_bounds": [
+        0,
+        86,
+        219,
+        189
+      ],
+      "dimensions": [
+        243,
+        127
+      ],
+      "sha256": "70ebc3789ce051d809d11f9ca944188b53b255ca3ed77f0dc963ab8c31dd2cd3"
+    },
+    {
+      "name": "BaggageConveyor",
+      "cell": 6,
+      "source_box": [
+        0,
+        256,
+        256,
+        512
+      ],
+      "alpha_bounds": [
+        32,
+        56,
+        256,
+        162
+      ],
+      "dimensions": [
+        248,
+        130
+      ],
+      "sha256": "9d9d3322f0c7e5f90eafc3e9a56be641af40dbe733a99e0b81008499a627957a"
+    },
+    {
+      "name": "SortingTable",
+      "cell": 7,
+      "source_box": [
+        256,
+        256,
+        512,
+        512
+      ],
+      "alpha_bounds": [
+        0,
+        38,
+        256,
+        168
+      ],
+      "dimensions": [
+        280,
+        154
+      ],
+      "sha256": "260d788ea217cd865317f8fb801a8a2faa82d324aa5dfb9cc139e7847ed92b74"
+    },
+    {
+      "name": "BaggageCart",
+      "cell": 8,
+      "source_box": [
+        512,
+        256,
+        768,
+        512
+      ],
+      "alpha_bounds": [
+        0,
+        45,
+        219,
+        161
+      ],
+      "dimensions": [
+        243,
+        140
+      ],
+      "sha256": "c02ac5cdb32a44af98eaa0951e0d77f45ead2f28af6660a11474b0c04a5f2193"
+    },
+    {
+      "name": "ReclaimCarousel",
+      "cell": 9,
+      "source_box": [
+        768,
+        256,
+        1024,
+        512
+      ],
+      "alpha_bounds": [
+        22,
+        52,
+        228,
+        175
+      ],
+      "dimensions": [
+        230,
+        147
+      ],
+      "sha256": "f8cd82e6edb305f667ec4cb1dfe0fc24c4caa993656285ca58390d151a9cb108"
+    },
+    {
+      "name": "InformationDesk",
+      "cell": 10,
+      "source_box": [
+        1024,
+        256,
+        1280,
+        512
+      ],
+      "alpha_bounds": [
+        43,
+        51,
+        197,
+        171
+      ],
+      "dimensions": [
+        178,
+        144
+      ],
+      "sha256": "37b79f5648b65363f3fdc957222e031ca341206c39e30b86a86255e11bf2abb8"
+    },
+    {
+      "name": "RestroomBlock",
+      "cell": 11,
+      "source_box": [
+        1280,
+        256,
+        1536,
+        512
+      ],
+      "alpha_bounds": [
+        15,
+        31,
+        193,
+        196
+      ],
+      "dimensions": [
+        202,
+        189
+      ],
+      "sha256": "71b827549dd6767f38d3a07b14a85c4fd90c18ffdf263cee6716074ad34822fd"
+    },
+    {
+      "name": "EntranceDoors",
+      "cell": 12,
+      "source_box": [
+        0,
+        512,
+        256,
+        768
+      ],
+      "alpha_bounds": [
+        39,
+        19,
+        256,
+        256
+      ],
+      "dimensions": [
+        241,
+        261
+      ],
+      "sha256": "551c9653efac262b001e54ca2e8edccde2e2ce0e1ebaa390bbed5f69d363777d"
+    },
+    {
+      "name": "SecureDoor",
+      "cell": 13,
+      "source_box": [
+        256,
+        512,
+        512,
+        768
+      ],
+      "alpha_bounds": [
+        0,
+        14,
+        241,
+        256
+      ],
+      "dimensions": [
+        265,
+        266
+      ],
+      "sha256": "35b4ca059c05ba5c978fc4ab30688115b67341cd9d2f2262d2fc05a874d11ab2"
+    },
+    {
+      "name": "PartitionWall",
+      "cell": 14,
+      "source_box": [
+        512,
+        512,
+        768,
+        768
+      ],
+      "alpha_bounds": [
+        47,
+        34,
+        229,
+        256
+      ],
+      "dimensions": [
+        206,
+        246
+      ],
+      "sha256": "d1d32531abf628a2038a05abda065137c35ce95fafb5db849be34bc8483822b8"
+    },
+    {
+      "name": "CurbsideShelter",
+      "cell": 15,
+      "source_box": [
+        768,
+        512,
+        1024,
+        768
+      ],
+      "alpha_bounds": [
+        42,
+        19,
+        222,
+        256
+      ],
+      "dimensions": [
+        204,
+        261
+      ],
+      "sha256": "37be5913d49f44007c2469fc765f1ef0bdd5cfd1ed977a832447530a55e95c2e"
+    },
+    {
+      "name": "BusStopShelter",
+      "cell": 16,
+      "source_box": [
+        1024,
+        512,
+        1280,
+        768
+      ],
+      "alpha_bounds": [
+        31,
+        19,
+        218,
+        256
+      ],
+      "dimensions": [
+        211,
+        261
+      ],
+      "sha256": "6f7b846db541ca8fc0733f8cc45e005200cb1120aaf818f942ea5b63c18d9701"
+    },
+    {
+      "name": "ParkingKiosk",
+      "cell": 17,
+      "source_box": [
+        1280,
+        512,
+        1536,
+        768
+      ],
+      "alpha_bounds": [
+        35,
+        12,
+        185,
+        256
+      ],
+      "dimensions": [
+        174,
+        268
+      ],
+      "sha256": "92b2b5e7bcbc01dcb5e5548691621e547b8e69bc0b06101dda3b9d68f6792dda"
+    },
+    {
+      "name": "TerminalFloor",
+      "cell": 18,
+      "source_box": [
+        0,
+        768,
+        256,
+        1024
+      ],
+      "alpha_bounds": [
+        58,
+        0,
+        243,
+        143
+      ],
+      "dimensions": [
+        209,
+        167
+      ],
+      "sha256": "518b995f406c2633f3c9dcaeafb01de4007760f1c8b2717bead7e8f4b9cb6c79"
+    },
+    {
+      "name": "SecureFloor",
+      "cell": 19,
+      "source_box": [
+        256,
+        768,
+        512,
+        1024
+      ],
+      "alpha_bounds": [
+        69,
+        0,
+        241,
+        144
+      ],
+      "dimensions": [
+        196,
+        168
+      ],
+      "sha256": "fa2928f471425f96e238156732447d1677061f2a2a1696bcbc16041f5e933cda"
+    },
+    {
+      "name": "CautionHatch",
+      "cell": 20,
+      "source_box": [
+        512,
+        768,
+        768,
+        1024
+      ],
+      "alpha_bounds": [
+        64,
+        0,
+        216,
+        142
+      ],
+      "dimensions": [
+        176,
+        166
+      ],
+      "sha256": "1b85da089ef0b9c91a0bd14ed1e133816f116bdf7d0f27b52f8975a4b7338660"
+    },
+    {
+      "name": "DirectionArrow",
+      "cell": 21,
+      "source_box": [
+        768,
+        768,
+        1024,
+        1024
+      ],
+      "alpha_bounds": [
+        53,
+        0,
+        210,
+        143
+      ],
+      "dimensions": [
+        181,
+        167
+      ],
+      "sha256": "4b51cdf32432df78ad849ad208f1f45710e016393b74e5e8ffb1d1867463d33c"
+    },
+    {
+      "name": "AccessibleRoute",
+      "cell": 22,
+      "source_box": [
+        1024,
+        768,
+        1280,
+        1024
+      ],
+      "alpha_bounds": [
+        43,
+        0,
+        201,
+        143
+      ],
+      "dimensions": [
+        182,
+        167
+      ],
+      "sha256": "b2146921e36b8178620aa92bcd7b21a1a19bb11c37d1144732e79791aeca0825"
+    },
+    {
+      "name": "ProtectionZone",
+      "cell": 23,
+      "source_box": [
+        1280,
+        768,
+        1536,
+        1024
+      ],
+      "alpha_bounds": [
+        35,
+        0,
+        185,
+        143
+      ],
+      "dimensions": [
+        174,
+        167
+      ],
+      "sha256": "4603ac6b5d85f26f05a2b823197c3bda91f242cffcfecc48351948e7d1ee4f0e"
+    }
+  ]
+}

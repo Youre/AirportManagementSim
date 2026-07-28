@@ -200,6 +200,32 @@ Phase 4 passed on 2026-07-26. The normative records are:
 | Content is controlled and cooked | Source and Shipping IoStore match all 34 project-authored Phase 4 assets; no external Phase 4 aircraft or generated runtime asset was retained |
 | Package remains clean and offline | Packaged Development S06/S10 passes; Shipping launches with zero TCP sockets and zero forbidden, runtime string-load, or required 3D matches |
 
+## Phase 5 implementation evidence
+
+[PI-08](phase-5-cargo-specialization-breadth-implementation-plan.md) maps the
+cargo and specialization-breadth slice to implementation and evidence. Phase 5
+passed on 2026-07-27. The normative records are:
+
+- [Phase 5 architecture-impact review](../../../.ai/reviews/2026-07-27-phase-5-architecture-impact.md);
+- [Phase 5 adversarial review](../../../.ai/reviews/2026-07-27-phase-5-adversarial-review.md);
+- [Phase 5 verification review](../../../.ai/reviews/2026-07-27-phase-5-verification.md);
+- [Phase 5 visual validation](phase5-visual-validation/README.md);
+- [Phase 5 content provenance](../30-content-and-assets/phase-5-content-provenance.md);
+- machine-readable local results under `AMSim/Saved/Phase5`.
+
+| Phase 5 claim | Evidence |
+| --- | --- |
+| Cargo is a complete operating loop | All four classes and three directions retain contract, shipment, security, storage, task, flight, exception, conservation, deadline, and economy evidence |
+| Dispatch remains ordinary and authoritative | Quantity cargo work uses Phase 2 task dependencies, teams, vehicles, route/equipment constraints, and completion callbacks |
+| Dedicated and belly freight interoperate safely | Cargo-only freighters require no passenger terminal; compatible belly freight links to Phase 4 flight IDs without corrupting passenger/bag reconciliation |
+| Six paths independently reach Advanced | Exact AP/day/readiness/reliability plus path evidence passes for GA, School, Charter, Cargo, Passenger, and Mixed while unrelated signature facilities are absent |
+| Provider and concession choices are real | Six offers expose commercial/operating terms, satisfaction, shared-resource requirements, and visible grace/recovery |
+| All event families use ordinary systems | Eight shared-lifecycle events retain linked ordinary entities, preview, accept/decline, preparation, active, partial-success, cleanup, reward, cooldown, and persistence |
+| Persistence evolves safely | Schema 6 round-trip, schema 1-5 migration, deterministic replay, cargo/tenant/event boundary continuation, and future/corrupt/reference rejection pass |
+| Presentation is concept-grounded and 2D | Four Figma-equivalent frames, dedicated query-backed views, concise rounded cards, and pooled Paper2D cargo/event proxies use VA-01/03/04/05/06/07 |
+| Content is controlled and cooked | Shipping IoStore contains all 44 definitions and four freighter presentation assets; no external aircraft or required 3D asset exists |
+| Package remains clean and offline | Development and Shipping packages pass; Shipping remains responsive with zero TCP sockets and zero forbidden executable/module or runtime string-load matches |
+
 ## Visual reference mapping
 
 | Reference | Owning surfaces | First comparison gate |
@@ -213,6 +239,12 @@ Phase 4 passed on 2026-07-26. The normative records are:
 | [VA-07 Progression](../30-content-and-assets/concept-art/07-progression-specializations.png) | PX-01, GS-12, GS-15 | Phase 2, completed Phase 6 |
 
 At each comparison gate, evidence includes the reference image, equivalent implementation capture, required similarities, intentional differences, and any discrepancy where the written specification overruled generated art.
+
+CT-05 now supplies stable visible-content IDs for every mapped reference. Phase
+4.5 must close all `Absent`, `Text-only`, and `Schematic` rows before a visual
+comparison can be described as concept-content complete. Layout, scale,
+package, and interaction passes remain separate evidence and cannot substitute
+for content completeness.
 
 ## Required scenario suite
 

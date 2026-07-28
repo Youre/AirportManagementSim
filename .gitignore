@@ -225,6 +225,7 @@ mcp-logs/
 /artifacts/
 /test-results/
 /reports/
+/.ai/scratch/
 
 # OS-generated files
 .DS_Store

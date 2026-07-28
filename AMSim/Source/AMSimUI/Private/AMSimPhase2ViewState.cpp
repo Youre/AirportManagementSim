@@ -37,6 +37,17 @@ namespace AMSim
 			State.TotalPhase2CostCredits);
 		View.Cause = Query.Cause;
 		View.Remedy = Query.Remedy;
+		const bool bExpansionClosureActive =
+			State.Expansion.Stage != EExpansionStage::None &&
+			State.Expansion.Stage != EExpansionStage::Operational &&
+			(!State.Incident.Id.IsValid() ||
+			 State.Incident.State == EIncidentState::Resolved);
+		if (bExpansionClosureActive)
+		{
+			View.Cause = State.Expansion.ClosureSummary;
+			View.Remedy =
+				TEXT("UNAFFECTED: ACTIVE RWY + STAND A1 OPEN · WORK AREA: EAST TAXI SPUR");
+		}
 		View.bUnlocked =
 			Phase1State.bInitialized &&
 			Phase1State.bAirportOpen &&

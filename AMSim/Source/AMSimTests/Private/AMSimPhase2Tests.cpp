@@ -658,6 +658,21 @@ bool FAMSimPhase2PresentationContractTest::RunTest(const FString& Parameters)
 	TestTrue(TEXT("Identity controls remain selectable"), View.bCanSelectIdentity);
 	TestFalse(TEXT("Accepted contract disables duplicate acceptance"), View.bCanAcceptContract);
 	TestTrue(TEXT("Operations summary is query-backed"), !View.Operations.IsEmpty());
+	if (!PurchaseAndBuildExpansion(*this, Simulation, CommandId))
+	{
+		return false;
+	}
+	const FPhase2ViewState ExpansionView = MakePhase2ViewState(
+		Simulation.CreatePhase2QuerySnapshot(),
+		Simulation.GetPhase2State(),
+		Simulation.GetPhase1State());
+	TestTrue(
+		TEXT("Active expansion localizes the affected taxi-spur closure"),
+		ExpansionView.Cause.Contains(TEXT("East taxi spur closed")));
+	TestTrue(
+		TEXT("Active expansion keeps unaffected runway and stand visibly open"),
+		ExpansionView.Remedy.Contains(TEXT("ACTIVE RWY")) &&
+			ExpansionView.Remedy.Contains(TEXT("STAND A1 OPEN")));
 	TestEqual(
 		TEXT("Inbound Phase 2 heading is deterministic"),
 		AAMSimWorldPresenter::GetPhase2HeadingIndex(EPhase2FlightState::Inbound),

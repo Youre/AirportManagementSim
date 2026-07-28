@@ -1,0 +1,363 @@
+{
+  "source": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase4.5\\Generated\\mature-airport-site-atlas-alpha.png",
+  "source_sha256": "63ff4f6299f0979428b963b00b346edade37149a170255ecca341c74f09b1c41",
+  "grid": [
+    4,
+    4
+  ],
+  "padding": 12,
+  "sprites": [
+    {
+      "name": "RunwayAsphalt",
+      "cell": 0,
+      "source_box": [
+        0,
+        0,
+        314,
+        314
+      ],
+      "alpha_bounds": [
+        76,
+        27,
+        239,
+        314
+      ],
+      "rotation_degrees_clockwise": 90,
+      "dimensions": [
+        311,
+        187
+      ],
+      "sha256": "7dfac509e06ee2e834b7b0b5a141356c3caf8a7a97c253a7530bed01dd601404"
+    },
+    {
+      "name": "TaxiwayAsphalt",
+      "cell": 1,
+      "source_box": [
+        314,
+        0,
+        627,
+        314
+      ],
+      "alpha_bounds": [
+        49,
+        26,
+        229,
+        314
+      ],
+      "rotation_degrees_clockwise": 90,
+      "dimensions": [
+        312,
+        204
+      ],
+      "sha256": "48c34dcf3b36a4a5976ee45f7604544797f0c8df21c96a0acc2b1d400d0095ff"
+    },
+    {
+      "name": "ApronStand",
+      "cell": 2,
+      "source_box": [
+        627,
+        0,
+        940,
+        314
+      ],
+      "alpha_bounds": [
+        12,
+        31,
+        273,
+        314
+      ],
+      "rotation_degrees_clockwise": 0,
+      "dimensions": [
+        285,
+        307
+      ],
+      "sha256": "effca8661d44951ec1d862e47a7d6e83f24708c7561406371a94b575ae988e0a"
+    },
+    {
+      "name": "AccessRoad",
+      "cell": 3,
+      "source_box": [
+        940,
+        0,
+        1254,
+        314
+      ],
+      "alpha_bounds": [
+        44,
+        36,
+        245,
+        307
+      ],
+      "rotation_degrees_clockwise": 90,
+      "dimensions": [
+        295,
+        225
+      ],
+      "sha256": "d6f6a17d3e854419e888bec010188bfcd56badee680f93655a50a83ffc5b412e"
+    },
+    {
+      "name": "RegionalTerminal",
+      "cell": 4,
+      "source_box": [
+        0,
+        314,
+        314,
+        627
+      ],
+      "alpha_bounds": [
+        35,
+        0,
+        286,
+        305
+      ],
+      "rotation_degrees_clockwise": 0,
+      "dimensions": [
+        275,
+        329
+      ],
+      "sha256": "df46716371fd53cd0e76dc14b71758a8788d19633a85ec99b825b04c2122765f"
+    },
+    {
+      "name": "GAHangars",
+      "cell": 5,
+      "source_box": [
+        314,
+        314,
+        627,
+        627
+      ],
+      "alpha_bounds": [
+        42,
+        0,
+        252,
+        307
+      ],
+      "rotation_degrees_clockwise": 0,
+      "dimensions": [
+        234,
+        331
+      ],
+      "sha256": "969be0f587f22ef8bd7e4a91145afe0ec8c1b8e57ce939ecf2e15ffc51b3f751"
+    },
+    {
+      "name": "OperationsStation",
+      "cell": 6,
+      "source_box": [
+        627,
+        314,
+        940,
+        627
+      ],
+      "alpha_bounds": [
+        18,
+        0,
+        267,
+        298
+      ],
+      "rotation_degrees_clockwise": 0,
+      "dimensions": [
+        273,
+        322
+      ],
+      "sha256": "dbbb6e0f861d8e5b23c05fa80007fd6531aa6317cc2567facb2528db24dd89f4"
+    },
+    {
+      "name": "FuelFarm",
+      "cell": 7,
+      "source_box": [
+        940,
+        314,
+        1254,
+        627
+      ],
+      "alpha_bounds": [
+        6,
+        50,
+        273,
+        300
+      ],
+      "rotation_degrees_clockwise": 0,
+      "dimensions": [
+        291,
+        274
+      ],
+      "sha256": "0d91b74ee4a4d752d22cf7d717c46a64268eb1f908035ca541994f629cc6834b"
+    },
+    {
+      "name": "ParkingLot",
+      "cell": 8,
+      "source_box": [
+        0,
+        627,
+        314,
+        940
+      ],
+      "alpha_bounds": [
+        21,
+        43,
+        292,
+        313
+      ],
+      "rotation_degrees_clockwise": 0,
+      "dimensions": [
+        295,
+        294
+      ],
+      "sha256": "afeb17f34c1ed8916e8380a67abbed5958943bf345c7f102fd3e8bdcdea4c885"
+    },
+    {
+      "name": "BusTaxiBay",
+      "cell": 9,
+      "source_box": [
+        314,
+        627,
+        627,
+        940
+      ],
+      "alpha_bounds": [
+        29,
+        48,
+        254,
+        255
+      ],
+      "rotation_degrees_clockwise": 0,
+      "dimensions": [
+        249,
+        231
+      ],
+      "sha256": "6d45d362aa7d9bb1c5e9a439e2141bd8f7296e7b9f3ccb19b89aaa8bc71e648b"
+    },
+    {
+      "name": "RailPlatform",
+      "cell": 10,
+      "source_box": [
+        627,
+        627,
+        940,
+        940
+      ],
+      "alpha_bounds": [
+        14,
+        63,
+        276,
+        249
+      ],
+      "rotation_degrees_clockwise": 0,
+      "dimensions": [
+        286,
+        210
+      ],
+      "sha256": "2bf7293083d02e467efdb234615ad537f5bdc83bfcc582384720a6d5ab459874"
+    },
+    {
+      "name": "DropoffIsland",
+      "cell": 11,
+      "source_box": [
+        940,
+        627,
+        1254,
+        940
+      ],
+      "alpha_bounds": [
+        0,
+        49,
+        284,
+        254
+      ],
+      "rotation_degrees_clockwise": 0,
+      "dimensions": [
+        308,
+        229
+      ],
+      "sha256": "5092b7d764144164f9e4c8777231d959103fb686f54acd94ab6d4c4035d3dab3"
+    },
+    {
+      "name": "TreeCluster",
+      "cell": 12,
+      "source_box": [
+        0,
+        940,
+        314,
+        1254
+      ],
+      "alpha_bounds": [
+        18,
+        0,
+        292,
+        268
+      ],
+      "rotation_degrees_clockwise": 0,
+      "dimensions": [
+        298,
+        292
+      ],
+      "sha256": "79c18ab68b87647b2e4d4f1fc29ddf2a96109d061cba5c8b5f922e8f6f3ba7c0"
+    },
+    {
+      "name": "LandscapeCluster",
+      "cell": 13,
+      "source_box": [
+        314,
+        940,
+        627,
+        1254
+      ],
+      "alpha_bounds": [
+        18,
+        22,
+        313,
+        251
+      ],
+      "rotation_degrees_clockwise": 0,
+      "dimensions": [
+        319,
+        253
+      ],
+      "sha256": "63c129e29eb5785ec8a43781869dcbe3aa621cea54c729032f16cbefb727c763"
+    },
+    {
+      "name": "PerimeterGate",
+      "cell": 14,
+      "source_box": [
+        627,
+        940,
+        940,
+        1254
+      ],
+      "alpha_bounds": [
+        0,
+        61,
+        283,
+        234
+      ],
+      "rotation_degrees_clockwise": 0,
+      "dimensions": [
+        307,
+        197
+      ],
+      "sha256": "c7f8957079268898d0b731fd7368d8b905ad86420848693b2572f89261681282"
+    },
+    {
+      "name": "ApronFixtures",
+      "cell": 15,
+      "source_box": [
+        940,
+        940,
+        1254,
+        1254
+      ],
+      "alpha_bounds": [
+        12,
+        11,
+        281,
+        276
+      ],
+      "rotation_degrees_clockwise": 0,
+      "dimensions": [
+        293,
+        289
+      ],
+      "sha256": "8d424a78e29aba369e77cdf6b54a720d7d5cc850dd2579f6304bcd32e5188ea4"
+    }
+  ]
+}

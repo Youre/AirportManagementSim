@@ -37,6 +37,8 @@ AAMSimCameraPawn::AAMSimCameraPawn()
 void AAMSimCameraPawn::BeginPlay()
 {
 	Super::BeginPlay();
+	ManagementCameraLocation = GetActorLocation();
+	ManagementOrthoWidth = Camera->OrthoWidth;
 	if (const APlayerController* PlayerController = Cast<APlayerController>(GetController()))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
@@ -67,13 +69,43 @@ void AAMSimCameraPawn::PanRight() { Pan(FVector::RightVector); }
 
 void AAMSimCameraPawn::Pan(const FVector Direction)
 {
+	if (bCloseOperationsMode)
+	{
+		return;
+	}
 	AddActorWorldOffset(Direction * 5000.0);
 }
 
 void AAMSimCameraPawn::Zoom(const FInputActionValue& Value)
 {
+	if (bCloseOperationsMode)
+	{
+		return;
+	}
 	Camera->OrthoWidth = FMath::Clamp(
 		Camera->OrthoWidth - Value.Get<float>() * 5000.0f,
 		30000.0f,
 		160000.0f);
+}
+
+void AAMSimCameraPawn::SetCloseOperationsMode(const bool bEnabled)
+{
+	if (bEnabled == bCloseOperationsMode)
+	{
+		return;
+	}
+	if (bEnabled)
+	{
+		ManagementCameraLocation = GetActorLocation();
+		ManagementOrthoWidth = Camera->OrthoWidth;
+		const FVector Current = GetActorLocation();
+		SetActorLocation(FVector(-32000.0, 23000.0, Current.Z));
+		Camera->OrthoWidth = 30000.0f;
+	}
+	else
+	{
+		SetActorLocation(ManagementCameraLocation);
+		Camera->OrthoWidth = ManagementOrthoWidth;
+	}
+	bCloseOperationsMode = bEnabled;
 }

@@ -175,6 +175,14 @@ int32 UAMSimPresentationAssetCommandlet::Main(const FString& Params)
 {
 	const FString SourceRoot = FPaths::ConvertRelativePathToFull(
 		FPaths::Combine(FPaths::ProjectDir(), TEXT("../SourceAssets/Phase1.5")));
+	const FString Phase45SourceRoot = FPaths::ConvertRelativePathToFull(
+		FPaths::Combine(
+			FPaths::ProjectDir(),
+			TEXT("../SourceAssets/Phase4.5/Sprites")));
+	const FString Phase5SourceRoot = FPaths::ConvertRelativePathToFull(
+		FPaths::Combine(
+			FPaths::ProjectDir(),
+			TEXT("../SourceAssets/Phase5/Aircraft")));
 	const auto MakeSource = [&SourceRoot](
 		const TCHAR* Folder,
 		const TCHAR* TextureName,
@@ -208,6 +216,150 @@ int32 UAMSimPresentationAssetCommandlet::Main(const FString& Params)
 		const FString SpriteName = FString::Printf(TEXT("S_Cessna152_Heading_%02d"), Index);
 		Sources.Add(MakeSource(TEXT("Aircraft"), *TextureName, *SpriteName));
 	}
+	const auto MakePhase45Source = [&Phase45SourceRoot](
+		const TCHAR* Folder,
+		const TCHAR* AssetName)
+	{
+		const FString TextureName =
+			FString::Printf(TEXT("T_%s"), AssetName);
+		const FString SpriteName =
+			FString::Printf(TEXT("S_%s"), AssetName);
+		return FPresentationSpriteSource{
+			FPaths::Combine(
+				Phase45SourceRoot,
+				Folder,
+				TextureName + TEXT(".png")),
+			FString::Printf(
+				TEXT("/Game/Phase45/Presentation/Textures/%s"),
+				Folder),
+			FString::Printf(
+				TEXT("/Game/Phase45/Presentation/Textures/%s/%s.%s"),
+				Folder,
+				*TextureName,
+				*TextureName),
+			FString::Printf(
+				TEXT("/Game/Phase45/Presentation/Sprites/%s/%s"),
+				Folder,
+				*SpriteName)};
+	};
+	static const TCHAR* OperationsSprites[] = {
+		TEXT("FuelTruck"),
+		TEXT("BaggageTug"),
+		TEXT("BaggageCartTrain"),
+		TEXT("OperationsVan"),
+		TEXT("FireRescueTruck"),
+		TEXT("ConstructionTruck"),
+		TEXT("ShuttleBus"),
+		TEXT("Taxi"),
+		TEXT("RentalCar"),
+		TEXT("Deicer"),
+		TEXT("RampWorker"),
+		TEXT("ConstructionWorker"),
+		TEXT("SecurityOfficer"),
+		TEXT("TerminalAgent"),
+		TEXT("PassengerFamily"),
+		TEXT("Passenger"),
+		TEXT("Suitcase"),
+		TEXT("SafetyCones"),
+		TEXT("PortableStairs"),
+		TEXT("PushbackTug")};
+	for (const TCHAR* AssetName : OperationsSprites)
+	{
+		Sources.Add(MakePhase45Source(TEXT("Operations"), AssetName));
+	}
+	static const TCHAR* TerminalSprites[] = {
+		TEXT("CheckInDesk"),
+		TEXT("BagDropDesk"),
+		TEXT("SecurityScanner"),
+		TEXT("QueueBarriers"),
+		TEXT("GatePodium"),
+		TEXT("SeatingCluster"),
+		TEXT("BaggageConveyor"),
+		TEXT("SortingTable"),
+		TEXT("BaggageCart"),
+		TEXT("ReclaimCarousel"),
+		TEXT("InformationDesk"),
+		TEXT("RestroomBlock"),
+		TEXT("EntranceDoors"),
+		TEXT("SecureDoor"),
+		TEXT("PartitionWall"),
+		TEXT("CurbsideShelter"),
+		TEXT("BusStopShelter"),
+		TEXT("ParkingKiosk"),
+		TEXT("TerminalFloor"),
+		TEXT("SecureFloor"),
+		TEXT("CautionHatch"),
+		TEXT("DirectionArrow"),
+		TEXT("AccessibleRoute"),
+		TEXT("ProtectionZone")};
+	for (const TCHAR* AssetName : TerminalSprites)
+	{
+		Sources.Add(MakePhase45Source(TEXT("Terminal"), AssetName));
+	}
+	static const TCHAR* UISprites[] = {
+		TEXT("Build"),
+		TEXT("Routes"),
+		TEXT("Timetable"),
+		TEXT("Staff"),
+		TEXT("Overlays"),
+		TEXT("Alerts"),
+		TEXT("Flights"),
+		TEXT("Projects"),
+		TEXT("Weather"),
+		TEXT("Services"),
+		TEXT("Passengers"),
+		TEXT("Baggage"),
+		TEXT("GeneralAviation"),
+		TEXT("FlightSchool"),
+		TEXT("Charter"),
+		TEXT("MixedAirport")};
+	for (const TCHAR* AssetName : UISprites)
+	{
+		Sources.Add(MakePhase45Source(TEXT("UI"), AssetName));
+	}
+	static const TCHAR* SiteSprites[] = {
+		TEXT("RunwayAsphalt"),
+		TEXT("TaxiwayAsphalt"),
+		TEXT("ApronStand"),
+		TEXT("AccessRoad"),
+		TEXT("RegionalTerminal"),
+		TEXT("GAHangars"),
+		TEXT("OperationsStation"),
+		TEXT("FuelFarm"),
+		TEXT("ParkingLot"),
+		TEXT("BusTaxiBay"),
+		TEXT("RailPlatform"),
+		TEXT("DropoffIsland"),
+		TEXT("TreeCluster"),
+		TEXT("LandscapeCluster"),
+		TEXT("PerimeterGate"),
+		TEXT("ApronFixtures")};
+	for (const TCHAR* AssetName : SiteSprites)
+	{
+		Sources.Add(MakePhase45Source(TEXT("Site"), AssetName));
+	}
+	const auto MakePhase5AircraftSource = [&Phase5SourceRoot](
+		const TCHAR* AssetName)
+	{
+		const FString TextureName =
+			FString::Printf(TEXT("T_%s"), AssetName);
+		const FString SpriteName =
+			FString::Printf(TEXT("S_%s"), AssetName);
+		return FPresentationSpriteSource{
+			FPaths::Combine(
+				Phase5SourceRoot,
+				TextureName + TEXT(".png")),
+			TEXT("/Game/Phase5/Presentation/Textures/Aircraft"),
+			FString::Printf(
+				TEXT("/Game/Phase5/Presentation/Textures/Aircraft/%s.%s"),
+				*TextureName,
+				*TextureName),
+			FString::Printf(
+				TEXT("/Game/Phase5/Presentation/Sprites/Aircraft/%s"),
+				*SpriteName)};
+	};
+	Sources.Add(MakePhase5AircraftSource(TEXT("Riverlark_F28")));
+	Sources.Add(MakePhase5AircraftSource(TEXT("Hearthwing_F62")));
 
 	bool bPassed = true;
 	TArray<UPackage*> PackagesToSave;
@@ -223,9 +375,13 @@ int32 UAMSimPresentationAssetCommandlet::Main(const FString& Params)
 	bPassed &= CreateComponentGalleryBlueprint(PackagesToSave);
 	if (!bPassed || !UEditorLoadingAndSavingUtils::SavePackages(PackagesToSave, true))
 	{
-		UE_LOG(LogTemp, Error, TEXT("Phase 1.5 presentation asset generation failed."));
+		UE_LOG(LogTemp, Error, TEXT("Presentation asset generation failed."));
 		return 1;
 	}
-	UE_LOG(LogTemp, Display, TEXT("Phase 1.5 presentation asset generation complete: %d sprites."), Sources.Num());
+	UE_LOG(
+		LogTemp,
+		Display,
+		TEXT("Presentation asset generation complete: %d sprites."),
+		Sources.Num());
 	return 0;
 }

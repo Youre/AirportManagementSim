@@ -86,9 +86,25 @@ Template-first rule:
 - Applicable screens or flows: Phase 1 inspection and fueling, extended by
   later turnaround systems.
 - Visual rules: identity, verb-plus-object label, status text, patterned
-  progress, and dependency connector; color never acts alone.
+  progress, and dependency connector; color never acts alone. Automatic
+  dispatch must be explicit, world equipment must occupy safe authored
+  positions, and player priority/assignment must never be phrased as manual
+  vehicle steering.
 - Component: reusable native card content hosted by the contextual decision
   region.
+
+## Construction lifecycle overlay
+
+- Purpose: keep a committed project spatially understandable after the proposal
+  closes.
+- Applicable screens or flows: funded, awaiting-delivery, building,
+  inspection, ready, operational, cancellation, and refund states.
+- Visual rules: retain the authoritative footprint; pair stage tint with
+  project-owned vehicle/worker/cone or inspection art; keep unaffected
+  operations open; clear every work proxy when the authoritative stage returns
+  to none or completes. Never invent a closure on an unopened site.
+- Component: `UAMSimConstructionProposalView` and
+  `AAMSimWorldPresenter::RefreshPhase1OperationsPresentation`.
 
 ## Phase 3 terminal flow surface
 
@@ -138,6 +154,12 @@ Template-first rule:
 - State encoding: cyan selected; green ready/complete; amber patterned
   high-risk; coral patterned blocked/critical; blue-gray waiting. Color is
   always paired with text, border treatment, or pattern.
+- Operational modification closures use a localized patterned world hatch on
+  the precise affected segment and explicitly name the runway, stand, or route
+  that remains open. Do not dim or recolor an entire operational site.
+- Timetable risk overlays use the complete `WX CONFLICT ///` or
+  `LOCK RISK ///` label with the authoritative time window and flight identity;
+  a compact card status alone is insufficient.
 - Responsive behavior: 100-150% retains both rails; 175-200% converts contract,
   feasibility, weather, and lifecycle rails into bounded drawers without
   shrinking the timetable or operational labels below the minimum.
@@ -145,4 +167,43 @@ Template-first rule:
   `FPhase4QuerySnapshot`.
 - Accepted placeholder content: `No regional timetable`, `Select a flight`,
   `Forecast available`, and `No active incident`.
-- Accepted placeholder content: `Inspect aircraft — waiting`.
+
+## Capability path inspector
+
+- Purpose: make non-exclusive airport specialization understandable as
+  capability evidence rather than a character class.
+- Applicable screens or flows: airport capabilities, suggested objectives, and
+  future-locked path inspection.
+- Visual rules: six equally prominent project-owned thumbnails; explicit
+  Established, Regional, Advanced, and Major bands; exactly three suggested
+  objectives; selected-path requirements, current evidence, spatial footprint,
+  business effect, next capability, and reward/outcome. State that paths can be
+  combined and grant no artificial class bonus.
+- Component: `UAMSimProgressionView`, mapped from
+  `FProgressionViewState`.
+- Accepted placeholder content: `Future locked`, `No evidence yet`, and
+  `Paths can be combined`.
+
+## Phase 5 cargo, provider, and event surfaces
+
+- Purpose: extend the Riverbend component system without turning cargo or
+  special events into text-only dashboards.
+- Cargo contract card: identity, direction, class, pieces/mass/volume,
+  deadline, compatibility, concise exception/remedy, and one primary action.
+- Warehouse card: zone type, occupied/capacity values, compatibility label,
+  road/airside connectivity, and color-independent full/blocked state.
+- Cargo-flow inspector: road receipt, check/security, compatible storage,
+  build-up/breakdown, airside handling, aircraft, and completion. The same
+  locations and route must appear in the Paper2D world.
+- Provider/concession card: footprint, opening cost, rent or revenue share,
+  required capability, service expectation, operating pattern, satisfaction
+  drivers, term, and explicit grace/recovery state.
+- Event card: preview, preparation requirements, ordinary linked demand,
+  active status, partial outcome, cleanup, reward, and cooldown. State what
+  remains open during any localized closure.
+- Responsive behavior: retain at least 60% continuous world area at 100-150%;
+  convert side rails to bounded compact drawers at 175-200%.
+- Concept references: VA-01, VA-03, VA-04, VA-05, VA-06, and VA-07.
+- Components: `UAMSimPhase5View`,
+  `AAMSimWorldPresenter::RefreshPhase5Presentation`, and
+  `FPhase5ViewState`.

@@ -1,0 +1,15 @@
+{
+  "source": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase4.5\\Generated\\mature-airport-site-atlas-source.png",
+  "output": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase4.5\\Generated\\mature-airport-site-atlas-alpha.png",
+  "sampled_key_rgb": [
+    231,
+    10,
+    218
+  ],
+  "threshold": 90.0,
+  "feather": 52.0,
+  "pixels": 1572516,
+  "transparent_pixels": 778775,
+  "partial_pixels": 12074,
+  "opaque_pixels": 781667
+}

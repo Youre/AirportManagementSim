@@ -10,6 +10,11 @@
 
 These images are deliberate implementation references for composition, information hierarchy, gameplay readability, tone, and the relationship between the 2D airport world and its management interface. They are not shippable assets, pixel-perfect UI specifications, or permission to introduce 3D content.
 
+[CT-05 Visual Content Requirements](../visual-content-requirements.md)
+translates their required visible structures into stable, testable requirement
+IDs. CT-05 is normative for content presence; this README remains the visual
+interpretation and provenance record.
+
 Authority order is:
 
 1. approved written specifications;

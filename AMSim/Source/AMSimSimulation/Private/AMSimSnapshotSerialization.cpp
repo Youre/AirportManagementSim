@@ -1,4 +1,5 @@
 #include "AMSimSnapshotSerialization.h"
+#include "AMSimPhase5SnapshotSerialization.h"
 #include "Misc/Crc.h"
 #include "Serialization/MemoryReader.h"
 #include "Serialization/MemoryWriter.h"
@@ -304,11 +305,21 @@ namespace AMSim
 			Archive << Record.bTow;
 		}
 
-		void SerializePhase2Service(FArchive& Archive, FPhase2ServiceTaskRecord& Record)
+		void SerializePhase2Service(
+			FArchive& Archive,
+			FPhase2ServiceTaskRecord& Record,
+			const bool bHasPhase5Fields)
 		{
 			Archive << Record.Id.Value;
 			Archive << Record.FlightId.Value;
 			SerializeName(Archive, Record.ServiceId);
+			if (bHasPhase5Fields)
+			{
+				SerializeName(Archive, Record.OwnerDomain);
+				Archive << Record.OwnerId;
+				SerializeName(Archive, Record.OperationId);
+				Archive << Record.Quantity;
+			}
 			SerializeEnum(Archive, Record.State);
 			Archive << Record.PrerequisiteTaskId.Value;
 			Archive << Record.AssignedVehicleId.Value;
@@ -429,7 +440,10 @@ namespace AMSim
 			Archive << Record.Message;
 		}
 
-		void SerializePhase2State(FArchive& Archive, FPhase2State& State)
+		void SerializePhase2State(
+			FArchive& Archive,
+			FPhase2State& State,
+			const uint32 SchemaVersion)
 		{
 			Archive << State.bInitialized;
 			Archive << State.MasterSeed;
@@ -470,7 +484,15 @@ namespace AMSim
 				Archive,
 				State.ServiceTasks,
 				MaximumHistoryRecords,
-				SerializePhase2Service);
+				[SchemaVersion](
+					FArchive& InnerArchive,
+					FPhase2ServiceTaskRecord& Record)
+				{
+					SerializePhase2Service(
+						InnerArchive,
+						Record,
+						SchemaVersion >= 6);
+				});
 			SerializeRecords(
 				Archive,
 				State.Vehicles,
@@ -1066,7 +1088,10 @@ namespace AMSim
 			}
 			if (Snapshot.SchemaVersion >= 3)
 			{
-				SerializePhase2State(Archive, Snapshot.Phase2);
+				SerializePhase2State(
+					Archive,
+					Snapshot.Phase2,
+					Snapshot.SchemaVersion);
 			}
 			if (Snapshot.SchemaVersion >= 4)
 			{
@@ -1075,6 +1100,10 @@ namespace AMSim
 			if (Snapshot.SchemaVersion >= 5)
 			{
 				SerializePhase4State(Archive, Snapshot.Phase4);
+			}
+			if (Snapshot.SchemaVersion >= 6)
+			{
+				SerializePhase5State(Archive, Snapshot.Phase5);
 			}
 		}
 	}
@@ -1181,6 +1210,13 @@ namespace AMSim
 				Snapshot.MasterSeed == 0 ? 1 : Snapshot.MasterSeed);
 			Snapshot.Phase4 = EmptyPhase4.GetState();
 			Snapshot.SchemaVersion = 5;
+		}
+		if (Snapshot.SchemaVersion == 5)
+		{
+			FPhase5Simulation EmptyPhase5(
+				Snapshot.MasterSeed == 0 ? 1 : Snapshot.MasterSeed);
+			Snapshot.Phase5 = EmptyPhase5.GetState();
+			Snapshot.SchemaVersion = 6;
 		}
 		return Snapshot.SchemaVersion == SnapshotSchemaVersion;
 	}

@@ -7,7 +7,13 @@
 class UBorder;
 class UButton;
 class UCanvasPanel;
+class UCanvasPanelSlot;
+class UProgressBar;
 class UTextBlock;
+class UTexture2D;
+class UAMSimOverviewView;
+class UAMSimProgressionView;
+class UAMSimPhase5View;
 
 UCLASS()
 class AMSIMUI_API UAMSimRegionalOperationsView final : public UUserWidget
@@ -15,7 +21,11 @@ class AMSIMUI_API UAMSimRegionalOperationsView final : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	UAMSimRegionalOperationsView(const FObjectInitializer& ObjectInitializer);
 	void RefreshFromSimulation();
+	int32 GetLoadedContractIdentityCount() const;
+	bool HasRequiredContractIdentityArt() const;
+	bool HasRequiredWeatherArt() const { return WeatherIconTexture != nullptr; }
 
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
@@ -62,6 +72,14 @@ private:
 	void SaveGame();
 	UFUNCTION()
 	void LoadGame();
+	UFUNCTION()
+	void ToggleProgression();
+	UFUNCTION()
+	void ToggleOverview();
+	UFUNCTION()
+	void SelectOverviewAircraft();
+	UFUNCTION()
+	void SelectOverviewFacility();
 
 	bool Submit(
 		AMSim::FPhase4Command Command,
@@ -77,9 +95,23 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<UCanvasPanel> TimetableSurface;
 	UPROPERTY(Transient)
+	TObjectPtr<UCanvasPanel> RootSurface;
+	UPROPERTY(Transient)
 	TObjectPtr<UCanvasPanel> IncidentSurface;
 	UPROPERTY(Transient)
+	TObjectPtr<UAMSimOverviewView> OverviewView;
+	UPROPERTY(Transient)
+	TObjectPtr<UAMSimProgressionView> ProgressionView;
+	UPROPERTY(Transient)
+	TObjectPtr<UAMSimPhase5View> Phase5View;
+	UPROPERTY(Transient)
 	TObjectPtr<UBorder> WeekGrid;
+	UPROPERTY(Transient)
+	TObjectPtr<UCanvasPanel> WeatherWindowOverlay;
+	UPROPERTY(Transient)
+	TObjectPtr<UCanvasPanelSlot> WeatherWindowSlot;
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> WeatherWindowText;
 	UPROPERTY(Transient)
 	TObjectPtr<UTextBlock> FundsText;
 	UPROPERTY(Transient)
@@ -105,6 +137,8 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<UTextBlock> ForecastText;
 	UPROPERTY(Transient)
+	TObjectPtr<UProgressBar> ForecastConfidenceBar;
+	UPROPERTY(Transient)
 	TObjectPtr<UTextBlock> IncidentHeadlineText;
 	UPROPERTY(Transient)
 	TObjectPtr<UTextBlock> IncidentCauseText;
@@ -125,9 +159,21 @@ private:
 	UPROPERTY(Transient)
 	TArray<TObjectPtr<UTextBlock>> FlightCardTexts;
 	UPROPERTY(Transient)
+	TArray<TObjectPtr<UCanvasPanelSlot>> FlightCardSlots;
+	UPROPERTY(Transient)
+	TArray<TObjectPtr<UBorder>> DayChips;
+	UPROPERTY(Transient)
+	TArray<TObjectPtr<UTextBlock>> DayChipTexts;
+	UPROPERTY(Transient)
 	TArray<TObjectPtr<UBorder>> ContractCards;
 	UPROPERTY(Transient)
 	TArray<TObjectPtr<UTextBlock>> ContractCardTexts;
+	UPROPERTY()
+	TArray<TObjectPtr<UTexture2D>> ContractIdentityTextures;
+	UPROPERTY()
+	TObjectPtr<UTexture2D> ContractAircraftTexture;
+	UPROPERTY()
+	TObjectPtr<UTexture2D> WeatherIconTexture;
 
 	UPROPERTY(Transient)
 	TObjectPtr<UButton> InitializeButton;
@@ -157,4 +203,6 @@ private:
 	AMSim::FPhase4ViewState ViewState;
 	bool bGateWarningReviewed = false;
 	bool bCompactLayout = false;
+	bool bOverviewOpen = false;
+	bool bProgressionOpen = false;
 };

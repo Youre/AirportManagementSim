@@ -4,6 +4,7 @@
 #include "AMSimPhase2Types.h"
 #include "AMSimPhase3Types.h"
 #include "AMSimPhase4Types.h"
+#include "AMSimPhase5Types.h"
 #include "GameFramework/Actor.h"
 #include "AMSimWorldPresenter.generated.h"
 
@@ -29,7 +30,12 @@ public:
 	void ApplyPhase4Snapshot(
 		const AMSim::FPhase4QuerySnapshot& Query,
 		const AMSim::FPhase4State& State);
+	void ApplyPhase5Snapshot(
+		const AMSim::FPhase5QuerySnapshot& Query,
+		const AMSim::FPhase5State& State);
 	void SetPhase3OverlayMode(int32 Mode);
+	void SetMatureOverviewMode(bool bEnabled);
+	void SetMatureSelectionFacility(bool bFacilitySelected);
 	uint64 GetLastAppliedRevision() const { return LastAppliedRevision; }
 	bool HasRequiredPresentationAssets() const;
 	static int32 GetHeadingIndex(AMSim::EFlightState FlightState);
@@ -39,6 +45,30 @@ public:
 	int32 GetActivePhase3PassengerProxyCount() const;
 	int32 GetActivePhase3BagProxyCount() const;
 	int32 GetActivePhase4ResponseProxyCount() const;
+	int32 GetActivePhase5CargoProxyCount() const;
+	int32 GetActiveMatureSiteProxyCount() const;
+	int32 GetActivePhase1ConstructionProxyCount() const;
+	int32 GetActiveTurnaroundSupportProxyCount() const;
+	int32 GetTerminalAccessibleDashProxyCount() const
+	{
+		return Phase3AccessibleDashes.Num();
+	}
+	int32 GetIncidentRouteSegmentProxyCount() const
+	{
+		return Phase4EmergencyRouteSegments.Num();
+	}
+	int32 GetTerminalExceptionRouteProxyCount() const
+	{
+		return Phase3BaggageExceptionRoute.Num();
+	}
+	int32 GetWetSurfaceProxyCount() const
+	{
+		return Phase4WetSurfaces.Num();
+	}
+	bool HasMatureSelectionProxy() const
+	{
+		return MatureSelection != nullptr;
+	}
 	bool IsPhase4IncidentWorldVisible() const
 	{
 		return bPhase4IncidentWorldVisible;
@@ -56,8 +86,33 @@ private:
 		const FVector& Scale);
 	void SetFacilitiesVisible(bool bVisible, bool bOperational);
 	void SetAircraftState(const AMSim::FPhase1QuerySnapshot& Query);
+	void FinalizePhase1OperationsPresentation(
+		UPaperSprite* ConstructionTruckSprite,
+		UPaperSprite* ConstructionWorkerSprite,
+		UPaperSprite* SafetyConesSprite,
+		UPaperSprite* ProtectionZoneSprite,
+		UPaperSprite* FuelTruckSprite,
+		UPaperSprite* RampWorkerSprite,
+		UPaperSprite* DirectionArrowSprite);
+	void RefreshPhase1OperationsPresentation(
+		const AMSim::FPhase1QuerySnapshot& Query);
 	void SetPhase3WorldVisible(bool bVisible);
 	void RefreshPhase3OverlayVisibility();
+	void RefreshIncidentPresentationVisibility();
+	void FinalizeTerminalPresentation(
+		UPaperSprite* DirectionArrowSprite,
+		UPaperSprite* AccessibleRouteSprite,
+		UPaperSprite* SecureDoorSprite,
+		UPaperSprite* PartitionWallSprite,
+		UPaperSprite* CautionHatchSprite,
+		UPaperSprite* SortingTableSprite);
+	void FinalizeIncidentPresentation(
+		UPaperSprite* RunwayAsphaltSprite,
+		UPaperSprite* TaxiwayAsphaltSprite,
+		UPaperSprite* ApronStandSprite);
+	void FinalizePhase5Presentation(
+		UPaperSprite* FeederFreighterSprite,
+		UPaperSprite* RegionalFreighterSprite);
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USceneComponent> Root;
@@ -84,11 +139,25 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UPaperSpriteComponent> FuelMarker;
 	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPaperSpriteComponent> TurnaroundFuelTruck;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPaperSpriteComponent> TurnaroundRampWorker;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPaperSpriteComponent> TurnaroundSafetyCones;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPaperSpriteComponent> TurnaroundSafetyZone;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> TurnaroundApproachPaths;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1ConstructionProxies;
+	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> Phase2Aircraft;
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> Phase2Vehicles;
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UPaperSpriteComponent> ExpansionOverlay;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPaperSpriteComponent> ExpansionClosureOverlay;
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UPaperSpriteComponent> IncidentOverlay;
 	UPROPERTY(VisibleAnywhere)
@@ -106,7 +175,15 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> Phase3AccessibleFlow;
 	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase3AccessibleDashes;
+	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> Phase3SecurityBoundary;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase3BaggageExceptionRoute;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPaperSpriteComponent> Phase3BaggageExceptionZone;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPaperSpriteComponent> Phase3BaggageExceptionStation;
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> Phase3Congestion;
 	UPROPERTY(VisibleAnywhere)
@@ -120,15 +197,59 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UPaperSpriteComponent> Phase3Aircraft;
 	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase3Props;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> MatureSite;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> MatureTaxiConnectors;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> MatureLandsideLinks;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> MatureLandscapeClusters;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> MatureAircraft;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPaperSpriteComponent> MatureSelection;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> MatureGroundVehicles;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> MaturePeople;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> MatureBags;
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UPaperSpriteComponent> Phase4WeatherOverlay;
 	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase4WetSurfaces;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase4RainStreaks;
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UPaperSpriteComponent> Phase4IncidentRunway;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPaperSpriteComponent> Phase4AffectedAircraft;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase4ClosureHatch;
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> Phase4RunwayClosure;
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> Phase4EmergencyRoute;
 	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase4EmergencyRouteSegments;
+	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> Phase4ResponseVehicles;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPaperSpriteComponent> Phase4ProtectionZone;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase5WarehouseZones;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase5CargoStacks;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase5CargoVehicles;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase5CargoRoutes;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase5EventArea;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase5Freighters;
 
 	UPROPERTY()
 	TObjectPtr<UPaperSprite> TerrainSprite;
@@ -148,13 +269,36 @@ private:
 	TObjectPtr<UPaperSprite> SelectionSprite;
 	UPROPERTY()
 	TArray<TObjectPtr<UPaperSprite>> AircraftHeadingSprites;
+	UPROPERTY()
+	TArray<TObjectPtr<UPaperSprite>> OperationsSprites;
+	UPROPERTY()
+	TArray<TObjectPtr<UPaperSprite>> TerminalSprites;
+	UPROPERTY()
+	TArray<TObjectPtr<UPaperSprite>> SiteSprites;
+	UPROPERTY()
+	TArray<TObjectPtr<UPaperSprite>> Phase5FreighterSprites;
 
 	uint64 LastAppliedRevision = MAX_uint64;
 	uint64 LastAppliedPhase2Revision = MAX_uint64;
 	uint64 LastAppliedPhase3Revision = MAX_uint64;
 	uint64 LastAppliedPhase4Revision = MAX_uint64;
+	uint64 LastAppliedPhase5Revision = MAX_uint64;
 	int32 Phase3OverlayMode = 0;
 	bool bPhase3WorldVisible = false;
 	bool bPhase3RoutesConnected = false;
+	bool bPhase3BaggageExceptionActive = false;
+	bool bMatureOverviewMode = false;
+	bool bMatureFacilitySelected = false;
+	bool bIncidentPresentationMode = false;
+	int32 Phase3PassengerAvailableCount = 0;
+	int32 Phase3BagAvailableCount = 0;
+	bool bPhase3AircraftAvailable = false;
+	int32 MatureAircraftAvailableCount = 0;
+	int32 MatureGroundVehicleAvailableCount = 0;
+	int32 MaturePeopleAvailableCount = 0;
+	int32 MatureBagAvailableCount = 0;
 	bool bPhase4IncidentWorldVisible = false;
+	bool bPhase4RunwayClosed = false;
+	bool bPhase4RouteVisible = false;
+	bool bPhase4ProtectionVisible = false;
 };

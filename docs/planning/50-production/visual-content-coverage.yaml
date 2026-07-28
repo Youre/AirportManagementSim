@@ -1,0 +1,122 @@
+schemaVersion: 1
+lastUpdated: 2026-07-28
+authority: docs/planning/30-content-and-assets/visual-content-requirements.md
+phase: "4.5"
+acceptedCompletionStatuses:
+  - present
+  - future-locked
+
+references:
+  VA-01:
+    concept: docs/planning/30-content-and-assets/concept-art/01-airport-overview-hud.png
+    owner: UAMSimOverviewView
+    requirements:
+      VC-OVR-01: present
+      VC-OVR-02: present
+      VC-OVR-03: present
+      VC-OVR-04: present
+      VC-OVR-05: present
+      VC-OVR-06: present
+      VC-OVR-07: present
+  VA-02:
+    concept: docs/planning/30-content-and-assets/concept-art/02-build-mode-runway-extension.png
+    owner: UAMSimConstructionView
+    requirements:
+      VC-BLD-01: present
+      VC-BLD-02: present
+      VC-BLD-03: present
+      VC-BLD-04: present
+      VC-BLD-05: present
+      VC-BLD-06: present
+      VC-BLD-07: present
+      VC-BLD-08: present
+  VA-03:
+    concept: docs/planning/30-content-and-assets/concept-art/03-terminal-passenger-flow.png
+    owner: UAMSimTerminalView
+    requirements:
+      VC-TRM-01: present
+      VC-TRM-02: present
+      VC-TRM-03: present
+      VC-TRM-04: present
+      VC-TRM-05: present
+      VC-TRM-06: present
+      VC-TRM-07: present
+      VC-TRM-08: present
+      VC-TRM-09: present
+      VC-TRM-10: present
+  VA-04:
+    concept: docs/planning/30-content-and-assets/concept-art/04-flight-planning-timetable.png
+    owner: UAMSimTimetableView
+    requirements:
+      VC-TIM-01: present
+      VC-TIM-02: present
+      VC-TIM-03: present
+      VC-TIM-04: present
+      VC-TIM-05: present
+      VC-TIM-06: present
+      VC-TIM-07: present
+      VC-TIM-08: present
+      VC-TIM-09: present
+  VA-05:
+    concept: docs/planning/30-content-and-assets/concept-art/05-aircraft-turnaround.png
+    owner: UAMSimTurnaroundView
+    requirements:
+      VC-TRN-01: present
+      VC-TRN-02: present
+      VC-TRN-03: present
+      VC-TRN-04: present
+      VC-TRN-05: present
+      VC-TRN-06: present
+      VC-TRN-07: present
+      VC-TRN-08: present
+  VA-06:
+    concept: docs/planning/30-content-and-assets/concept-art/06-weather-incident-response.png
+    owner: UAMSimIncidentView
+    requirements:
+      VC-INC-01: present
+      VC-INC-02: present
+      VC-INC-03: present
+      VC-INC-04: present
+      VC-INC-05: present
+      VC-INC-06: present
+      VC-INC-07: present
+      VC-INC-08: present
+      VC-INC-09: present
+      VC-INC-10: present
+  VA-07:
+    concept: docs/planning/30-content-and-assets/concept-art/07-progression-specializations.png
+    owner: UAMSimProgressionView
+    requirements:
+      VC-PRG-01: present
+      VC-PRG-02: present
+      VC-PRG-03: present
+      VC-PRG-04: present
+      VC-PRG-05: present
+      VC-PRG-06: present
+      VC-PRG-07: present
+      VC-PRG-08: future-locked
+      VC-PRG-09: present
+
+components:
+  VC-C01: { owner: AMSimUITheme/UAMSimRootScreen, status: present }
+  VC-C02: { owner: UAMSimOverviewView, status: present }
+  VC-C03: { owner: UAMSimOverviewView, status: present }
+  VC-C04: { owner: UAMSimOverviewView/UAMSimTurnaroundView, status: present }
+  VC-C05: { owner: UAMSimConstructionProposalView, status: present }
+  VC-C06: { owner: UAMSimConstructionProposalView/AAMSimWorldPresenter, status: present }
+  VC-C07: { owner: UAMSimConstructionProposalView/AAMSimWorldPresenter, status: present }
+  VC-C08: { owner: AAMSimWorldPresenter/UAMSimTerminalView, status: present }
+  VC-C09: { owner: AAMSimWorldPresenter, status: present }
+  VC-C10: { owner: UAMSimTerminalView, status: present }
+  VC-C11: { owner: UAMSimRegionalOperationsView, status: present }
+  VC-C12: { owner: UAMSimRegionalOperationsView, status: present }
+  VC-C13: { owner: UAMSimRegionalOperationsView, status: present }
+  VC-C14: { owner: UAMSimTurnaroundView/AAMSimWorldPresenter, status: present }
+  VC-C15: { owner: UAMSimTurnaroundView, status: present }
+  VC-C16: { owner: UAMSimIncidentView, status: present }
+  VC-C17: { owner: AAMSimWorldPresenter, status: present }
+  VC-C18: { owner: UAMSimRegionalOperationsView, status: present }
+  VC-C19: { owner: UAMSimProgressionView, status: present }
+  VC-C20: { owner: UAMSimProgressionView, status: present }
+  VC-C21: { owner: UAMSimProgressionView, status: present }
+  VC-C22: { owner: AMSimEditor/content-pipeline, status: present }

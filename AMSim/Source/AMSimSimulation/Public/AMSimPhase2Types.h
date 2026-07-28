@@ -246,6 +246,10 @@ namespace AMSim
 		FServiceTaskId Id;
 		FFlightId FlightId;
 		FName ServiceId;
+		FName OwnerDomain;
+		uint64 OwnerId = 0;
+		FName OperationId;
+		int32 Quantity = 1;
 		EPhase2ServiceState State = EPhase2ServiceState::Queued;
 		FServiceTaskId PrerequisiteTaskId;
 		FVehicleId AssignedVehicleId;

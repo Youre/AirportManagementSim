@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <g id="shadow" opacity=".22" transform="translate(7 9)">
+    <path fill="#07151d" d="M246 34h20l12 146 126 77v22l-122-25-6 137 54 48v20l-74-22-74 22v-20l54-48-6-137-122 25v-22l126-77z"/>
+  </g>
+  <g id="airframe">
+    <path fill="#e9f2ee" stroke="#102d39" stroke-width="8" stroke-linejoin="round" d="M246 28h20l13 151 128 76v28l-126-27-6 137 56 46v24l-75-20-75 20v-24l56-46-6-137-126 27v-28l128-76z"/>
+    <path fill="#cbd9d4" d="M246 37h20l6 153-16 28-16-28z"/>
+  </g>
+  <g id="livery">
+    <path fill="#0a5266" d="M246 47h20l5 104-15 31-15-31z"/>
+    <path fill="#1ab8ca" d="M236 203 111 264v11l127-26zM276 203l125 61v11l-127-26z"/>
+    <path fill="#f0a329" d="m237 377 19 18 19-18-2 42-17 13-17-13z"/>
+    <path fill="#102d39" d="M181 439h150v13H181z"/>
+  </g>
+  <g id="details" fill="#102d39">
+    <path d="M245 72h22l3 35h-28z"/>
+    <circle cx="223" cy="255" r="8"/>
+    <circle cx="289" cy="255" r="8"/>
+    <path d="M238 323h36v12h-36z"/>
+  </g>
+</svg>

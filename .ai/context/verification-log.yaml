@@ -425,25 +425,25 @@ entries:
     command: Initial Phase 1.5 clean Shipping cook dependency inspection
     result: failed
     notes: The cook exposed seven aircraft heading sprites whose imported
-      textures existed in the editor session but had not been saved to disk.
-      The package was rejected despite UAT success. The asset commandlet now
-      adds every imported texture package to the explicit save set.
+      textures existed in the editor session but had not been saved to disk. The
+      package was rejected despite UAT success. The asset commandlet now adds
+      every imported texture package to the explicit save set.
   - timestamp: '2026-07-26T16:46:00.000000+00:00'
     commit: 8001ac16e81f52776d90841640ef49321eb5fb91
     branch: codex/planning-docs-concept-art
     worktree: C:/Users/dave/Documents/AirportManagementSim
     command: 'Phase 1.5 final verification: editor build; project audit; 27-result
-      automation; five-scale rendered matrix; manual cursor/state review; clean
-      Shipping cook, asset registry, launch, socket, and forbidden-dependency checks;
-      ai-project-init doctor'
+      automation; five-scale rendered matrix; manual cursor/state review; clean Shipping
+      cook, asset registry, launch, socket, and forbidden-dependency checks; ai-project-init
+      doctor'
     result: passed
     notes: Unreal 5.8.0 editor build and content audit passed. Automation
       completed 27 results with 0 failed/not-run/in-process. The 100–200%
       1920x1080 matrix passed with zero 8x backlog and compact drawers at
       175–200%. Manual inspection confirmed visible cursor and representative
       state progression. Shipping produced 267 packages with no missing
-      presentation dependency; the runtime stayed alive for five seconds with
-      0 TCP sockets and 0 forbidden file/text/receipt matches. Doctor exited 0
+      presentation dependency; the runtime stayed alive for five seconds with 0
+      TCP sockets and 0 forbidden file/text/receipt matches. Doctor exited 0
       with only known managed-template, lexical, legacy-ledger, and schema
       warnings plus an ignored Saved inspection artifact warning.
   - timestamp: '2026-07-26T17:57:20.000000+00:00'
@@ -461,10 +461,10 @@ entries:
     commit: a6dc2196f6e1ad6dba05a70624ae9bbdcf181a2c
     branch: codex/planning-docs-concept-art
     worktree: C:/Users/dave/Documents/AirportManagementSim
-    command: 'Phase 1.5 corrective component-language verification: reviews;
-      editor build; component gallery; project audit; full automation;
-      five-scale rendered matrix; clean Development and Shipping packages;
-      packaged smoke, launch, socket, and forbidden-dependency checks'
+    command: 'Phase 1.5 corrective component-language verification: reviews; editor
+      build; component gallery; project audit; full automation; five-scale rendered
+      matrix; clean Development and Shipping packages; packaged smoke, launch, socket,
+      and forbidden-dependency checks'
     result: passed
     notes: The centralized rounded UI theme, reduced-copy contextual layouts,
       and responsive rail behavior compile in Unreal 5.8.0. The audit passed.
@@ -472,20 +472,19 @@ entries:
       0 failed/not-run/in-process. Every 1920x1080 candidate capture from
       100-200% passed with zero 8x backlog; the inspected 125% and 150% offer
       and turnaround states have no clipped actions or service text. Clean
-      Development and Shipping cooks produced 267 packages. Packaged S01
-      passed at 1.732 ms p99 with checksum 6583174326702355518; Shipping stayed
-      alive for five seconds with 0 TCP sockets and 0 forbidden
-      file/text/receipt matches.
+      Development and Shipping cooks produced 267 packages. Packaged S01 passed
+      at 1.732 ms p99 with checksum 6583174326702355518; Shipping stayed alive
+      for five seconds with 0 TCP sockets and 0 forbidden file/text/receipt
+      matches.
   - timestamp: '2026-07-26T18:02:00.000000+00:00'
     commit: a6dc2196f6e1ad6dba05a70624ae9bbdcf181a2c
     branch: codex/planning-docs-concept-art
     worktree: C:/Users/dave/Documents/AirportManagementSim
     command: python -m ai_project_init.cli doctor . --json
     result: passed
-    notes: Exited 0. Only known managed-template, lexical-review,
-      legacy-ledger, project schema/version, and ignored Saved inspection
-      warnings remain; no structural error or new component-language evidence
-      conflict.
+    notes: Exited 0. Only known managed-template, lexical-review, legacy-ledger,
+      project schema/version, and ignored Saved inspection warnings remain; no
+      structural error or new component-language evidence conflict.
   - timestamp: '2026-07-26T19:19:29.000000+00:00'
     commit: 90251c9a38a7eecd1e02e21ad9dd01222508fd66
     branch: codex/planning-docs-concept-art
@@ -506,27 +505,26 @@ entries:
     result: failed
     notes: The executable and integrated smoke passed, but the indexed container
       retained 267 packages and zero Phase 2 definition assets. Asset Manager
-      scanning alone had not rooted the new bounded catalog. Added
-      /Game/Phase2 to DirectoriesToAlwaysCook and made the Phase 2 pipeline
-      compare source and IoStore asset names.
+      scanning alone had not rooted the new bounded catalog. Added /Game/Phase2
+      to DirectoriesToAlwaysCook and made the Phase 2 pipeline compare source
+      and IoStore asset names.
   - timestamp: '2026-07-26T19:35:11.2537838+00:00'
     commit: 90251c9a38a7eecd1e02e21ad9dd01222508fd66
     branch: codex/planning-docs-concept-art
     worktree: C:/Users/dave/Documents/AirportManagementSim
-    command: 'Final Phase 2 gate: editor build; Phase 0-2 audit; focused and
-      full automation; 100-200% rendered matrix; integrated save/load smoke;
-      clean Development and Shipping packages; IoStore asset inventory;
-      socket, dependency, runtime-load, and 2D scans'
+    command: 'Final Phase 2 gate: editor build; Phase 0-2 audit; focused and full
+      automation; 100-200% rendered matrix; integrated save/load smoke; clean Development
+      and Shipping packages; IoStore asset inventory; socket, dependency, runtime-load,
+      and 2D scans'
     result: passed
     notes: Audit resolved 20 Phase 1 and 33 Phase 2 assets. Full automation
       reported 33 succeeded and 1 succeeded-with-warning with zero
       failed/not-run/in-process. All five scales passed at 1.433-1.490 ms p99
       with zero 8x backlog. Packaged smoke reached day 8 with 24 completed
-      flights, resolved incident, operational expansion, schema-3
-      continuation, 1.754 ms p99, and checksum 4077945290392220792. Shipping
-      contains 300 packages including all 33 Phase 2 assets, observes zero TCP
-      sockets, and has zero forbidden, runtime string-load, or required 3D
-      matches.
+      flights, resolved incident, operational expansion, schema-3 continuation,
+      1.754 ms p99, and checksum 4077945290392220792. Shipping contains 300
+      packages including all 33 Phase 2 assets, observes zero TCP sockets, and
+      has zero forbidden, runtime string-load, or required 3D matches.
   - timestamp: '2026-07-26T19:37:58.3861531+00:00'
     commit: 90251c9a38a7eecd1e02e21ad9dd01222508fd66
     branch: codex/planning-docs-concept-art
@@ -534,8 +532,8 @@ entries:
     command: python -m ai_project_init.cli doctor . --json
     result: passed
     notes: Exited 0. Only the known ignored Saved artifact, managed-template,
-      lexical-review, legacy-ledger, and project schema/version warnings
-      remain; no structural error or Phase 2 evidence conflict.
+      lexical-review, legacy-ledger, and project schema/version warnings remain;
+      no structural error or Phase 2 evidence conflict.
   - timestamp: '2026-07-26T21:31:00.0000000+00:00'
     commit: 2eded6bacb2c41351711c5bbf4f584f43372ece2
     branch: codex/planning-docs-concept-art
@@ -544,8 +542,8 @@ entries:
     result: failed
     notes: Phase 3 focused automation passed. The full suite found one retained
       Phase 2 serialization assertion that still expected schema 3 after the
-      authoritative snapshot advanced to schema 4. The test was corrected to
-      use the shared current schema constant; the next full run reported zero
+      authoritative snapshot advanced to schema 4. The test was corrected to use
+      the shared current schema constant; the next full run reported zero
       failed/not-run/in-process records.
   - timestamp: '2026-07-26T21:40:00.0000000+00:00'
     commit: 2eded6bacb2c41351711c5bbf4f584f43372ece2
@@ -554,18 +552,18 @@ entries:
     command: Initial Phase 3 Development package staging
     result: failed
     notes: Cook completed, but Unreal 5.8 tied the Zen server lifetime to
-      UnrealEditor-Cmd and staging could not read the completed cook oplog
-      after that process exited. No project build, audit, automation, cook, or
-      content assertion failed. The pipeline now starts Zen independently
-      before BuildCookRun.
+      UnrealEditor-Cmd and staging could not read the completed cook oplog after
+      that process exited. No project build, audit, automation, cook, or content
+      assertion failed. The pipeline now starts Zen independently before
+      BuildCookRun.
   - timestamp: '2026-07-26T22:09:26.5781009+00:00'
     commit: 2eded6bacb2c41351711c5bbf4f584f43372ece2
     branch: codex/planning-docs-concept-art
     worktree: C:/Users/dave/Documents/AirportManagementSim
-    command: 'Final Phase 3 gate: editor build; Phase 0-3 audit; focused and
-      full automation; 100-200% rendered VA-03 matrix; schema/save boundary
-      matrix; clean Development and Shipping packages; packaged S05 smoke;
-      IoStore, socket, dependency, runtime-load, and 2D scans'
+    command: 'Final Phase 3 gate: editor build; Phase 0-3 audit; focused and full
+      automation; 100-200% rendered VA-03 matrix; schema/save boundary matrix; clean
+      Development and Shipping packages; packaged S05 smoke; IoStore, socket, dependency,
+      runtime-load, and 2D scans'
     result: passed
     notes: Audit resolved 20 Phase 1, 33 Phase 2, and 34 Phase 3 assets. Full
       automation reported 40 succeeded and 1 succeeded-with-warning with zero
@@ -574,8 +572,8 @@ entries:
       backlog; inspected 100%, 175%, and 200% VA-03 states have no P0-P2 visual
       defect. Packaged smoke passed at 1.723 ms p99 and 1,108.093 average FPS
       with checksum 10622603748974364525. Shipping directly contains all 34
-      Phase 3 assets, observes zero TCP sockets, and has zero forbidden,
-      runtime string-load, or required 3D matches.
+      Phase 3 assets, observes zero TCP sockets, and has zero forbidden, runtime
+      string-load, or required 3D matches.
   - timestamp: '2026-07-26T22:11:00.0000000+00:00'
     commit: 2eded6bacb2c41351711c5bbf4f584f43372ece2
     branch: codex/planning-docs-concept-art
@@ -592,29 +590,28 @@ entries:
     worktree: C:/Users/dave/Documents/AirportManagementSim
     command: Initial Phase 4 clean package staging
     result: failed
-    notes: Cook completed, but staging lost its UE 5.8 Zen oplog connection.
-      No implementation, automation, content, or package-boundary assertion
-      failed. The incomplete package root was rejected, Zen was restarted,
-      and the clean package gate reran from the beginning.
+    notes: Cook completed, but staging lost its UE 5.8 Zen oplog connection. No
+      implementation, automation, content, or package-boundary assertion failed.
+      The incomplete package root was rejected, Zen was restarted, and the clean
+      package gate reran from the beginning.
   - timestamp: '2026-07-26T23:48:00.0000000+00:00'
     commit: 126ce1087c7518176f617a5e2063f7f254a64c0c
     branch: codex/planning-docs-concept-art
     worktree: C:/Users/dave/Documents/AirportManagementSim
-    command: 'Final Phase 4 gate: editor build; focused and full automation;
-      deterministic seven-day S06/S10 fixture; schema-5 migration/save;
-      VA-04/VA-06 comparison; 100-200% rendered matrix; clean Development and
-      Shipping packages; packaged Phase 4 smoke; IoStore, socket, dependency,
-      runtime-load, and 2D scans'
+    command: 'Final Phase 4 gate: editor build; focused and full automation; deterministic
+      seven-day S06/S10 fixture; schema-5 migration/save; VA-04/VA-06 comparison;
+      100-200% rendered matrix; clean Development and Shipping packages; packaged
+      Phase 4 smoke; IoStore, socket, dependency, runtime-load, and 2D scans'
     result: passed
     notes: Five focused Phase 4 tests passed. The full suite reported 45
       succeeded plus one retained warning with zero failed/not-run/in-process.
       The fixture completed 21 flights, 18 connections, 6 missed/rebooked
       passengers, 32 transfer bags, 96 border passengers, rental/rail access,
       incident recovery, and one renewal. All five scales passed after visual
-      inspection corrected compact clipping. Packaged Phase 4 passed at 1.722
-      ms p99 with checksum 4002092208679843671. Shipping directly contains all
-      34 Phase 4 assets and has zero TCP socket, forbidden, runtime string-load,
-      or required 3D matches.
+      inspection corrected compact clipping. Packaged Phase 4 passed at 1.722 ms
+      p99 with checksum 4002092208679843671. Shipping directly contains all 34
+      Phase 4 assets and has zero TCP socket, forbidden, runtime string-load, or
+      required 3D matches.
   - timestamp: '2026-07-26T23:50:00.0000000+00:00'
     commit: 126ce1087c7518176f617a5e2063f7f254a64c0c
     branch: codex/planning-docs-concept-art
@@ -622,5 +619,268 @@ entries:
     command: python -m ai_project_init.cli doctor . --json
     result: passed
     notes: Exited 0. Only known ignored Saved-artifact, managed-template,
-      lexical-review, legacy-ledger, and project schema/version warnings
-      remain; no structural error or Phase 4 evidence conflict.
+      lexical-review, legacy-ledger, and project schema/version warnings remain;
+      no structural error or Phase 4 evidence conflict.
+  - timestamp: '2026-07-27T01:33:45.0000000+00:00'
+    commit: fafbdca
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: Initial Phase 4.5 turnaround rendered smoke after component split
+    result: failed
+    notes: The child turnaround presenter was refreshed once before its widget
+      tree had rebuilt, causing a null presentation pointer on startup. The
+      presenter now defers data application until its required child widgets
+      exist; the next editor build and both standard and proposal smoke runs
+      exited 0.
+  - timestamp: '2026-07-27T01:46:00.0000000+00:00'
+    commit: fafbdca
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Phase 4.5 first content pass: editor build; focused progression, timetable,
+      and Paper2D tests; standard and proposal Phase 1 rendered smoke; standard Phase
+      4 rendered S06/S10; seven equivalent-state boards; diff and file-size checks'
+    result: passed
+    notes: Unreal 5.8.0 editor build passed. Phase 4.5 progression/timetable
+      tests passed 2/2 and the serialized Paper2D asset test passed. Standard
+      and proposal Phase 1 smoke exited 0. The 1920x1080 Phase 4 S06/S10 fixture
+      passed all journey, save/load, state, capture, reference-profile, and
+      backlog assertions with checksum 16245934987686420607. All focused source
+      files remain below 2,000 lines and git diff --check passed.
+  - timestamp: '2026-07-27T02:20:49.8457494+00:00'
+    commit: fafbdca
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Phase 4.5 shared content iteration: editor build; focused progression/timetable/icon-kit
+      automation; overview and progression 1920x1080 recaptures; VA-01/VA-07 comparison
+      boards; standard rendered Phase 4 S06/S10 regression smoke; diff check'
+    result: passed
+    notes: The cooker-visible kit resolves nine overview icons, six
+      specialization identities, and selected-aircraft identity art. Focused
+      automation passed 3/3. The recaptured overview exposes identity,
+      schedule/stand, border, transport, readiness, connection, and baggage
+      evidence. The capability map uses named four-band labels and
+      requirements/evidence/next/reward inspector sections without clipping.
+      Standard Phase 4 passed all journey, schema-5 save/load, state, capture,
+      reference-profile, and backlog assertions at 1.480 ms p99 with checksum
+      2724416927687886146. git diff --check passed. CT-05 remains active because
+      the comparison boards still record schematic and absent items.
+  - timestamp: '2026-07-27T02:55:00.0000000+00:00'
+    commit: fafbdca
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Phase 4.5 mature-airport site iteration: editor build; focused presentation
+      and Paper2D asset automation; 1920x1080 VA-01 recapture; standard Phase 1 terminal
+      and Phase 4 regional rendered regressions; concept comparison and provenance
+      review'
+    result: passed
+    notes: Unreal 5.8.0 editor build passed. Three focused presentation tests
+      and the serialized Paper2D world test passed with zero failures. The
+      sixteen-piece cooker-visible site kit resolves runway, taxiway, apron,
+      access, terminal, GA, operations, fuel, parking, transit, landscaping,
+      perimeter, and fixture content. Phase 1 passed at 1.345 ms p99 with zero
+      8x backlog and retained its terminal cutaway. Phase 4 passed all journey,
+      save/load, state, screenshot, and reference-profile assertions at 1.434 ms
+      p99 with checksum 625002085189678383. VA-01 remains schematic because
+      spatial cohesion, ambient density, drawers, meters, and actions are not
+      yet at concept quality.
+  - timestamp: '2026-07-27T03:44:20.0000000+00:00'
+    commit: fafbdca990f708c44f74897038882414dc4d1e30
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Phase 4.5 structural content baseline: editor build; focused Phase 4.5
+      and Paper2D automation; proposal and standard Phase 1 rendered smoke; Phase
+      4 S06/S10 rendered smoke; VA-02/04/05/06 recapture and comparison; coverage,
+      line-limit, YAML, and diff checks'
+    result: passed
+    notes: Unreal 5.8.0 editor build passed after the regional card presenter
+      was split below the 2,000-line source limit. Focused Phase 4.5 automation
+      passed 4/4 and the serialized Paper2D world test passed 1/1. Proposal
+      Phase 1 passed at 1.340 ms p99 with checksum 8473547707088552880. Phase 4
+      completed 21 flights and all journey/save/state/capture checks at 1.395 ms
+      p99 with checksum 6667522321886296823. Incident presentation now remains
+      on the mature airport through later visibility refreshes. All seven
+      comparison boards are current, coverage YAML parses with seven references
+      and 22 components, no CT-05 row is absent or text-only, all source files
+      remain below 2,000 lines, and git diff --check passes.
+  - timestamp: '2026-07-27T12:03:51.9706314+00:00'
+    commit: fafbdca990f708c44f74897038882414dc4d1e30
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Phase 4.5 VA-01/VA-06 quality iteration: editor build; focused Phase
+      4.5 and Paper2D automation; settled Phase 4 S06/S10 rendered smoke; VA-01/VA-06
+      equivalent-state comparison; coverage, line-limit, YAML, and diff checks'
+    result: passed
+    notes: Unreal 5.8.0 editor build passed. Focused Phase 4.5 presentation
+      automation passed 4/4 and the serialized Paper2D asset test passed 1/1.
+      The Phase 4 smoke now waits two frames after response dispatch so the
+      capture contains the authoritative incident world layer rather than its
+      previous-frame presentation. S06/S10 passed all journey, save/load, state,
+      screenshot, reference-profile, and backlog assertions at 1.373 ms p99 with
+      checksum 14783482036899846707. VA-01 adds connective site geometry,
+      ambient entities, inspector meters, and functional actions; VA-06 adds
+      dark rain, bounded red closure hatching, an affected-aircraft focal point,
+      route arrows, and responding equipment. Coverage parses as 55 present, 27
+      schematic, and one future-locked assessment. Focused source files remain
+      below 2,000 lines and git diff --check passes.
+  - timestamp: '2026-07-27T12:05:08.6308563+00:00'
+    commit: fafbdca990f708c44f74897038882414dc4d1e30
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: python -m ai_project_init.cli doctor . --json
+    result: passed
+    notes: Exited 0. Only the known ignored Saved token-name, managed-template,
+      lexical-review, legacy-ledger, and project schema/version warnings remain;
+      no structural error or new Phase 4.5 evidence conflict.
+  - timestamp: '2026-07-27T22:36:42.967174+00:00'
+    commit: fafbdca990f708c44f74897038882414dc4d1e30
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Phase 4.5 VA-01/VA-03/VA-06 content iteration: editor build; focused
+      Phase 4.5 and expanded Paper2D automation; exact Phase 4 S06/S10 rendered smoke;
+      three equivalent-state boards; coverage, line-limit, doctor, and diff checks'
+    result: passed
+    notes: Unreal 5.8.0 editor build passed. Phase 4.5 automation passed 4/4 and
+      the expanded Paper2D world test passed 1/1, including 20 accessible-route
+      dash proxies, six incident connectors, and the mature selection proxy. The
+      rendered fixture passed all journey, save/load, state, capture,
+      reference-profile, and backlog assertions at 1.190 ms p99 with checksum
+      1585399326517419218. VA-03 now has a widened textured cutaway, larger
+      props, continuous departure/arrival/baggage/landside paths, and a parallel
+      dashed accessible route. VA-06 captures the protected state with a
+      continuous route and staged vehicles. VA-01 binds the selected aircraft to
+      its inspector. Coverage parses as 63 present, 19 schematic, and one
+      future-locked assessment; focused source files remain below 2,000 lines,
+      git diff --check passes, and doctor reports only the known baseline
+      warnings. Five-scale, gallery, package, manual interaction, and
+      owner-approval gates remain open.
+  - timestamp: '2026-07-27T23:20:25.600653+00:00'
+    commit: fafbdca990f708c44f74897038882414dc4d1e30
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Phase 4.5 selection/boundary/weather iteration: Unreal 5.8 editor build;
+      Phase4_5 and Paper2D automation; aircraft/facility overview proof runs; exact
+      S06/S10 rendered smoke; VA-01/03/06 comparison; coverage, line-limit, YAML,
+      adversarial, and diff checks'
+    result: passed
+    notes: Unreal 5.8.0 editor build passed. Phase 4.5 automation passed 4/4 and
+      Paper2DWorld passed 1/1, including four baggage-exception route proxies
+      and three wet-surface proxies. Aircraft and facility proof captures show
+      synchronized identity, inspector evidence, selected tab, and world focus.
+      VA-03 shows authored controlled-door/partition evidence, a dedicated
+      clear/active exception branch, and passenger-family identity art. VA-06
+      preserves the complete protected response above runway/taxi/apron wet
+      layers. The exact S06/S10 fixture passed journey, save/load, state,
+      capture, reference-profile, and backlog assertions at 1.348 ms p99 with
+      checksum 3917398314022310839. Coverage parses as 68 present, 14 schematic,
+      and one future-locked assessment; all source files remain below 2,000
+      lines and git diff --check passes.
+  - timestamp: '2026-07-27T23:20:46.655252+00:00'
+    commit: fafbdca990f708c44f74897038882414dc4d1e30
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: ai-init doctor . --json
+    result: passed
+    notes: Exited 0. Only the known ignored Saved token-name,
+      managed-template/baseline, lexical-review, legacy-ledger, and project
+      schema/version warnings remain; no structural error or Phase 4.5 evidence
+      conflict.
+  - timestamp: '2026-07-28T00:06:37.3201558+00:00'
+    commit: fafbdca990f708c44f74897038882414dc4d1e30
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Phase 4.5 operational-evidence iteration: Unreal 5.8 editor build; full
+      AMSim automation; standard and progression-proof Phase 4 S06/S10 rendered smoke;
+      VA-02/04/05/07 equivalent-state comparison; coverage, line-limit, YAML, doctor,
+      and diff checks'
+    result: passed
+    notes: Unreal 5.8.0 editor build passed. The full suite reported 49
+      succeeded and one retained warning with zero failed/not-run/in-process.
+      Final S06/S10 passed every journey, schema-5 save/load, state, capture,
+      reference-profile, and backlog assertion at 1.185 ms p99 with 21 completed
+      flights and checksum 7074104819005943803. Construction now retains
+      stage-derived work proxies; turnaround shows a protected fuel position,
+      two authored approach arrows, and explicit automatic dispatch; contract
+      and progression identity/evidence are visible in their captured states.
+      Coverage parses as 78 present, four schematic, and one future-locked
+      assessment. Source files remain below 2,000 lines, git diff --check
+      passes, and doctor reports only known baseline warnings.
+  - timestamp: '2026-07-28T01:58:08.2005610+00:00'
+    commit: fafbdca990f708c44f74897038882414dc4d1e30
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Phase 4.5 completion gates: five-scale component gallery; exact authoritative
+      closure and locked-risk rendered evidence; clean Phase 1 pipeline; direct Shipping
+      IoStore inventory; packaged Phase 4 S06/S10 smoke; packaged Windows interaction
+      audit'
+    result: passed
+    notes: The component gallery passes at 100, 125, 150, 175, and 200 percent
+      at 1920 x 1080, with compact scrolling at the two largest scales. The
+      clean pipeline reports 49 succeeded plus one retained warning-only test,
+      zero failed/not-run/in-process tests, successful Development and Shipping
+      packages, a 1.335 ms p99 Phase 1 packaged smoke, zero forbidden Shipping
+      file/text/receipt matches, zero Shipping sockets, and zero required 3D
+      candidates. The first package attempt encountered a transient local Zen
+      refusal; restarting Zen and repeating the same gate passed. Direct
+      Shipping IoStore inventory contains the production root widget, all 48
+      Phase 1 presentation assets, and all 136 Phase 4.5 runtime assets; the
+      development gallery and 16 unused UI PaperSprite companions are absent as
+      intended. Packaged S06/S10 completes 21 flights and passes screenshots at
+      1.336 ms p99 with checksum 8710455680428232083. Manual packaged
+      interaction proves visible cursor, hover/tooltips, click focus, text focus
+      restoration, time controls, captions, mouse-wheel zoom, WASD pan,
+      aircraft/facility/capability selection, and overview/timetable/ capability
+      navigation. Coverage is 82 present, zero schematic, and one approved
+      future-locked assessment. `ai-init doctor . --json` exits 0 with only the
+      documented baseline warnings, source files remain below 2,000 lines, and
+      git diff --check passes. Only owner visual acceptance remains.
+  - timestamp: '2026-07-28T02:23:05.683998+00:00'
+    commit: fafbdca990f708c44f74897038882414dc4d1e30
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: rg -n -i source-track-reference scan in Suno remix prompts
+    result: passed
+    notes: M11-M16 are standalone prompts; remix source routing is retained only
+      as separate UI metadata.
+  - timestamp: '2026-07-28T02:24:08.205665+00:00'
+    commit: fafbdca990f708c44f74897038882414dc4d1e30
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: Suno remix-title and standalone-prompt scan
+    result: passed
+    notes: M11-M16 titles identify their remix source; prompt bodies remain
+      source-independent.
+  - timestamp: '2026-07-28T03:28:30.2900083+00:00'
+    commit: fafbdca990f708c44f74897038882414dc4d1e30
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Phase 5 closeout: Unreal 5.8 editor and game builds; focused and
+      full automation; Development/Shipping BuildCookRun; direct Shipping
+      IoStore inventory; dependency/runtime-load/3D scans; offline packaged
+      smoke; Figma validation and documentation'
+    result: passed
+    notes: Phase 5 focused automation passed 5 of 5. Full AMSim automation
+      reported 54 succeeded and one retained warning-only legacy save test
+      with zero failed or not-run tests. Development and Shipping BuildCookRun
+      passed with 553 cooked packages. Direct Shipping IoStore inspection
+      found all 44 Phase 5 definitions and four freighter presentation assets
+      (50 entries including two texture bulk-data entries), plus the production
+      root Widget Blueprint. Shipping executable/module scans found zero
+      forbidden editor, MCP, toolset, test, Python, or RemoteControl matches;
+      runtime modules contain zero string asset loads; Phase 5 contains zero
+      required 3D assets. The packaged Shipping game remained responsive after
+      eight seconds and opened zero TCP connections. Four 1920 x 1080 Figma
+      frames and repository exports record cargo/warehouse, cargo turnaround,
+      Advanced capability, and active-airshow comparisons. Phase 4.5 is
+      accepted as the continuing-development baseline with aesthetic polish
+      retained as debt. Major/wide-body work and long-form human gates remain
+      deferred.
+  - timestamp: '2026-07-28T03:33:20.1097933+00:00'
+    commit: fafbdca990f708c44f74897038882414dc4d1e30
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: ai-init doctor . --json
+    result: passed
+    notes: Exited 0. Only the documented ignored Saved token-name,
+      managed-template, lexical-review, legacy-ledger, and project
+      schema/version warnings remain; no structural or Phase 5 conflict was
+      reported.

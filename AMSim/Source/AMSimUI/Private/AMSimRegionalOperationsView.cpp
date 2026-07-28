@@ -1,8 +1,13 @@
 #include "AMSimRegionalOperationsView.h"
 
+#include "Algo/Count.h"
 #include "AMSimAirportSimulationSubsystem.h"
 #include "AMSimGameInstanceSubsystem.h"
+#include "AMSimOverviewView.h"
+#include "AMSimPhase5View.h"
+#include "AMSimProgressionView.h"
 #include "AMSimSaveStore.h"
+#include "AMSimTimetableGeometry.h"
 #include "AMSimUITheme.h"
 #include "AMSimWorldPresenter.h"
 #include "Blueprint/WidgetTree.h"
@@ -12,14 +17,21 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
+#include "Components/Image.h"
+#include "Components/ProgressBar.h"
 #include "Components/ScrollBox.h"
+#include "Components/SizeBox.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
 #include "Engine/UserInterfaceSettings.h"
+#include "Engine/Texture2D.h"
 #include "EngineUtils.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
+#include "UObject/ConstructorHelpers.h"
 
-namespace
+namespace AMSimRegionalOperationsViewPrivate
 {
 	using namespace AMSim::UITheme;
 
@@ -142,6 +154,54 @@ namespace
 		return Card;
 	}
 
+	UCanvasPanel* MakeStripedWindow(
+		UWidgetTree* Tree,
+		const TCHAR* Name,
+		TObjectPtr<UTextBlock>& OutText)
+	{
+		UCanvasPanel* Window = Tree->ConstructWidget<UCanvasPanel>(
+			UCanvasPanel::StaticClass(),
+			Name);
+		UBorder* Base = MakeSurface(
+			Tree,
+			*FString::Printf(TEXT("%sBase"), Name),
+			ESurface::Warning,
+			FMargin(0.0f),
+			9.0f,
+			2.0f);
+		Base->SetBrushColor(FLinearColor(1.0f, 1.0f, 1.0f, 0.17f));
+		AddAnchored(Window, Base, FAnchors(0.0f, 0.0f, 1.0f, 1.0f));
+		for (int32 Index = 0; Index < 8; ++Index)
+		{
+			UBorder* Stripe = Tree->ConstructWidget<UBorder>(
+				UBorder::StaticClass(),
+				*FString::Printf(TEXT("%sStripe%d"), Name, Index));
+			Stripe->SetBrushColor(FLinearColor(1.0f, 0.86f, 0.42f, 0.05f));
+			const float Left = 0.03f + 0.12f * Index;
+			AddAnchored(
+				Window,
+				Stripe,
+				FAnchors(Left, 0.0f, Left + 0.028f, 1.0f),
+				FMargin(),
+				1);
+		}
+		OutText = MakeText(
+			Tree,
+			*FString::Printf(TEXT("%sText"), Name),
+			TEXT("WEATHER WINDOW"),
+			9,
+			Amber(),
+			true);
+		OutText->SetJustification(ETextJustify::Center);
+		AddAnchored(
+			Window,
+			OutText,
+			FAnchors(0.02f, 0.02f, 0.98f, 0.30f),
+			FMargin(),
+			2);
+		return Window;
+	}
+
 	void SetActionVisible(UButton* Button, const bool bVisible)
 	{
 		if (Button)
@@ -178,6 +238,61 @@ namespace
 		}
 		return DisplayName.Left(6).ToUpper();
 	}
+
+	FString OperatorShortLabel(const FString& DisplayName)
+	{
+		if (DisplayName.Contains(TEXT("Riverbend")))
+		{
+			return TEXT("RIVERBEND");
+		}
+		if (DisplayName.Contains(TEXT("Northstar")))
+		{
+			return TEXT("NORTHSTAR");
+		}
+		if (DisplayName.Contains(TEXT("Coastal")))
+		{
+			return TEXT("COASTAL");
+		}
+		return DisplayName.Left(9).ToUpper();
+	}
+}
+
+using namespace AMSimRegionalOperationsViewPrivate;
+
+UAMSimRegionalOperationsView::UAMSimRegionalOperationsView(
+	const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	static const TCHAR* IdentityPaths[] = {
+		TEXT("/Game/Phase45/Presentation/Textures/UI/T_Flights.T_Flights"),
+		TEXT("/Game/Phase45/Presentation/Textures/UI/T_MixedAirport.T_MixedAirport"),
+		TEXT("/Game/Phase45/Presentation/Textures/UI/T_Passengers.T_Passengers")};
+	for (const TCHAR* Path : IdentityPaths)
+	{
+		ConstructorHelpers::FObjectFinderOptional<UTexture2D> Finder(Path);
+		ContractIdentityTextures.Add(Finder.Get());
+	}
+	static ConstructorHelpers::FObjectFinderOptional<UTexture2D> AircraftFinder(
+		TEXT("/Game/Phase1/Presentation/Textures/Aircraft/T_Cessna152_Heading_00.T_Cessna152_Heading_00"));
+	ContractAircraftTexture = AircraftFinder.Get();
+	static ConstructorHelpers::FObjectFinderOptional<UTexture2D> WeatherFinder(
+		TEXT("/Game/Phase45/Presentation/Textures/UI/T_Weather.T_Weather"));
+	WeatherIconTexture = WeatherFinder.Get();
+}
+
+int32 UAMSimRegionalOperationsView::GetLoadedContractIdentityCount() const
+{
+	return Algo::CountIf(
+		ContractIdentityTextures,
+		[](const UTexture2D* Texture)
+		{
+			return Texture != nullptr;
+		});
+}
+
+bool UAMSimRegionalOperationsView::HasRequiredContractIdentityArt() const
+{
+	return GetLoadedContractIdentityCount() == 3 && ContractAircraftTexture;
 }
 
 TSharedRef<SWidget> UAMSimRegionalOperationsView::RebuildWidget()
@@ -201,6 +316,7 @@ TSharedRef<SWidget> UAMSimRegionalOperationsView::RebuildWidget()
 		UCanvasPanel::StaticClass(),
 		TEXT("RegionalRoot"));
 	WidgetTree->RootWidget = Root;
+	RootSurface = Root;
 
 	UBorder* TopBar = MakeSurface(
 		WidgetTree,
@@ -249,6 +365,26 @@ TSharedRef<SWidget> UAMSimRegionalOperationsView::RebuildWidget()
 		CyanSoft(),
 		true);
 	AddHorizontal(TopRow, ClockText, 12.0f);
+	UButton* OverviewButton = MakeButton(
+		WidgetTree,
+		TEXT("RegionalOverview"),
+		TEXT("OVERVIEW"),
+		EButton::Secondary,
+		SmallSize);
+	OverviewButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimRegionalOperationsView::ToggleOverview);
+	AddHorizontal(TopRow, OverviewButton, 7.0f);
+	UButton* ProgressionButton = MakeButton(
+		WidgetTree,
+		TEXT("RegionalCapabilities"),
+		bCompactLayout ? TEXT("PATHS") : TEXT("CAPABILITIES"),
+		EButton::Secondary,
+		SmallSize);
+	ProgressionButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimRegionalOperationsView::ToggleProgression);
+	AddHorizontal(TopRow, ProgressionButton, 7.0f);
 	UButton* PauseButton = MakeButton(
 		WidgetTree,
 		TEXT("RegionalPause"),
@@ -351,16 +487,64 @@ TSharedRef<SWidget> UAMSimRegionalOperationsView::RebuildWidget()
 		10.0f);
 	for (int32 Index = 0; Index < 3; ++Index)
 	{
-		TObjectPtr<UTextBlock> Text;
-		UBorder* Card = MakeMetricCard(
+		UBorder* Card = MakeSurface(
 			WidgetTree,
 			*FString::Printf(TEXT("RegionalContractCard%d"), Index),
-			Text,
-			TEXT("OPERATOR OFFER"),
+			ESurface::RaisedCard,
+			FMargin(9.0f),
+			12.0f);
+		UHorizontalBox* CardRow =
+			WidgetTree->ConstructWidget<UHorizontalBox>(
+				UHorizontalBox::StaticClass(),
+				*FString::Printf(TEXT("RegionalContractRow%d"), Index));
+		Card->SetContent(CardRow);
+
+		USizeBox* OperatorBox = WidgetTree->ConstructWidget<USizeBox>(
+			USizeBox::StaticClass(),
+			*FString::Printf(TEXT("RegionalContractOperatorSize%d"), Index));
+		OperatorBox->SetWidthOverride(bCompactLayout ? 28.0f : 36.0f);
+		OperatorBox->SetHeightOverride(bCompactLayout ? 28.0f : 36.0f);
+		UImage* OperatorImage = WidgetTree->ConstructWidget<UImage>(
+			UImage::StaticClass(),
+			*FString::Printf(TEXT("RegionalContractOperator%d"), Index));
+		if (ContractIdentityTextures.IsValidIndex(Index))
+		{
+			OperatorImage->SetBrushFromTexture(
+				ContractIdentityTextures[Index],
+				true);
+		}
+		static const FLinearColor OperatorTints[] = {
+			FLinearColor(0.33f, 0.86f, 0.96f, 1.0f),
+			FLinearColor(1.0f, 0.72f, 0.24f, 1.0f),
+			FLinearColor(0.44f, 0.80f, 0.48f, 1.0f)};
+		OperatorImage->SetColorAndOpacity(OperatorTints[Index]);
+		OperatorBox->SetContent(OperatorImage);
+		AddHorizontal(CardRow, OperatorBox, 8.0f);
+
+		TObjectPtr<UTextBlock> Text = MakeText(
+			WidgetTree,
+			*FString::Printf(TEXT("RegionalContractText%d"), Index),
+			TEXT("SELECTED OPERATOR OFFER"),
 			SmallSize,
-			ESurface::RaisedCard);
-		ContractCards.Add(Card);
+			White(),
+			true);
 		ContractCardTexts.Add(Text);
+		AddHorizontal(CardRow, Text, 6.0f, true);
+
+		USizeBox* AircraftBox = WidgetTree->ConstructWidget<USizeBox>(
+			USizeBox::StaticClass(),
+			*FString::Printf(TEXT("RegionalContractAircraftSize%d"), Index));
+		AircraftBox->SetWidthOverride(bCompactLayout ? 34.0f : 46.0f);
+		AircraftBox->SetHeightOverride(bCompactLayout ? 24.0f : 32.0f);
+		UImage* AircraftImage = WidgetTree->ConstructWidget<UImage>(
+			UImage::StaticClass(),
+			*FString::Printf(TEXT("RegionalContractAircraft%d"), Index));
+		AircraftImage->SetBrushFromTexture(ContractAircraftTexture, true);
+		AircraftImage->SetColorAndOpacity(OperatorTints[Index]);
+		AircraftBox->SetContent(AircraftImage);
+		AddHorizontal(CardRow, AircraftBox, 0.0f);
+
+		ContractCards.Add(Card);
 		AddVertical(ContractColumn, Card, 9.0f);
 	}
 	InitializeButton = MakeButton(
@@ -442,7 +626,10 @@ TSharedRef<SWidget> UAMSimRegionalOperationsView::RebuildWidget()
 		TEXT("FRI"), TEXT("SAT"), TEXT("SUN")};
 	for (int32 Day = 0; Day < 7; ++Day)
 	{
-		const float Left = 0.012f + Day * 0.141f;
+		const float Left =
+			AMSim::FTimetableGeometry::DayColumnLeft(Day + 1);
+		const float Right =
+			AMSim::FTimetableGeometry::DayColumnRight(Day + 1);
 		UBorder* DayChip = MakeSurface(
 			WidgetTree,
 			*FString::Printf(TEXT("RegionalDay%d"), Day),
@@ -458,10 +645,45 @@ TSharedRef<SWidget> UAMSimRegionalOperationsView::RebuildWidget()
 			true);
 		DayText->SetJustification(ETextJustify::Center);
 		DayChip->SetContent(DayText);
+		DayChips.Add(DayChip);
+		DayChipTexts.Add(DayText);
 		AddAnchored(
 			GridCanvas,
 			DayChip,
-			FAnchors(Left, 0.13f, Left + 0.134f, 0.19f));
+			FAnchors(Left, 0.13f, Right, 0.19f));
+	}
+
+	static const int32 TimeMarks[] = {
+		6 * 60, 9 * 60, 12 * 60, 15 * 60, 18 * 60, 21 * 60};
+	for (const int32 Minute : TimeMarks)
+	{
+		const float LineY =
+			AMSim::FTimetableGeometry::MinuteToAnchor(Minute);
+		UTextBlock* TimeLabel = MakeText(
+			WidgetTree,
+			*FString::Printf(TEXT("RegionalTimeLabel%d"), Minute),
+			MinuteDisplay(Minute),
+			SmallSize,
+			Muted(),
+			true);
+		TimeLabel->SetJustification(ETextJustify::Right);
+		AddAnchored(
+			GridCanvas,
+			TimeLabel,
+			FAnchors(0.004f, LineY - 0.014f, 0.050f, LineY + 0.018f));
+		UBorder* GuideLine =
+			WidgetTree->ConstructWidget<UBorder>(
+				UBorder::StaticClass(),
+				*FString::Printf(TEXT("RegionalTimeGuide%d"), Minute));
+		GuideLine->SetBrushColor(FLinearColor(
+			CyanSoft().R,
+			CyanSoft().G,
+			CyanSoft().B,
+			Minute == 12 * 60 ? 0.24f : 0.11f));
+		AddAnchored(
+			GridCanvas,
+			GuideLine,
+			FAnchors(0.055f, LineY, 0.988f, LineY + 0.0015f));
 	}
 
 	for (int32 Index = 0; Index < 21; ++Index)
@@ -478,36 +700,41 @@ TSharedRef<SWidget> UAMSimRegionalOperationsView::RebuildWidget()
 			WidgetTree,
 			*FString::Printf(TEXT("RegionalFlightText%d"), Index),
 			TEXT("FLIGHT · SLOT · GATE"),
-			SmallSize,
+			bCompactLayout ? 9 : 10,
 			White(),
 			true);
 		Card->SetContent(CardText);
 		FlightCards.Add(Card);
 		FlightCardTexts.Add(CardText);
-		if (bCompactLayout)
-		{
-			const float Top = 0.22f + Row * 0.235f;
-			AddAnchored(
-				GridCanvas,
-				Card,
-				FAnchors(0.055f, Top, 0.945f, Top + 0.205f),
-				FMargin(0.0f),
-				2 + Day);
-		}
-		else
-		{
-			const float Left = 0.012f + Day * 0.141f;
-			const float Top = 0.205f + Row * 0.255f;
-			AddAnchored(
-				GridCanvas,
-				Card,
-				FAnchors(
-					Left,
-					Top,
-					Left + 0.134f,
-					Top + 0.232f));
-		}
+		const int32 PlaceholderMinute = 7 * 60 + Row * 5 * 60;
+		const AMSim::FTimetableCardGeometry Geometry =
+			AMSim::FTimetableGeometry::MakeCard(
+				Day + 1,
+				PlaceholderMinute,
+				PlaceholderMinute + 90,
+				bCompactLayout);
+		FlightCardSlots.Add(AddAnchored(
+			GridCanvas,
+			Card,
+			FAnchors(
+				Geometry.Left,
+				Geometry.Top,
+				Geometry.Right,
+				Geometry.Bottom),
+			FMargin(0.0f),
+			2 + Day));
 	}
+	WeatherWindowOverlay = MakeStripedWindow(
+		WidgetTree,
+		TEXT("RegionalWeatherWindow"),
+		WeatherWindowText);
+	WeatherWindowSlot = AddAnchored(
+		GridCanvas,
+		WeatherWindowOverlay,
+		FAnchors(0.34f, 0.40f, 0.45f, 0.58f),
+		FMargin(),
+		10);
+	WeatherWindowOverlay->SetVisibility(ESlateVisibility::Collapsed);
 	AddAnchored(
 		TimetableSurface,
 		WeekGrid,
@@ -717,8 +944,24 @@ TSharedRef<SWidget> UAMSimRegionalOperationsView::RebuildWidget()
 			UVerticalBox::StaticClass(),
 			TEXT("RegionalWeatherColumn"));
 	WeatherRail->SetContent(WeatherColumn);
-	AddVertical(
-		WeatherColumn,
+	UHorizontalBox* WeatherTitleRow =
+		WidgetTree->ConstructWidget<UHorizontalBox>(
+			UHorizontalBox::StaticClass(),
+			TEXT("RegionalWeatherTitleRow"));
+	USizeBox* WeatherIconBox = WidgetTree->ConstructWidget<USizeBox>(
+		USizeBox::StaticClass(),
+		TEXT("RegionalWeatherIconSize"));
+	WeatherIconBox->SetWidthOverride(34.0f);
+	WeatherIconBox->SetHeightOverride(34.0f);
+	UImage* WeatherIcon = WidgetTree->ConstructWidget<UImage>(
+		UImage::StaticClass(),
+		TEXT("RegionalWeatherIcon"));
+	WeatherIcon->SetBrushFromTexture(WeatherIconTexture, true);
+	WeatherIcon->SetColorAndOpacity(Cyan());
+	WeatherIconBox->SetContent(WeatherIcon);
+	AddHorizontal(WeatherTitleRow, WeatherIconBox, 8.0f);
+	AddHorizontal(
+		WeatherTitleRow,
 		MakeText(
 			WidgetTree,
 			TEXT("RegionalWeatherTitle"),
@@ -726,7 +969,9 @@ TSharedRef<SWidget> UAMSimRegionalOperationsView::RebuildWidget()
 			TitleSize,
 			White(),
 			true),
-		8.0f);
+		0.0f,
+		true);
+	AddVertical(WeatherColumn, WeatherTitleRow, 8.0f);
 	AddVertical(
 		WeatherColumn,
 		MakeMetricCard(
@@ -742,7 +987,7 @@ TSharedRef<SWidget> UAMSimRegionalOperationsView::RebuildWidget()
 		MakeText(
 			WidgetTree,
 			TEXT("RegionalForecastTitle"),
-			TEXT("6-HOUR FORECAST"),
+			TEXT("OPERATIONAL FORECAST"),
 			BodySize,
 			Cyan(),
 			true),
@@ -756,12 +1001,18 @@ TSharedRef<SWidget> UAMSimRegionalOperationsView::RebuildWidget()
 			TEXT("Confidence and runway recommendation"),
 			SmallSize),
 		9.0f);
+	ForecastConfidenceBar = WidgetTree->ConstructWidget<UProgressBar>(
+		UProgressBar::StaticClass(),
+		TEXT("RegionalForecastConfidence"));
+	ForecastConfidenceBar->SetFillColorAndOpacity(AMSim::UITheme::Green());
+	ForecastConfidenceBar->SetPercent(0.0f);
+	AddVertical(WeatherColumn, ForecastConfidenceBar, 9.0f);
 	AddVertical(
 		WeatherColumn,
 		MakeText(
 			WidgetTree,
 			TEXT("RegionalWeatherEvidence"),
-			TEXT("WIND 260 / 15 KT\nVISIBILITY 4.2 KM\nRUNWAY WET\nAPPROACH LIMITS ACTIVE"),
+			TEXT("TEMPERATURE / NOT MODELED\nLIMITS / AIRCRAFT-SPECIFIC\nSOURCE / DETERMINISTIC FORECAST"),
 			SmallSize,
 			Muted()),
 		0.0f);
@@ -959,9 +1210,68 @@ TSharedRef<SWidget> UAMSimRegionalOperationsView::RebuildWidget()
 		FMargin(0.0f),
 		12);
 
+	OverviewView =
+		WidgetTree->ConstructWidget<UAMSimOverviewView>(
+			UAMSimOverviewView::StaticClass(),
+			TEXT("RegionalOverviewView"));
+	OverviewView->OnOpenTimetable.BindUObject(
+		this,
+		&UAMSimRegionalOperationsView::ToggleOverview);
+	OverviewView->OnOpenCapabilities.BindUObject(
+		this,
+		&UAMSimRegionalOperationsView::ToggleProgression);
+	OverviewView->OnSelectAircraft.BindUObject(
+		this,
+		&UAMSimRegionalOperationsView::SelectOverviewAircraft);
+	OverviewView->OnSelectFacility.BindUObject(
+		this,
+		&UAMSimRegionalOperationsView::SelectOverviewFacility);
+	AddAnchored(
+		Root,
+		OverviewView,
+		FAnchors(0.0f, 0.085f, 1.0f, 1.0f),
+		FMargin(0.0f),
+		35);
+	ProgressionView =
+		WidgetTree->ConstructWidget<UAMSimProgressionView>(
+			UAMSimProgressionView::StaticClass(),
+			TEXT("RegionalProgressionView"));
+	AddAnchored(
+		Root,
+		ProgressionView,
+		FAnchors(0.0f, 0.085f, 1.0f, 1.0f),
+		FMargin(0.0f),
+		40);
+	Phase5View = WidgetTree->ConstructWidget<UAMSimPhase5View>(
+		UAMSimPhase5View::StaticClass(),
+		TEXT("Phase5OperationsView"));
+	AddAnchored(
+		Root,
+		Phase5View,
+		FAnchors(0.0f, 0.0f, 1.0f, 1.0f),
+		FMargin(0.0f),
+		100);
+
 	SetVisibility(ESlateVisibility::Collapsed);
-	TimetableSurface->SetVisibility(ESlateVisibility::Visible);
+	bProgressionOpen = FParse::Param(
+		FCommandLine::Get(),
+		TEXT("AMSimPhase45ProgressionProof"));
+	bOverviewOpen =
+		!bProgressionOpen &&
+		FParse::Param(FCommandLine::Get(), TEXT("AMSimPhase45OverviewProof"));
+	TimetableSurface->SetVisibility(
+		bProgressionOpen || bOverviewOpen
+			? ESlateVisibility::Collapsed
+			: ESlateVisibility::Visible);
 	IncidentSurface->SetVisibility(ESlateVisibility::Collapsed);
+	OverviewView->SetVisibility(
+		bOverviewOpen
+			? ESlateVisibility::SelfHitTestInvisible
+			: ESlateVisibility::Collapsed);
+	ProgressionView->SetVisibility(
+		bProgressionOpen
+			? ESlateVisibility::SelfHitTestInvisible
+			: ESlateVisibility::Collapsed);
 	RefreshFromSimulation();
 	return Super::RebuildWidget();
 }
@@ -1028,6 +1338,74 @@ void UAMSimRegionalOperationsView::PublishTimetable()
 	Command.Type =
 		AMSim::EPhase4CommandType::PublishSevenDayTimetable;
 	Submit(Command, TEXT("Seven-day timetable published in exact slots."));
+}
+
+void UAMSimRegionalOperationsView::ToggleProgression()
+{
+	if (ViewState.bIncidentMode || !ProgressionView)
+	{
+		return;
+	}
+	bProgressionOpen = !bProgressionOpen;
+	bOverviewOpen = false;
+	ProgressionView->RefreshFromSimulation();
+	ProgressionView->SetVisibility(
+		bProgressionOpen
+			? ESlateVisibility::SelfHitTestInvisible
+			: ESlateVisibility::Collapsed);
+	TimetableSurface->SetVisibility(
+		bProgressionOpen
+			? ESlateVisibility::Collapsed
+			: ESlateVisibility::SelfHitTestInvisible);
+	OverviewView->SetVisibility(ESlateVisibility::Collapsed);
+	for (TActorIterator<AAMSimWorldPresenter> It(GetWorld()); It; ++It)
+	{
+		It->SetMatureOverviewMode(false);
+		break;
+	}
+}
+
+void UAMSimRegionalOperationsView::ToggleOverview()
+{
+	if (ViewState.bIncidentMode || !OverviewView)
+	{
+		return;
+	}
+	bOverviewOpen = !bOverviewOpen;
+	bProgressionOpen = false;
+	OverviewView->RefreshFromSimulation();
+	OverviewView->SetVisibility(
+		bOverviewOpen
+			? ESlateVisibility::SelfHitTestInvisible
+			: ESlateVisibility::Collapsed);
+	TimetableSurface->SetVisibility(
+		bOverviewOpen
+			? ESlateVisibility::Collapsed
+			: ESlateVisibility::SelfHitTestInvisible);
+	ProgressionView->SetVisibility(ESlateVisibility::Collapsed);
+	for (TActorIterator<AAMSimWorldPresenter> It(GetWorld()); It; ++It)
+	{
+		It->SetMatureOverviewMode(bOverviewOpen);
+		break;
+	}
+}
+
+void UAMSimRegionalOperationsView::SelectOverviewAircraft()
+{
+	for (TActorIterator<AAMSimWorldPresenter> It(GetWorld()); It; ++It)
+	{
+		It->SetMatureSelectionFacility(false);
+		break;
+	}
+}
+
+void UAMSimRegionalOperationsView::SelectOverviewFacility()
+{
+	for (TActorIterator<AAMSimWorldPresenter> It(GetWorld()); It; ++It)
+	{
+		It->SetMatureSelectionFacility(true);
+		break;
+	}
 }
 
 const AMSim::FPhase4FlightRecord*
@@ -1266,105 +1644,6 @@ void UAMSimRegionalOperationsView::LoadGame()
 	}
 }
 
-void UAMSimRegionalOperationsView::RefreshContractCards(
-	const AMSim::FPhase4State& State)
-{
-	for (int32 Index = 0; Index < ContractCards.Num(); ++Index)
-	{
-		if (!State.Contracts.IsValidIndex(Index))
-		{
-			ContractCards[Index]->SetVisibility(ESlateVisibility::Collapsed);
-			continue;
-		}
-		const AMSim::FPhase4ContractRecord& Contract =
-			State.Contracts[Index];
-		ContractCards[Index]->SetVisibility(ESlateVisibility::Visible);
-		ContractCardTexts[Index]->SetText(FText::FromString(FString::Printf(
-			TEXT("%s\n%s · %d SEATS\nDAILY · %s"),
-			*Contract.OperatorDisplayName.ToUpper(),
-			*Contract.AircraftDisplayName.ToUpper(),
-			Contract.PassengerCapacity,
-			Contract.bAccepted ? TEXT("ACCEPTED ✓") : TEXT("AVAILABLE"))));
-		AMSim::UITheme::StyleSurface(
-			ContractCards[Index],
-			Contract.bAccepted
-				? AMSim::UITheme::ESurface::Positive
-				: AMSim::UITheme::ESurface::RaisedCard,
-			FMargin(11.0f),
-			12.0f,
-			1.4f);
-	}
-}
-
-void UAMSimRegionalOperationsView::RefreshFlightCards(
-	const AMSim::FPhase4State& State)
-{
-	const int32 VisibleDay = FMath::Clamp(
-		State.CurrentOperatingDay > 0 ? State.CurrentOperatingDay : 1,
-		1,
-		7);
-	for (int32 Index = 0; Index < FlightCards.Num(); ++Index)
-	{
-		if (!State.Flights.IsValidIndex(Index))
-		{
-			FlightCards[Index]->SetVisibility(ESlateVisibility::Collapsed);
-			continue;
-		}
-		const AMSim::FPhase4FlightRecord& Flight = State.Flights[Index];
-		const bool bVisible =
-			!bCompactLayout || Flight.DayIndex == VisibleDay;
-		FlightCards[Index]->SetVisibility(
-			bVisible
-				? ESlateVisibility::Visible
-				: ESlateVisibility::Collapsed);
-		if (!bVisible)
-		{
-			continue;
-		}
-		const FString Status =
-			Flight.bGateChanged
-				? TEXT("R1 · BUS")
-				: Flight.bWeatherRestricted
-					? TEXT("HIGH RISK !")
-					: Flight.bInternational
-						? TEXT("INTL · READY")
-						: Flight.bCompleted
-							? TEXT("COMPLETE ✓")
-							: TEXT("READY ✓");
-		const FString CardCopy = bCompactLayout
-			? FString::Printf(
-				TEXT("%s · %s\n%s–%s · %s · %s\n%s"),
-				*Flight.FlightCode.ToString(),
-				*Flight.OperatorDisplayName.ToUpper(),
-				*MinuteDisplay(Flight.PlannedArrivalMinute),
-				*MinuteDisplay(Flight.PlannedDepartureMinute),
-				*Flight.AssignedGateId.ToString(),
-				*Flight.AircraftDisplayName.ToUpper(),
-				*Status)
-			: FString::Printf(
-				TEXT("%s\n%s–%s\n%s · %s\n%s"),
-				*Flight.FlightCode.ToString(),
-				*MinuteDisplay(Flight.PlannedArrivalMinute),
-				*MinuteDisplay(Flight.PlannedDepartureMinute),
-				*Flight.AssignedGateId.ToString(),
-				*AircraftShortLabel(Flight.AircraftDisplayName),
-				*Status);
-		FlightCardTexts[Index]->SetText(FText::FromString(CardCopy));
-		const AMSim::UITheme::ESurface Surface =
-			Flight.bWeatherRestricted
-				? AMSim::UITheme::ESurface::Warning
-				: Flight.bCompleted
-					? AMSim::UITheme::ESurface::Positive
-					: AMSim::UITheme::ESurface::Card;
-		AMSim::UITheme::StyleSurface(
-			FlightCards[Index],
-			Surface,
-			FMargin(bCompactLayout ? 7.0f : 9.0f),
-			10.0f,
-			1.4f);
-	}
-}
-
 void UAMSimRegionalOperationsView::RefreshFromSimulation()
 {
 	UAMSimAirportSimulationSubsystem* Subsystem =
@@ -1379,6 +1658,30 @@ void UAMSimRegionalOperationsView::RefreshFromSimulation()
 		Subsystem->GetPhase4Query();
 	const AMSim::FPhase4State& State =
 		Subsystem->GetSimulation().GetPhase4State();
+	const AMSim::FPhase5QuerySnapshot Phase5Query =
+		Subsystem->GetPhase5Query();
+	if (Phase5View)
+	{
+		Phase5View->RefreshFromSimulation();
+	}
+	if (Phase5Query.bUnlocked || Phase5Query.bInitialized)
+	{
+		SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		if (RootSurface)
+		{
+			for (int32 Index = 0;
+				Index < RootSurface->GetChildrenCount();
+				++Index)
+			{
+				UWidget* Child = RootSurface->GetChildAt(Index);
+				Child->SetVisibility(
+					Child == Phase5View
+						? ESlateVisibility::SelfHitTestInvisible
+						: ESlateVisibility::Collapsed);
+			}
+		}
+		return;
+	}
 	if (!Query.bUnlocked && !Query.bInitialized)
 	{
 		SetVisibility(ESlateVisibility::Collapsed);
@@ -1386,6 +1689,14 @@ void UAMSimRegionalOperationsView::RefreshFromSimulation()
 	}
 	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	UpdateWorldPresentation(Query, State);
+	if (ProgressionView)
+	{
+		ProgressionView->RefreshFromSimulation();
+	}
+	if (OverviewView)
+	{
+		OverviewView->RefreshFromSimulation();
+	}
 	if (ViewState.Revision == Query.Revision)
 	{
 		return;
@@ -1486,6 +1797,57 @@ void UAMSimRegionalOperationsView::RefreshFromSimulation()
 				CompactForecast->ConfidencePercent,
 				*CompactForecast->RecommendedRunway.ToString())
 			: ViewState.Forecast));
+	if (CompactForecast)
+	{
+		const TCHAR* Category =
+			CompactForecast->Category ==
+					AMSim::EPhase4WeatherCategory::LowVisibility
+				? TEXT("LOW VISIBILITY")
+				: CompactForecast->Category ==
+							AMSim::EPhase4WeatherCategory::Rain
+					? TEXT("RAIN")
+					: CompactForecast->Category ==
+								AMSim::EPhase4WeatherCategory::StrongWind
+						? TEXT("STRONG WIND")
+						: TEXT("CLEAR");
+		const TCHAR* Implication =
+			CompactForecast->Category ==
+					AMSim::EPhase4WeatherCategory::LowVisibility ||
+				CompactForecast->Category ==
+					AMSim::EPhase4WeatherCategory::Rain
+				? TEXT("APPROACH LIMITS ACTIVE")
+				: CompactForecast->Category ==
+							AMSim::EPhase4WeatherCategory::StrongWind
+					? TEXT("CROSSWIND REVIEW")
+					: TEXT("NORMAL OPERATIONS");
+		WeatherText->SetText(FText::FromString(FString::Printf(
+			TEXT("CURRENT / %s\nWIND / %03d DEG / %d KT\nVIS / %.1f KM\nSURFACE / %s"),
+			Category,
+			CompactForecast->WindDirectionDegrees,
+			CompactForecast->WindSpeedKnots,
+			static_cast<double>(CompactForecast->VisibilityMeters) / 1000.0,
+			*CompactForecast->RunwaySurface.ToString().ToUpper())));
+		ForecastText->SetText(FText::FromString(FString::Printf(
+			TEXT("D%d +%02dH / %s\n%03d DEG / %d KT / %.1f KM\nCONFIDENCE / %d%%\nRWY %s / %s\n%s"),
+			CompactForecast->DayIndex,
+			CompactForecast->HourOffset,
+			Category,
+			CompactForecast->WindDirectionDegrees,
+			CompactForecast->WindSpeedKnots,
+			static_cast<double>(CompactForecast->VisibilityMeters) / 1000.0,
+			CompactForecast->ConfidencePercent,
+			*CompactForecast->RecommendedRunway.ToString(),
+			*CompactForecast->RunwaySurface.ToString().ToUpper(),
+			Implication)));
+		if (ForecastConfidenceBar)
+		{
+			ForecastConfidenceBar->SetPercent(
+				FMath::Clamp(
+					CompactForecast->ConfidencePercent / 100.0f,
+					0.0f,
+					1.0f));
+		}
+	}
 	IncidentHeadlineText->SetText(
 		FText::FromString(
 			bCompactLayout
@@ -1539,12 +1901,51 @@ void UAMSimRegionalOperationsView::RefreshFromSimulation()
 		(TotalMinutes / 60) % 24,
 		TotalMinutes % 60)));
 
+	if (ViewState.bIncidentMode)
+	{
+		bProgressionOpen = false;
+		bOverviewOpen = false;
+		for (TActorIterator<AAMSimWorldPresenter> It(GetWorld()); It; ++It)
+		{
+			It->SetMatureOverviewMode(true);
+			break;
+		}
+	}
+	const bool bOverviewProof =
+		!ViewState.bIncidentMode &&
+		Query.bFixtureCompleted &&
+		FParse::Param(
+			FCommandLine::Get(),
+			TEXT("AMSimPhase45OverviewProof"));
+	if (bOverviewProof)
+	{
+		bProgressionOpen = false;
+		bOverviewOpen = true;
+		const bool bFacilityProof = FParse::Param(
+			FCommandLine::Get(),
+			TEXT("AMSimPhase45FacilityProof"));
+		OverviewView->SetFacilitySelected(bFacilityProof);
+		for (TActorIterator<AAMSimWorldPresenter> It(GetWorld()); It; ++It)
+		{
+			It->SetMatureOverviewMode(true);
+			It->SetMatureSelectionFacility(bFacilityProof);
+			break;
+		}
+	}
 	TimetableSurface->SetVisibility(
-		ViewState.bIncidentMode
+		ViewState.bIncidentMode || bProgressionOpen || bOverviewOpen
 			? ESlateVisibility::Collapsed
 			: ESlateVisibility::SelfHitTestInvisible);
 	IncidentSurface->SetVisibility(
 		ViewState.bIncidentMode
+			? ESlateVisibility::SelfHitTestInvisible
+			: ESlateVisibility::Collapsed);
+	ProgressionView->SetVisibility(
+		bProgressionOpen
+			? ESlateVisibility::SelfHitTestInvisible
+			: ESlateVisibility::Collapsed);
+	OverviewView->SetVisibility(
+		bOverviewOpen
 			? ESlateVisibility::SelfHitTestInvisible
 			: ESlateVisibility::Collapsed);
 	RefreshContractCards(State);
@@ -1579,6 +1980,12 @@ void UAMSimRegionalOperationsView::UpdateWorldPresentation(
 	for (TActorIterator<AAMSimWorldPresenter> It(GetWorld()); It; ++It)
 	{
 		It->ApplyPhase4Snapshot(Query, State);
+		const bool bIncidentMode =
+			Query.IncidentLifecycle >=
+				AMSim::EPhase4IncidentLifecycle::Alerted &&
+			Query.IncidentLifecycle <
+				AMSim::EPhase4IncidentLifecycle::Recovered;
+		It->SetMatureOverviewMode(bOverviewOpen || bIncidentMode);
 		break;
 	}
 }

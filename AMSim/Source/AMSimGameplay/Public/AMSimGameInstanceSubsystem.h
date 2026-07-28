@@ -50,6 +50,8 @@ private:
 
 	bool bPhase1SmokeActive = false;
 	bool bPhase4SmokeRequested = false;
+	bool bPhase45ConstructionProofRequested = false;
+	bool bPhase45OperationalEvidenceRequested = false;
 	bool bPhase1SmokeJourneyPassed = true;
 	bool bPhase1SmokeSaveLoadPassed = false;
 	bool bPhase1SmokeResolutionRequested = false;
@@ -66,6 +68,10 @@ private:
 	uint64 Phase1StartingMemoryMiB = 0;
 	uint64 Phase1MaximumMemoryMiB = 0;
 	int32 Phase1MaximumBacklogSteps = 0;
+	int32 Phase1TurnaroundSettleFrames = 0;
+	int32 Phase1ProposalSettleFrames = 0;
+	int32 Phase4IncidentSettleFrames = 0;
+	int32 Phase4CompleteSettleFrames = 0;
 	bool bPhase1ReferenceProfileRequested = false;
 	FString Phase1PendingScreenshot;
 	TArray<double> Phase1SmokeFrameMilliseconds;

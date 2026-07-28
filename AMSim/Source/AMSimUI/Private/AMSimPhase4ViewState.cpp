@@ -73,4 +73,40 @@ namespace AMSim
 				});
 		return View;
 	}
+
+	FPhase4FlightCardViewState MakePhase4FlightCardViewState(
+		const FPhase4FlightRecord& Flight)
+	{
+		FPhase4FlightCardViewState View;
+		if (Flight.bGateChanged && Flight.bOverrideRecorded)
+		{
+			View.Status = TEXT("LOCK");
+			View.RiskLabel = TEXT("LOCK RISK ///");
+			View.bWarning = true;
+		}
+		else if (Flight.bGateChanged)
+		{
+			View.Status = TEXT("R1 / BUS");
+		}
+		else if (Flight.bWeatherRestricted)
+		{
+			View.Status = TEXT("WX");
+			View.RiskLabel = TEXT("WX CONFLICT ///");
+			View.bWarning = true;
+		}
+		else if (Flight.bInternational)
+		{
+			View.Status = TEXT("INTL / READY");
+		}
+		else if (Flight.bCompleted)
+		{
+			View.Status = TEXT("COMPLETE");
+			View.bPositive = true;
+		}
+		else
+		{
+			View.Status = TEXT("READY");
+		}
+		return View;
+	}
 }

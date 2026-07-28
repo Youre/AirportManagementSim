@@ -1,0 +1,28 @@
+{
+  "prompt_id": "716cd8ff-963a-4634-8a07-89c764b404d3",
+  "server": "http://192.168.5.12:8188",
+  "workflow_preset": "stable-audio-3-medium",
+  "workflow_path": "C:\\Users\\dave\\Documents\\custom-skills\\skills\\comfyui-audiogen\\assets\\workflows\\audio_stable_audio_3_medium_base.json",
+  "prompt": "Instrumental rockabilly airport-operations cue, 118 BPM. Original small-combo groove with slap upright bass, crisp snare-and-brush shuffle, clean twang rhythm guitar, upright piano accents, and a lightly muted tenor sax answering the hook. Purposeful cargo trucks, warehouse docks, and freighter turnarounds: busy, competent, never frantic. Keep the melody concise and hummable; include a four-bar low-density break for radio and captions; warm tape-like mix and a clear loop-ready ending. No vocals, no spoken word, no imitation of any performer, no distortion, no arena rock, no country ballad, no crowd or airport recordings, no orchestral score.",
+  "seed": 2026072801,
+  "negative": "",
+  "seconds": 20.0,
+  "steps": null,
+  "cfg": null,
+  "sampler_name": null,
+  "scheduler": null,
+  "denoise": null,
+  "quality": "V0",
+  "category": "Music",
+  "reprompt": false,
+  "voice": null,
+  "exaggeration": null,
+  "cfg_weight": null,
+  "temperature": null,
+  "use_cpu": null,
+  "keep_model_loaded": null,
+  "output_files": [
+    "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Audio\\Music\\rockabilly-pass-2026-07-28\\RB17_Cargo_Rockabilly_716cd8ff-963a-4634-8a07-89c764b404d3_1.mp3"
+  ],
+  "timestamp": "2026-07-27T22:49:39-0400"
+}

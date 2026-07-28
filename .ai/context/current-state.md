@@ -6,8 +6,8 @@ Material profile: documents
 Initialization mode: augment-existing
 
 Active priorities:
-- Preserve the completed Phase 4 evidence and open Phase 5 only after an
-  explicit planning session.
+- Preserve the complete Phase 5 cargo/specialization baseline while planning
+  Phase 6 Major-airport capability.
 
 Current architectural tensions:
 - Shipping must exclude editor and online-support dependencies.
@@ -15,22 +15,22 @@ Current architectural tensions:
 - Automated screenshot checks prove capture integrity and layout bounds, not visual similarity or polish.
 
 Next verification command:
-- Before opening Phase 5, run `scripts/phase4/Invoke-Phase4Pipeline.ps1
-  -SkipFirewall` if the Phase 4 foundation changes.
+- Open Phase 6 planning from PI-01 without absorbing the Phase 7 long-soak or
+  formal unassisted gates.
 
 Last verification:
-- 2026-07-26 UTC: Phase 4 builds and audits; all 46 automation records
-  complete with zero failed/not-run/in-process results; VA-04/VA-06 and the
-  100-200% matrix pass; clean Development and Shipping packages pass integrated
-  S06/S10, schema-5 save/load, launch, socket, dependency, 2D, runtime-load,
-  and direct 34-asset IoStore inventory gates.
+- 2026-07-28 UTC: Phase 5 focused automation passed 5/5 and the full suite
+  passed 54 plus one retained warning-only test. Development and Shipping
+  packages passed with 553 cooked packages; Shipping contains all 48 Phase 5
+  assets, zero forbidden executable/module matches, zero runtime string loads,
+  zero required 3D assets, and zero observed TCP connections.
 <!-- ai-project-init:end managed -->
 
 ## Project-specific state
 
 Active priorities:
 
-- Keep Phase 4 stable and plan Phase 5 only when the owner opens it.
+- Keep Phase 1-5 behavior stable while Phase 6 is planned.
 - Preserve a visible mouse cursor across gameplay world, HUD, panels, and click capture.
 - Use OpenAI Image Gen for concept/UI exploration and local ComfyUI for reviewed simple textures, variants, edits, and cutouts.
 
@@ -38,7 +38,8 @@ Current tensions:
 
 - The approved reference capability tier has no physical result yet, but its four-hour soak is deferred to Phase 7 rather than blocking continued development.
 - The fictional Riverbend Trainer content lock is approved for this slice; any later real-aircraft naming, data, art, or livery still requires a separate CT-01/CT-02 review.
-- Phase 4 is complete. Phase 5 remains unopened.
+- Phase 4.5 is accepted with continuing visual polish debt. Phase 5 is
+  complete. Phase 6 is next.
 
 Verification note:
 
@@ -124,4 +125,95 @@ Verification note:
   zero TCP sockets and has zero forbidden editor/test/MCP/Python/
   RemoteControl/Toolset, runtime string-load, required 3D, or external Phase 4
   aircraft matches.
-- Until `ai-init` is installed on `PATH`, run the CLI module with the skill source on `PYTHONPATH`.
+- Phase 4.5 visual-content remediation is active under CT-05/PI-07. The first
+  content pass adds a mature-airport overview, pre-commit construction
+  proposal, close-operations turnaround camera and dependency timeline, a true
+  day/time timetable, a six-path capability map, 20 generated operations
+  sprites, and 24 generated terminal/marking sprites.
+- The shared Phase 4.5 UI atlas adds 16 project-owned tool, activity, status,
+  and specialization identities with recorded prompt, cleanup, checksums, and
+  cooker-visible hard references. The overview now includes icon-plus-label
+  tools, activity symbols, aircraft identity art, schedule/stand, border,
+  transport, readiness, connection, and baggage evidence. The capability map
+  now uses six equal-weight identities, named Established/Regional/Advanced/
+  Major bands, and requirements/current-evidence/next-capability/reward
+  inspector sections.
+- The generated mature-site atlas adds 16 cooker-visible runway, taxiway,
+  apron, terminal, GA, operations, fuel, parking, transit, access, landscape,
+  gate, and fixture sprites. The regional overview composes them with
+  simulation-derived aircraft, vehicles, staff, passengers, and bags; other
+  screens explicitly disable mature-overview mode. VA-01 now contains the
+  required semantic airport categories. Added taxi and landside connections,
+  perimeter landscaping, ground vehicles, people, bags, and a query-derived
+  selected-flight inspector make the required complete-airport and mixed-
+  activity outcomes present. The selected aircraft now has an explicit world
+  ring bound to the inspector. Aircraft and Regional Terminal tabs now switch
+  real identity art, query-backed readiness/capacity/service content, and the
+  world focus ring. Contextual facility actions open the timetable and
+  capability surfaces. Entity-specific drawers and still-higher ambient
+  density remain optional polish beyond CT-05 rather than completion gaps.
+- Seven equivalent-state comparison boards are recorded under
+  `docs/planning/50-production/visual-reviews/phase-4-5/`. They confirm that
+  the accepted color/component language remains coherent. Every CT-05 row now
+  has a visible implementation or an intentional future lock; none remains
+  absent or text-only. Construction has a six-category palette, authoritative
+  invalid geometry and validation consequences; timetable has operator and
+  aircraft identity plus a bounded weather window; turnaround has selected
+  aircraft identity and parallel service progress. The terminal now uses
+  textured architectural zones, a complete prop kit, continuous departure,
+  arrival, baggage, and landside paths, plus a color-independent dashed
+  accessible route. Incident capture settles after area protection, showing
+  authoritative dark rain, a red hatched affected-aircraft closure, continuous
+  response connectors, directional markers, three responding vehicles, and
+  continuing airport activity. The terminal now adds authored partition and
+  secure-door evidence, a dedicated clear/active baggage-exception branch and
+  station, and family portrait art. Incident presentation adds separate
+  cooker-visible runway, taxiway, and apron wet-surface layers.
+- Construction now retains stage-derived work tint, truck, worker, cones, and
+  protected-zone proxies through delivery/build/inspection and clears them on
+  completion or cancellation. Turnaround adds a patterned exclusion zone, two
+  authored approach arrows, explicit automatic-dispatch policy, safe equipment
+  placement, and a dependency timeline. The timetable's selected contract has
+  identity, silhouette, route, frequency, capacity, and reward; the affected
+  weather cell has pattern plus text. The specialization inspector now adds
+  spatial/business implications and an explicit capability-based,
+  non-exclusive combination rule.
+- Every implementable CT-05 requirement is present: coverage records 82
+  present, zero schematic, and one approved future-locked assessment.
+  Authoritative proof now shows an affected-only live taxi-spur closure with
+  the runway and Stand A1 open, and localized weather and locked-horizon risk
+  use full patterned labels on the affected timetable cell. The five-scale
+  component gallery passes. Direct Shipping IoStore inspection finds the
+  production root, all 48 Phase 1 presentation assets, and all 136 Phase 4.5
+  runtime assets while excluding the development gallery and 16 intentionally
+  unused PaperSprite companions for UI textures. The exact clean package rerun
+  passes full automation, packaged Phase 1 and Phase 4 smoke, forbidden
+  dependency/runtime-load/3D scans, and offline socket checks. Packaged manual
+  interaction proves the cursor stays visible through viewport clicks, hover,
+  focus, zoom, pan, time controls, captions, selection, and view navigation.
+  The owner accepted this as the continuing-development baseline on
+  2026-07-27; aesthetic refinement remains tracked visual debt.
+- Phase 5 is complete under PI-08. Schema 6 composes cargo, provider tenants,
+  rating contributions, three objectives, path-neutral achievements, six
+  non-exclusive capability paths, and eight shared-lifecycle special events
+  into `FSimulation`.
+- Cargo supports four classes, outbound/inbound/transfer directions,
+  dedicated feeder/regional freighters, compatible belly freight, warehouse
+  compatibility/capacity, ordinary quantity-based dispatch, traceable
+  exceptions/recovery, and Phase 1 economy/AP authority.
+- Six Advanced fixtures prove GA, Flight School, Charter, Cargo, Passenger,
+  and Mixed independence. Provider/concession offers expose footprint,
+  opening/rent/share terms, capability, expectations, pattern, satisfaction
+  drivers, term, and grace/recovery.
+- Four Figma validation frames are retained under
+  `docs/planning/50-production/phase5-visual-validation`. `/Game/Phase5`
+  contains 44 definitions plus two project-authored fictional freighter
+  texture/sprite pairs. No `Joes_Game`, external aircraft, military aircraft,
+  runtime string load, or required 3D asset entered Phase 5.
+- Final Phase 5 verification reports 5/5 focused tests, 54 passed plus one
+  retained warning-only full-suite result, clean Development and Shipping
+  packages, all 48 Phase 5 assets in IoStore, zero forbidden Shipping binary
+  matches, and zero observed Shipping TCP connections.
+- `ai-init doctor . --json` runs from `PATH`; its retained warnings are the
+  documented baseline managed-template, lexical-review, legacy-ledger, and
+  project schema/version warnings.

@@ -12,18 +12,24 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
+#include "Components/Image.h"
 #include "Components/Overlay.h"
 #include "Components/OverlaySlot.h"
 #include "Components/ProgressBar.h"
 #include "Components/ScrollBox.h"
+#include "Components/SizeBox.h"
 #include "Components/Spacer.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
 #include "Engine/UserInterfaceSettings.h"
+#include "Engine/Texture2D.h"
 #include "EngineUtils.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
+#include "UObject/ConstructorHelpers.h"
 
-namespace
+namespace AMSimTerminalViewPrivate
 {
 	using namespace AMSim::UITheme;
 
@@ -139,7 +145,7 @@ namespace
 		return Card;
 	}
 
-	void AddLabel(
+	UTextBlock* AddLabel(
 		UWidgetTree* Tree,
 		UCanvasPanel* Canvas,
 		const TCHAR* Name,
@@ -169,7 +175,19 @@ namespace
 			FAnchors(Position.X, Position.Y),
 			FMargin(-Size.X * 0.5f, -Size.Y * 0.5f, Size.X, Size.Y),
 			3);
+		return Text;
 	}
+}
+
+using namespace AMSimTerminalViewPrivate;
+
+UAMSimTerminalView::UAMSimTerminalView(
+	const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	static ConstructorHelpers::FObjectFinder<UTexture2D> PassengerFamily(
+		TEXT("/Game/Phase45/Presentation/Textures/Operations/T_PassengerFamily.T_PassengerFamily"));
+	PassengerFamilyTexture = PassengerFamily.Object;
 }
 
 TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
@@ -406,7 +424,27 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		WidgetTree, TEXT("PartyIdentity"), PartyText,
 		TEXT("MAYA'S PARTY  ·  4 TRAVELLERS"), BodySize,
 		AMSim::UITheme::ESurface::RaisedCard);
-	AddVertical(Party, PartyIdentity, 6.0f);
+	UHorizontalBox* PartyIdentityRow =
+		WidgetTree->ConstructWidget<UHorizontalBox>(
+			UHorizontalBox::StaticClass(),
+			TEXT("PartyIdentityRow"));
+	if (PassengerFamilyTexture)
+	{
+		USizeBox* PortraitSize = WidgetTree->ConstructWidget<USizeBox>();
+		PortraitSize->SetWidthOverride(bCompact ? 52.0f : 68.0f);
+		PortraitSize->SetHeightOverride(bCompact ? 52.0f : 68.0f);
+		UImage* Portrait = WidgetTree->ConstructWidget<UImage>();
+		Portrait->SetBrushFromTexture(PassengerFamilyTexture, true);
+		PortraitSize->SetContent(Portrait);
+		UHorizontalBoxSlot* PortraitSlot =
+			PartyIdentityRow->AddChildToHorizontalBox(PortraitSize);
+		PortraitSlot->SetPadding(FMargin(0.0f, 0.0f, 8.0f, 0.0f));
+		PortraitSlot->SetVerticalAlignment(VAlign_Center);
+	}
+	UHorizontalBoxSlot* PartyIdentitySlot =
+		PartyIdentityRow->AddChildToHorizontalBox(PartyIdentity);
+	PartyIdentitySlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+	AddVertical(Party, PartyIdentityRow, 6.0f);
 	UHorizontalBox* PartyMembers = WidgetTree->ConstructWidget<UHorizontalBox>(
 		UHorizontalBox::StaticClass(),
 		TEXT("PartyMembers"));
@@ -532,11 +570,11 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 	const int32 WorldLabelFont = bCompact ? 8 : 11;
 	AddLabel(
 		WidgetTree, TerminalLabels, TEXT("GateA1Label"),
-		TEXT("Gate A1"), FVector2D(0.35f, 0.18f),
+		TEXT("Gate A1"), FVector2D(0.31f, 0.18f),
 		FVector2D(118.0f, 32.0f) * WorldLabelScale, WorldLabelFont);
 	AddLabel(
 		WidgetTree, TerminalLabels, TEXT("GateA2Label"),
-		TEXT("Gate A2"), FVector2D(0.58f, 0.18f),
+		TEXT("Gate A2"), FVector2D(0.61f, 0.18f),
 		FVector2D(118.0f, 32.0f) * WorldLabelScale, WorldLabelFont);
 	AddLabel(
 		WidgetTree, TerminalLabels, TEXT("LoungeLabel"),
@@ -546,21 +584,30 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 	AddLabel(
 		WidgetTree, TerminalLabels, TEXT("CheckInLabel"),
 		bCompact ? TEXT("Check-in") : TEXT("Check-in & bag drop"),
-		FVector2D(0.31f, 0.52f),
+		FVector2D(0.26f, 0.52f),
 		FVector2D(188.0f, 34.0f) * WorldLabelScale, WorldLabelFont);
 	AddLabel(
 		WidgetTree, TerminalLabels, TEXT("SecurityLabel"),
-		TEXT("Security"), FVector2D(0.49f, 0.50f),
-		FVector2D(126.0f, 34.0f) * WorldLabelScale, WorldLabelFont);
+		bCompact ? TEXT("Controlled") : TEXT("Controlled door"),
+		FVector2D(0.49f, 0.50f),
+		FVector2D(166.0f, 34.0f) * WorldLabelScale, WorldLabelFont);
 	AddLabel(
 		WidgetTree, TerminalLabels, TEXT("BagMakeupLabel"),
 		bCompact ? TEXT("Bag make-up") : TEXT("Baggage make-up"),
-		FVector2D(0.65f, 0.44f),
+		FVector2D(0.70f, 0.44f),
 		FVector2D(164.0f, 34.0f) * WorldLabelScale, WorldLabelFont);
+	BaggageExceptionLabelText = AddLabel(
+		WidgetTree,
+		TerminalLabels,
+		TEXT("BagExceptionLabel"),
+		bCompact ? TEXT("Exception") : TEXT("Exception · clear"),
+		FVector2D(0.73f, 0.55f),
+		FVector2D(172.0f, 34.0f) * WorldLabelScale,
+		WorldLabelFont);
 	AddLabel(
 		WidgetTree, TerminalLabels, TEXT("ArrivalsLabel"),
 		bCompact ? TEXT("Arrivals") : TEXT("Arrivals corridor"),
-		FVector2D(0.61f, 0.63f),
+		FVector2D(0.65f, 0.63f),
 		FVector2D(168.0f, 34.0f) * WorldLabelScale, WorldLabelFont);
 	AddLabel(
 		WidgetTree, TerminalLabels, TEXT("ReclaimLabel"),
@@ -570,15 +617,15 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 	AddLabel(
 		WidgetTree, TerminalLabels, TEXT("EntranceLabel"),
 		bCompact ? TEXT("Entrance") : TEXT("Entrance & curb"),
-		FVector2D(0.31f, 0.82f),
+		FVector2D(0.26f, 0.82f),
 		FVector2D(154.0f, 34.0f) * WorldLabelScale, WorldLabelFont);
 	AddLabel(
 		WidgetTree, TerminalLabels, TEXT("ParkingLabel"),
-		TEXT("Parking"), FVector2D(0.53f, 0.88f),
+		TEXT("Parking"), FVector2D(0.55f, 0.88f),
 		FVector2D(122.0f, 32.0f) * WorldLabelScale, WorldLabelFont);
 	AddLabel(
 		WidgetTree, TerminalLabels, TEXT("BusStopLabel"),
-		TEXT("Bus stop"), FVector2D(0.69f, 0.86f),
+		TEXT("Bus stop"), FVector2D(0.76f, 0.86f),
 		FVector2D(122.0f, 32.0f) * WorldLabelScale, WorldLabelFont);
 	AddAnchored(
 		Canvas,
@@ -1009,6 +1056,19 @@ void UAMSimTerminalView::RefreshFromSimulation()
 	{
 		return;
 	}
+	const AMSim::FPhase2State& Phase2State =
+		Subsystem->GetSimulation().GetPhase2State();
+	const bool bShowPhase2ClosureProof =
+		FParse::Param(
+			FCommandLine::Get(),
+			TEXT("AMSimPhase45OperationalEvidence")) &&
+		Phase2State.Expansion.Stage != AMSim::EExpansionStage::None &&
+		Phase2State.Expansion.Stage != AMSim::EExpansionStage::Operational;
+	if (bShowPhase2ClosureProof)
+	{
+		SetVisibility(ESlateVisibility::Collapsed);
+		return;
+	}
 	const AMSim::FPhase3QuerySnapshot Query = Subsystem->GetPhase3Query();
 	const AMSim::FPhase3State& State =
 		Subsystem->GetSimulation().GetPhase3State();
@@ -1058,6 +1118,18 @@ void UAMSimTerminalView::RefreshFromSimulation()
 	NeedsText->SetText(FText::FromString(ViewState.FeaturedNeeds));
 	RouteText->SetText(FText::FromString(ViewState.FeaturedRoute));
 	BaggageText->SetText(FText::FromString(ViewState.Baggage));
+	if (BaggageExceptionLabelText)
+	{
+		BaggageExceptionLabelText->SetText(FText::FromString(
+			ViewState.bCanResolveBaggage
+				? TEXT("EXCEPTION · ACTIVE")
+				: TEXT("EXCEPTION · CLEAR")));
+		BaggageExceptionLabelText->SetColorAndOpacity(
+			FSlateColor(
+				ViewState.bCanResolveBaggage
+					? AMSim::UITheme::Coral()
+					: AMSim::UITheme::White()));
+	}
 	LandsideText->SetText(FText::FromString(ViewState.Landside));
 	ConfidenceText->SetText(FText::FromString(FString::Printf(
 		TEXT("TIME CONFIDENCE  ·  %d%%"),

@@ -665,6 +665,25 @@ bool FAMSimPhase4PresentationMappingTest::RunTest(
 	TestTrue(
 		TEXT("Timetable copy remains query-derived"),
 		View.Timetable.Contains(TEXT("21 FLIGHTS")));
+	AMSim::FPhase4FlightRecord LockedFlight;
+	LockedFlight.bGateChanged = true;
+	LockedFlight.bOverrideRecorded = true;
+	const AMSim::FPhase4FlightCardViewState LockedCard =
+		AMSim::MakePhase4FlightCardViewState(LockedFlight);
+	TestTrue(
+		TEXT("Locked-horizon risk is localized with text and pattern"),
+		LockedCard.bWarning &&
+			LockedCard.RiskLabel.Contains(TEXT("LOCK RISK")) &&
+			LockedCard.RiskLabel.Contains(TEXT("///")));
+	AMSim::FPhase4FlightRecord WeatherFlight;
+	WeatherFlight.bWeatherRestricted = true;
+	const AMSim::FPhase4FlightCardViewState WeatherCard =
+		AMSim::MakePhase4FlightCardViewState(WeatherFlight);
+	TestTrue(
+		TEXT("Weather conflict keeps a color-independent card pattern"),
+		WeatherCard.bWarning &&
+			WeatherCard.RiskLabel.Contains(TEXT("WX CONFLICT")) &&
+			WeatherCard.RiskLabel.Contains(TEXT("///")));
 
 	const AAMSimWorldPresenter* Presenter =
 		GetDefault<AAMSimWorldPresenter>();

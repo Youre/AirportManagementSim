@@ -1,0 +1,431 @@
+{
+  "source": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase4.5\\Generated\\airport-operations-atlas-alpha.png",
+  "source_sha256": "a8b5d262991ffe985f4b84dd212353ae1e98603499f09729c0da325370b7bf94",
+  "grid": [
+    5,
+    4
+  ],
+  "padding": 12,
+  "sprites": [
+    {
+      "name": "FuelTruck",
+      "cell": 0,
+      "source_box": [
+        0,
+        0,
+        307,
+        256
+      ],
+      "alpha_bounds": [
+        106,
+        29,
+        228,
+        256
+      ],
+      "dimensions": [
+        146,
+        251
+      ],
+      "sha256": "d9b097152fa5c64916463fe99f1a6ee056fe5281494f93601f5c35f9579730c5"
+    },
+    {
+      "name": "BaggageTug",
+      "cell": 1,
+      "source_box": [
+        307,
+        0,
+        614,
+        256
+      ],
+      "alpha_bounds": [
+        63,
+        96,
+        307,
+        244
+      ],
+      "dimensions": [
+        268,
+        172
+      ],
+      "sha256": "dacac3316eeb53329bb9ad787256cd90e95ba7f4ea2f205c2dd004f8baefdb95"
+    },
+    {
+      "name": "BaggageCartTrain",
+      "cell": 2,
+      "source_box": [
+        614,
+        0,
+        922,
+        256
+      ],
+      "alpha_bounds": [
+        0,
+        103,
+        308,
+        236
+      ],
+      "dimensions": [
+        332,
+        157
+      ],
+      "sha256": "e720ee100c826c32153033fe932d3a1da35e2f09a48ed82b50c26290d9563106"
+    },
+    {
+      "name": "OperationsVan",
+      "cell": 3,
+      "source_box": [
+        922,
+        0,
+        1229,
+        256
+      ],
+      "alpha_bounds": [
+        0,
+        61,
+        247,
+        256
+      ],
+      "dimensions": [
+        271,
+        219
+      ],
+      "sha256": "7a984e5bd97f904d0dff186e1b876b70aa6236adcbf3b15da8a716c00636dd37"
+    },
+    {
+      "name": "FireRescueTruck",
+      "cell": 4,
+      "source_box": [
+        1229,
+        0,
+        1536,
+        256
+      ],
+      "alpha_bounds": [
+        60,
+        33,
+        199,
+        256
+      ],
+      "dimensions": [
+        163,
+        247
+      ],
+      "sha256": "8455e925c0ffff4d016550b0b4a17dbefbd88aabd5ca1af7180c8b9bfbe7b271"
+    },
+    {
+      "name": "ConstructionTruck",
+      "cell": 5,
+      "source_box": [
+        0,
+        256,
+        307,
+        512
+      ],
+      "alpha_bounds": [
+        104,
+        0,
+        217,
+        256
+      ],
+      "dimensions": [
+        137,
+        280
+      ],
+      "sha256": "a4a7c0f3e1c6e9cfb65fc38ff1d0b352d4ae9e8e9ce7d47f45bc7aa65186b05f"
+    },
+    {
+      "name": "ShuttleBus",
+      "cell": 6,
+      "source_box": [
+        307,
+        256,
+        614,
+        512
+      ],
+      "alpha_bounds": [
+        70,
+        46,
+        193,
+        256
+      ],
+      "dimensions": [
+        147,
+        234
+      ],
+      "sha256": "68d0dfe05984ea12344b00a0d5e4e3111fdb0b13d6f6755e5f36baa83aa68dc0"
+    },
+    {
+      "name": "Taxi",
+      "cell": 7,
+      "source_box": [
+        614,
+        256,
+        922,
+        512
+      ],
+      "alpha_bounds": [
+        82,
+        73,
+        189,
+        256
+      ],
+      "dimensions": [
+        131,
+        207
+      ],
+      "sha256": "af5f3cad8ac7c4f4eca24c76cf5e65c6fd40d3ad3d4487c9122e2da0e969159c"
+    },
+    {
+      "name": "RentalCar",
+      "cell": 8,
+      "source_box": [
+        922,
+        256,
+        1229,
+        512
+      ],
+      "alpha_bounds": [
+        109,
+        0,
+        221,
+        256
+      ],
+      "dimensions": [
+        136,
+        280
+      ],
+      "sha256": "70f1f31f067fe62ebd7d1752218ec51f8c6e9bac36cea5576c4ab2c414b7a461"
+    },
+    {
+      "name": "Deicer",
+      "cell": 9,
+      "source_box": [
+        1229,
+        256,
+        1536,
+        512
+      ],
+      "alpha_bounds": [
+        59,
+        0,
+        185,
+        256
+      ],
+      "dimensions": [
+        150,
+        280
+      ],
+      "sha256": "461f148f5590eec23ccfbce8bd9e7de10a05a4682a4dfdc994c30a72fced5ad2"
+    },
+    {
+      "name": "RampWorker",
+      "cell": 10,
+      "source_box": [
+        0,
+        512,
+        307,
+        768
+      ],
+      "alpha_bounds": [
+        114,
+        0,
+        202,
+        256
+      ],
+      "dimensions": [
+        112,
+        280
+      ],
+      "sha256": "2d977a90d1eafa9d23c348dc8636de8590bdc36c1db4638f7fbe591800507f64"
+    },
+    {
+      "name": "ConstructionWorker",
+      "cell": 11,
+      "source_box": [
+        307,
+        512,
+        614,
+        768
+      ],
+      "alpha_bounds": [
+        90,
+        0,
+        176,
+        200
+      ],
+      "dimensions": [
+        110,
+        224
+      ],
+      "sha256": "baae8eeb1b3b4f18c0d8dc3adb7a23ddcadb39cd84df1247da0afbdf76980f7b"
+    },
+    {
+      "name": "SecurityOfficer",
+      "cell": 12,
+      "source_box": [
+        614,
+        512,
+        922,
+        768
+      ],
+      "alpha_bounds": [
+        94,
+        0,
+        182,
+        202
+      ],
+      "dimensions": [
+        112,
+        226
+      ],
+      "sha256": "2bfa3dfa215223f99aeed4995368fa3b05e0843fa5993eec6fd2d5d32823dbba"
+    },
+    {
+      "name": "TerminalAgent",
+      "cell": 13,
+      "source_box": [
+        922,
+        512,
+        1229,
+        768
+      ],
+      "alpha_bounds": [
+        76,
+        0,
+        196,
+        256
+      ],
+      "dimensions": [
+        144,
+        280
+      ],
+      "sha256": "5937338f1222510fb57904438c3a92d50ae53ca55ae7a262baf4554a96ed3618"
+    },
+    {
+      "name": "PassengerFamily",
+      "cell": 14,
+      "source_box": [
+        1229,
+        512,
+        1536,
+        768
+      ],
+      "alpha_bounds": [
+        26,
+        0,
+        208,
+        201
+      ],
+      "dimensions": [
+        206,
+        225
+      ],
+      "sha256": "cf895708a2069a4ea655d38ea677441fd6cae7b95c23e5349b78c868e3cfe217"
+    },
+    {
+      "name": "Passenger",
+      "cell": 15,
+      "source_box": [
+        0,
+        768,
+        307,
+        1024
+      ],
+      "alpha_bounds": [
+        116,
+        0,
+        200,
+        166
+      ],
+      "dimensions": [
+        108,
+        190
+      ],
+      "sha256": "28fd53574d2bb4937cb1c29b8cd34eddd0713efd3b769848713acaf8d2ac7a67"
+    },
+    {
+      "name": "Suitcase",
+      "cell": 16,
+      "source_box": [
+        307,
+        768,
+        614,
+        1024
+      ],
+      "alpha_bounds": [
+        94,
+        20,
+        176,
+        165
+      ],
+      "dimensions": [
+        106,
+        169
+      ],
+      "sha256": "3ea3060ff9621921a5894f348b1f5573aa866271bb9a1f32ab0b0da5ee67935f"
+    },
+    {
+      "name": "SafetyCones",
+      "cell": 17,
+      "source_box": [
+        614,
+        768,
+        922,
+        1024
+      ],
+      "alpha_bounds": [
+        58,
+        27,
+        202,
+        155
+      ],
+      "dimensions": [
+        168,
+        152
+      ],
+      "sha256": "32d14377cf2b0e64f0d266b97051f2437cfc0bb579e33d1e6c6eba852416f566"
+    },
+    {
+      "name": "PortableStairs",
+      "cell": 18,
+      "source_box": [
+        922,
+        768,
+        1229,
+        1024
+      ],
+      "alpha_bounds": [
+        75,
+        0,
+        218,
+        180
+      ],
+      "dimensions": [
+        167,
+        204
+      ],
+      "sha256": "e4713e69bbceec170e6034bbc780065508736d7c01ce1687e8bb1c4240c0774f"
+    },
+    {
+      "name": "PushbackTug",
+      "cell": 19,
+      "source_box": [
+        1229,
+        768,
+        1536,
+        1024
+      ],
+      "alpha_bounds": [
+        37,
+        19,
+        206,
+        187
+      ],
+      "dimensions": [
+        193,
+        192
+      ],
+      "sha256": "b5e18c66d3f6607fec4e6cce1d5f1b234eb3e5d0fd02d1001465ebf170b5f6af"
+    }
+  ]
+}

@@ -6,6 +6,13 @@
 
 ## Project decisions
 
+- 2026-07-26: The approved concept art's required visible content is promoted into CT-05 with stable requirement IDs. The accepted Riverbend palette/component shell remains, but responsive, package, and semantic passes no longer count as concept-content parity while required world objects, task-specific visualizations, or equivalent states are absent. Phase 4.5 closes this cross-phase presentation debt before Phase 5 opens.
+- 2026-07-27: Phase 4.5 is accepted as the technical and visual-content baseline
+  with continuing aesthetic polish debt. Phase 5 makes per-path capability
+  evidence authoritative and non-exclusive after initialization, retains the
+  Phase 2 selected-specialization field only for schema compatibility, keeps
+  Phase 1 as economy/AP authority, and defers Major/wide-body capability and
+  long-form human gates to Phases 6 and 7.
 - 2026-07-25: Unreal Engine replaces the Godot reference in `ideas.txt` as the target engine.
 - 2026-07-25: The game is 2D, cartoon-styled, and top-down; 3D assets and 3D presentation are excluded.
 - 2026-07-25: The original aircraft-art library was a read-only source of candidates until an import and rights review was approved.

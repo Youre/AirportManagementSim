@@ -73,6 +73,10 @@ namespace AMSim
 		{
 			HashBytes(Hash, &Task.Id.Value, sizeof(uint64));
 			HashBytes(Hash, &Task.State, sizeof(Task.State));
+			HashString(Hash, Task.OwnerDomain.ToString());
+			HashBytes(Hash, &Task.OwnerId, sizeof(uint64));
+			HashString(Hash, Task.OperationId.ToString());
+			HashBytes(Hash, &Task.Quantity, sizeof(int32));
 			HashBytes(Hash, &Task.AssignedVehicleId.Value, sizeof(uint64));
 			HashBytes(Hash, &Task.AssignedTeamId.Value, sizeof(uint64));
 		}
@@ -215,7 +219,12 @@ namespace AMSim
 		for (const FPhase2ServiceTaskRecord& Task : InState.ServiceTasks)
 		{
 			if (!RegisterId(Task.Id.Value) ||
-				!ContainsId(InState.Flights, Task.FlightId) ||
+				(Task.OwnerDomain.IsNone()
+					? !ContainsId(InState.Flights, Task.FlightId)
+					: Task.OwnerDomain != TEXT("Phase5") ||
+						Task.OwnerId == 0 ||
+						Task.OperationId.IsNone()) ||
+				Task.Quantity <= 0 ||
 				(Task.AssignedVehicleId.IsValid() &&
 					!ContainsId(InState.Vehicles, Task.AssignedVehicleId)) ||
 				(Task.AssignedTeamId.IsValid() &&

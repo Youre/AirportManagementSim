@@ -24,6 +24,9 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<UAMSimRootScreen> RootScreen;
 
+	UPROPERTY()
+	TSubclassOf<UUserWidget> DevelopmentGalleryClass;
+
 	UPROPERTY(Transient)
 	TObjectPtr<UUserWidget> DevelopmentGallery;
 };

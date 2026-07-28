@@ -4,7 +4,7 @@ This directory is the durable source of truth for planning the 2D, top-down airp
 
 ## Current planning stage
 
-The project is in **phased implementation**. `ideas.txt` remains the living concept source; the approved specification set defines implementable feature behavior, technical boundaries, initial tuning, verification, and phased integration. Phase 0, Phase 1, the accepted Phase 1.5 visual foundation, [PI-04 Phase 2 living general aviation](50-production/phase-2-living-ga-implementation-plan.md), [PI-05 Phase 3 terminal and landside](50-production/phase-3-terminal-landside-implementation-plan.md), and [PI-06 Phase 4 regional scheduled airport](50-production/phase-4-regional-scheduled-airport-implementation-plan.md) are complete. Phase 5 remains unopened. The four-hour physical-tier soak and formal unassisted tester record are deferred to release hardening and do not block continued feature development. Work still enters only through its owning approved specifications and phase gate.
+The project is in **phased implementation**. `ideas.txt` remains the living concept source; the approved specification set defines implementable feature behavior, technical boundaries, initial tuning, verification, and phased integration. Phase 0 through [PI-08 Phase 5 cargo and specialization breadth](50-production/phase-5-cargo-specialization-breadth-implementation-plan.md) are complete. [PI-07 Phase 4.5 visual-content remediation](50-production/phase-4-5-visual-content-remediation-plan.md) is accepted as the technical/content baseline while aesthetic refinement remains continuing visual debt. Phase 6 is next. The four-hour physical-tier soak and formal unassisted tester record are deferred to release hardening and do not block continued feature development. Work still enters only through its owning approved specifications and phase gate.
 
 ## Directory map
 
@@ -83,6 +83,14 @@ The inventory confirms presence, format, dimensions, and source classification. 
 - [Phase 4 regional scheduled-airport implementation plan](50-production/phase-4-regional-scheduled-airport-implementation-plan.md)
 - [Phase 4 visual review](50-production/phase-4-visual-review.md)
 - [Phase 4 content provenance](30-content-and-assets/phase-4-content-provenance.md)
+- [Visual content requirements](30-content-and-assets/visual-content-requirements.md)
+- [Phase 4.5 visual-content remediation plan](50-production/phase-4-5-visual-content-remediation-plan.md)
+- [Phase 4.5 content coverage](50-production/visual-content-coverage.yaml)
+- [Phase 4.5 generated-content provenance](30-content-and-assets/phase-4-5-content-provenance.md)
+- [Phase 4.5 equivalent-state visual reviews](50-production/visual-reviews/phase-4-5/VA-01.md)
+- [Phase 5 cargo and specialization breadth plan](50-production/phase-5-cargo-specialization-breadth-implementation-plan.md)
+- [Phase 5 visual validation](50-production/phase5-visual-validation/README.md)
+- [Phase 5 content provenance](30-content-and-assets/phase-5-content-provenance.md)
 - [Phase 1 reference-hardware gate](50-production/phase-1-reference-hardware.md)
 - [Phase 1 unassisted new-tester protocol](50-production/phase-1-new-tester-protocol.md)
 - [Verification and requirements traceability](50-production/verification-traceability.md)

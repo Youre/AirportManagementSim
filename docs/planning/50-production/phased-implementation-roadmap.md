@@ -86,11 +86,24 @@ Add recurring contracts, seven-day timetable and locked horizon; regional/narrow
 
 ## Phase 5: Cargo and specialization breadth
 
+**Status:** Complete — verified on 2026-07-27. See
+[PI-08](phase-5-cargo-specialization-breadth-implementation-plan.md),
+[Phase 5 visual validation](phase5-visual-validation/README.md), and
+[Phase 5 content provenance](../30-content-and-assets/phase-5-content-provenance.md).
+
+Phase 4.5 closed as an accepted technical/content baseline with continuing
+visual polish debt before Phase 5 opened.
+
 **Goal:** Every promised specialization reaches a credible Advanced loop, and mixed airports have meaningful shared-resource choices.
 
 Add cargo contracts/classes/warehouses; belly freight; advanced flight school, charter, GA and passenger capability; service providers/concessions; specialization-specific objectives/achievements; airshow, fly-in, cargo surge, and other special events.
 
 **Gate:** automated and human playthroughs prove GA, flight school, charter, cargo, passenger, and mixed paths can each reach Advanced without building another path's signature facility.
+
+The deterministic six-path fixtures, cargo/event/provider suites, visual
+frames, clean Development and Shipping packages, direct IoStore inventory,
+offline smoke, and package-boundary scans pass. Longer owner play sessions,
+the four-hour soak, and formal unassisted testing remain Phase 7 work.
 
 ## Phase 6: Major-airport capability
 

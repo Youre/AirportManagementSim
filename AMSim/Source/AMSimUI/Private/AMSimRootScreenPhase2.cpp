@@ -363,8 +363,10 @@ void UAMSimRootScreen::RefreshPhase2Presentation(
 					? TEXT("PAUSED")
 					: *FString::Printf(TEXT("%dx"), Phase1State.SpeedMultiplier)));
 		SetPhase2Text(StatusText, Query.PrimaryStatus);
-		SetPhase2Text(CauseText, Query.Cause);
-		SetPhase2Text(RemedyText, TEXT("NEXT: ") + Query.Remedy);
+		SetPhase2Text(CauseText, CurrentPhase2ViewState.Cause);
+		SetPhase2Text(
+			RemedyText,
+			TEXT("NEXT: ") + CurrentPhase2ViewState.Remedy);
 		SetPhase2Text(
 			ObjectiveText,
 			FString::Printf(
@@ -373,14 +375,14 @@ void UAMSimRootScreen::RefreshPhase2Presentation(
 		if (CauseText)
 		{
 			CauseText->SetVisibility(
-				Query.Cause.IsEmpty()
+				CurrentPhase2ViewState.Cause.IsEmpty()
 					? ESlateVisibility::Collapsed
 					: ESlateVisibility::Visible);
 		}
 		if (RemedyText)
 		{
 			RemedyText->SetVisibility(
-				Query.Remedy.IsEmpty()
+				CurrentPhase2ViewState.Remedy.IsEmpty()
 					? ESlateVisibility::Collapsed
 					: ESlateVisibility::Visible);
 		}

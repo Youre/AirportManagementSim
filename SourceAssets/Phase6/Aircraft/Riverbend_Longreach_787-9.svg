@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="2048"
+     height="2048"
+     viewBox="0 0 2048 2048">
+  <title>Riverbend Longreach 787-9 — River and Sun</title>
+  <desc>
+    Project-owned strict top-down 2D master. The 62.8 m fuselage length and
+    60.1 m wingspan are normalized at 32 pixels per meter. Nose points right
+    in the editable master. Runtime heading H000 points up.
+  </desc>
+
+  <g id="wings" fill="#F6F2E6" stroke="#06131F"
+     stroke-width="10" stroke-linejoin="round">
+    <path id="port-wing"
+          d="M1242 934 L716 64 Q700 37 674 54 L626 80
+             L930 969 L1162 988 Z"/>
+    <path id="starboard-wing"
+          d="M1242 1114 L716 1984 Q700 2011 674 1994 L626 1968
+             L930 1079 L1162 1060 Z"/>
+  </g>
+
+  <g id="wing-shading" fill="#D8DED9">
+    <path d="M1150 940 L703 92 L669 109 L956 966 Z"/>
+    <path d="M1150 1108 L703 1956 L669 1939 L956 1082 Z"/>
+  </g>
+
+  <g id="wing-panels" fill="none" stroke="#667A80"
+     stroke-width="6" stroke-linecap="round" opacity="0.9">
+    <path d="M1048 952 L738 224"/>
+    <path d="M978 963 L694 383"/>
+    <path d="M1048 1096 L738 1824"/>
+    <path d="M978 1085 L694 1665"/>
+    <path d="M858 905 L730 179"/>
+    <path d="M858 1143 L730 1869"/>
+  </g>
+
+  <g id="engine-pylons" fill="#D8DED9" stroke="#06131F"
+     stroke-width="7" stroke-linejoin="round">
+    <path d="M1029 610 L1165 588 L1190 647 L1038 650 Z"/>
+    <path d="M1029 1438 L1165 1460 L1190 1401 L1038 1398 Z"/>
+  </g>
+
+  <g id="tailplanes" fill="#E7E8DE" stroke="#06131F"
+     stroke-width="10" stroke-linejoin="round">
+    <path id="port-tailplane"
+          d="M500 962 L127 520 Q113 503 89 516 L57 539
+             L296 1003 L511 1007 Z"/>
+    <path id="starboard-tailplane"
+          d="M500 1086 L127 1528 Q113 1545 89 1532 L57 1509
+             L296 1045 L511 1041 Z"/>
+  </g>
+
+  <g id="engines" stroke="#06131F" stroke-width="9">
+    <path id="port-engine" fill="#0B1E3A"
+          d="M1135 570 H1318 Q1381 570 1415 617
+             Q1381 664 1318 664 H1135 Q1108 617 1135 570 Z"/>
+    <path id="starboard-engine" fill="#0B1E3A"
+          d="M1135 1384 H1318 Q1381 1384 1415 1431
+             Q1381 1478 1318 1478 H1135 Q1108 1431 1135 1384 Z"/>
+    <path fill="none" stroke="#08A9D1" stroke-width="13"
+          d="M1368 582 Q1402 617 1368 652"/>
+    <path fill="none" stroke="#08A9D1" stroke-width="13"
+          d="M1368 1396 Q1402 1431 1368 1466"/>
+    <ellipse cx="1370" cy="617" rx="15" ry="23" fill="#FFB72C"
+             stroke="none"/>
+    <ellipse cx="1370" cy="1431" rx="15" ry="23" fill="#FFB72C"
+             stroke="none"/>
+  </g>
+
+  <g id="fuselage">
+    <path fill="#F6F2E6" stroke="#06131F" stroke-width="11"
+          stroke-linejoin="round"
+          d="M68 1024
+             Q133 970 282 950
+             Q801 932 1667 936
+             Q1884 938 1991 991
+             Q2023 1006 2033 1024
+             Q2023 1042 1991 1057
+             Q1884 1110 1667 1112
+             Q801 1116 282 1098
+             Q133 1078 68 1024 Z"/>
+    <path id="navy-spine" fill="#0B1E3A"
+          d="M76 1024 Q143 977 286 960 L744 950
+             L653 1000 L339 1012 L170 1024
+             L339 1036 L653 1048 L744 1098 L286 1088
+             Q143 1071 76 1024 Z"/>
+    <path id="river-line" fill="none" stroke="#08A9D1"
+          stroke-width="13" stroke-linecap="round"
+          d="M303 1043
+             C458 1015 552 1071 709 1039
+             S1011 1007 1164 1038
+             S1467 1071 1698 1025"/>
+    <circle id="sun-mark" cx="272" cy="995" r="33" fill="#FFB72C"
+            stroke="#06131F" stroke-width="6"/>
+    <path id="river-mark" fill="none" stroke="#08A9D1"
+          stroke-width="10" stroke-linecap="round"
+          d="M218 1027 Q272 1008 326 1027
+             M225 1046 Q272 1030 319 1046"/>
+  </g>
+
+  <g id="flight-deck" fill="#132A3B">
+    <path d="M1939 993 Q1981 1004 1998 1020 L1950 1014 Z"/>
+    <path d="M1939 1055 Q1981 1044 1998 1028 L1950 1034 Z"/>
+  </g>
+
+  <g id="airframe-details" fill="none" stroke="#657A80"
+     stroke-width="5" stroke-linecap="round">
+    <path d="M1662 951 Q1753 1024 1662 1097"/>
+    <path d="M1486 949 V979 M1486 1069 V1099"/>
+    <path d="M1048 948 V982 M1048 1066 V1100"/>
+    <path d="M804 951 V984 M804 1064 V1097"/>
+    <path d="M542 959 V991 M542 1057 V1089"/>
+    <path d="M1840 976 V999 M1840 1049 V1072"/>
+  </g>
+
+  <g id="doors" fill="#F6F2E6" stroke="#06131F" stroke-width="5">
+    <rect x="1715" y="951" width="26" height="45" rx="5"/>
+    <rect x="1715" y="1052" width="26" height="45" rx="5"/>
+    <rect x="956" y="950" width="26" height="45" rx="5"/>
+    <rect x="956" y="1053" width="26" height="45" rx="5"/>
+  </g>
+
+  <g id="wingtip-marks" fill="#0B1E3A" stroke="#06131F"
+     stroke-width="5">
+    <path d="M626 80 L674 54 Q700 37 716 64 L742 107 L658 135 Z"/>
+    <path d="M626 1968 L674 1994 Q700 2011 716 1984
+             L742 1941 L658 1913 Z"/>
+  </g>
+  <g id="wingtip-river" fill="none" stroke="#08A9D1"
+     stroke-width="9" stroke-linecap="round">
+    <path d="M654 96 Q685 72 716 87"/>
+    <path d="M654 1952 Q685 1976 716 1961"/>
+  </g>
+</svg>

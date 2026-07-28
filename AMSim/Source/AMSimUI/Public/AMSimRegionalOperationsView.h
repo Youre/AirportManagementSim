@@ -14,6 +14,12 @@ class UTexture2D;
 class UAMSimOverviewView;
 class UAMSimProgressionView;
 class UAMSimPhase5View;
+class UAMSimPhase6View;
+
+namespace AMSim
+{
+	struct FPhase6QuerySnapshot;
+}
 
 UCLASS()
 class AMSIMUI_API UAMSimRegionalOperationsView final : public UUserWidget
@@ -91,6 +97,9 @@ private:
 	void UpdateWorldPresentation(
 		const AMSim::FPhase4QuerySnapshot& Query,
 		const AMSim::FPhase4State& State);
+	void InitializePhase6View();
+	bool RefreshPhase6View(
+		const AMSim::FPhase6QuerySnapshot& Query);
 
 	UPROPERTY(Transient)
 	TObjectPtr<UCanvasPanel> TimetableSurface;
@@ -104,6 +113,8 @@ private:
 	TObjectPtr<UAMSimProgressionView> ProgressionView;
 	UPROPERTY(Transient)
 	TObjectPtr<UAMSimPhase5View> Phase5View;
+	UPROPERTY(Transient)
+	TObjectPtr<UAMSimPhase6View> Phase6View;
 	UPROPERTY(Transient)
 	TObjectPtr<UBorder> WeekGrid;
 	UPROPERTY(Transient)

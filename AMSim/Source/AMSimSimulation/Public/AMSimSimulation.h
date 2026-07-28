@@ -5,6 +5,7 @@
 #include "AMSimPassengerTerminalSimulation.h"
 #include "AMSimRegionalScheduledSimulation.h"
 #include "AMSimPhase5Simulation.h"
+#include "AMSimPhase6Simulation.h"
 #include "AMSimStarterAirfieldSimulation.h"
 
 namespace AMSim
@@ -23,6 +24,7 @@ namespace AMSim
 		FPhase3State Phase3;
 		FPhase4State Phase4;
 		FPhase5State Phase5;
+		FPhase6State Phase6;
 	};
 
 	class AMSIMSIMULATION_API FSimulation
@@ -38,6 +40,7 @@ namespace AMSim
 		FPhase3QuerySnapshot CreatePhase3QuerySnapshot() const;
 		FPhase4QuerySnapshot CreatePhase4QuerySnapshot() const;
 		FPhase5QuerySnapshot CreatePhase5QuerySnapshot() const;
+		FPhase6QuerySnapshot CreatePhase6QuerySnapshot() const;
 		FSimulationDiagnostics CreateDiagnostics() const;
 		FSnapshot CreateSnapshot() const;
 		bool RestoreSnapshot(const FSnapshot& Snapshot);
@@ -46,6 +49,7 @@ namespace AMSim
 		EPhase3CommandResult QueuePhase3Command(const FPhase3Command& Command);
 		EPhase4CommandResult QueuePhase4Command(const FPhase4Command& Command);
 		EPhase5CommandResult QueuePhase5Command(const FPhase5Command& Command);
+		EPhase6CommandResult QueuePhase6Command(const FPhase6Command& Command);
 
 		const TArray<FEvent>& GetEvents() const { return Events; }
 		const FPhase1State& GetPhase1State() const { return Phase1.GetState(); }
@@ -53,6 +57,7 @@ namespace AMSim
 		const FPhase3State& GetPhase3State() const { return Phase3.GetState(); }
 		const FPhase4State& GetPhase4State() const { return Phase4.GetState(); }
 		const FPhase5State& GetPhase5State() const { return Phase5.GetState(); }
+		const FPhase6State& GetPhase6State() const { return Phase6.GetState(); }
 		uint64 CalculateChecksum() const;
 
 	private:
@@ -72,6 +77,7 @@ namespace AMSim
 		FPassengerTerminalSimulation Phase3;
 		FRegionalScheduledSimulation Phase4;
 		FPhase5Simulation Phase5;
+		FPhase6Simulation Phase6;
 	};
 
 	struct FReplayResult

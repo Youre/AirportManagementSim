@@ -2,6 +2,7 @@
 
 #include "AMSimDeterminism.h"
 #include "AMSimLivingAirportSimulation.h"
+#include "AMSimPathProgressionEvaluator.h"
 #include "AMSimStarterAirfieldSimulation.h"
 
 namespace AMSim
@@ -136,6 +137,25 @@ namespace AMSim
 			TEXT("Phase5.CargoBreadth"));
 		State.NextDomainId = Phase5IdBase;
 		State.NextEventSequence = 1;
+	}
+
+	void FPhase5Simulation::ApplyMajorSignals(
+		const FPhase6CapabilitySignals& Signals,
+		const int64 CurrentGameMilliseconds)
+	{
+		ApplyMajorCapabilitySignals(
+			State,
+			Signals,
+			CurrentGameMilliseconds,
+			[this](
+				const EPhase5EventType Type,
+				const FCommandId& Cause,
+				const uint64 SubjectId,
+				const int64 EventTime,
+				const FString& Message)
+			{
+				Emit(Type, Cause, SubjectId, EventTime, Message);
+			});
 	}
 
 	EPhase5CommandResult FPhase5Simulation::QueueCommand(
@@ -1236,264 +1256,23 @@ namespace AMSim
 		const FPhase3State& Phase3State,
 		const FPhase4State& Phase4State)
 	{
-		TMap<FName, int32> ComponentTotals;
-		for (const FPhase5RatingContributionRecord& Contribution :
-			State.RatingContributions)
-		{
-			ComponentTotals.FindOrAdd(Contribution.ComponentId) +=
-				Contribution.Magnitude;
-		}
-		int32 RatingTotal = 0;
-		for (const FName Component : {
-			TEXT("Rating.SafetyReadiness"),
-			TEXT("Rating.OperationalReliability"),
-			TEXT("Rating.CustomerExperience"),
-			TEXT("Rating.TenantRelationships"),
-			TEXT("Rating.AccessCleanlinessAmenities")})
-		{
-			RatingTotal += FMath::Clamp(
-				50 + ComponentTotals.FindRef(Component),
-				0,
-				100);
-		}
-		State.OverallRating = RatingTotal / 5;
-
-		auto HasProvider = [this](const FName ProviderType)
-		{
-			return State.ProviderTenants.ContainsByPredicate(
-				[ProviderType](const FPhase5ProviderTenantRecord& Tenant)
-				{
-					return Tenant.ProviderType == ProviderType &&
-						Tenant.State == EProviderTenantState::Active;
-				});
-		};
-		const int32 OperatingDays = FMath::Max(
-			State.CurrentOperatingDay,
-			FMath::Max(
-				Phase2State.CurrentOperatingDay,
-				Phase4State.CurrentOperatingDay));
-		for (FPhase5PathEvidenceRecord& Evidence : State.Paths)
-		{
-			Evidence.AirportPoints = Phase1State.AirportPoints;
-			Evidence.OperatingDays = OperatingDays;
-			Evidence.SafetyRating = State.OverallRating;
-			Evidence.ReliabilityRating = State.OverallRating;
-			Evidence.bSharedResourceDayCompleted = false;
-			switch (Evidence.Path)
+		RefreshAdvancedPathProgression(
+			State,
+			CurrentGameMilliseconds,
+			Phase1State,
+			Phase2State,
+			Phase3State,
+			Phase4State,
+			[this](
+				const EPhase5EventType Type,
+				const FCommandId& Cause,
+				const uint64 SubjectId,
+				const int64 EventTime,
+				const FString& Message)
 			{
-			case ESpecializationPath::GeneralAviation:
-				Evidence.CompletedOperations =
-					CountCompletedForSpecialization(
-						Phase2State,
-						EAirportSpecialization::GeneralAviation);
-				Evidence.DistinctRolesOrClasses =
-					CountDistinctRoles(Phase2State);
-				Evidence.bPrimaryTenantActive = HasProvider(TEXT("FBO"));
-				Evidence.bSecondaryProviderActive =
-					HasProvider(TEXT("Maintenance"));
-				Evidence.bSignatureFacilityOperational =
-					Phase2State.bInitialized;
-				break;
-			case ESpecializationPath::FlightSchool:
-				Evidence.CompletedOperations =
-					CountCompletedForSpecialization(
-						Phase2State,
-						EAirportSpecialization::FlightSchool);
-				Evidence.DistinctRolesOrClasses =
-					Phase2State.Aircraft.Num() >= 2 ? 2 : Phase2State.Aircraft.Num();
-				Evidence.bPrimaryTenantActive =
-					Phase2State.Tenants.ContainsByPredicate(
-						[](const FPhase2TenantRecord& Tenant)
-						{
-							return Tenant.Specialization ==
-									EAirportSpecialization::FlightSchool &&
-								Tenant.bActive;
-						});
-				Evidence.bSecondaryProviderActive =
-					HasProvider(TEXT("Maintenance"));
-				Evidence.bSignatureFacilityOperational =
-					Evidence.bPrimaryTenantActive;
-				break;
-			case ESpecializationPath::Charter:
-				Evidence.CompletedOperations =
-					CountCompletedForSpecialization(
-						Phase2State,
-						EAirportSpecialization::Charter);
-				Evidence.bPrimaryTenantActive =
-					Phase2State.Tenants.ContainsByPredicate(
-						[](const FPhase2TenantRecord& Tenant)
-						{
-							return Tenant.Specialization ==
-									EAirportSpecialization::Charter &&
-								Tenant.bActive;
-						});
-				Evidence.bSecondaryProviderActive =
-					HasProvider(TEXT("Fuel"));
-				Evidence.bSignatureFacilityOperational =
-					Evidence.bPrimaryTenantActive;
-				break;
-			case ESpecializationPath::Cargo:
-				Evidence.CompletedOperations =
-					State.CompletedShipmentCount;
-				Evidence.DistinctRolesOrClasses =
-					State.CompletedCargoClassCount;
-				Evidence.bPrimaryTenantActive =
-					HasProvider(TEXT("CargoOperator"));
-				Evidence.bSecondaryProviderActive =
-					HasProvider(TEXT("Maintenance"));
-				Evidence.bSignatureFacilityOperational =
-					State.WarehouseZones.Num() == 4 &&
-					State.WarehouseZones.ContainsByPredicate(
-						[](const FPhase5WarehouseZoneRecord& Zone)
-						{
-							return Zone.bOperational &&
-								Zone.bRoadConnected &&
-								Zone.bAirsideConnected;
-						});
-				break;
-			case ESpecializationPath::Passenger:
-				Evidence.CompletedOperations =
-					Phase4State.CompletedFlightCount;
-				Evidence.CompletedPassengers =
-					Phase3State.CompletedPassengerCount;
-				Evidence.bPrimaryTenantActive =
-					Phase3State.bTerminalOpen;
-				Evidence.bSecondaryProviderActive =
-					HasProvider(TEXT("FoodConcession")) ||
-					HasProvider(TEXT("RetailConcession"));
-				Evidence.bSignatureFacilityOperational =
-					Phase3State.bTerminalOpen &&
-					Phase3State.bSecurityIntegrityValid;
-				break;
-			case ESpecializationPath::Mixed:
-				break;
-			}
-			if (Evidence.Path != ESpecializationPath::Mixed)
-			{
-				if (MeetsAdvancedRequirements(Evidence))
-				{
-					Evidence.Band = ECapabilityBand::Advanced;
-				}
-				else if (Evidence.bSignatureFacilityOperational &&
-					Evidence.CompletedOperations > 0)
-				{
-					Evidence.Band = ECapabilityBand::Regional;
-				}
-				else if (Evidence.bSignatureFacilityOperational)
-				{
-					Evidence.Band = ECapabilityBand::Established;
-				}
-				else
-				{
-					Evidence.Band = ECapabilityBand::Unavailable;
-				}
-			}
-		}
-
-		int32 RegionalPathCount = 0;
-		int32 ActivePathOperationCount = 0;
-		for (const FPhase5PathEvidenceRecord& Evidence : State.Paths)
-		{
-			if (Evidence.Path != ESpecializationPath::Mixed &&
-				Evidence.Band >= ECapabilityBand::Regional)
-			{
-				++RegionalPathCount;
-			}
-			if (Evidence.Path != ESpecializationPath::Mixed &&
-				Evidence.CompletedOperations > 0)
-			{
-				++ActivePathOperationCount;
-			}
-		}
-		FPhase5PathEvidenceRecord* Mixed = State.Paths.FindByPredicate(
-			[](const FPhase5PathEvidenceRecord& Evidence)
-			{
-				return Evidence.Path == ESpecializationPath::Mixed;
+				Emit(Type, Cause, SubjectId, EventTime, Message);
 			});
-		if (Mixed)
-		{
-			Mixed->AirportPoints = Phase1State.AirportPoints;
-			Mixed->OperatingDays = OperatingDays;
-			Mixed->SafetyRating = State.OverallRating;
-			Mixed->ReliabilityRating = State.OverallRating;
-			Mixed->RegionalPathCount = RegionalPathCount;
-			Mixed->bPrimaryTenantActive = RegionalPathCount >= 2;
-			Mixed->bSecondaryProviderActive =
-				State.ProviderTenants.ContainsByPredicate(
-					[](const FPhase5ProviderTenantRecord& Tenant)
-					{
-						return Tenant.State == EProviderTenantState::Active;
-					});
-			Mixed->bSignatureFacilityOperational = RegionalPathCount >= 2;
-			Mixed->bSharedResourceDayCompleted =
-				RegionalPathCount >= 2 &&
-				ActivePathOperationCount >= 2 &&
-				Mixed->bSecondaryProviderActive;
-			Mixed->Band = MeetsAdvancedRequirements(*Mixed)
-				? ECapabilityBand::Advanced
-				: RegionalPathCount >= 2
-					? ECapabilityBand::Regional
-					: ECapabilityBand::Established;
-		}
-
-		State.AdvancedPathCount = 0;
-		for (FPhase5PathEvidenceRecord& Evidence : State.Paths)
-		{
-			Evidence.CurrentEvidence = FString::Printf(
-				TEXT("%d AP • day %d • %d operations • rating %d"),
-				Evidence.AirportPoints,
-				Evidence.OperatingDays,
-				Evidence.CompletedOperations,
-				State.OverallRating);
-			Evidence.NextRequirement =
-				Evidence.Band == ECapabilityBand::Advanced
-					? TEXT("Major remains future locked.")
-					: TEXT("Reach 50 AP, day 7, rating 70, and path evidence.");
-			if (Evidence.Band == ECapabilityBand::Advanced)
-			{
-				++State.AdvancedPathCount;
-				FPhase5AchievementRecord* Achievement =
-					State.Achievements.FindByPredicate(
-						[&Evidence](const FPhase5AchievementRecord& Candidate)
-						{
-							return Candidate.Path == Evidence.Path;
-						});
-				if (Achievement && !Achievement->bEarned)
-				{
-					Achievement->bEarned = true;
-					Achievement->EarnedAtGameMilliseconds =
-						CurrentGameMilliseconds;
-					Emit(
-						EPhase5EventType::AchievementEarned,
-						{},
-						Achievement->Id.Value,
-						CurrentGameMilliseconds,
-						Achievement->DisplayName);
-				}
-			}
-		}
-
-		for (FPhase5ObjectiveRecord& Objective : State.Objectives)
-		{
-			const FPhase5PathEvidenceRecord* Evidence =
-				State.Paths.FindByPredicate(
-					[&Objective](const FPhase5PathEvidenceRecord& Candidate)
-					{
-						return Candidate.Path == Objective.Path;
-					});
-			Objective.Current =
-				Evidence && Evidence->Band == ECapabilityBand::Advanced ? 1 : 0;
-			Objective.bCompleted = Objective.Current >= Objective.Target;
-		}
-		State.bFixtureCompleted =
-			State.CompletedCargoClassCount == 4 &&
-			State.CompletedCargoFlowCount == 3 &&
-			State.SpecialEvents.ContainsByPredicate(
-				[](const FPhase5SpecialEventRecord& Event)
-				{
-					return Event.bRewardRecognized ||
-						Event.State == ESpecialEventState::Cooldown;
-				});
+		return;
 	}
 
 	void FPhase5Simulation::AddRatingContribution(

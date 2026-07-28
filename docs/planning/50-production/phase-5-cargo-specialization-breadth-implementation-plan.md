@@ -107,4 +107,5 @@ artifacts and are not source-controlled.
   is the sole Phase 5 acceptance gate still open.
 - Longer play sessions, the four-hour soak, and the formal unassisted protocol
   remain Phase 7 gates.
-- Major capability and wide-body content remain visibly future-locked.
+- Major capability and wide-body content are now technically implemented by
+  PI-09; their owner acceptance gates remain open.

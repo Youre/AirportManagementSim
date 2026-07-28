@@ -221,7 +221,8 @@ namespace AMSim
 			if (!RegisterId(Task.Id.Value) ||
 				(Task.OwnerDomain.IsNone()
 					? !ContainsId(InState.Flights, Task.FlightId)
-					: Task.OwnerDomain != TEXT("Phase5") ||
+					: (Task.OwnerDomain != TEXT("Phase5") &&
+							Task.OwnerDomain != TEXT("Phase6")) ||
 						Task.OwnerId == 0 ||
 						Task.OperationId.IsNone()) ||
 				Task.Quantity <= 0 ||

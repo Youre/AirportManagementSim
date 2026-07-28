@@ -903,3 +903,49 @@ entries:
       packages passed with 553 cooked packages. Shipping retained all 48 Phase
       5 assets, the production root widget, zero forbidden binary matches, and
       zero TCP connections during the eight-second smoke.
+  - timestamp: '2026-07-28T11:01:01.0330507+00:00'
+    commit: 2876538c71ae09a31c04cb7b731504a9e1c64e3f
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Phase 6 pre-art approval gate: Unreal 5.8 editor build; focused
+      AMSim.Phase6 automation; source line-limit and diff checks'
+    result: passed
+    notes: The editor target builds successfully. All eight Phase 6 tests pass
+      with zero warnings, failures, or not-run tests, covering cooker-visible
+      2D content, incident recovery, large-aircraft compatibility and ordinary
+      dispatch, schema-7 persistence and schema-6 migration, view-state
+      revision gating, six independent Major paths, parallel-runway numbering,
+      and the exact 10,000-logical/2,000-visible scale contract. Source files
+      remain at or below 2,000 lines and git diff --check passes outside the
+      preserved unrelated audio work. The reviewed 787 source remains outside
+      project content pending explicit owner approval.
+  - timestamp: '2026-07-28T22:14:22.8900432Z'
+    commit: 2876538c71ae09a31c04cb7b731504a9e1c64e3f
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Phase 6 technical closeout: focused/full Unreal automation;
+      Development/Shipping BuildCookRun; direct Shipping IoStore inventory;
+      dependency, runtime-load, and 3D scans; offline packaged smoke; River &
+      Sun aircraft and equivalent-state visual review'
+    result: passed
+    notes: Phase 6 focused automation passed 8 of 8. Full AMSim automation
+      reported 62 clean passes and one retained warning-only Phase 0 backup
+      probe with zero failed or not-run tests. Fresh Development and Shipping
+      packages each cooked 613 packages. Direct Shipping inventory found all
+      28 Phase 6 definitions, 16 approved River & Sun textures, 16 matching
+      PaperSprites, and the production root widget. Shipping has zero
+      forbidden editor, MCP, test, tool, direct runtime string-load, required
+      3D, or TCP matches. The deterministic maximum fixture reached 10,000
+      logical agents, 2,000 visible agents, 150 aircraft, and 500 vehicles
+      without backlog. Owner Phase 5/6 journeys, final visual approval, and the
+      bounded 15-minute maximum-load observation remain open.
+  - timestamp: '2026-07-28T22:20:00.0000000Z'
+    commit: 2876538c71ae09a31c04cb7b731504a9e1c64e3f
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: ai-init doctor . --json
+    result: passed
+    notes: Exited 0 after Phase 6 closeout updates. Only the documented ignored
+      Saved token-name, managed-template, lexical-review, legacy-ledger, and
+      project schema/version warnings remain; no Phase 6 structural conflict
+      was reported.

@@ -1,0 +1,3 @@
+# Machine-generated vector workflow traces are immutable provenance bundles.
+# Preserve their emitted bytes and do not attempt line-oriented merges/diffs.
+SourceAssets/Phase6/VGC/** binary

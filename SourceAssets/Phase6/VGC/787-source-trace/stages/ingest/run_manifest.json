@@ -1,0 +1,35 @@
+{
+  "created_at": "2026-07-28T21:38:35+00:00",
+  "entry_path": "image_tracing",
+  "expected_output_refs": {
+    "metadata_bundle": "future_phase",
+    "raw_vector_asset": "future_phase",
+    "structural_metadata": "WEB-97"
+  },
+  "input_refs": {
+    "input_package": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\ingest\\input_package.json",
+    "source": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\Aircraft\\Boeing_787-9_source-approved.png"
+  },
+  "next_phase": "WEB-97",
+  "run_id": "ingest",
+  "schema_version": "0.1",
+  "stage_statuses": [
+    {
+      "notes": "Input source was acquired or represented.",
+      "stage": "input_acquisition",
+      "status": "complete"
+    },
+    {
+      "notes": "Image/vector normalization artifacts were produced when applicable.",
+      "stage": "normalization",
+      "status": "complete"
+    },
+    {
+      "notes": "Next phase: WEB-97.",
+      "stage": "structural_analysis",
+      "status": "pending"
+    }
+  ],
+  "status": "passed",
+  "warnings": []
+}

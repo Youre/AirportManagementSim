@@ -1,0 +1,30 @@
+{
+  "artifacts": {
+    "copied_source": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\ingest\\source\\Boeing_787-9_source-approved.png",
+    "diagnostic_edges": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\ingest\\diagnostics\\edges.png",
+    "diagnostic_grayscale": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\ingest\\diagnostics\\grayscale.png",
+    "diagnostic_preview": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\ingest\\diagnostics\\preview.png",
+    "normalized_input": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\ingest\\normalized\\input.png"
+  },
+  "created_at": "2026-07-28T21:38:35+00:00",
+  "entry_path": "image_tracing",
+  "generated_source": null,
+  "input_mode": "image",
+  "intent": "Faithful top-down Boeing 787-9 silhouette baseline for the owner-approved fictional Riverbend Longreach River and Sun livery; preserve editable aircraft geometry and transparent background",
+  "schema_version": "0.1",
+  "source": {
+    "exists": true,
+    "format": "PNG",
+    "height": 776,
+    "media_type": "image",
+    "mode": "RGBA",
+    "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\Aircraft\\Boeing_787-9_source-approved.png",
+    "resolved_path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\Aircraft\\Boeing_787-9_source-approved.png",
+    "sha256": "6aa56cd2cdd7035e3ee3526cff5a603751e03441da11ece6c7e6e550b9b04449",
+    "size_bytes": 188996,
+    "source_type": "image",
+    "svg_metadata": null,
+    "width": 719
+  },
+  "warnings": []
+}

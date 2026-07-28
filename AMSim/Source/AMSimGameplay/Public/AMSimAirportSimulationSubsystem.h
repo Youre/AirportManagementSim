@@ -23,11 +23,13 @@ public:
 	AMSim::EPhase3CommandResult SubmitPhase3Command(AMSim::FPhase3Command Command);
 	AMSim::EPhase4CommandResult SubmitPhase4Command(AMSim::FPhase4Command Command);
 	AMSim::EPhase5CommandResult SubmitPhase5Command(AMSim::FPhase5Command Command);
+	AMSim::EPhase6CommandResult SubmitPhase6Command(AMSim::FPhase6Command Command);
 	AMSim::FPhase1QuerySnapshot GetPhase1Query() const;
 	AMSim::FPhase2QuerySnapshot GetPhase2Query() const;
 	AMSim::FPhase3QuerySnapshot GetPhase3Query() const;
 	AMSim::FPhase4QuerySnapshot GetPhase4Query() const;
 	AMSim::FPhase5QuerySnapshot GetPhase5Query() const;
+	AMSim::FPhase6QuerySnapshot GetPhase6Query() const;
 	AMSim::FSnapshot CreateSnapshot() const;
 	bool RestoreSnapshot(const AMSim::FSnapshot& Snapshot);
 	int64 GetRecommendedStarterArrivalTime() const;
@@ -42,6 +44,7 @@ private:
 	uint64 NextPhase3CommandId = 1;
 	uint64 NextPhase4CommandId = 1;
 	uint64 NextPhase5CommandId = 1;
+	uint64 NextPhase6CommandId = 1;
 	double AccumulatedGameMilliseconds = 0.0;
 	double LastSimulationWorkMilliseconds = 0.0;
 	int64 LastSimulationMilliseconds = 0;

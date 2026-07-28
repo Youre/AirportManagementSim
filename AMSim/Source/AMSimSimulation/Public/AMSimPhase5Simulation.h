@@ -6,6 +6,7 @@ namespace AMSim
 {
 	class FStarterAirfieldSimulation;
 	class FLivingAirportSimulation;
+	struct FPhase6CapabilitySignals;
 
 	class AMSIMSIMULATION_API FPhase5Simulation
 	{
@@ -39,6 +40,9 @@ namespace AMSim
 			const FPhase2State& Phase2State,
 			const FPhase3State& Phase3State,
 			const FPhase4State& Phase4State);
+		void ApplyMajorSignals(
+			const FPhase6CapabilitySignals& Signals,
+			int64 CurrentGameMilliseconds);
 
 		const FPhase5State& GetState() const { return State; }
 

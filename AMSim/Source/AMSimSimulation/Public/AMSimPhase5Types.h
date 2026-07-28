@@ -39,6 +39,14 @@ namespace AMSim
 		Major
 	};
 
+	enum class ECapabilityOperationalStatus : uint8
+	{
+		Healthy,
+		Grace,
+		Recovering,
+		Suspended
+	};
+
 	enum class ECargoClass : uint8
 	{
 		GeneralFreight,
@@ -261,19 +269,29 @@ namespace AMSim
 	{
 		ESpecializationPath Path = ESpecializationPath::GeneralAviation;
 		ECapabilityBand Band = ECapabilityBand::Unavailable;
+		ECapabilityBand EarnedBand = ECapabilityBand::Unavailable;
+		ECapabilityBand OperationalBand = ECapabilityBand::Unavailable;
+		ECapabilityOperationalStatus OperationalStatus =
+			ECapabilityOperationalStatus::Healthy;
 		int32 AirportPoints = 0;
 		int32 OperatingDays = 0;
+		int32 QualifyingOperatingDays = 0;
 		int32 SafetyRating = 0;
 		int32 ReliabilityRating = 0;
+		int32 TenantRelationshipRating = 0;
 		int32 CompletedOperations = 0;
 		int32 DistinctRolesOrClasses = 0;
 		int32 CompletedPassengers = 0;
 		int32 RegionalPathCount = 0;
+		int32 AdvancedPathCount = 0;
+		int32 SharedResourceDays = 0;
 		bool bPrimaryTenantActive = false;
 		bool bSecondaryProviderActive = false;
 		bool bSignatureFacilityOperational = false;
 		bool bSharedResourceDayCompleted = false;
+		bool bMajorRequirementsMet = false;
 		TArray<FName> FacilityIds;
+		TArray<FName> MajorEvidenceIds;
 		FString CurrentEvidence;
 		FString NextRequirement;
 	};
@@ -355,6 +373,7 @@ namespace AMSim
 		int32 CompletedCargoClassCount = 0;
 		int32 CompletedCargoFlowCount = 0;
 		int32 AdvancedPathCount = 0;
+		int32 MajorPathCount = 0;
 		int32 OverallRating = 70;
 		int64 TotalCargoRevenueCredits = 0;
 		int64 TotalEventRevenueCredits = 0;
@@ -376,6 +395,7 @@ namespace AMSim
 		int32 ActiveProviderCount = 0;
 		int32 GraceProviderCount = 0;
 		int32 AdvancedPathCount = 0;
+		int32 MajorPathCount = 0;
 		int32 OverallRating = 0;
 		int32 ActiveEventCount = 0;
 		FString PrimaryStatus;

@@ -227,6 +227,34 @@ acceptance journeys remain. The normative records are:
 | Content is controlled and cooked | Shipping IoStore contains all 44 definitions and four freighter presentation assets; no external aircraft or required 3D asset exists |
 | Package remains clean and offline | Development and Shipping packages pass; Shipping remains responsive with zero TCP sockets and zero forbidden executable/module or runtime string-load matches |
 
+## Phase 6 implementation evidence
+
+[PI-09](phase-6-major-airport-capability-implementation-plan.md) maps the
+Major-airport and scale slice to implementation and evidence. Phase 6
+engineering gates passed on 2026-07-28; owner visual review, the Phase 5 and
+Phase 6 prepared-save journeys, and the bounded 15-minute maximum-load
+observation remain. The normative records are:
+
+- [Phase 6 architecture-impact review](../../../.ai/reviews/2026-07-28-phase-6-architecture-impact.md);
+- [Phase 6 adversarial review](../../../.ai/reviews/2026-07-28-phase-6-adversarial-review.md);
+- [Phase 6 verification review](../../../.ai/reviews/2026-07-28-phase-6-verification.md);
+- [Phase 6 visual validation](phase6-visual-validation/README.md);
+- [Phase 6 content provenance](../30-content-and-assets/phase-6-content-provenance.md);
+- machine-readable local results under `AMSim/Saved/Phase6`.
+
+| Phase 6 claim | Evidence |
+| --- | --- |
+| Six paths independently reach Major | Exact AP/day/safety/reliability/relationship plus path evidence passes for GA, School, Charter, Cargo, Passenger, and Mixed while unrelated signature facilities are absent |
+| Earned and operational capability remain distinct | Grace, suspension, recovery, and permanent earned-band assertions pass through the focused Phase 5 progression evaluator |
+| Parallel runways are authoritative | Reciprocal/parallel labels, end uses, reservations, crossings, wake spacing, closures, and deterministic configuration assertions pass |
+| The 787 uses ordinary airport systems | Compatibility gates and 11 ordinary dispatch tasks reconcile passenger, bag, service, flight, economy, completion, and save state |
+| Serious loss is warned and recoverable | Stored warning and acknowledged decision precede seeded outcome; bounded closure, response, investigation, repair, funding, reopening, and persistence pass |
+| Maximum-scale truth is retained | 10,000 logical agents, 2,000 visible agents, 150 aircraft, and 500 vehicles pass with stable identity, pooled reuse, deterministic checksums, and no backlog warning |
+| Persistence evolves safely | Schema 7 round-trip, schema 1-6 migration, deterministic continuation, and future/corrupt/reference rejection pass |
+| Presentation remains concise, 2D, and concept-grounded | Five required equivalent-state boards plus a maximum-scale frame, dedicated query-backed views, Riverbend components, 64% world region, pooled Paper2D proxies, and recorded mismatch corrections cover VA-01 through VA-07 |
+| Content is controlled and cooked | Shipping IoStore contains all 28 definitions, 16 approved River & Sun textures, 16 PaperSprites, and the production root widget |
+| Package remains clean and offline | Development and Shipping packages each cook 613 packages; Shipping stays responsive with zero TCP sockets and zero forbidden editor/MCP/test, direct runtime string-load, or required 3D matches |
+
 ## Visual reference mapping
 
 | Reference | Owning surfaces | First comparison gate |

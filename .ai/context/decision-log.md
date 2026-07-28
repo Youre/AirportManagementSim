@@ -13,6 +13,13 @@
   Phase 2 selected-specialization field only for schema compatibility, keeps
   Phase 1 as economy/AP authority, and defers Major/wide-body capability and
   long-form human gates to Phases 6 and 7.
+- 2026-07-28: Phase 6 uses the owner-approved River & Sun treatment for the
+  fictional Riverbend Longreach 787-9. Approval covers only the recorded
+  Boeing 787-9 reference checksum and a project-authored top-down vector
+  master with 16 headings; it does not approve other `Joes_Game` aircraft or
+  real airline branding. Phase 6 technical implementation may close while
+  owner journeys, final visual approval, and the bounded 15-minute
+  maximum-load observation remain explicit acceptance gates.
 - 2026-07-25: Unreal Engine replaces the Godot reference in `ideas.txt` as the target engine.
 - 2026-07-25: The game is 2D, cartoon-styled, and top-down; 3D assets and 3D presentation are excluded.
 - 2026-07-25: The original aircraft-art library was a read-only source of candidates until an import and rights review was approved.

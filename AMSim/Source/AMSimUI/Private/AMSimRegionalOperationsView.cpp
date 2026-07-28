@@ -1251,6 +1251,7 @@ TSharedRef<SWidget> UAMSimRegionalOperationsView::RebuildWidget()
 		FAnchors(0.0f, 0.0f, 1.0f, 1.0f),
 		FMargin(0.0f),
 		100);
+	InitializePhase6View();
 
 	SetVisibility(ESlateVisibility::Collapsed);
 	bProgressionOpen = FParse::Param(
@@ -1660,9 +1661,15 @@ void UAMSimRegionalOperationsView::RefreshFromSimulation()
 		Subsystem->GetSimulation().GetPhase4State();
 	const AMSim::FPhase5QuerySnapshot Phase5Query =
 		Subsystem->GetPhase5Query();
+	const AMSim::FPhase6QuerySnapshot Phase6Query =
+		Subsystem->GetPhase6Query();
 	if (Phase5View)
 	{
 		Phase5View->RefreshFromSimulation();
+	}
+	if (RefreshPhase6View(Phase6Query))
+	{
+		return;
 	}
 	if (Phase5Query.bUnlocked || Phase5Query.bInitialized)
 	{

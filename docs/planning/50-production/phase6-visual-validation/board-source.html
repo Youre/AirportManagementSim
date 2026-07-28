@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920,height=1080">
+<title>Riverbend Phase 6 Visual Validation</title>
+<style>
+:root {
+  --navy-950:#06131f; --navy-900:#081b2a; --navy-850:#0a2334;
+  --navy-800:#0d2c40; --cyan:#08a9d1; --cyan-soft:#72d8e7;
+  --amber:#ffb72c; --ivory:#f6f2e6; --mint:#56d3a2;
+  --red:#f65e54; --muted:#9eb5bd; --line:#1b6078;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:var(--navy-950);font-family:"Segoe UI",sans-serif;color:var(--ivory)}
+body{background:
+  linear-gradient(rgba(8,27,42,.94),rgba(6,19,31,.97)),
+  repeating-linear-gradient(0deg,transparent 0 39px,rgba(8,169,209,.08) 40px),
+  repeating-linear-gradient(90deg,transparent 0 39px,rgba(8,169,209,.08) 40px)}
+.shell{width:100%;height:100%;padding:24px;display:grid;grid-template-rows:88px 1fr 58px;gap:14px}
+.topbar,.footer,.panel,.card,.chip,.world{border:2px solid var(--line);background:rgba(8,31,47,.96)}
+.topbar{border-radius:22px;padding:16px 22px;display:flex;align-items:center;gap:18px}
+.brandmark{width:52px;height:52px;border:2px solid var(--cyan);border-radius:14px;display:grid;place-items:center;color:var(--amber);font-size:30px}
+.titleblock{flex:1}.eyebrow,.section-title,.label,.tab,.metric-label{text-transform:uppercase;font-weight:750;letter-spacing:.08em}
+.eyebrow{color:var(--cyan);font-size:15px}.title{font-size:32px;line-height:1.1;font-weight:800}.subtitle{color:var(--muted);font-size:16px;margin-top:4px}
+.topmetrics{display:flex;gap:10px}.chip{border-radius:13px;padding:10px 14px;font-size:14px;color:var(--muted)}.chip b{color:var(--ivory)}
+.layout{display:grid;grid-template-columns:300px 1fr 344px;gap:14px;min-height:0}
+.panel{border-radius:20px;padding:17px;min-height:0;overflow:hidden}
+.section-title{font-size:17px;color:var(--cyan);margin-bottom:14px;display:flex;justify-content:space-between}
+.tabs{display:grid;gap:9px}.tab{height:50px;border:1px solid var(--line);border-radius:13px;padding:14px;color:var(--muted);font-size:14px;background:#092236}
+.tab.active{background:#0a354a;color:var(--ivory);border-color:var(--cyan);box-shadow:inset 4px 0 var(--amber)}
+.stack{display:grid;gap:10px}.card{border-width:1px;border-radius:15px;padding:13px}.card.selected{border-color:var(--cyan);box-shadow:inset 4px 0 var(--cyan)}
+.card.warn{border-color:var(--amber);box-shadow:inset 4px 0 var(--amber)}.card.danger{border-color:var(--red);box-shadow:inset 4px 0 var(--red)}
+.card h3{font-size:16px;margin:0 0 5px}.card p{font-size:13px;line-height:1.35;margin:0;color:var(--muted)}
+.status{display:inline-flex;align-items:center;gap:7px;margin-top:8px;font-size:12px;font-weight:750;text-transform:uppercase;letter-spacing:.06em}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--mint)}.warn .dot{background:var(--amber)}.danger .dot{background:var(--red)}
+.world{position:relative;border-radius:22px;overflow:hidden;background:
+  linear-gradient(rgba(11,43,47,.16),rgba(11,43,47,.16)),
+  repeating-linear-gradient(45deg,#2e543c 0 12px,#325941 12px 24px)}
+.world::before{content:"LIVE 2D AIRPORT";position:absolute;left:18px;top:16px;padding:7px 10px;border-radius:9px;background:rgba(6,19,31,.84);border:1px solid var(--cyan);font-size:12px;font-weight:800;letter-spacing:.08em;z-index:6}
+.world-note{position:absolute;right:16px;top:16px;padding:8px 11px;border-radius:10px;background:rgba(6,19,31,.9);border:1px solid var(--line);font-size:12px;color:var(--muted);z-index:6}
+.runway{position:absolute;width:78px;height:660px;top:104px;background:#29323b;border:5px solid #c8d0c8;box-shadow:0 0 0 6px rgba(6,19,31,.55)}
+.runway::before{content:"";position:absolute;left:34px;top:20px;bottom:20px;border-left:4px dashed #f4f0dd}
+.r1{left:26%;transform:rotate(2deg)}.r2{left:48%;transform:rotate(2deg)}
+.runway-label{position:absolute;left:9px;color:#f4f0dd;font-weight:900;font-size:18px;z-index:2}.runway-label.top{top:14px}.runway-label.bottom{bottom:14px;transform:rotate(180deg)}
+.taxi{position:absolute;background:#b08b45;border:4px solid #e7c576}.taxi.h{height:46px;left:25%;right:9%;top:54%}.taxi.v{width:46px;top:38%;bottom:9%;left:68%}
+.stand{position:absolute;width:210px;height:138px;right:7%;top:38%;background:#aa8c63;border:4px solid var(--amber);border-radius:18px}
+.stand::before{content:"H1";position:absolute;left:15px;top:12px;color:#4a3520;font-weight:900;font-size:26px}
+.building{position:absolute;background:#18394a;border:3px solid var(--cyan);border-radius:16px;color:var(--ivory);display:grid;place-items:center;text-align:center;font-size:13px;font-weight:750}
+.closure{position:absolute;background:repeating-linear-gradient(45deg,rgba(246,94,84,.8) 0 8px,rgba(255,183,44,.18) 8px 16px);border:3px solid var(--red);border-radius:9px}
+.route{position:absolute;border:4px dashed var(--cyan);border-left:0;border-bottom:0;border-radius:0 20px 0 0}
+.aircraft{position:absolute;object-fit:contain;z-index:5;filter:drop-shadow(8px 10px 3px rgba(3,10,16,.42))}
+.vehicle{position:absolute;width:32px;height:18px;border-radius:5px;background:var(--amber);border:2px solid var(--navy-950);z-index:5}
+.vehicle.cyan{background:var(--cyan)}.vehicle.red{background:var(--red)}
+.person{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--ivory);z-index:4}
+.metricgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.metric{background:#092236;border:1px solid var(--line);border-radius:13px;padding:12px}.metric strong{font-size:23px;display:block}.metric-label{font-size:10px;color:var(--muted)}
+.progress{height:9px;background:#06131f;border-radius:9px;overflow:hidden;margin-top:8px}.progress span{display:block;height:100%;background:var(--cyan);border-radius:9px}.progress.amber span{background:var(--amber)}.progress.red span{background:var(--red)}
+.button{height:46px;border-radius:13px;border:2px solid var(--cyan);background:#073f53;color:var(--ivory);display:grid;place-items:center;font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-top:10px}.button.secondary{background:transparent;border-color:var(--line);color:var(--muted)}
+.footer{border-radius:16px;padding:12px 18px;display:flex;align-items:center;gap:20px;color:var(--muted);font-size:13px}
+.footer b{color:var(--cyan)}.spacer{flex:1}.legend{display:flex;gap:14px}.legend span{display:flex;align-items:center;gap:7px}
+.cap-map{position:absolute;inset:74px 52px 42px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:18px}
+.cap-card{border:2px solid var(--line);border-radius:22px;background:rgba(8,31,47,.94);padding:18px;position:relative}
+.cap-card.active{border-color:var(--cyan)}.cap-card h2{font-size:20px;margin:0 0 7px}.band{position:absolute;right:15px;top:15px;border:1px solid var(--amber);color:var(--amber);padding:7px 9px;border-radius:10px;font-size:11px;font-weight:800}
+.evidence{display:grid;gap:6px;margin-top:13px}.evidence div{font-size:13px;color:var(--muted);display:flex;justify-content:space-between}.evidence b{color:var(--ivory)}
+.scale-cloud{position:absolute;inset:100px 55px 60px}.cluster{position:absolute;border:2px solid rgba(8,169,209,.5);background:rgba(8,38,48,.38);border-radius:24px}
+.cluster::after{content:attr(data-label);position:absolute;left:10px;top:9px;color:var(--cyan-soft);font-size:11px;font-weight:800;letter-spacing:.06em}
+.speck{position:absolute;width:5px;height:5px;border-radius:50%;background:var(--ivory);opacity:.85}
+.count-badge{position:absolute;border:2px solid var(--cyan);background:#092a3b;border-radius:18px;padding:12px 15px;font-weight:800;font-size:18px}
+.count-badge small{display:block;color:var(--muted);font-size:10px;letter-spacing:.08em}
+</style>
+</head>
+<body>
+<main class="shell">
+  <header class="topbar">
+    <div class="brandmark">☀</div>
+    <div class="titleblock">
+      <div class="eyebrow">Riverbend Airports · Phase 6 validation</div>
+      <div class="title" id="title"></div>
+      <div class="subtitle" id="subtitle"></div>
+    </div>
+    <div class="topmetrics">
+      <div class="chip">DAY <b>14</b></div>
+      <div class="chip">TIME <b>16:42</b></div>
+      <div class="chip">FUNDS <b>£184,700</b></div>
+      <div class="chip">AP <b>100</b></div>
+    </div>
+  </header>
+  <section class="layout">
+    <aside class="panel">
+      <div class="section-title"><span>Major operations</span><span>06</span></div>
+      <div class="tabs" id="tabs"></div>
+      <div class="section-title" style="margin-top:20px"><span>Current state</span></div>
+      <div class="stack" id="leftcards"></div>
+    </aside>
+    <section class="world" id="world"></section>
+    <aside class="panel">
+      <div class="section-title"><span id="railtitle">Inspector</span><span>LIVE</span></div>
+      <div id="rail"></div>
+    </aside>
+  </section>
+  <footer class="footer">
+    <b id="reference"></b>
+    <span id="alignment"></span>
+    <span class="spacer"></span>
+    <span>World area 64%</span>
+    <span>Mouse visible</span>
+    <span>Color + label status</span>
+  </footer>
+</main>
+<script>
+const aircraft="../../../../SourceAssets/Phase6/Aircraft/T_RiverbendLongreach787_9_H04.png";
+const tabs=(active)=>["Runways","Capacity","RL 602","Incident","Major"].map(x=>`<div class="tab ${x===active?"active":""}">${x}</div>`).join("");
+const card=(title,text,type="")=>`<div class="card ${type}"><h3>${title}</h3><p>${text}</p><div class="status"><span class="dot"></span>${type==="danger"?"ACTION REQUIRED":type==="warn"?"WATCH":"READY"}</div></div>`;
+const metric=(value,label,fill=100,color="")=>`<div class="metric"><strong>${value}</strong><div class="metric-label">${label}</div><div class="progress ${color}"><span style="width:${fill}%"></span></div></div>`;
+const frames={
+runways:{
+ title:"Parallel runway operations",subtitle:"Independent configuration with capacity, closure, and reciprocal-end clarity",active:"Runways",ref:"VA-01 + VA-04",align:"World-first overview · planning hierarchy · concise configuration rail",
+ left:[card("09L / 27R","ARRIVAL · operational · 3,200 × 45 m"),card("09R / 27L","DEPARTURE · operational · 3,200 × 45 m","selected"),card("Crossing window","No crossing conflict in the next 18 min")],
+ world:`<div class="world-note">CONFIG: INDEPENDENT ARRIVAL / DEPARTURE</div><div class="runway r1"><span class="runway-label top">09L</span><span class="runway-label bottom">27R</span></div><div class="runway r2"><span class="runway-label top">09R</span><span class="runway-label bottom">27L</span></div><div class="taxi h"></div><div class="taxi v"></div><div class="building" style="right:7%;bottom:8%;width:190px;height:92px">OPERATIONS<br>CENTER</div><div class="route" style="left:49%;top:43%;width:260px;height:210px"></div>`,
+ railtitle:"Runway configuration",rail:`<div class="metricgrid">${metric("2 / 2","Operational runways")}${metric("34","Movements / hour",78)}${metric("12 min","Peak queue",44,"amber")}${metric("100%","Reciprocal integrity")}</div>${card("Independent use","09L arrivals · 09R departures","selected")}${card("Protection","No open closure or crossing conflict")}<div class="button">Apply configuration</div><div class="button secondary">Review timetable impact</div>`
+},
+terminal:{
+ title:"High-capacity terminal flow",subtitle:"Passenger, baggage, and public-access capacity remain one connected operating system",active:"Capacity",ref:"VA-03",align:"Spatial terminal flow · explicit baggage chain · public-access choices",
+ left:[card("Concourse B","12 contact gates · 4,800 passengers / hour","selected"),card("Baggage hall","18 make-up lines · 12 reclaim belts"),card("Public access","Rail and bus open · parking connected")],
+ world:`<div class="world-note">HIGH-CAPACITY TERMINAL · ALL ROUTES CONNECTED</div>
+ <div class="building" style="left:8%;top:13%;width:31%;height:23%">CHECK-IN + SECURITY<br>4,800 PAX / HOUR</div>
+ <div class="building" style="left:47%;top:10%;width:43%;height:27%">CONCOURSE B<br>12 CONTACT GATES</div>
+ <div class="building" style="left:10%;top:51%;width:35%;height:25%;border-color:var(--amber)">BAGGAGE HALL<br>18 MAKE-UP · 12 RECLAIM</div>
+ <div class="building" style="right:8%;bottom:8%;width:33%;height:22%;border-color:var(--mint)">PUBLIC ACCESS HUB<br>RAIL · BUS · PARKING</div>
+ <div class="route" style="left:34%;top:23%;width:215px;height:155px"></div>
+ <div class="route" style="left:28%;top:38%;width:330px;height:235px;border-color:var(--amber)"></div>
+ <div class="route" style="left:51%;top:49%;width:285px;height:215px;border-color:var(--mint)"></div>
+ ${Array.from({length:48},(_,i)=>`<i class="person" style="left:${11+(i*17)%74}%;top:${18+(i*29)%62}%;background:${i%7===0?"var(--amber)":i%5===0?"var(--cyan)":"var(--ivory)"}"></i>`).join("")}`,
+ railtitle:"Capacity and flow",rail:`<div class="metricgrid">${metric("4,800","Passengers / hour",86)}${metric("2,900","Bags / hour",78,"amber")}${metric("12 / 12","Gates available")}${metric("2 / 2","Access modes")}</div>${card("Flow connected","Entrance → security → gate → reclaim → access","selected")}${card("Shared-resource watch","Two baggage lines reserved for RL 602","warn")}<div class="button">Inspect passenger flow</div><div class="button secondary">Open baggage capacity</div>`
+},
+turnaround:{
+ title:"RL 602 wide-body turnaround",subtitle:"One ordinary-dispatch chain with passenger and baggage reconciliation",active:"RL 602",ref:"VA-05",align:"Selected aircraft hierarchy · safe service positions · dependency-first turnaround",
+ left:[card("RL 602","Riverbend Longreach · B787-9 · Stand H1","selected"),card("Departure 18:05","278 passengers · 334 accepted bags"),card("Airfield readiness","09R departure slot protected")],
+ world:`<div class="world-note">STAND H1 · 42 MIN TO DEPARTURE</div><div class="stand"></div><div class="taxi h"></div><img class="aircraft" src="${aircraft}" style="width:510px;height:510px;right:8%;top:23%"><div class="route" style="right:29%;top:47%;width:280px;height:190px"></div><div class="vehicle cyan" style="right:34%;top:45%"></div><div class="vehicle" style="right:27%;top:69%"></div><div class="vehicle" style="right:12%;top:65%"></div><div class="vehicle cyan" style="right:8%;top:31%"></div><div class="building" style="left:7%;bottom:8%;width:220px;height:108px">CONCOURSE B<br>GATE 12</div>`,
+ railtitle:"Turnaround chain",rail:`${card("6 of 11 tasks complete","Fuel and catering complete · bags loading","selected")}<div class="metricgrid">${metric("278 / 278","Passengers reconciled")}${metric("286 / 334","Bags loaded",86,"amber")}${metric("4","Teams dispatched")}${metric("0","Unsafe overlaps")}</div>${card("Next dependency","Complete baggage load, then doors and pushback","warn")}<div class="button">Advance operation</div><div class="button secondary">Inspect ordinary tasks</div>`
+},
+major:{
+ title:"Major capability evidence",subtitle:"Six non-exclusive paths with permanent earned bands and recoverable operational bands",active:"Major",ref:"VA-07",align:"Equal paths · explicit evidence · no exclusive specialization",
+ left:[card("Earned band","Major is permanent once evidenced","selected"),card("Operational band","Requirement loss starts grace and recovery","warn"),card("Universal gate","100 AP · 14 days · safety 80 · reliability 80")],
+ world:`<div class="world-note">MAJOR EVIDENCE MAP · ALL PATHS INDEPENDENT</div><div class="cap-map">
+ ${["General Aviation","Flight School","Charter","Cargo","Passenger","Mixed"].map((x,i)=>`<div class="cap-card ${i===4?"active":""}"><span class="band">${i<5?"MAJOR":"ADVANCED"}</span><h2>${x}</h2><p style="color:var(--muted);margin:0">${i===4?"One complete 787 turnaround and two access modes":"Path evidence retained without unrelated signature facilities"}</p><div class="evidence"><div><span>Airport points</span><b>100 / 100</b></div><div><span>Operating days</span><b>14 / 14</b></div><div><span>Readiness</span><b>${84+i}%</b></div><div><span>Tenant relation</span><b>${76+i}%</b></div></div></div>`).join("")}
+ </div>`,
+ railtitle:"Passenger evidence",rail:`${card("Major earned","Operational requirements currently satisfied","selected")}<div class="metricgrid">${metric("24 / 24","Recurring flights")}${metric("500 / 500","Journeys")}${metric("1 / 1","787 turnarounds")}${metric("2 / 2","Access modes")}</div>${card("Facility independence","Warehouse and GA campus are not required")}<div class="button">Review achievement</div><div class="button secondary">Cycle path</div>`
+},
+incident:{
+ title:"Serious incident continuity",subtitle:"Warned, confirmed, localized, recoverable—and never a bankruptcy trap",active:"Incident",ref:"VA-06",align:"Localized closure · consequence/remedy copy · ordinary response resources",
+ left:[card("Incident 6A","Aircraft loss · area protected · no injuries","danger"),card("09L / 27R","Closed locally for investigation","warn"),card("09R / 27L","Open · reduced mixed operations continue")],
+ world:`<div class="world-note">LOCALIZED CLOSURE · ADJACENT RUNWAY OPEN</div><div class="runway r1"><span class="runway-label top">09L</span><span class="runway-label bottom">27R</span></div><div class="runway r2"><span class="runway-label top">09R</span><span class="runway-label bottom">27L</span></div><div class="closure" style="left:23%;top:46%;width:138px;height:170px"></div><div class="route" style="left:35%;top:32%;width:310px;height:260px;border-color:var(--red)"></div><div class="vehicle red" style="left:39%;top:31%"></div><div class="vehicle" style="left:45%;top:38%"></div><div class="vehicle cyan" style="left:38%;top:59%"></div><div class="building" style="right:6%;bottom:7%;width:210px;height:108px;border-color:var(--red)">AIRPORT RESCUE<br>STATION</div>`,
+ railtitle:"Incident lifecycle",rail:`${card("Area protected","CAUSE · aircraft loss on 09L<br>CONSEQUENCE · localized closure<br>REMEDY · investigate, repair, reopen","danger")}<div class="metricgrid">${metric("4 / 4","Resources on scene")}${metric("100%","Area protection")}${metric("62%","Investigation",62,"amber")}${metric("1","Runway remains open")}</div>${card("Continuity","Departures continue on 09R at reduced rate","selected")}<div class="button">Begin repair</div><div class="button secondary">Review incident report</div>`
+},
+scale:{
+ title:"Maximum-scale airport overview",subtitle:"10,000 logical agents with a bounded 2,000-visible presentation pool",active:"Capacity",ref:"VA-01 + VA-03",align:"World-dominant operations · aggregated flow · explicit performance budget",
+ left:[card("Logical population","10,000 active passengers, bags, teams, and vehicles","selected"),card("Visible pool","2,000 proxies · reused, sorted, and revision-gated"),card("Backlog","0 critical buckets · deterministic aggregation")],
+ world:`<div class="world-note">MAXIMUM SCALE FIXTURE · NO BACKLOG WARNING</div><div class="scale-cloud">
+ <div class="cluster" data-label="TERMINAL A · 3,450" style="left:2%;top:8%;width:42%;height:35%"></div>
+ <div class="cluster" data-label="CONCOURSE B · 2,780" style="right:2%;top:5%;width:42%;height:38%"></div>
+ <div class="cluster" data-label="CARGO + SERVICE · 1,420" style="left:8%;bottom:4%;width:35%;height:37%"></div>
+ <div class="cluster" data-label="LANDSIDE + ACCESS · 2,350" style="right:3%;bottom:4%;width:48%;height:38%"></div>
+ ${Array.from({length:150},(_,i)=>`<i class="speck" style="left:${4+(i*37)%91}%;top:${5+(i*53)%87}%;background:${i%11===0?"var(--amber)":i%7===0?"var(--cyan)":"var(--ivory)"}"></i>`).join("")}
+ <div class="count-badge" style="left:39%;top:41%"><small>LOGICAL AGENTS</small>10,000</div>
+ <div class="count-badge" style="left:61%;top:49%"><small>VISIBLE PROXIES</small>2,000</div>
+ </div>`,
+ railtitle:"Scale diagnostics",rail:`<div class="metricgrid">${metric("10,000","Logical agents")}${metric("2,000","Visible proxies")}${metric("150","On-map aircraft")}${metric("500","Vehicles")}</div>${card("Aggregation healthy","Revision-gated pools remain within target","selected")}${card("Simulation buckets","32 deferred buckets · deterministic order")}<div class="button">Inspect capacity</div><div class="button secondary">Toggle flow overlay</div>`
+}
+};
+const key=new URLSearchParams(location.search).get("board")||"runways";
+const f=frames[key]||frames.runways;
+document.getElementById("title").textContent=f.title;
+document.getElementById("subtitle").textContent=f.subtitle;
+document.getElementById("tabs").innerHTML=tabs(f.active);
+document.getElementById("leftcards").innerHTML=f.left.join("");
+document.getElementById("world").innerHTML=f.world;
+document.getElementById("railtitle").textContent=f.railtitle;
+document.getElementById("rail").innerHTML=f.rail;
+document.getElementById("reference").textContent="REFERENCE · "+f.ref;
+document.getElementById("alignment").textContent=f.align;
+</script>
+</body>
+</html>

@@ -884,6 +884,7 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 	FinalizePhase5Presentation(
 		Phase5FreighterSprites[0],
 		Phase5FreighterSprites[1]);
+	InitializePhase6Presentation();
 	const FVector AirsideLinkLocations[] = {
 		FVector(14500.0, -26000.0, 12.0),
 		FVector(14500.0, 26000.0, 13.0),

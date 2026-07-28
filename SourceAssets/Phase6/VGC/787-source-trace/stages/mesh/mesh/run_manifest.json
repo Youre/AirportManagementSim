@@ -1,0 +1,33 @@
+{
+  "created_at": "2026-07-28T21:38:37+00:00",
+  "entry_path": "image_tracing",
+  "expected_output_refs": {
+    "metadata_bundle": "WEB-102",
+    "optimized_svg": "WEB-102",
+    "runtime_export_bundle": "WEB-102"
+  },
+  "input_refs": {
+    "interaction_mesh": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\mesh\\mesh\\interaction_mesh.json",
+    "mesh_preview_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\mesh\\mesh\\mesh_preview.svg",
+    "segmentation_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\segment\\segmentation\\segmentation_manifest.json"
+  },
+  "next_phase": "WEB-102",
+  "run_id": "mesh",
+  "schema_version": "0.1",
+  "stage_statuses": [
+    {
+      "notes": "Deterministic layer-aware interaction mesh generated.",
+      "stage": "interaction_mesh_generation",
+      "status": "complete"
+    },
+    {
+      "notes": "Next phase: WEB-102.",
+      "stage": "metadata_runtime_export",
+      "status": "pending"
+    }
+  ],
+  "status": "passed",
+  "warnings": [
+    "Skipped unsupported internal SVG element type for cleanup: g"
+  ]
+}

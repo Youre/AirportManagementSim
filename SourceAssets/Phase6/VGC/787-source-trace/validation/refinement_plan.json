@@ -1,0 +1,74 @@
+{
+  "created_at": "2026-07-28T21:38:46+00:00",
+  "next_phase": "WEB-94",
+  "orchestration_manifest_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\workflow\\orchestration_manifest.json",
+  "quality_scores": [
+    {
+      "category": "artifact_health",
+      "max_score": 100.0,
+      "notes": "0 failed checks and 0 warning checks across workflow artifacts.",
+      "score": 100.0,
+      "status": "pass"
+    },
+    {
+      "category": "topology_quality",
+      "max_score": 100.0,
+      "notes": "1 cleanup warnings.",
+      "score": 97.0,
+      "status": "pass"
+    },
+    {
+      "category": "visual_fidelity",
+      "max_score": 100.0,
+      "notes": "cleanup point retention 0.960; faithful retained 379 contours and 5812 points (0.892 contour ratio, 0.173 point ratio)",
+      "score": 45.541,
+      "status": "fail"
+    },
+    {
+      "category": "semantic_readability",
+      "max_score": 100.0,
+      "notes": "Semantic layer coverage is within expected ranges.",
+      "score": 100.0,
+      "status": "pass"
+    },
+    {
+      "category": "interaction_mesh_usability",
+      "max_score": 100.0,
+      "notes": "Interaction mesh checks are within expected ranges.",
+      "score": 100.0,
+      "status": "pass"
+    },
+    {
+      "category": "runtime_usability",
+      "max_score": 100.0,
+      "notes": "Runtime bundle checks are within expected ranges.",
+      "score": 100.0,
+      "status": "pass"
+    }
+  ],
+  "refinement_actions": [
+    {
+      "action_id": "action-01",
+      "action_type": "rerun_stage",
+      "command": [
+        "skills/vector-graphic-composer/env/bin/python",
+        "skills/vector-graphic-composer/scripts/vgc_orchestrate.py",
+        "--source",
+        "<source_image>",
+        "--intent",
+        "<intent>",
+        "--entry-path",
+        "image_tracing",
+        "--fidelity-profile",
+        "faithful",
+        "--out",
+        "<new_workflow_out>"
+      ],
+      "priority": 25,
+      "reason": "Visual fidelity is below the ready threshold; rerun the image workflow with `--fidelity-profile faithful` and inspect the contour budgets.",
+      "stage": "analyze"
+    }
+  ],
+  "schema_version": "0.1",
+  "status": "fail"
+}

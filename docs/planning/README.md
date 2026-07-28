@@ -4,7 +4,7 @@ This directory is the durable source of truth for planning the 2D, top-down airp
 
 ## Current planning stage
 
-The project is in **phased implementation**. `ideas.txt` remains the living concept source; the approved specification set defines implementable feature behavior, technical boundaries, initial tuning, verification, and phased integration. Phase 0 through [PI-07 Phase 4.5 visual-content remediation](50-production/phase-4-5-visual-content-remediation-plan.md) are complete; aesthetic refinement remains continuing visual debt. [PI-08 Phase 5 cargo and specialization breadth](50-production/phase-5-cargo-specialization-breadth-implementation-plan.md) is implementation- and technically complete, with six owner-operated accelerated acceptance journeys still open before the phase is formally closed. The four-hour physical-tier soak and formal unassisted tester record are deferred to release hardening and do not block continued feature development. Work still enters only through its owning approved specifications and phase gate.
+The project is in **phased implementation**. `ideas.txt` remains the living concept source; the approved specification set defines implementable feature behavior, technical boundaries, initial tuning, verification, and phased integration. Phase 0 through [PI-07 Phase 4.5 visual-content remediation](50-production/phase-4-5-visual-content-remediation-plan.md) are complete; aesthetic refinement remains continuing visual debt. [PI-08 Phase 5 cargo and specialization breadth](50-production/phase-5-cargo-specialization-breadth-implementation-plan.md) and [PI-09 Phase 6 Major-airport capability](50-production/phase-6-major-airport-capability-implementation-plan.md) are implementation- and technically complete. Their owner-operated acceptance journeys, Phase 6 final visual checkpoint, and bounded 15-minute maximum-load observation remain open. The four-hour physical-tier soak, genuine pacing journey, and formal unassisted tester record are deferred to release hardening and do not block continued feature development. Work still enters only through its owning approved specifications and phase gate.
 
 ## Directory map
 
@@ -91,6 +91,9 @@ The inventory confirms presence, format, dimensions, and source classification. 
 - [Phase 5 cargo and specialization breadth plan](50-production/phase-5-cargo-specialization-breadth-implementation-plan.md)
 - [Phase 5 visual validation](50-production/phase5-visual-validation/README.md)
 - [Phase 5 content provenance](30-content-and-assets/phase-5-content-provenance.md)
+- [Phase 6 Major-airport capability plan](50-production/phase-6-major-airport-capability-implementation-plan.md)
+- [Phase 6 visual validation](50-production/phase6-visual-validation/README.md)
+- [Phase 6 content provenance](30-content-and-assets/phase-6-content-provenance.md)
 - [Phase 1 reference-hardware gate](50-production/phase-1-reference-hardware.md)
 - [Phase 1 unassisted new-tester protocol](50-production/phase-1-new-tester-protocol.md)
 - [Verification and requirements traceability](50-production/verification-traceability.md)

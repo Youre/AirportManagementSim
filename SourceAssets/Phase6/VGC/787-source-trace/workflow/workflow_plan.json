@@ -1,0 +1,240 @@
+{
+  "artifacts": [],
+  "created_at": "2026-07-28T21:38:35+00:00",
+  "dry_run": false,
+  "entry_decision": {
+    "explicit_entry_path": true,
+    "fidelity_profile": "faithful",
+    "input_mode": "image",
+    "rationale": "Explicit entry path supplied by caller.",
+    "selected_entry_path": "image_tracing",
+    "source_kind": "image"
+  },
+  "entry_path": "image_tracing",
+  "from_stage": "ingest",
+  "input_mode": "image",
+  "metrics": {
+    "artifact_count": 0,
+    "dry_run": false,
+    "executed_stage_count": 0,
+    "failed_stage_count": 0,
+    "planned_stage_count": 7,
+    "skipped_stage_count": 7,
+    "total_duration_seconds": 0.0
+  },
+  "next_phase": "WEB-104",
+  "run_id": "787-source-trace",
+  "schema_version": "0.1",
+  "stages": [
+    {
+      "command": [
+        "C:\\Users\\dave\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "C:\\Users\\dave\\Documents\\custom-skills\\skills\\vector-graphic-composer\\scripts\\vgc_ingest.py",
+        "--intent",
+        "Faithful top-down Boeing 787-9 silhouette baseline for the owner-approved fictional Riverbend Longreach River and Sun livery; preserve editable aircraft geometry and transparent background",
+        "--entry-path",
+        "image_tracing",
+        "--out",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\ingest",
+        "--source",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\Aircraft\\Boeing_787-9_source-approved.png"
+      ],
+      "completed_at": null,
+      "duration_seconds": null,
+      "input_refs": {
+        "intent": "Faithful top-down Boeing 787-9 silhouette baseline for the owner-approved fictional Riverbend Longreach River and Sun livery; preserve editable aircraft geometry and transparent background"
+      },
+      "notes": "Stage planned by VGC orchestrator.",
+      "output_refs": {
+        "input_package": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\ingest\\input_package.json",
+        "run_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\ingest\\run_manifest.json"
+      },
+      "returncode": null,
+      "stage": "ingest",
+      "started_at": null,
+      "status": "planned",
+      "stderr_tail": "",
+      "stdout_tail": "",
+      "warnings": []
+    },
+    {
+      "command": [
+        "C:\\Users\\dave\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "C:\\Users\\dave\\Documents\\custom-skills\\skills\\vector-graphic-composer\\scripts\\vgc_analyze.py",
+        "--input-package",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\ingest\\input_package.json",
+        "--out",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\analyze",
+        "--fidelity-profile",
+        "faithful"
+      ],
+      "completed_at": null,
+      "duration_seconds": null,
+      "input_refs": {
+        "fidelity_profile": "faithful",
+        "input_package": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\ingest\\input_package.json"
+      },
+      "notes": "Stage planned by VGC orchestrator.",
+      "output_refs": {
+        "run_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\analyze\\structural\\run_manifest.json",
+        "structural_analysis": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\analyze\\structural\\structural_analysis.json"
+      },
+      "returncode": null,
+      "stage": "analyze",
+      "started_at": null,
+      "status": "planned",
+      "stderr_tail": "",
+      "stdout_tail": "",
+      "warnings": []
+    },
+    {
+      "command": [
+        "C:\\Users\\dave\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "C:\\Users\\dave\\Documents\\custom-skills\\skills\\vector-graphic-composer\\scripts\\vgc_vectorize.py",
+        "--structural-analysis",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\analyze\\structural\\structural_analysis.json",
+        "--out",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\vectorize",
+        "--fidelity-profile",
+        "faithful"
+      ],
+      "completed_at": null,
+      "duration_seconds": null,
+      "input_refs": {
+        "fidelity_profile": "faithful",
+        "structural_analysis": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\analyze\\structural\\structural_analysis.json"
+      },
+      "notes": "Stage planned by VGC orchestrator.",
+      "output_refs": {
+        "raw_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\vectorize\\vector\\raw.svg",
+        "run_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\vectorize\\vector\\run_manifest.json",
+        "vector_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\vectorize\\vector\\vector_manifest.json"
+      },
+      "returncode": null,
+      "stage": "vectorize",
+      "started_at": null,
+      "status": "planned",
+      "stderr_tail": "",
+      "stdout_tail": "",
+      "warnings": []
+    },
+    {
+      "command": [
+        "C:\\Users\\dave\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "C:\\Users\\dave\\Documents\\custom-skills\\skills\\vector-graphic-composer\\scripts\\vgc_cleanup.py",
+        "--vector-manifest",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\vectorize\\vector\\vector_manifest.json",
+        "--out",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\cleanup",
+        "--fidelity-profile",
+        "faithful"
+      ],
+      "completed_at": null,
+      "duration_seconds": null,
+      "input_refs": {
+        "fidelity_profile": "faithful",
+        "vector_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\vectorize\\vector\\vector_manifest.json"
+      },
+      "notes": "Stage planned by VGC orchestrator.",
+      "output_refs": {
+        "cleaned_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\cleanup\\cleanup\\cleaned.svg",
+        "cleanup_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\cleanup\\cleanup\\cleanup_manifest.json",
+        "run_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\cleanup\\cleanup\\run_manifest.json"
+      },
+      "returncode": null,
+      "stage": "cleanup",
+      "started_at": null,
+      "status": "planned",
+      "stderr_tail": "",
+      "stdout_tail": "",
+      "warnings": []
+    },
+    {
+      "command": [
+        "C:\\Users\\dave\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "C:\\Users\\dave\\Documents\\custom-skills\\skills\\vector-graphic-composer\\scripts\\vgc_segment.py",
+        "--cleanup-manifest",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\cleanup\\cleanup\\cleanup_manifest.json",
+        "--out",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\segment"
+      ],
+      "completed_at": null,
+      "duration_seconds": null,
+      "input_refs": {
+        "cleanup_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\cleanup\\cleanup\\cleanup_manifest.json"
+      },
+      "notes": "Stage planned by VGC orchestrator.",
+      "output_refs": {
+        "layered_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\segment\\segmentation\\layered.svg",
+        "run_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\segment\\segmentation\\run_manifest.json",
+        "segmentation_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\segment\\segmentation\\segmentation_manifest.json"
+      },
+      "returncode": null,
+      "stage": "segment",
+      "started_at": null,
+      "status": "planned",
+      "stderr_tail": "",
+      "stdout_tail": "",
+      "warnings": []
+    },
+    {
+      "command": [
+        "C:\\Users\\dave\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "C:\\Users\\dave\\Documents\\custom-skills\\skills\\vector-graphic-composer\\scripts\\vgc_mesh.py",
+        "--segmentation-manifest",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\segment\\segmentation\\segmentation_manifest.json",
+        "--out",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\mesh"
+      ],
+      "completed_at": null,
+      "duration_seconds": null,
+      "input_refs": {
+        "segmentation_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\segment\\segmentation\\segmentation_manifest.json"
+      },
+      "notes": "Stage planned by VGC orchestrator.",
+      "output_refs": {
+        "interaction_mesh": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\mesh\\mesh\\interaction_mesh.json",
+        "mesh_preview_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\mesh\\mesh\\mesh_preview.svg",
+        "run_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\mesh\\mesh\\run_manifest.json"
+      },
+      "returncode": null,
+      "stage": "mesh",
+      "started_at": null,
+      "status": "planned",
+      "stderr_tail": "",
+      "stdout_tail": "",
+      "warnings": []
+    },
+    {
+      "command": [
+        "C:\\Users\\dave\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "C:\\Users\\dave\\Documents\\custom-skills\\skills\\vector-graphic-composer\\scripts\\vgc_export.py",
+        "--interaction-mesh",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\mesh\\mesh\\interaction_mesh.json",
+        "--out",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\export"
+      ],
+      "completed_at": null,
+      "duration_seconds": null,
+      "input_refs": {
+        "interaction_mesh": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\mesh\\mesh\\interaction_mesh.json"
+      },
+      "notes": "Stage planned by VGC orchestrator.",
+      "output_refs": {
+        "export_package": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\export\\runtime\\export_package.json",
+        "run_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\export\\runtime\\run_manifest.json",
+        "runtime_bundle_zip": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\export\\runtime_bundle.zip",
+        "runtime_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\export\\runtime\\vgc.svg"
+      },
+      "returncode": null,
+      "stage": "export",
+      "started_at": null,
+      "status": "planned",
+      "stderr_tail": "",
+      "stdout_tail": "",
+      "warnings": []
+    }
+  ],
+  "to_stage": "export",
+  "warnings": []
+}

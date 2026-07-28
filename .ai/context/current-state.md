@@ -6,31 +6,35 @@ Material profile: documents
 Initialization mode: augment-existing
 
 Active priorities:
-- Run the six owner-operated accelerated Advanced-path journeys against the
-  technically complete Phase 5 baseline.
+- Complete the owner acceptance gates against the technically complete Phase
+  5 and Phase 6 baselines: six Advanced journeys, six Major journeys, the
+  Phase 6 final visual checkpoint, and the bounded maximum-load observation.
 
 Current architectural tensions:
 - Shipping must exclude editor and online-support dependencies.
 - CommonUI and viewport capture must preserve a visible, interactive Windows mouse cursor.
 - Automated screenshot checks prove capture integrity and layout bounds, not visual similarity or polish.
+- Maximum-scale deterministic automation does not replace the remaining
+  time-based owner observation.
 
 Next verification command:
-- Complete one prepared-save journey for each of GA, Flight School, Charter,
-  Cargo, Passenger, and Mixed through player-facing controls.
+- Complete the GA Advanced and GA Major prepared-save journeys through
+  player-facing controls, then record the equivalent-state visual checkpoint.
 
 Last verification:
-- 2026-07-28 UTC: Phase 5 focused automation passed 5/5 and the full suite
-  passed 54 plus one retained warning-only test. Development and Shipping
-  packages passed with 553 cooked packages; Shipping contains all 48 Phase 5
-  assets, zero forbidden executable/module matches, zero runtime string loads,
-  zero required 3D assets, and zero observed TCP connections.
+- 2026-07-28 UTC: Phase 6 focused automation passed 8/8 and the full suite
+  passed 62 plus one retained warning-only legacy save test. Fresh Development
+  and Shipping packages each cooked 613 packages; Shipping contains all 60
+  Phase 6 assets and the production root widget, zero forbidden dependency,
+  direct runtime string-load, or required 3D matches, and zero observed TCP
+  connections.
 <!-- ai-project-init:end managed -->
 
 ## Project-specific state
 
 Active priorities:
 
-- Keep Phase 1-5 behavior stable while Phase 6 is planned.
+- Keep Phase 1-6 behavior stable while owner acceptance is completed.
 - Preserve a visible mouse cursor across gameplay world, HUD, panels, and click capture.
 - Use OpenAI Image Gen for concept/UI exploration and local ComfyUI for reviewed simple textures, variants, edits, and cutouts.
 
@@ -219,6 +223,35 @@ Verification note:
 - These automated and agent-executed checks do not substitute for the six
   owner-operated 10-15 minute prepared-save journeys required by PI-08. That
   is the sole Phase 5 acceptance gate still open.
+- Phase 6 implementation is technically complete under PI-09. Schema 7
+  composes Major progression, earned/operational capability state, parallel
+  runway configuration, high-capacity facilities, wide-body operations,
+  serious incidents, repairs/recovery, and scale diagnostics into
+  `FSimulation`.
+- Six independent fixtures reach Major for GA, Flight School, Charter, Cargo,
+  Passenger, and Mixed with unrelated signature facilities absent. Progression
+  remains non-exclusive and uses the focused Phase 5 evaluator.
+- The Riverbend Longreach 787-9 uses the owner-approved River & Sun fictional
+  livery. A project-authored vector master and 16 reviewed headings are
+  cooker-visible; only the approved Boeing 787-9 reference is retained outside
+  cooked content.
+- The complete Phase 1-6 automation suite reports 62 clean passes, one
+  retained warning-only legacy backup probe, and zero failures or not-run
+  tests. The exact 10,000-logical/2,000-visible/150-aircraft/500-vehicle
+  deterministic scale contract passes without a backlog warning.
+- Fresh Development and Shipping BuildCookRun passes produce 613 cooked
+  packages. Direct Shipping IoStore inspection finds all 60 Phase 6 assets
+  and the production root widget; dependency, direct runtime string-load,
+  required-3D, and eight-second offline socket checks are clean.
+- Five required Phase 6 equivalent-state boards plus a supplemental
+  maximum-scale frame cover parallel runways, high-capacity terminal flow,
+  wide-body turnaround, Major capability, incident continuity, and maximum
+  scale. The River & Sun aircraft checkpoint is approved; final owner visual
+  approval remains open.
+- Phase 6 formal closeout still requires the six Phase 5 Advanced journeys,
+  six Phase 6 Major journeys, final visual checkpoint, and bounded 15-minute
+  maximum-load observation. Phase 7 retains the four-hour soak, formal
+  unassisted test, and genuine pacing journey.
 - `ai-init doctor . --json` runs from `PATH`; its retained warnings are the
   documented baseline managed-template, lexical-review, legacy-ledger, and
   project schema/version warnings.

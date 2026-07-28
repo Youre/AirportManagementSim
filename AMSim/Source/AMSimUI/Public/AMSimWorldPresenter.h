@@ -5,6 +5,7 @@
 #include "AMSimPhase3Types.h"
 #include "AMSimPhase4Types.h"
 #include "AMSimPhase5Types.h"
+#include "AMSimPhase6Types.h"
 #include "GameFramework/Actor.h"
 #include "AMSimWorldPresenter.generated.h"
 
@@ -33,6 +34,9 @@ public:
 	void ApplyPhase5Snapshot(
 		const AMSim::FPhase5QuerySnapshot& Query,
 		const AMSim::FPhase5State& State);
+	void ApplyPhase6Snapshot(
+		const AMSim::FPhase6QuerySnapshot& Query,
+		const AMSim::FPhase6State& State);
 	void SetPhase3OverlayMode(int32 Mode);
 	void SetMatureOverviewMode(bool bEnabled);
 	void SetMatureSelectionFacility(bool bFacilitySelected);
@@ -46,6 +50,7 @@ public:
 	int32 GetActivePhase3BagProxyCount() const;
 	int32 GetActivePhase4ResponseProxyCount() const;
 	int32 GetActivePhase5CargoProxyCount() const;
+	int32 GetActivePhase6ProxyCount() const;
 	int32 GetActiveMatureSiteProxyCount() const;
 	int32 GetActivePhase1ConstructionProxyCount() const;
 	int32 GetActiveTurnaroundSupportProxyCount() const;
@@ -113,6 +118,7 @@ private:
 	void FinalizePhase5Presentation(
 		UPaperSprite* FeederFreighterSprite,
 		UPaperSprite* RegionalFreighterSprite);
+	void InitializePhase6Presentation();
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USceneComponent> Root;
@@ -250,6 +256,16 @@ private:
 	TArray<TObjectPtr<UPaperSpriteComponent>> Phase5EventArea;
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> Phase5Freighters;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase6RunwaySystem;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase6Facilities;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase6LargeAircraft;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase6Response;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase6Closure;
 
 	UPROPERTY()
 	TObjectPtr<UPaperSprite> TerrainSprite;
@@ -277,12 +293,15 @@ private:
 	TArray<TObjectPtr<UPaperSprite>> SiteSprites;
 	UPROPERTY()
 	TArray<TObjectPtr<UPaperSprite>> Phase5FreighterSprites;
+	UPROPERTY()
+	TArray<TObjectPtr<UPaperSprite>> Phase6WidebodySprites;
 
 	uint64 LastAppliedRevision = MAX_uint64;
 	uint64 LastAppliedPhase2Revision = MAX_uint64;
 	uint64 LastAppliedPhase3Revision = MAX_uint64;
 	uint64 LastAppliedPhase4Revision = MAX_uint64;
 	uint64 LastAppliedPhase5Revision = MAX_uint64;
+	uint64 LastAppliedPhase6Revision = MAX_uint64;
 	int32 Phase3OverlayMode = 0;
 	bool bPhase3WorldVisible = false;
 	bool bPhase3RoutesConnected = false;

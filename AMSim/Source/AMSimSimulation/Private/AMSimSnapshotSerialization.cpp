@@ -1,5 +1,6 @@
 #include "AMSimSnapshotSerialization.h"
 #include "AMSimPhase5SnapshotSerialization.h"
+#include "AMSimPhase6SnapshotSerialization.h"
 #include "Misc/Crc.h"
 #include "Serialization/MemoryReader.h"
 #include "Serialization/MemoryWriter.h"
@@ -1103,7 +1104,14 @@ namespace AMSim
 			}
 			if (Snapshot.SchemaVersion >= 6)
 			{
-				SerializePhase5State(Archive, Snapshot.Phase5);
+				SerializePhase5State(
+					Archive,
+					Snapshot.Phase5,
+					Snapshot.SchemaVersion);
+			}
+			if (Snapshot.SchemaVersion >= 7)
+			{
+				SerializePhase6State(Archive, Snapshot.Phase6);
 			}
 		}
 	}
@@ -1217,6 +1225,23 @@ namespace AMSim
 				Snapshot.MasterSeed == 0 ? 1 : Snapshot.MasterSeed);
 			Snapshot.Phase5 = EmptyPhase5.GetState();
 			Snapshot.SchemaVersion = 6;
+		}
+		if (Snapshot.SchemaVersion == 6)
+		{
+			for (FPhase5PathEvidenceRecord& Path : Snapshot.Phase5.Paths)
+			{
+				Path.EarnedBand = Path.Band;
+				Path.OperationalBand = Path.Band;
+				Path.OperationalStatus =
+					ECapabilityOperationalStatus::Healthy;
+				Path.QualifyingOperatingDays = Path.OperatingDays;
+				Path.TenantRelationshipRating = 75;
+			}
+			Snapshot.Phase5.MajorPathCount = 0;
+			FPhase6Simulation EmptyPhase6(
+				Snapshot.MasterSeed == 0 ? 1 : Snapshot.MasterSeed);
+			Snapshot.Phase6 = EmptyPhase6.GetState();
+			Snapshot.SchemaVersion = 7;
 		}
 		return Snapshot.SchemaVersion == SnapshotSchemaVersion;
 	}

@@ -1,0 +1,269 @@
+{
+  "schema_version": 1,
+  "asset_id": "Aircraft.Widebody.RiverbendLongreach787_9",
+  "display_name": "Riverbend Longreach 787-9",
+  "approval": {
+    "owner": "Dave",
+    "date": "2026-07-28",
+    "treatment": "River & Sun"
+  },
+  "external_source": {
+    "file": "Boeing_787-9_source-approved.png",
+    "sha256": "6AA56CD2CDD7035E3EE3526CFF5A603751E03441DA11ECE6C7E6E550B9B04449",
+    "width": 719,
+    "height": 776,
+    "cooked": false
+  },
+  "production_master": {
+    "file": "Riverbend_Longreach_787-9.svg",
+    "sha256": "FE42CAFBF5315B6922FF660570382A676C61D11D5BDBD7FB48EBAA1BF28F15B1",
+    "width": 2048,
+    "height": 2048,
+    "orientation": "nose-right/east",
+    "runtime_dimension": "2D",
+    "required_3d_assets": 0
+  },
+  "physical_dimensions_meters": {
+    "length": 62.8,
+    "span": 60.1
+  },
+  "pixels_per_meter": 32,
+  "livery": {
+    "operator": "Riverbend Longreach",
+    "fictional": true,
+    "palette": {
+      "navy": "#0B1E3A",
+      "cyan": "#08A9D1",
+      "amber": "#FFB72C",
+      "ivory": "#F6F2E6"
+    }
+  },
+  "master_raster": {
+    "file": "Riverbend_Longreach_787-9_master.png",
+    "sha256": "988C11F97569D9E170D8774E992B3AEF6B36CD2610B8B44598C71F701454EC40",
+    "width": 2048,
+    "height": 2048
+  },
+  "heading_convention": {
+    "count": 16,
+    "step_degrees": 22.5,
+    "h000": "nose-up/north",
+    "clockwise": true
+  },
+  "headings": [
+    {
+      "index": 0,
+      "heading_degrees": 0.0,
+      "source_rotation_degrees": 90.0,
+      "file": "T_RiverbendLongreach787_9_H00.png",
+      "width": 2048,
+      "height": 2048,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256": "16ABADDE28EBC880A3BDB6B2C29A808EC6CB3495928FC013D7465596A9A9965F"
+    },
+    {
+      "index": 1,
+      "heading_degrees": 22.5,
+      "source_rotation_degrees": 67.5,
+      "file": "T_RiverbendLongreach787_9_H01.png",
+      "width": 2676,
+      "height": 2676,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256": "915C84639C5980B21FE64BF7B88E23913D7C30719A685D029184057534B8E13E"
+    },
+    {
+      "index": 2,
+      "heading_degrees": 45.0,
+      "source_rotation_degrees": 45.0,
+      "file": "T_RiverbendLongreach787_9_H02.png",
+      "width": 2898,
+      "height": 2898,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256": "76E7D7C383A295E875BD5A1CE75825E39860EBE84A4CB36897A17AF9A6647637"
+    },
+    {
+      "index": 3,
+      "heading_degrees": 67.5,
+      "source_rotation_degrees": 22.5,
+      "file": "T_RiverbendLongreach787_9_H03.png",
+      "width": 2676,
+      "height": 2676,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256": "F3E1B54E3912FF07FA58657CF3BD7ACEE9FE87C359D8A42CC8280DDABE72388B"
+    },
+    {
+      "index": 4,
+      "heading_degrees": 90.0,
+      "source_rotation_degrees": 0.0,
+      "file": "T_RiverbendLongreach787_9_H04.png",
+      "width": 2048,
+      "height": 2048,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256": "988C11F97569D9E170D8774E992B3AEF6B36CD2610B8B44598C71F701454EC40"
+    },
+    {
+      "index": 5,
+      "heading_degrees": 112.5,
+      "source_rotation_degrees": -22.5,
+      "file": "T_RiverbendLongreach787_9_H05.png",
+      "width": 2676,
+      "height": 2676,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256": "DD6E5D58839BE6A47A3F50B5FEBEDD9C6B2D420663E3567C99ACEDAFB78C4EF7"
+    },
+    {
+      "index": 6,
+      "heading_degrees": 135.0,
+      "source_rotation_degrees": -45.0,
+      "file": "T_RiverbendLongreach787_9_H06.png",
+      "width": 2898,
+      "height": 2898,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256": "C5BED67DB322964AA898B91836FF5F201072BB25E6F91E2FE2264825A4762975"
+    },
+    {
+      "index": 7,
+      "heading_degrees": 157.5,
+      "source_rotation_degrees": -67.5,
+      "file": "T_RiverbendLongreach787_9_H07.png",
+      "width": 2676,
+      "height": 2676,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256": "51B07C431659405E9CC0BD29DD3CEFBE6ECE6293C660D16BF0823878C7545912"
+    },
+    {
+      "index": 8,
+      "heading_degrees": 180.0,
+      "source_rotation_degrees": -90.0,
+      "file": "T_RiverbendLongreach787_9_H08.png",
+      "width": 2048,
+      "height": 2048,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256": "E740574523D83F222E4B871557DFD6A4EC3405877DA45DC9FA1E8E19D720358E"
+    },
+    {
+      "index": 9,
+      "heading_degrees": 202.5,
+      "source_rotation_degrees": -112.5,
+      "file": "T_RiverbendLongreach787_9_H09.png",
+      "width": 2676,
+      "height": 2676,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256": "9CD6F0E142E257745CC44AA5A474B3F61792AB14C09B2A970DDB27D1B90F7FC2"
+    },
+    {
+      "index": 10,
+      "heading_degrees": 225.0,
+      "source_rotation_degrees": -135.0,
+      "file": "T_RiverbendLongreach787_9_H10.png",
+      "width": 2898,
+      "height": 2898,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256": "103FEE477B36E76AB361D32FA249579FFBE981AC48B631153728BF97D2AD6547"
+    },
+    {
+      "index": 11,
+      "heading_degrees": 247.5,
+      "source_rotation_degrees": -157.5,
+      "file": "T_RiverbendLongreach787_9_H11.png",
+      "width": 2676,
+      "height": 2676,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256": "6C920D1ED05A7B4CFDB83CA141B867E381D5746DBE0E5D50FD4F19C988B3D68B"
+    },
+    {
+      "index": 12,
+      "heading_degrees": 270.0,
+      "source_rotation_degrees": -180.0,
+      "file": "T_RiverbendLongreach787_9_H12.png",
+      "width": 2048,
+      "height": 2048,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256": "A7E7CF3B06C80617C4156F25D8CBD89153EA6CD04A352257885DA4965C698202"
+    },
+    {
+      "index": 13,
+      "heading_degrees": 292.5,
+      "source_rotation_degrees": -202.5,
+      "file": "T_RiverbendLongreach787_9_H13.png",
+      "width": 2676,
+      "height": 2676,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256": "34CB4ED484EC75B0CAC0D2D57B49443B811778818BECEE34116904D9B95F6957"
+    },
+    {
+      "index": 14,
+      "heading_degrees": 315.0,
+      "source_rotation_degrees": -225.0,
+      "file": "T_RiverbendLongreach787_9_H14.png",
+      "width": 2898,
+      "height": 2898,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256": "5D872DC5E22EB4A984E98E37C8E22EBDA30860D2047326BD790CF32360D27488"
+    },
+    {
+      "index": 15,
+      "heading_degrees": 337.5,
+      "source_rotation_degrees": -247.5,
+      "file": "T_RiverbendLongreach787_9_H15.png",
+      "width": 2676,
+      "height": 2676,
+      "pivot": [
+        0.5,
+        0.5
+      ],
+      "sha256": "48E20D283743B53CF40A0D81AABD3DFAAD957441FC330EA3730D39C7B9FA191F"
+    }
+  ],
+  "review_board": {
+    "file": "Riverbend_Longreach_787-9_heading-review.png",
+    "sha256": "C52807CB00B3C2D533E562AF5C33B943DE7431469BD016474C281DC055239C1B",
+    "width": 1920,
+    "height": 1080
+  }
+}

@@ -109,11 +109,24 @@ soak and formal unassisted testing remain Phase 7 work.
 
 ## Phase 6: Major-airport capability
 
+**Status:** Technical implementation and automated verification complete;
+owner visual review, six Phase 5 Advanced journeys, six Phase 6 Major
+journeys, and the bounded 15-minute maximum-load observation remain. See
+[PI-09](phase-6-major-airport-capability-implementation-plan.md),
+[Phase 6 visual validation](phase6-visual-validation/README.md), and
+[Phase 6 content provenance](../30-content-and-assets/phase-6-content-provenance.md).
+
 **Goal:** Complete the 10–15 hour progression target and large-scale systems.
 
 Add large aircraft only after scale/art validation; parallel runway numbering/configuration; high-capacity terminals, baggage, cargo, stands, service fleets, transport, and staff; Major unlocks for every path; performance/aggregation work at maximum targets; complete recovery after severe aircraft-loss scenarios.
 
 **Gate:** all six Major-path simulations pass solvency, capability, save, determinism, and performance; serious incidents remain warned, abstract, and recoverable.
+
+The six deterministic Major fixtures, schema-7 persistence, parallel-runway
+and ordinary-dispatch wide-body integrations, serious-incident recovery,
+maximum-scale contract, 63-test suite, clean packages, direct IoStore
+inventory, offline smoke, and dependency scans pass. These technical checks
+do not replace the remaining owner-operated and time-based acceptance gates.
 
 ## Phase 7: Content, accessibility, and release hardening
 

@@ -25,6 +25,9 @@ namespace AMSim
 		bool RestoreState(const FPhase2State& InState, const FPhase1State& Phase1State);
 		void Reset(uint64 MasterSeed);
 		void EnsureCargoServiceResources(int64 CurrentGameMilliseconds);
+		void EnsureExternalServiceResource(
+			FName ServiceId,
+			int64 CurrentGameMilliseconds);
 		FServiceTaskId RegisterExternalServiceTask(
 			FName OwnerDomain,
 			uint64 OwnerId,
@@ -32,6 +35,15 @@ namespace AMSim
 			int32 Quantity,
 			int64 DurationMilliseconds,
 			int64 CurrentGameMilliseconds);
+		FServiceTaskId RegisterExternalServiceTask(
+			FName OwnerDomain,
+			uint64 OwnerId,
+			FName ServiceId,
+			FName OperationId,
+			int32 Quantity,
+			int64 DurationMilliseconds,
+			int64 CurrentGameMilliseconds,
+			FServiceTaskId PrerequisiteTaskId = {});
 		bool IsServiceTaskComplete(FServiceTaskId TaskId) const;
 
 	private:

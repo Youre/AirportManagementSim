@@ -183,6 +183,10 @@ int32 UAMSimPresentationAssetCommandlet::Main(const FString& Params)
 		FPaths::Combine(
 			FPaths::ProjectDir(),
 			TEXT("../SourceAssets/Phase5/Aircraft")));
+	const FString Phase6SourceRoot = FPaths::ConvertRelativePathToFull(
+		FPaths::Combine(
+			FPaths::ProjectDir(),
+			TEXT("../SourceAssets/Phase6/Aircraft")));
 	const auto MakeSource = [&SourceRoot](
 		const TCHAR* Folder,
 		const TCHAR* TextureName,
@@ -360,6 +364,32 @@ int32 UAMSimPresentationAssetCommandlet::Main(const FString& Params)
 	};
 	Sources.Add(MakePhase5AircraftSource(TEXT("Riverlark_F28")));
 	Sources.Add(MakePhase5AircraftSource(TEXT("Hearthwing_F62")));
+	const auto MakePhase6AircraftSource = [&Phase6SourceRoot](
+		const int32 HeadingIndex)
+	{
+		const FString TextureName = FString::Printf(
+			TEXT("T_RiverbendLongreach787_9_H%02d"),
+			HeadingIndex);
+		const FString SpriteName = FString::Printf(
+			TEXT("S_RiverbendLongreach787_9_H%02d"),
+			HeadingIndex);
+		return FPresentationSpriteSource{
+			FPaths::Combine(
+				Phase6SourceRoot,
+				TextureName + TEXT(".png")),
+			TEXT("/Game/Phase6/Presentation/Textures/Aircraft"),
+			FString::Printf(
+				TEXT("/Game/Phase6/Presentation/Textures/Aircraft/%s.%s"),
+				*TextureName,
+				*TextureName),
+			FString::Printf(
+				TEXT("/Game/Phase6/Presentation/Sprites/Aircraft/%s"),
+				*SpriteName)};
+	};
+	for (int32 HeadingIndex = 0; HeadingIndex < 16; ++HeadingIndex)
+	{
+		Sources.Add(MakePhase6AircraftSource(HeadingIndex));
+	}
 
 	bool bPassed = true;
 	TArray<UPackage*> PackagesToSave;

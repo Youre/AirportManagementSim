@@ -1,0 +1,66 @@
+{
+  "assets": [
+    {
+      "asset_id": "vgc-svg",
+      "media_type": "image/svg+xml",
+      "path": "vgc.svg",
+      "role": "layered_vector_asset",
+      "sha256": "9ed8e25be88d871acfb069200ce8e61e47539d637f3814a2e83753af7296b34b",
+      "size_bytes": 140945
+    },
+    {
+      "asset_id": "graph-json",
+      "media_type": "application/json",
+      "path": "graph.json",
+      "role": "interaction_graph",
+      "sha256": "ad1f88d952735e093c9e9b65039ec5212d9bec29773bed256f2f1aad5d45ac2a",
+      "size_bytes": 712612
+    },
+    {
+      "asset_id": "runtime-metadata",
+      "media_type": "application/json",
+      "path": "runtime_metadata.json",
+      "role": "runtime_metadata",
+      "sha256": "eb80d20f6e8d4cdafbddbae797680b3f7d3304cb0fe23096395faa27a0fe4270",
+      "size_bytes": 248287
+    },
+    {
+      "asset_id": "readme",
+      "media_type": "text/markdown",
+      "path": "README.md",
+      "role": "documentation",
+      "sha256": "1c6f663aa5bd2e40ecc907061986604b2ee109260137b29d78a6b11b09335477",
+      "size_bytes": 511
+    }
+  ],
+  "bundle_zip": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\export\\runtime_bundle.zip",
+  "created_at": "2026-07-28T21:38:37+00:00",
+  "entry_path": "image_tracing",
+  "graph_summary": {
+    "edge_count": 693,
+    "influence_region_count": 363,
+    "layer_count": 3,
+    "max_degree": 7,
+    "node_count": 363,
+    "traversal_hint_count": 4
+  },
+  "input_mode": "image",
+  "interaction_mesh_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\mesh\\mesh\\interaction_mesh.json",
+  "metrics": {
+    "asset_count": 4,
+    "graph_edge_count": 693,
+    "graph_node_count": 363,
+    "has_graph": true,
+    "has_metadata": true,
+    "has_svg": true,
+    "total_size_bytes": 1102355,
+    "zip_size_bytes": 71347
+  },
+  "next_phase": "WEB-103",
+  "runtime_dir": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\Phase6\\VGC\\787-source-trace\\stages\\export\\runtime",
+  "schema_version": "0.1",
+  "warnings": [
+    "Skipped unsupported internal SVG element type for cleanup: g",
+    "Skipped unsupported internal SVG element type for cleanup: g"
+  ]
+}

@@ -198,25 +198,59 @@ namespace AMSim
 
 		void SerializePath(
 			FArchive& Archive,
-			FPhase5PathEvidenceRecord& Record)
+			FPhase5PathEvidenceRecord& Record,
+			const uint32 SchemaVersion)
 		{
 			SerializeEnum(Archive, Record.Path);
 			SerializeEnum(Archive, Record.Band);
+			if (SchemaVersion >= 7)
+			{
+				SerializeEnum(Archive, Record.EarnedBand);
+				SerializeEnum(Archive, Record.OperationalBand);
+				SerializeEnum(Archive, Record.OperationalStatus);
+			}
 			Archive << Record.AirportPoints;
 			Archive << Record.OperatingDays;
+			if (SchemaVersion >= 7)
+			{
+				Archive << Record.QualifyingOperatingDays;
+				Archive << Record.TenantRelationshipRating;
+			}
 			Archive << Record.SafetyRating;
 			Archive << Record.ReliabilityRating;
 			Archive << Record.CompletedOperations;
 			Archive << Record.DistinctRolesOrClasses;
 			Archive << Record.CompletedPassengers;
 			Archive << Record.RegionalPathCount;
+			if (SchemaVersion >= 7)
+			{
+				Archive << Record.AdvancedPathCount;
+				Archive << Record.SharedResourceDays;
+			}
 			Archive << Record.bPrimaryTenantActive;
 			Archive << Record.bSecondaryProviderActive;
 			Archive << Record.bSignatureFacilityOperational;
 			Archive << Record.bSharedResourceDayCompleted;
+			if (SchemaVersion >= 7)
+			{
+				Archive << Record.bMajorRequirementsMet;
+			}
 			SerializeNames(Archive, Record.FacilityIds);
+			if (SchemaVersion >= 7)
+			{
+				SerializeNames(Archive, Record.MajorEvidenceIds);
+			}
 			Archive << Record.CurrentEvidence;
 			Archive << Record.NextRequirement;
+			if (Archive.IsLoading() && SchemaVersion < 7)
+			{
+				Record.EarnedBand = Record.Band;
+				Record.OperationalBand = Record.Band;
+				Record.OperationalStatus =
+					ECapabilityOperationalStatus::Healthy;
+				Record.QualifyingOperatingDays = Record.OperatingDays;
+				Record.TenantRelationshipRating = 75;
+			}
 		}
 
 		void SerializeObjective(
@@ -278,7 +312,10 @@ namespace AMSim
 		}
 	}
 
-	void SerializePhase5State(FArchive& Archive, FPhase5State& State)
+	void SerializePhase5State(
+		FArchive& Archive,
+		FPhase5State& State,
+		const uint32 SchemaVersion)
 	{
 		Archive << State.bInitialized;
 		Archive << State.bFixtureCompleted;
@@ -318,7 +355,12 @@ namespace AMSim
 			Archive,
 			State.Paths,
 			MaximumSmallRecords,
-			SerializePath);
+			[SchemaVersion](
+				FArchive& RecordArchive,
+				FPhase5PathEvidenceRecord& Record)
+			{
+				SerializePath(RecordArchive, Record, SchemaVersion);
+			});
 		SerializeRecords(
 			Archive,
 			State.Objectives,
@@ -343,6 +385,10 @@ namespace AMSim
 		Archive << State.CompletedCargoClassCount;
 		Archive << State.CompletedCargoFlowCount;
 		Archive << State.AdvancedPathCount;
+		if (SchemaVersion >= 7)
+		{
+			Archive << State.MajorPathCount;
+		}
 		Archive << State.OverallRating;
 		Archive << State.TotalCargoRevenueCredits;
 		Archive << State.TotalEventRevenueCredits;

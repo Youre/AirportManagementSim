@@ -31,6 +31,6 @@ project_initiatives:
     next_outcome: Continue bounded aesthetic polish alongside later phases
   - id: phase-5-cargo-breadth
     title: Complete cargo and specialization breadth
-    status: complete
+    status: acceptance
     source: docs/planning/50-production/phase-5-cargo-specialization-breadth-implementation-plan.md
-    next_outcome: Preserve Phase 5 contracts while planning Phase 6 Major capability
+    next_outcome: Complete six owner-operated accelerated Advanced-path journeys

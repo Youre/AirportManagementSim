@@ -204,7 +204,8 @@ Phase 4 passed on 2026-07-26. The normative records are:
 
 [PI-08](phase-5-cargo-specialization-breadth-implementation-plan.md) maps the
 cargo and specialization-breadth slice to implementation and evidence. Phase 5
-passed on 2026-07-27. The normative records are:
+engineering gates passed on 2026-07-27; six owner-operated accelerated
+acceptance journeys remain. The normative records are:
 
 - [Phase 5 architecture-impact review](../../../.ai/reviews/2026-07-27-phase-5-architecture-impact.md);
 - [Phase 5 adversarial review](../../../.ai/reviews/2026-07-27-phase-5-adversarial-review.md);

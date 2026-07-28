@@ -6,8 +6,8 @@ Material profile: documents
 Initialization mode: augment-existing
 
 Active priorities:
-- Preserve the complete Phase 5 cargo/specialization baseline while planning
-  Phase 6 Major-airport capability.
+- Run the six owner-operated accelerated Advanced-path journeys against the
+  technically complete Phase 5 baseline.
 
 Current architectural tensions:
 - Shipping must exclude editor and online-support dependencies.
@@ -15,8 +15,8 @@ Current architectural tensions:
 - Automated screenshot checks prove capture integrity and layout bounds, not visual similarity or polish.
 
 Next verification command:
-- Open Phase 6 planning from PI-01 without absorbing the Phase 7 long-soak or
-  formal unassisted gates.
+- Complete one prepared-save journey for each of GA, Flight School, Charter,
+  Cargo, Passenger, and Mixed through player-facing controls.
 
 Last verification:
 - 2026-07-28 UTC: Phase 5 focused automation passed 5/5 and the full suite
@@ -38,8 +38,9 @@ Current tensions:
 
 - The approved reference capability tier has no physical result yet, but its four-hour soak is deferred to Phase 7 rather than blocking continued development.
 - The fictional Riverbend Trainer content lock is approved for this slice; any later real-aircraft naming, data, art, or livery still requires a separate CT-01/CT-02 review.
-- Phase 4.5 is accepted with continuing visual polish debt. Phase 5 is
-  complete. Phase 6 is next.
+- Phase 4.5 is accepted with continuing visual polish debt. Phase 5
+  implementation and technical verification are complete; owner accelerated
+  acceptance remains.
 
 Verification note:
 
@@ -193,7 +194,8 @@ Verification note:
   focus, zoom, pan, time controls, captions, selection, and view navigation.
   The owner accepted this as the continuing-development baseline on
   2026-07-27; aesthetic refinement remains tracked visual debt.
-- Phase 5 is complete under PI-08. Schema 6 composes cargo, provider tenants,
+- Phase 5 implementation is technically complete under PI-08. Schema 6
+  composes cargo, provider tenants,
   rating contributions, three objectives, path-neutral achievements, six
   non-exclusive capability paths, and eight shared-lifecycle special events
   into `FSimulation`.
@@ -214,6 +216,9 @@ Verification note:
   retained warning-only full-suite result, clean Development and Shipping
   packages, all 48 Phase 5 assets in IoStore, zero forbidden Shipping binary
   matches, and zero observed Shipping TCP connections.
+- These automated and agent-executed checks do not substitute for the six
+  owner-operated 10-15 minute prepared-save journeys required by PI-08. That
+  is the sole Phase 5 acceptance gate still open.
 - `ai-init doctor . --json` runs from `PATH`; its retained warnings are the
   documented baseline managed-template, lexical-review, legacy-ledger, and
   project schema/version warnings.

@@ -86,7 +86,8 @@ Add recurring contracts, seven-day timetable and locked horizon; regional/narrow
 
 ## Phase 5: Cargo and specialization breadth
 
-**Status:** Complete — verified on 2026-07-27. See
+**Status:** Implementation and technical verification complete; six
+owner-operated accelerated acceptance journeys remain. See
 [PI-08](phase-5-cargo-specialization-breadth-implementation-plan.md),
 [Phase 5 visual validation](phase5-visual-validation/README.md), and
 [Phase 5 content provenance](../30-content-and-assets/phase-5-content-provenance.md).
@@ -102,8 +103,9 @@ Add cargo contracts/classes/warehouses; belly freight; advanced flight school, c
 
 The deterministic six-path fixtures, cargo/event/provider suites, visual
 frames, clean Development and Shipping packages, direct IoStore inventory,
-offline smoke, and package-boundary scans pass. Longer owner play sessions,
-the four-hour soak, and formal unassisted testing remain Phase 7 work.
+offline smoke, and package-boundary scans pass. These do not replace the
+plan's six owner-operated 10-15 minute prepared-save journeys. The four-hour
+soak and formal unassisted testing remain Phase 7 work.
 
 ## Phase 6: Major-airport capability
 

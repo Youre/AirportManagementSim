@@ -1,15 +1,17 @@
 # Phase 5 Verification Review
 
-**Status:** Passed  
+**Status:** Engineering gates passed; owner accelerated acceptance open  
 **Date:** 2026-07-27  
 **Scope:** PI-08 cargo and specialization breadth
 
 ## Result
 
-Phase 5 is complete as a deterministic, saveable, packaged, offline,
-top-down-2D gameplay slice. The four-hour physical-tier soak, formal unassisted
-tester protocol, Major capability, wide-body operations, and continuing visual
-polish are deliberately outside this gate.
+Phase 5 is implementation- and technically complete as a deterministic,
+saveable, packaged, offline, top-down-2D gameplay slice. Its six
+owner-operated accelerated Advanced-path journeys are not replaced by
+automation and remain open. The four-hour physical-tier soak, formal
+unassisted tester protocol, Major capability, wide-body operations, and
+continuing visual polish are deliberately outside this engineering gate.
 
 ## Evidence
 
@@ -44,5 +46,6 @@ polish are deliberately outside this gate.
 
 ## Review decision
 
-The architecture controls and adversarial exit conditions are satisfied. No
-Phase 5 blocker remains, and Phase 6 planning may begin.
+The architecture controls and adversarial engineering exit conditions are
+satisfied. Formal Phase 5 closure waits on the six owner-operated accelerated
+journeys; Phase 6 planning should follow that record.

@@ -1,6 +1,6 @@
 # PI-08: Phase 5 Cargo and Specialization Breadth
 
-**Status:** Complete  
+**Status:** Implementation and technical verification complete; owner accelerated acceptance open  
 **Owner:** Simulation, gameplay, presentation, and content  
 **Approved:** 2026-07-27  
 **Completed:** 2026-07-27  
@@ -95,13 +95,14 @@ Local machine-readable reports remain under `AMSim/Saved/Phase5` and
 `AMSim/Saved/Phase5PackagesContractFinal`; they are reproducible build
 artifacts and are not source-controlled.
 
-## Accepted residuals
+## Remaining acceptance
 
 - Phase 4.5 is accepted as the technical and visual-content baseline, while
   further aesthetic polish remains continuing visual debt rather than a Phase
   5 gameplay blocker.
-- The six accelerated path fixtures are deterministic automation evidence.
-  Longer owner play sessions, the four-hour soak, and the formal unassisted
-  protocol remain Phase 7 gates.
+- Six deterministic Advanced-path fixtures pass, but they do not substitute
+  for the plan's six owner-operated 10-15 minute prepared-save journeys. That
+  is the sole Phase 5 acceptance gate still open.
+- Longer play sessions, the four-hour soak, and the formal unassisted protocol
+  remain Phase 7 gates.
 - Major capability and wide-body content remain visibly future-locked.
-

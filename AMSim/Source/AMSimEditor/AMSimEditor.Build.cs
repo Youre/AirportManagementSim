@@ -5,6 +5,7 @@ public class AMSimEditor : ModuleRules
 	public AMSimEditor(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+		bUseUnity = false;
 		PrivateDependencyModuleNames.AddRange(new[]
 		{
 			"AMSimGameplay",

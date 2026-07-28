@@ -252,8 +252,47 @@ bool FAMSimPhase5CargoContinuityTest::RunTest(const FString& Parameters)
 		AdvanceSteps(Simulation, 35);
 	}
 
+	for (int32 RecurringIndex = 0; RecurringIndex < 7; ++RecurringIndex)
+	{
+		FPhase5Command Accept;
+		Accept.Id = {CommandId++};
+		Accept.Type = EPhase5CommandType::AcceptNextCargoContract;
+		if (!QueuePhase5(*this, Simulation, Accept))
+		{
+			return false;
+		}
+		for (int32 Round = 0; Round < 18; ++Round)
+		{
+			const FPhase5ShipmentRecord* Ready =
+				Simulation.GetPhase5State().Shipments.FindByPredicate(
+					[](const FPhase5ShipmentRecord& Shipment)
+					{
+						return Shipment.State != ECargoState::Offered &&
+							Shipment.State != ECargoState::Completed &&
+							Shipment.State != ECargoState::Exception &&
+							!Shipment.ActiveServiceTaskId.IsValid();
+					});
+			if (Ready)
+			{
+				FPhase5Command Advance;
+				Advance.Id = {CommandId++};
+				Advance.Type =
+					EPhase5CommandType::AdvanceNextCargoShipment;
+				Advance.ShipmentId = Ready->Id;
+				if (!QueuePhase5(*this, Simulation, Advance))
+				{
+					return false;
+				}
+			}
+			AdvanceSteps(Simulation, 35);
+		}
+	}
+
 	const FPhase5State& State = Simulation.GetPhase5State();
-	TestEqual(TEXT("All five shipments complete"), State.CompletedShipmentCount, 5);
+	TestEqual(
+		TEXT("Recurring cargo reaches the Advanced shipment threshold"),
+		State.CompletedShipmentCount,
+		12);
 	TestEqual(TEXT("All cargo classes complete"), State.CompletedCargoClassCount, 4);
 	TestEqual(TEXT("All cargo flows complete"), State.CompletedCargoFlowCount, 3);
 	TestTrue(

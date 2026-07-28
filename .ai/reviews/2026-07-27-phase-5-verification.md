@@ -21,7 +21,7 @@ continuing visual polish are deliberately outside this engineering gate.
 | Focused tests | 5 succeeded, zero warnings/failures |
 | Full suite | 54 succeeded, one retained warning-only legacy save test, zero failed/not-run |
 | Schema | Version 6; schemas 1-5 migrate; invalid future/reference/conservation state rejects |
-| Cargo | Four classes, three directions, dedicated and belly freight, warehouse compatibility/capacity, ordinary dispatch, recovery |
+| Cargo | Four classes, three directions, dedicated and belly freight, warehouse compatibility/capacity, ordinary dispatch, recurring offers through the 12-shipment threshold, recovery |
 | Progression | Six independent Advanced fixtures and Mixed shared-resource evidence pass |
 | Tenants/events | Six tenant/provider offers, grace/recovery, eight event families, explicit partial success, cleanup, cooldown |
 | Content | 44 definitions plus four fictional freighter presentation assets |

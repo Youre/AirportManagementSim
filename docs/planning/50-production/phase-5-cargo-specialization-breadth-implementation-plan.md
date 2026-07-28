@@ -26,7 +26,9 @@ formal unassisted testing remain Phase 6 or Phase 7 work.
 - Cargo supports general, express/mail, temperature-sensitive, and oversized
   freight; outbound, inbound, transfer, and compatible belly flows; pieces,
   mass, volume, security, deadline, location, storage, task, flight, exception,
-  and reward ownership.
+  and reward ownership. Deterministic recurring offers keep the board viable
+  beyond the five authored fixture journeys and allow Cargo to reach its
+  12-shipment Advanced threshold.
 - A road/airside-connected warehouse exposes compatible general, express,
   cold, and oversized capacity. Quantity-based cargo work uses the ordinary
   dispatcher and its forklift, dolly/tug, truck, loader, support-unit, and

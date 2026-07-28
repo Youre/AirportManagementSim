@@ -884,3 +884,22 @@ entries:
       managed-template, lexical-review, legacy-ledger, and project
       schema/version warnings remain; no structural or Phase 5 conflict was
       reported.
+  - timestamp: '2026-07-28T03:44:03.8886699+00:00'
+    commit: b6ea2b5cd4c9a78d5c77aaa721651da5c886b8db
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Clean-tree build audit and Phase 5 recurring-cargo reachability
+      proof'
+    result: passed
+    notes: The clean-tree audit exposed and corrected Unreal unity translation
+      unit collisions by making project modules explicitly non-unity. A full
+      clean editor rebuild compiled 108 actions successfully. Phase 5 now
+      creates deterministic recurring cargo offers after the authored fixture
+      set, and the ordinary-dispatch automation completes 12 shipments while
+      retaining all four classes, all three directions, belly freight,
+      schema-6 persistence, and cargo conservation. Focused automation passed
+      5 of 5; the full suite passed 54 plus one retained warning-only legacy
+      test with zero failures/not-run. Clean-tree Development and Shipping
+      packages passed with 553 cooked packages. Shipping retained all 48 Phase
+      5 assets, the production root widget, zero forbidden binary matches, and
+      zero TCP connections during the eight-second smoke.

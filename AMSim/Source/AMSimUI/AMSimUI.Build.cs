@@ -5,6 +5,7 @@ public class AMSimUI : ModuleRules
 	public AMSimUI(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+		bUseUnity = false;
 		PublicDependencyModuleNames.AddRange(new[]
 		{
 			"AMSimGameplay",

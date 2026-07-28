@@ -1107,6 +1107,67 @@ namespace AMSim
 		}
 		State.CompletedCargoClassCount = Classes.Num();
 		State.CompletedCargoFlowCount = Flows.Num();
+
+		const bool bHasAvailableOffer =
+			State.Shipments.ContainsByPredicate(
+				[](const FPhase5ShipmentRecord& Shipment)
+				{
+					return Shipment.State == ECargoState::Offered;
+				});
+		if (!bHasAvailableOffer &&
+			State.Shipments.Num() >= 5 &&
+			State.Shipments.Num() < 10000)
+		{
+			const int32 TemplateIndex =
+				State.CompletedShipmentCount % 5;
+			const FPhase5ShipmentRecord Template =
+				State.Shipments[TemplateIndex];
+			const FPhase5CargoContractRecord* TemplateContract =
+				State.CargoContracts.FindByPredicate(
+					[&Template](const FPhase5CargoContractRecord& Contract)
+					{
+						return Contract.Id == Template.ContractId;
+					});
+
+			FPhase5CargoContractRecord Contract;
+			if (TemplateContract)
+			{
+				Contract = *TemplateContract;
+			}
+			Contract.Id = {AllocateId()};
+			Contract.ContentId = FName(*FString::Printf(
+				TEXT("Contract.Phase5.Recurring.%llu"),
+				Contract.Id.Value));
+			Contract.DisplayName = FString::Printf(
+				TEXT("%s %d"),
+				TemplateContract
+					? *TemplateContract->DisplayName
+					: TEXT("Recurring cargo"),
+				State.CompletedShipmentCount + 1);
+			Contract.bAccepted = false;
+			State.CargoContracts.Add(Contract);
+
+			FPhase5ShipmentRecord Shipment = Template;
+			Shipment.Id = {AllocateId()};
+			Shipment.ContractId = Contract.Id;
+			Shipment.State = ECargoState::Offered;
+			Shipment.FlowStep = 0;
+			Shipment.DeadlineGameMilliseconds =
+				CurrentGameMilliseconds + 900000;
+			Shipment.bSecurityCleared = false;
+			Shipment.CurrentLocation = TEXT("Awaiting contract");
+			Shipment.ActiveServiceTaskId = {};
+			Shipment.ExceptionCause.Reset();
+			Shipment.Remedy.Reset();
+			Shipment.bRewardRecognized = false;
+			State.Shipments.Add(Shipment);
+			Emit(
+				EPhase5EventType::CargoStateChanged,
+				{},
+				Shipment.Id.Value,
+				CurrentGameMilliseconds,
+				TEXT("A recurring cargo offer entered the board."));
+		}
 	}
 
 	void FPhase5Simulation::RefreshTenants(

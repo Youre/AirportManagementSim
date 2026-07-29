@@ -6,9 +6,10 @@ Material profile: documents
 Initialization mode: augment-existing
 
 Active priorities:
-- Complete the owner acceptance gates against the technically complete Phase
-  5 and Phase 6 baselines: six Advanced journeys, six Major journeys, the
-  Phase 6 final visual checkpoint, and the bounded maximum-load observation.
+- Run the consolidated owner acceptance protocol against Riverbend RC1:
+  Phase 5 Advanced journeys, Phase 6 Major journeys, maximum-load observation,
+  pacing journey, reference-tier soak, unassisted test, audio/captions, and
+  final concept-art checkpoint.
 
 Current architectural tensions:
 - Shipping must exclude editor and online-support dependencies.
@@ -18,16 +19,15 @@ Current architectural tensions:
   time-based owner observation.
 
 Next verification command:
-- Complete the GA Advanced and GA Major prepared-save journeys through
-  player-facing controls, then record the equivalent-state visual checkpoint.
+- Begin the consolidated owner test with the GA Advanced and GA Major prepared
+  saves against the exact Riverbend RC1 package hashes.
 
 Last verification:
-- 2026-07-28 UTC: Phase 6 focused automation passed 8/8 and the full suite
-  passed 62 plus one retained warning-only legacy save test. Fresh Development
-  and Shipping packages each cooked 613 packages; Shipping contains all 60
-  Phase 6 assets and the production root widget, zero forbidden dependency,
-  direct runtime string-load, or required 3D matches, and zero observed TCP
-  connections.
+- 2026-07-29 UTC: Phase 7 focused automation passed 5/5 and the full suite
+  passed 67 plus one retained warning-only legacy backup test. Clean
+  Development and Shipping packages each cooked 628 packages; all 15 Phase 7
+  assets are present, the audio-enabled packaged journey and save/load pass,
+  Shipping opens zero TCP sockets, and all release scans are clean.
 <!-- ai-project-init:end managed -->
 
 ## Project-specific state
@@ -252,6 +252,29 @@ Verification note:
   six Phase 6 Major journeys, final visual checkpoint, and bounded 15-minute
   maximum-load observation. Phase 7 retains the four-hour soak, formal
   unassisted test, and genuine pacing journey.
+- Phase 7 implementation is release-candidate ready under PI-10. Schema 8
+  persists only acknowledged contextual-help IDs and migrates schemas 1-7.
+  Six first-use cards, the five-tab Release Guide, a local accessibility
+  profile, centralized captions-first radio, 15 phrase families, and 15
+  release Primary Assets are integrated without adding simulation mechanics.
+- The Phase 7 actual-product audit compares live Unreal captures to VA-01
+  through VA-07 and records three material differences, intentional
+  differences, and a bounded correction for every state. Terminal, Regional,
+  Advanced, and Major are explicit destinations so later eligibility no
+  longer obscures concept-mapped surfaces.
+- Phase 7 focused automation passes 5/5. The final complete suite reports 67
+  clean passes, one retained warning-only Phase 0 backup probe, and zero
+  failures or not-run tests.
+- Clean Development and Shipping packages contain 628 packages, including all
+  15 Phase 7 definitions. The audio-enabled packaged S01 journey and save/load
+  pass; Shipping remains open for eight seconds with zero TCP sockets.
+  Dependency, runtime string-load, required-3D, unreviewed-music, secret,
+  endpoint, and source-line audits are clean.
+- Riverbend RC1 is correctly marked `release candidate ready for owner
+  acceptance`, not Phase 7 complete. The consolidated owner journeys,
+  15-minute maximum-load observation, 10-15 hour pacing journey, four-hour
+  reference-tier soak, formal unassisted/audio/caption protocol, and final
+  visual approval remain pending by owner decision.
 - `ai-init doctor . --json` runs from `PATH`; its retained warnings are the
   documented baseline managed-template, lexical-review, legacy-ledger, and
   project schema/version warnings.

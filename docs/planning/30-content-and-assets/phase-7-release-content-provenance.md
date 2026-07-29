@@ -1,8 +1,8 @@
 # Phase 7 Release Content and Provenance
 
-**Status:** Implementation baseline; package hashes pending  
+**Status:** Riverbend RC1 technical identity recorded; owner acceptance pending
 **Owner:** Content and release engineering  
-**Last updated:** 2026-07-28
+**Last updated:** 2026-07-29
 
 ## Retained release content
 
@@ -32,6 +32,12 @@ rights, checksum, mix role, loop treatment, loudness, and explicit retention.
   captions-first phrase families.
 - `/Game/Phase7/Definitions` contains the cooker-visible release definitions.
 
-Package and executable hashes are filled by the release-candidate audit after
-clean Development and Shipping packages succeed. Human gates remain `pending`
+Clean Development and Shipping packages succeeded from source commit
+`24c17bc933c961d3e7119d70d4e4f32b010c50a6`. Both contain 628 cooked packages,
+including all 15 Phase 7 definitions. The exact launcher/runtime hashes are
+recorded in `Phase7ReleaseManifest.json` and the external
+`AMSim/Saved/Phase7/release-attestation.json`.
+
+The audio-enabled Development S01 journey and save/load pass. Shipping remains
+open for eight seconds with zero TCP sockets. Human gates remain `pending`
 until the owner performs them against those exact hashes.

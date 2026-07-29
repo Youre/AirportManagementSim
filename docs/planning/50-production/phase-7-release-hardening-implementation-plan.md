@@ -1,7 +1,7 @@
 # PI-10: Phase 7 Content, Accessibility, and Release Hardening
 
-**Status:** Implementation active; full owner acceptance deferred until the
-release candidate is ready  
+**Status:** Release candidate ready for owner acceptance; consolidated owner
+test pending
 **Owner:** Product, presentation, content, quality, and release engineering  
 **Approved:** 2026-07-28  
 **Normative requirements:** PX-01 through PX-03, CT-01 through CT-05,

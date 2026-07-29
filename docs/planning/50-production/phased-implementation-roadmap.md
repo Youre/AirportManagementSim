@@ -2,7 +2,7 @@
 
 **Status:** Approved baseline  
 **Owner:** Production and integration  
-**Last updated:** 2026-07-26
+**Last updated:** 2026-07-29
 
 ## Purpose
 
@@ -130,9 +130,11 @@ do not replace the remaining owner-operated and time-based acceptance gates.
 
 ## Phase 7: Content, accessibility, and release hardening
 
-**Status:** Implementation active; consolidated owner testing follows the
-release-candidate build. See
-[PI-10](phase-7-release-hardening-implementation-plan.md).
+**Status:** Release candidate ready for owner acceptance. Technical
+implementation and release audits passed on 2026-07-29 UTC; the consolidated
+owner test remains. See [PI-10](phase-7-release-hardening-implementation-plan.md),
+the [verification record](../../../.ai/reviews/2026-07-28-phase-7-verification.md),
+and [actual-product visual audit](phase7-visual-validation/README.md).
 
 **Goal:** A shippable offline Windows game rather than a technically complete prototype.
 
@@ -141,6 +143,14 @@ Complete curated maps, approved aircraft/operator catalog, guidance/help, voiced
 Run the retained physical reference-tier four-hour soak and formal unassisted tester/audio/caption/comprehension protocol against a release-candidate package identity.
 
 **Gate:** zero release-blocking issues; all traceability rows verified; package runs with network denied; every supported old save migrates; no 3D or unapproved source asset ships.
+
+The schema-8 migration matrix, 68-test suite, deterministic rendered fixtures,
+five-scale Release Guide, actual VA-01 through VA-07 comparisons, clean
+Development and Shipping packages, 628-package cook inventory, all 15 Phase 7
+assets, audio-enabled packaged smoke, save/load, zero Shipping TCP sockets,
+and release-boundary scans pass. Owner journeys, time-based observations,
+formal unassisted/audio/caption protocol, and final visual approval remain
+open and are not represented as automated passes.
 
 ## Cross-phase integration rules
 

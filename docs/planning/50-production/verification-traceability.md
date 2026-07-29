@@ -255,6 +255,34 @@ observation remain. The normative records are:
 | Content is controlled and cooked | Shipping IoStore contains all 28 definitions, 16 approved River & Sun textures, 16 PaperSprites, and the production root widget |
 | Package remains clean and offline | Development and Shipping packages each cook 613 packages; Shipping stays responsive with zero TCP sockets and zero forbidden editor/MCP/test, direct runtime string-load, or required 3D matches |
 
+## Phase 7 implementation evidence
+
+[PI-10](phase-7-release-hardening-implementation-plan.md) maps guidance,
+accessibility, release content, migration, security, packaging, and final owner
+acceptance to implementation and evidence. Phase 7 technical gates passed on
+2026-07-29 UTC; consolidated owner acceptance remains. The normative records
+are:
+
+- [Phase 7 architecture-impact review](../../../.ai/reviews/2026-07-28-phase-7-architecture-impact.md);
+- [Phase 7 adversarial review](../../../.ai/reviews/2026-07-28-phase-7-adversarial-review.md);
+- [Phase 7 verification review](../../../.ai/reviews/2026-07-28-phase-7-verification.md);
+- [Phase 7 actual-product visual validation](phase7-visual-validation/README.md);
+- [Phase 7 content provenance](../30-content-and-assets/phase-7-release-content-provenance.md);
+- machine-readable local results under `AMSim/Saved/Phase7`.
+
+| Phase 7 claim | Evidence |
+| --- | --- |
+| First-use guidance is bounded and persistent | Six cards are query-selected, at or below 45 words, dismissed through a typed command/event, included in checksum/schema 8, and recoverable from Help |
+| Accessibility is local and cross-slot | 100-200% scale, captions-on, reduced-motion, camera-shake-off, and reset use a config-backed profile without airport progression or personal data |
+| Radio is captions-first and offline | One lazy-initialized game-instance service owns local speech/fallback; 15 phrase families and caption deduplication pass; no endpoint exists |
+| Persistence evolves safely | Schema-8 round-trip, schemas 1-7 migration, deterministic acknowledgement, duplicate/invalid rejection, and existing continuation tests pass |
+| Release content is controlled | One approved map, six specialization paths, reviewed Phase 1-6 aircraft/operators, 15 Phase 7 definitions, and explicit unreviewed-music exclusion pass |
+| Presentation remains concept-grounded | Actual Unreal comparisons cover VA-01 through VA-07; the five-scale Release Guide passes; later-phase surfaces use explicit navigation instead of replacing mapped states |
+| Automation remains stable | Phase 7 focused tests pass 5/5; the full suite passes 67 plus one retained warning-only backup probe with zero failure/not-run |
+| Packages are complete and offline | Clean Development and Shipping packages contain 628 packages and all 15 Phase 7 assets; audio-enabled S01/save-load passes; Shipping opens zero TCP sockets |
+| Release boundary is clean | Zero forbidden dependency, runtime string-load, required-3D, unreviewed-music, secret, endpoint, or line-limit findings |
+| Owner acceptance is honest | Exact package hashes are recorded; 12 prepared journeys, load/pacing/soak observations, unassisted/audio/caption protocol, and final visual approval remain pending |
+
 ## Visual reference mapping
 
 | Reference | Owning surfaces | First comparison gate |

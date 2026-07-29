@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "releaseId": "Riverbend-RC1",
-  "status": "implementation-active",
+  "status": "release-candidate-ready-for-owner-acceptance",
   "engine": "5.8.0",
   "platform": "Win64",
   "saveSchema": 8,
@@ -35,15 +35,15 @@
     "unreviewedMusicIncluded": false
   },
   "technicalGates": {
-    "focusedAutomation": "pending",
-    "fullAutomation": "pending",
-    "migrationMatrix": "pending",
-    "developmentPackage": "pending",
-    "shippingPackage": "pending",
-    "cookInventory": "pending",
-    "offlineSocketAudit": "pending",
-    "securityAudit": "pending",
-    "actualVisualAudit": "pending"
+    "focusedAutomation": "passed",
+    "fullAutomation": "passed",
+    "migrationMatrix": "passed",
+    "developmentPackage": "passed",
+    "shippingPackage": "passed",
+    "cookInventory": "passed",
+    "offlineSocketAudit": "passed",
+    "securityAudit": "passed",
+    "actualVisualAudit": "passed"
   },
   "ownerGates": {
     "phase5AdvancedJourneys": "pending",
@@ -55,11 +55,12 @@
     "finalVisualApproval": "pending"
   },
   "packageIdentity": {
-    "sourceCommit": "",
-    "contentManifestSha256": "",
-    "developmentLauncherSha256": "",
-    "developmentRuntimeSha256": "",
-    "shippingLauncherSha256": "",
-    "shippingRuntimeSha256": ""
+    "sourceCommit": "24c17bc933c961d3e7119d70d4e4f32b010c50a6",
+    "contentManifestSha256": "943bfe827fac55ea66b3ae92c2193fd53017f0ed1635679141e5e381691b70b8",
+    "developmentLauncherSha256": "6e313c72d7eaf9147aebe8b3adb593fac4d75c6eeeea818a201e677a222ec39f",
+    "developmentRuntimeSha256": "76a1d4b7d35f916ca4025cc762069d9c5e8614b2ff886e6af984c56dd013ba1b",
+    "shippingLauncherSha256": "def5538ac925382c0f5ffe98fe9689c66ea921595043d72d6be9a2c321de474b",
+    "shippingRuntimeSha256": "9f28cb19624bea7685ca9a5e2defa12a247fb02beb5bb289efd7ee92299f4bb3",
+    "externalAttestation": "AMSim/Saved/Phase7/release-attestation.json"
   }
 }

@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "reviewId": "CT01-CT04.Release.2026-07-28",
+  "approvedRuntimeSources": [
+    {
+      "scope": "Phase1",
+      "decision": "approved",
+      "record": "docs/planning/30-content-and-assets/aircraft-import-manifest-template.csv"
+    },
+    {
+      "scope": "Phase3",
+      "decision": "project-authored",
+      "record": "docs/planning/30-content-and-assets/phase-3-content-provenance.md"
+    },
+    {
+      "scope": "Phase4",
+      "decision": "project-authored",
+      "record": "docs/planning/30-content-and-assets/phase-4-content-provenance.md"
+    },
+    {
+      "scope": "Phase4.5",
+      "decision": "project-authored",
+      "record": "docs/planning/30-content-and-assets/phase-4-5-content-provenance.md"
+    },
+    {
+      "scope": "Phase5",
+      "decision": "project-authored",
+      "record": "docs/planning/30-content-and-assets/phase-5-content-provenance.md"
+    },
+    {
+      "scope": "Phase6",
+      "decision": "owner-approved-derived-asset",
+      "record": "docs/planning/30-content-and-assets/phase-6-content-provenance.md"
+    }
+  ],
+  "excluded": {
+    "militaryCoreAircraft": true,
+    "realOperatorBranding": true,
+    "required3DAssets": true,
+    "unapprovedJoesGameAssets": true,
+    "unreviewedSourceAssetsAudioMusic": true
+  },
+  "runtimeThirdPartyNotices": [
+    {
+      "component": "Unreal Engine 5.8",
+      "owner": "Epic Games",
+      "distributionReview": "required-before-external-release"
+    }
+  ],
+  "unreviewedRuntimeItems": []
+}

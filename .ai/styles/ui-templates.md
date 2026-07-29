@@ -207,3 +207,29 @@ Template-first rule:
 - Components: `UAMSimPhase5View`,
   `AAMSimWorldPresenter::RefreshPhase5Presentation`, and
   `FPhase5ViewState`.
+
+## Release guidance and accessibility surface
+
+- Purpose: keep first-use help, the offline manual, authentic-term glossary,
+  controls, and accessibility choices available without leaving the game.
+- Applicable screens or flows: every gameplay phase, contextual first-use
+  guidance, accessibility review, and the formal unassisted tester journey.
+- Source visuals: VA-01 for peripheral guidance and world dominance, VA-06 for
+  captions and cause/consequence/action, and VA-07 for approachable progress
+  cards.
+- Composition: full-screen navy modal above the live airport; compact
+  icon-plus-label section tabs; one dominant readable content panel; one
+  optional quick-reference rail at 100-150%; compact single-panel mode at
+  175-200%; persistent close action.
+- Cards: rounded 14-18 unit surfaces, one short eyebrow, one plain-language
+  explanation, and at most one next action. Aviation terms remain authentic
+  and are defined in place.
+- Accessibility states: scale choices show selected text plus border/fill;
+  captions show explicit `ON`; reduced motion shows `ON/OFF` text; camera
+  shake shows `OFF`; no status is color-only.
+- Contextual card: no more than 45 words; anchored above the bottom context
+  area; `GOT IT` is the only primary action; acknowledgement is save-local.
+- Components: `UAMSimReleaseGuideView`, `UAMSimContextHelpCard`,
+  `UAMSimAccessibilityProfile`, and the shared Riverbend theme.
+- Accepted placeholder content: `Select a section`, `No help needed here`,
+  and `Captions on`.

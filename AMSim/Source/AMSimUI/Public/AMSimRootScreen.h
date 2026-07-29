@@ -2,7 +2,6 @@
 
 #include "AMSimPhase1ViewState.h"
 #include "AMSimPhase2ViewState.h"
-#include "AMSimSpeechProvider.h"
 #include "CommonActivatableWidget.h"
 #include "Input/UIActionBindingHandle.h"
 #include "AMSimRootScreen.generated.h"
@@ -15,6 +14,8 @@ class UTextBlock;
 class UUserWidget;
 class UVerticalBox;
 class UAMSimConstructionProposalView;
+class UAMSimContextHelpCard;
+class UAMSimReleaseGuideView;
 class UAMSimTerminalView;
 class UAMSimTurnaroundView;
 
@@ -26,6 +27,7 @@ class AMSIMUI_API UAMSimRootScreen : public UCommonActivatableWidget
 public:
 	UAMSimRootScreen(const FObjectInitializer& ObjectInitializer);
 	static FUIInputConfig MakeGameplayInputConfig();
+	void ShowReleaseGuide();
 
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
@@ -74,6 +76,11 @@ private:
 	void ToggleObjectiveDrawer();
 	UFUNCTION()
 	void ToggleOperationsDrawer();
+	UFUNCTION()
+	void ToggleReleaseGuide();
+	UFUNCTION()
+	void ToggleTerminalPresentation();
+	void CloseTerminalPresentation();
 	UFUNCTION()
 	void InitializePhase2();
 	UFUNCTION()
@@ -174,6 +181,10 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<UAMSimTurnaroundView> TurnaroundView;
 	UPROPERTY(Transient)
+	TObjectPtr<UAMSimContextHelpCard> ContextHelpCard;
+	UPROPERTY(Transient)
+	TObjectPtr<UAMSimReleaseGuideView> ReleaseGuideView;
+	UPROPERTY(Transient)
 	TObjectPtr<UVerticalBox> Phase1Page;
 
 	UPROPERTY(Transient)
@@ -232,6 +243,8 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<UButton> RecoveryButton;
 	UPROPERTY(Transient)
+	TObjectPtr<UButton> TerminalNavigationButton;
+	UPROPERTY(Transient)
 	TObjectPtr<UButton> InitializePhase2Button;
 	UPROPERTY(Transient)
 	TObjectPtr<UButton> SelectGAButton;
@@ -260,9 +273,9 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<UButton> RespondPhase2IncidentButton;
 
-	TUniquePtr<IAMSimSpeechProvider> SpeechProvider;
 	AMSim::FPhase1ViewState CurrentViewState;
 	AMSim::FPhase2ViewState CurrentPhase2ViewState;
 	uint64 LastAppliedRevision = MAX_uint64;
 	int32 LastPhraseCount = 0;
+	bool bOpenReleaseGuideWhenReady = false;
 };

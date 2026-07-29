@@ -162,7 +162,10 @@ namespace AMSim
 			}
 		}
 
-		void SerializePhase1State(FArchive& Archive, FPhase1State& State)
+		void SerializePhase1State(
+			FArchive& Archive,
+			FPhase1State& State,
+			const uint32 SchemaVersion)
 		{
 			Archive << State.bInitialized;
 			Archive << State.bPaused;
@@ -247,6 +250,24 @@ namespace AMSim
 				State.Events,
 				MaximumHistoryRecords,
 				SerializePhase1Event);
+			if (SchemaVersion >= 8)
+			{
+				int32 HelpCount =
+					State.AcknowledgedContextHelp.Num();
+				if (!SerializeCount(Archive, HelpCount, 64))
+				{
+					return;
+				}
+				if (Archive.IsLoading())
+				{
+					State.AcknowledgedContextHelp.SetNum(HelpCount);
+				}
+				for (FName& HelpId :
+					State.AcknowledgedContextHelp)
+				{
+					SerializeName(Archive, HelpId);
+				}
+			}
 			Archive << State.RecoveryGrantCount;
 		}
 
@@ -1085,7 +1106,10 @@ namespace AMSim
 			}
 			if (Snapshot.SchemaVersion >= 2)
 			{
-				SerializePhase1State(Archive, Snapshot.Phase1);
+				SerializePhase1State(
+					Archive,
+					Snapshot.Phase1,
+					Snapshot.SchemaVersion);
 			}
 			if (Snapshot.SchemaVersion >= 3)
 			{
@@ -1242,6 +1266,11 @@ namespace AMSim
 				Snapshot.MasterSeed == 0 ? 1 : Snapshot.MasterSeed);
 			Snapshot.Phase6 = EmptyPhase6.GetState();
 			Snapshot.SchemaVersion = 7;
+		}
+		if (Snapshot.SchemaVersion == 7)
+		{
+			Snapshot.Phase1.AcknowledgedContextHelp.Reset();
+			Snapshot.SchemaVersion = 8;
 		}
 		return Snapshot.SchemaVersion == SnapshotSchemaVersion;
 	}

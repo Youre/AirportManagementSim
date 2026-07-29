@@ -245,6 +245,17 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 	UHorizontalBoxSlot* BrandSlot = TopRow->AddChildToHorizontalBox(Brand);
 	BrandSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
 	BrandSlot->SetVerticalAlignment(VAlign_Center);
+	UButton* ReturnButton = MakeButton(
+		WidgetTree,
+		TEXT("TerminalReturn"),
+		TEXT("BACK"),
+		AMSim::UITheme::EButton::Secondary,
+		SmallSize);
+	ReturnButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimTerminalView::ReturnToAirport);
+	TopRow->AddChildToHorizontalBox(
+		ReturnButton)->SetPadding(FMargin(6.0f));
 	FundsText = MakeText(
 		WidgetTree,
 		TEXT("TerminalFunds"),
@@ -261,6 +272,32 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		AMSim::UITheme::Muted(),
 		true);
 	TopRow->AddChildToHorizontalBox(Weather)->SetPadding(FMargin(12.0f));
+	AdvancedOperationsButton = MakeButton(
+		WidgetTree,
+		TEXT("TerminalAdvancedOperations"),
+		bCompact ? TEXT("ADV") : TEXT("ADVANCED"),
+		AMSim::UITheme::EButton::Secondary,
+		SmallSize);
+	AdvancedOperationsButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimTerminalView::OpenAdvancedOperations);
+	AdvancedOperationsButton->SetVisibility(
+		ESlateVisibility::Collapsed);
+	TopRow->AddChildToHorizontalBox(
+		AdvancedOperationsButton)->SetPadding(FMargin(6.0f));
+	MajorOperationsButton = MakeButton(
+		WidgetTree,
+		TEXT("TerminalMajorOperations"),
+		TEXT("MAJOR"),
+		AMSim::UITheme::EButton::Secondary,
+		SmallSize);
+	MajorOperationsButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimTerminalView::OpenMajorOperations);
+	MajorOperationsButton->SetVisibility(
+		ESlateVisibility::Collapsed);
+	TopRow->AddChildToHorizontalBox(
+		MajorOperationsButton)->SetPadding(FMargin(6.0f));
 	ClockText = MakeText(
 		WidgetTree,
 		TEXT("TerminalClock"),
@@ -783,6 +820,9 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		WidgetTree->ConstructWidget<UAMSimRegionalOperationsView>(
 			UAMSimRegionalOperationsView::StaticClass(),
 			TEXT("RegionalOperationsView"));
+	RegionalOperationsView->OnReturnRequested.BindUObject(
+		this,
+		&UAMSimTerminalView::ReturnToAirport);
 	AddAnchored(
 		Canvas,
 		RegionalOperationsView,
@@ -1048,8 +1088,52 @@ void UAMSimTerminalView::LoadGame()
 	}
 }
 
+void UAMSimTerminalView::OpenAdvancedOperations()
+{
+	if (RegionalOperationsView)
+	{
+		RegionalOperationsView->ShowAdvancedOperations();
+		RegionalOperationsView->SetVisibility(
+			ESlateVisibility::SelfHitTestInvisible);
+	}
+}
+
+void UAMSimTerminalView::OpenMajorOperations()
+{
+	if (RegionalOperationsView)
+	{
+		RegionalOperationsView->ShowMajorOperations();
+		RegionalOperationsView->SetVisibility(
+			ESlateVisibility::SelfHitTestInvisible);
+	}
+}
+
+void UAMSimTerminalView::ShowPresentation()
+{
+	bHasBeenOpened = true;
+	bPresentationOpen = true;
+	RefreshFromSimulation();
+}
+
+void UAMSimTerminalView::ClosePresentation()
+{
+	bPresentationOpen = false;
+	SetVisibility(ESlateVisibility::Collapsed);
+}
+
+void UAMSimTerminalView::ReturnToAirport()
+{
+	ClosePresentation();
+	OnReturnRequested.ExecuteIfBound();
+}
+
 void UAMSimTerminalView::RefreshFromSimulation()
 {
+	if (!bPresentationOpen)
+	{
+		SetVisibility(ESlateVisibility::Collapsed);
+		return;
+	}
 	UAMSimAirportSimulationSubsystem* Subsystem =
 		GetWorld() ? GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>() : nullptr;
 	if (!Subsystem)
@@ -1074,9 +1158,36 @@ void UAMSimTerminalView::RefreshFromSimulation()
 		Subsystem->GetSimulation().GetPhase3State();
 	const AMSim::FPhase4QuerySnapshot Phase4Query =
 		Subsystem->GetPhase4Query();
+	const AMSim::FPhase5QuerySnapshot Phase5Query =
+		Subsystem->GetPhase5Query();
+	const AMSim::FPhase6QuerySnapshot Phase6Query =
+		Subsystem->GetPhase6Query();
+	if (AdvancedOperationsButton)
+	{
+		AdvancedOperationsButton->SetVisibility(
+			Phase5Query.bUnlocked || Phase5Query.bInitialized
+				? ESlateVisibility::Visible
+				: ESlateVisibility::Collapsed);
+	}
+	if (MajorOperationsButton)
+	{
+		MajorOperationsButton->SetVisibility(
+			Phase6Query.bUnlocked || Phase6Query.bInitialized
+				? ESlateVisibility::Visible
+				: ESlateVisibility::Collapsed);
+	}
 	if (RegionalOperationsView)
 	{
 		RegionalOperationsView->RefreshFromSimulation();
+	}
+	if (RegionalOperationsView &&
+		(RegionalOperationsView->IsAdvancedOperationsOpen() ||
+			RegionalOperationsView->IsMajorOperationsOpen()))
+	{
+		SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		RegionalOperationsView->SetVisibility(
+			ESlateVisibility::SelfHitTestInvisible);
+		return;
 	}
 	if (Phase4Query.bUnlocked || Phase4Query.bInitialized)
 	{
@@ -1102,6 +1213,11 @@ void UAMSimTerminalView::RefreshFromSimulation()
 		return;
 	}
 	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (RegionalOperationsView)
+	{
+		RegionalOperationsView->SetVisibility(
+			ESlateVisibility::Collapsed);
+	}
 	UpdateWorldPresentation(Query, State);
 	if (ViewState.Revision == Query.Revision)
 	{

@@ -32,6 +32,17 @@ public:
 	int32 GetLoadedContractIdentityCount() const;
 	bool HasRequiredContractIdentityArt() const;
 	bool HasRequiredWeatherArt() const { return WeatherIconTexture != nullptr; }
+	FSimpleDelegate OnReturnRequested;
+	void ShowAdvancedOperations();
+	void ShowMajorOperations();
+	bool IsAdvancedOperationsOpen() const
+	{
+		return bAdvancedOperationsOpen;
+	}
+	bool IsMajorOperationsOpen() const
+	{
+		return bMajorOperationsOpen;
+	}
 
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
@@ -86,6 +97,14 @@ private:
 	void SelectOverviewAircraft();
 	UFUNCTION()
 	void SelectOverviewFacility();
+	UFUNCTION()
+	void ToggleAdvancedOperations();
+	void CloseAdvancedOperations();
+	UFUNCTION()
+	void ToggleMajorOperations();
+	void CloseMajorOperations();
+	UFUNCTION()
+	void ReturnToAirport();
 
 	bool Submit(
 		AMSim::FPhase4Command Command,
@@ -210,10 +229,16 @@ private:
 	TObjectPtr<UButton> RecoveryButton;
 	UPROPERTY(Transient)
 	TObjectPtr<UButton> RenewalButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> AdvancedOperationsButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> MajorOperationsButton;
 
 	AMSim::FPhase4ViewState ViewState;
 	bool bGateWarningReviewed = false;
 	bool bCompactLayout = false;
 	bool bOverviewOpen = false;
 	bool bProgressionOpen = false;
+	bool bAdvancedOperationsOpen = false;
+	bool bMajorOperationsOpen = false;
 };

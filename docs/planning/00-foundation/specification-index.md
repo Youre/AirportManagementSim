@@ -105,6 +105,8 @@ The [Concept Art Reference Set](../30-content-and-assets/concept-art/README.md) 
 | PI-06 | [Phase 4 Regional Scheduled Airport Implementation Plan](../50-production/phase-4-regional-scheduled-airport-implementation-plan.md) | Phase 4 recurring timetable, connections, border, disruption, presentation, and exit evidence |
 | PI-07 | [Phase 4.5 Visual Content Remediation](../50-production/phase-4-5-visual-content-remediation-plan.md) | Cross-phase implementation of CT-05 before Phase 5 opens |
 | PI-08 | [Phase 5 Cargo and Specialization Breadth](../50-production/phase-5-cargo-specialization-breadth-implementation-plan.md) | Cargo, independent Advanced paths, providers, concessions, events, schema 6, presentation, and exit evidence |
+| PI-09 | [Phase 6 Major-Airport Capability](../50-production/phase-6-major-airport-capability-implementation-plan.md) | Major paths, parallel runways, wide-body operations, serious incidents, scale, schema 7, and exit evidence |
+| PI-10 | [Phase 7 Content, Accessibility, and Release Hardening](../50-production/phase-7-release-hardening-implementation-plan.md) | Guidance, accessibility, offline radio, release content, schema 8, packaging, and final owner acceptance |
 
 ## Shared identifiers and interfaces
 

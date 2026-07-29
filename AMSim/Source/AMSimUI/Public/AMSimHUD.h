@@ -13,11 +13,14 @@ class AMSIMUI_API AAMSimHUD final : public AHUD
 
 public:
 	AAMSimHUD();
+	void ApplyInterfaceScale(float Scale);
 
 protected:
 	virtual void BeginPlay() override;
 
 private:
+	void CreateRootScreen(bool bOpenReleaseGuide);
+
 	UPROPERTY()
 	TSubclassOf<UAMSimRootScreen> RootScreenClass;
 

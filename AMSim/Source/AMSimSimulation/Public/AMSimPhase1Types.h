@@ -40,7 +40,8 @@ namespace AMSim
 		ScheduleStarterFlight,
 		RequestRecovery,
 		SetPaused,
-		SetSpeed
+		SetSpeed,
+		AcknowledgeContextHelp
 	};
 
 	enum class EPhase1CommandResult : uint8
@@ -133,7 +134,8 @@ namespace AMSim
 		TransactionRecorded,
 		CapabilityAwarded,
 		RecoveryGranted,
-		PhraseQueued
+		PhraseQueued,
+		ContextHelpAcknowledged
 	};
 
 	struct FPhase1Point
@@ -177,6 +179,7 @@ namespace AMSim
 		FName RequestedStandDefinitionId;
 		int32 SpeedMultiplier = 0;
 		bool bPaused = true;
+		FName ContextHelpId;
 	};
 
 	struct FPhase1Event
@@ -330,6 +333,7 @@ namespace AMSim
 		TArray<FObjectiveRecord> Objectives;
 		TArray<FPhraseIntentRecord> PhraseIntents;
 		TArray<FPhase1Event> Events;
+		TArray<FName> AcknowledgedContextHelp;
 		int32 RecoveryGrantCount = 0;
 	};
 

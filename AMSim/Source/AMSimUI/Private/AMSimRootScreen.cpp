@@ -4,8 +4,11 @@
 #include "AMSimAirportSimulationSubsystem.h"
 #include "AMSimCameraPawn.h"
 #include "AMSimConstructionProposalView.h"
+#include "AMSimContextHelpCard.h"
 #include "AMSimGameInstanceSubsystem.h"
 #include "AMSimPhase1Fixture.h"
+#include "AMSimRadioSubsystem.h"
+#include "AMSimReleaseGuideView.h"
 #include "AMSimTerminalView.h"
 #include "AMSimTurnaroundView.h"
 #include "AMSimUITheme.h"
@@ -31,6 +34,8 @@
 #include "Engine/World.h"
 #include "EngineUtils.h"
 #include "AMSimWorldPresenter.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
 #include "Styling/CoreStyle.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -1403,6 +1408,29 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		12);
 	Load->OnClicked.AddDynamic(this, &UAMSimRootScreen::LoadGame);
 	Controls->AddChildToHorizontalBox(Load)->SetPadding(FMargin(3.0f));
+	TerminalNavigationButton = MakeButton(
+		WidgetTree,
+		TEXT("TerminalNavigation"),
+		bCompactLayout ? TEXT("OPS") : TEXT("TERMINAL"),
+		AMSim::UITheme::EButton::Secondary,
+		12);
+	TerminalNavigationButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimRootScreen::ToggleTerminalPresentation);
+	TerminalNavigationButton->SetVisibility(
+		ESlateVisibility::Collapsed);
+	Controls->AddChildToHorizontalBox(
+		TerminalNavigationButton)->SetPadding(FMargin(3.0f));
+	UButton* Help = MakeButton(
+		WidgetTree,
+		TEXT("Help"),
+		TEXT("HELP"),
+		AMSim::UITheme::EButton::Tool,
+		12);
+	Help->OnClicked.AddDynamic(
+		this,
+		&UAMSimRootScreen::ToggleReleaseGuide);
+	Controls->AddChildToHorizontalBox(Help)->SetPadding(FMargin(3.0f));
 	InteractionText = MakeText(
 		WidgetTree,
 		TEXT("Interaction"),
@@ -1418,12 +1446,44 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	TerminalView = WidgetTree->ConstructWidget<UAMSimTerminalView>(
 		UAMSimTerminalView::StaticClass(),
 		TEXT("PassengerTerminalView"));
+	TerminalView->OnReturnRequested.BindUObject(
+		this,
+		&UAMSimRootScreen::CloseTerminalPresentation);
 	UOverlaySlot* TerminalSlot = Root->AddChildToOverlay(TerminalView);
 	TerminalSlot->SetHorizontalAlignment(HAlign_Fill);
 	TerminalSlot->SetVerticalAlignment(VAlign_Fill);
 
-	SpeechProvider = CreateAMSimLocalSpeechProvider();
-	const bool bSpeechReady = SpeechProvider->Initialize();
+	ContextHelpCard =
+		WidgetTree->ConstructWidget<UAMSimContextHelpCard>(
+			UAMSimContextHelpCard::StaticClass(),
+			TEXT("ContextHelpCard"));
+	UOverlaySlot* ContextHelpSlot =
+		Root->AddChildToOverlay(ContextHelpCard);
+	ContextHelpSlot->SetHorizontalAlignment(HAlign_Fill);
+	ContextHelpSlot->SetVerticalAlignment(VAlign_Fill);
+	ReleaseGuideView =
+		WidgetTree->ConstructWidget<UAMSimReleaseGuideView>(
+			UAMSimReleaseGuideView::StaticClass(),
+			TEXT("ReleaseGuideView"));
+	UOverlaySlot* ReleaseGuideSlot =
+		Root->AddChildToOverlay(ReleaseGuideView);
+	ReleaseGuideSlot->SetHorizontalAlignment(HAlign_Fill);
+	ReleaseGuideSlot->SetVerticalAlignment(VAlign_Fill);
+	if (bOpenReleaseGuideWhenReady ||
+		FParse::Param(
+			FCommandLine::Get(),
+			TEXT("AMSimReleaseGuide")))
+	{
+		ReleaseGuideView->OpenGuide();
+	}
+
+	const UAMSimRadioSubsystem* Radio =
+		GetGameInstance()
+			? GetGameInstance()->GetSubsystem<
+				UAMSimRadioSubsystem>()
+			: nullptr;
+	const bool bSpeechReady =
+		Radio && Radio->IsSpeechReady();
 	SetInteractionMessage(
 		bSpeechReady
 			? TEXT("Local radio speech and captions ready.")
@@ -1441,11 +1501,6 @@ void UAMSimRootScreen::NativeTick(const FGeometry& MyGeometry, const float InDel
 
 void UAMSimRootScreen::NativeDestruct()
 {
-	if (SpeechProvider)
-	{
-		SpeechProvider->Shutdown();
-		SpeechProvider.Reset();
-	}
 	Super::NativeDestruct();
 }
 
@@ -1570,6 +1625,13 @@ void UAMSimRootScreen::RefreshFromSimulation()
 	const AMSim::FPhase2QuerySnapshot Phase2Query = Subsystem->GetPhase2Query();
 	const AMSim::FPhase2State& Phase2State = Subsystem->GetSimulation().GetPhase2State();
 	const AMSim::FPhase3QuerySnapshot Phase3Query = Subsystem->GetPhase3Query();
+	if (TerminalNavigationButton)
+	{
+		TerminalNavigationButton->SetVisibility(
+			Phase3Query.bUnlocked || Phase3Query.bInitialized
+				? ESlateVisibility::Visible
+				: ESlateVisibility::Collapsed);
+	}
 	const bool bOperationalEvidence =
 		FParse::Param(
 			FCommandLine::Get(),
@@ -1585,6 +1647,11 @@ void UAMSimRootScreen::RefreshFromSimulation()
 	}
 	if (TerminalView)
 	{
+		if (Phase3Query.bInitialized &&
+			!TerminalView->HasBeenOpened())
+		{
+			TerminalView->ShowPresentation();
+		}
 		TerminalView->RefreshFromSimulation();
 		if (bShowPhase2ClosureProof)
 		{
@@ -1598,7 +1665,8 @@ void UAMSimRootScreen::RefreshFromSimulation()
 	if (Phase1Page)
 	{
 		Phase1Page->SetVisibility(
-			(Phase3Query.bUnlocked || Phase3Query.bInitialized) &&
+			TerminalView &&
+			TerminalView->IsPresentationOpen() &&
 			!bShowPhase2ClosureProof
 				? ESlateVisibility::Collapsed
 				: ESlateVisibility::Visible);
@@ -1702,9 +1770,21 @@ void UAMSimRootScreen::RefreshFromSimulation()
 				? ESlateVisibility::Visible
 				: ESlateVisibility::Collapsed);
 	}
-	if (State.PhraseIntents.Num() > LastPhraseCount && SpeechProvider)
+	if (State.PhraseIntents.Num() > LastPhraseCount)
 	{
-		SpeechProvider->Speak(GetWorld(), State.PhraseIntents.Last().Caption);
+		if (UAMSimRadioSubsystem* Radio =
+			GetGameInstance()
+				? GetGameInstance()->GetSubsystem<
+					UAMSimRadioSubsystem>()
+				: nullptr)
+		{
+			const AMSim::FPhraseIntentRecord& Phrase =
+				State.PhraseIntents.Last();
+			Radio->PresentCaption(
+				GetWorld(),
+				Phrase.PhraseId,
+				Phrase.Caption);
+		}
 	}
 
 	for (TActorIterator<AAMSimWorldPresenter> It(GetWorld()); It; ++It)
@@ -1877,5 +1957,32 @@ void UAMSimRootScreen::SetInteractionMessage(const FString& Message, const bool 
 	{
 		InteractionText->SetText(FText::FromString(Message));
 		InteractionText->SetColorAndOpacity(FSlateColor(bSucceeded ? Cyan : ErrorColor));
+	}
+}
+
+void UAMSimRootScreen::ShowReleaseGuide()
+{
+	bOpenReleaseGuideWhenReady = true;
+	if (ReleaseGuideView)
+	{
+		ReleaseGuideView->OpenGuide();
+	}
+}
+
+void UAMSimRootScreen::ToggleReleaseGuide()
+{
+	if (!ReleaseGuideView)
+	{
+		return;
+	}
+	if (ReleaseGuideView->IsGuideOpen())
+	{
+		bOpenReleaseGuideWhenReady = false;
+		ReleaseGuideView->CloseGuide();
+	}
+	else
+	{
+		bOpenReleaseGuideWhenReady = true;
+		ReleaseGuideView->OpenGuide();
 	}
 }

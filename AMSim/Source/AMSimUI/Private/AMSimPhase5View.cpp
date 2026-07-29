@@ -165,6 +165,15 @@ TSharedRef<SWidget> UAMSimPhase5View::RebuildWidget()
 		10,
 		Muted());
 	AddHorizontal(HeaderRow, StatusText, 10.0f, true);
+	UButton* ReturnButton = MakeButton(
+		WidgetTree,
+		TEXT("Phase5Return"),
+		TEXT("BACK TO AIRPORT"),
+		EButton::Secondary);
+	ReturnButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimPhase5View::ReturnToPrevious);
+	AddHorizontal(HeaderRow, ReturnButton, 7.0f);
 	InitializeButton = MakeButton(
 		WidgetTree,
 		TEXT("Phase5Initialize"),
@@ -561,6 +570,11 @@ void UAMSimPhase5View::ShowEvents()
 void UAMSimPhase5View::ShowCapabilities()
 {
 	ShowPanel(3);
+}
+
+void UAMSimPhase5View::ReturnToPrevious()
+{
+	OnReturnRequested.ExecuteIfBound();
 }
 
 void UAMSimPhase5View::ShowPanel(const int32 PanelIndex)

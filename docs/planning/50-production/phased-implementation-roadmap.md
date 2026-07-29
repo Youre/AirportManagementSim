@@ -130,6 +130,10 @@ do not replace the remaining owner-operated and time-based acceptance gates.
 
 ## Phase 7: Content, accessibility, and release hardening
 
+**Status:** Implementation active; consolidated owner testing follows the
+release-candidate build. See
+[PI-10](phase-7-release-hardening-implementation-plan.md).
+
 **Goal:** A shippable offline Windows game rather than a technically complete prototype.
 
 Complete curated maps, approved aircraft/operator catalog, guidance/help, voiced/captioned radio coverage, visual/audio polish, accessibility review, balance playtests, rights/provenance, migration matrix, long soak, clean-machine package, security/offline audit, and child-safety content review.

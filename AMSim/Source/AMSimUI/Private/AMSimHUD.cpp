@@ -1,8 +1,11 @@
 #include "AMSimHUD.h"
+#include "AMSimAccessibilityProfile.h"
 #include "AMSimRootScreen.h"
 #include "Blueprint/UserWidget.h"
+#include "Engine/World.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
+#include "TimerManager.h"
 #include "UObject/ConstructorHelpers.h"
 
 AAMSimHUD::AAMSimHUD()
@@ -32,6 +35,7 @@ AAMSimHUD::AAMSimHUD()
 void AAMSimHUD::BeginPlay()
 {
 	Super::BeginPlay();
+	UAMSimAccessibilityProfile::Get()->ApplySavedSettings();
 	if (APlayerController* Controller = GetOwningPlayerController())
 	{
 #if !UE_BUILD_SHIPPING
@@ -49,13 +53,68 @@ void AAMSimHUD::BeginPlay()
 			return;
 		}
 #endif
-		TSubclassOf<UAMSimRootScreen> ScreenClass = RootScreenClass;
-		if (!ScreenClass)
-		{
-			ScreenClass = UAMSimRootScreen::StaticClass();
-		}
-		RootScreen = CreateWidget<UAMSimRootScreen>(Controller, ScreenClass);
-		RootScreen->AddToViewport();
-		RootScreen->ActivateWidget();
+		CreateRootScreen(
+			FParse::Param(
+				FCommandLine::Get(),
+				TEXT("AMSimReleaseGuide")));
 	}
+}
+
+void AAMSimHUD::CreateRootScreen(const bool bOpenReleaseGuide)
+{
+	APlayerController* Controller =
+		GetOwningPlayerController();
+	if (!Controller)
+	{
+		return;
+	}
+	if (RootScreen)
+	{
+		RootScreen->DeactivateWidget();
+		RootScreen->RemoveFromParent();
+		RootScreen = nullptr;
+	}
+	TSubclassOf<UAMSimRootScreen> ScreenClass = RootScreenClass;
+	if (!ScreenClass)
+	{
+		ScreenClass = UAMSimRootScreen::StaticClass();
+	}
+	RootScreen =
+		CreateWidget<UAMSimRootScreen>(
+			Controller,
+			ScreenClass);
+	RootScreen->AddToViewport();
+	RootScreen->ActivateWidget();
+	if (bOpenReleaseGuide)
+	{
+		RootScreen->ShowReleaseGuide();
+		TWeakObjectPtr<UAMSimRootScreen> WeakRootScreen =
+			RootScreen;
+		GetWorldTimerManager().SetTimerForNextTick(
+			FTimerDelegate::CreateLambda(
+				[WeakRootScreen]()
+				{
+					if (UAMSimRootScreen* Screen =
+						WeakRootScreen.Get())
+					{
+						Screen->ShowReleaseGuide();
+						Screen->ForceLayoutPrepass();
+					}
+				}));
+	}
+}
+
+void AAMSimHUD::ApplyInterfaceScale(const float Scale)
+{
+	UAMSimAccessibilityProfile::Get()->SetInterfaceScale(Scale);
+	TWeakObjectPtr<AAMSimHUD> WeakThis(this);
+	GetWorldTimerManager().SetTimerForNextTick(
+		FTimerDelegate::CreateLambda(
+			[WeakThis]()
+			{
+				if (AAMSimHUD* Hud = WeakThis.Get())
+				{
+					Hud->CreateRootScreen(true);
+				}
+			}));
 }

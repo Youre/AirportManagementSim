@@ -2,6 +2,7 @@
 
 #include "AMSimAirportSimulationSubsystem.h"
 #include "AMSimPhase2Fixture.h"
+#include "AMSimTerminalView.h"
 #include "Components/Border.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
@@ -26,6 +27,32 @@ namespace
 			Button->SetIsEnabled(bEnabled);
 		}
 	}
+}
+
+void UAMSimRootScreen::ToggleTerminalPresentation()
+{
+	if (!TerminalView)
+	{
+		return;
+	}
+	if (TerminalView->IsPresentationOpen())
+	{
+		TerminalView->ClosePresentation();
+	}
+	else
+	{
+		TerminalView->ShowPresentation();
+	}
+	RefreshFromSimulation();
+}
+
+void UAMSimRootScreen::CloseTerminalPresentation()
+{
+	if (TerminalView)
+	{
+		TerminalView->ClosePresentation();
+	}
+	RefreshFromSimulation();
 }
 
 bool UAMSimRootScreen::SubmitPhase2Command(

@@ -94,6 +94,7 @@ The inventory confirms presence, format, dimensions, and source classification. 
 - [Phase 6 Major-airport capability plan](50-production/phase-6-major-airport-capability-implementation-plan.md)
 - [Phase 6 visual validation](50-production/phase6-visual-validation/README.md)
 - [Phase 6 content provenance](30-content-and-assets/phase-6-content-provenance.md)
+- [Phase 7 release-hardening plan](50-production/phase-7-release-hardening-implementation-plan.md)
 - [Phase 1 reference-hardware gate](50-production/phase-1-reference-hardware.md)
 - [Phase 1 unassisted new-tester protocol](50-production/phase-1-new-tester-protocol.md)
 - [Verification and requirements traceability](50-production/verification-traceability.md)

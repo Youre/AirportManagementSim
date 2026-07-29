@@ -20,6 +20,11 @@ class AMSIMUI_API UAMSimTerminalView final : public UUserWidget
 public:
 	UAMSimTerminalView(const FObjectInitializer& ObjectInitializer);
 	void RefreshFromSimulation();
+	void ShowPresentation();
+	void ClosePresentation();
+	bool IsPresentationOpen() const { return bPresentationOpen; }
+	bool HasBeenOpened() const { return bHasBeenOpened; }
+	FSimpleDelegate OnReturnRequested;
 	bool HasRequiredPassengerIdentityArt() const
 	{
 		return PassengerFamilyTexture != nullptr;
@@ -62,6 +67,12 @@ private:
 	void SaveGame();
 	UFUNCTION()
 	void LoadGame();
+	UFUNCTION()
+	void OpenAdvancedOperations();
+	UFUNCTION()
+	void OpenMajorOperations();
+	UFUNCTION()
+	void ReturnToAirport();
 
 	bool Submit(
 		AMSim::FPhase3Command Command,
@@ -136,9 +147,15 @@ private:
 	TObjectPtr<UButton> AssistanceButton;
 	UPROPERTY(Transient)
 	TObjectPtr<UButton> BaggageButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> AdvancedOperationsButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> MajorOperationsButton;
 	UPROPERTY()
 	TObjectPtr<UTexture2D> PassengerFamilyTexture;
 
 	AMSim::FPhase3ViewState ViewState;
 	int32 OverlayMode = 0;
+	bool bPresentationOpen = false;
+	bool bHasBeenOpened = false;
 };

@@ -17,6 +17,7 @@ class AMSIMUI_API UAMSimPhase6View final : public UUserWidget
 
 public:
 	void RefreshFromSimulation();
+	FSimpleDelegate OnReturnRequested;
 
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
@@ -57,6 +58,8 @@ private:
 	void ShowIncident();
 	UFUNCTION()
 	void ShowProgression();
+	UFUNCTION()
+	void ReturnToPrevious();
 
 	AMSim::EPhase6CommandResult Submit(
 		AMSim::FPhase6Command Command,

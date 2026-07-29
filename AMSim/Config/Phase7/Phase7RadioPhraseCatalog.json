@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "captionsFirst": true,
+  "offlineOnly": true,
+  "families": [
+    "Radio.ATIS",
+    "Radio.ArrivalContact",
+    "Radio.PatternEntry",
+    "Radio.LandingClearance",
+    "Radio.TakeoffClearance",
+    "Radio.HoldShort",
+    "Radio.RunwayCrossing",
+    "Radio.TaxiRoute",
+    "Radio.StandAssignment",
+    "Radio.GoAround",
+    "Radio.ServiceDispatch",
+    "Radio.Boarding",
+    "Radio.PassengerPage",
+    "Radio.WeatherWarning",
+    "Radio.EmergencyResponse"
+  ]
+}

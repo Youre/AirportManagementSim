@@ -6,6 +6,7 @@
 #include "AMSimOverviewView.h"
 #include "AMSimPhase5View.h"
 #include "AMSimProgressionView.h"
+#include "AMSimRadioSubsystem.h"
 #include "AMSimSaveStore.h"
 #include "AMSimTimetableGeometry.h"
 #include "AMSimUITheme.h"
@@ -280,21 +281,6 @@ UAMSimRegionalOperationsView::UAMSimRegionalOperationsView(
 	WeatherIconTexture = WeatherFinder.Get();
 }
 
-int32 UAMSimRegionalOperationsView::GetLoadedContractIdentityCount() const
-{
-	return Algo::CountIf(
-		ContractIdentityTextures,
-		[](const UTexture2D* Texture)
-		{
-			return Texture != nullptr;
-		});
-}
-
-bool UAMSimRegionalOperationsView::HasRequiredContractIdentityArt() const
-{
-	return GetLoadedContractIdentityCount() == 3 && ContractAircraftTexture;
-}
-
 TSharedRef<SWidget> UAMSimRegionalOperationsView::RebuildWidget()
 {
 	if (!WidgetTree || WidgetTree->RootWidget)
@@ -365,6 +351,16 @@ TSharedRef<SWidget> UAMSimRegionalOperationsView::RebuildWidget()
 		CyanSoft(),
 		true);
 	AddHorizontal(TopRow, ClockText, 12.0f);
+	UButton* ReturnButton = MakeButton(
+		WidgetTree,
+		TEXT("RegionalReturn"),
+		TEXT("BACK"),
+		EButton::Secondary,
+		SmallSize);
+	ReturnButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimRegionalOperationsView::ReturnToAirport);
+	AddHorizontal(TopRow, ReturnButton, 7.0f);
 	UButton* OverviewButton = MakeButton(
 		WidgetTree,
 		TEXT("RegionalOverview"),
@@ -385,6 +381,30 @@ TSharedRef<SWidget> UAMSimRegionalOperationsView::RebuildWidget()
 		this,
 		&UAMSimRegionalOperationsView::ToggleProgression);
 	AddHorizontal(TopRow, ProgressionButton, 7.0f);
+	AdvancedOperationsButton = MakeButton(
+		WidgetTree,
+		TEXT("RegionalAdvancedOperations"),
+		bCompactLayout ? TEXT("ADV") : TEXT("ADVANCED"),
+		EButton::Secondary,
+		SmallSize);
+	AdvancedOperationsButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimRegionalOperationsView::ToggleAdvancedOperations);
+	AdvancedOperationsButton->SetVisibility(
+		ESlateVisibility::Collapsed);
+	AddHorizontal(TopRow, AdvancedOperationsButton, 7.0f);
+	MajorOperationsButton = MakeButton(
+		WidgetTree,
+		TEXT("RegionalMajorOperations"),
+		TEXT("MAJOR"),
+		EButton::Secondary,
+		SmallSize);
+	MajorOperationsButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimRegionalOperationsView::ToggleMajorOperations);
+	MajorOperationsButton->SetVisibility(
+		ESlateVisibility::Collapsed);
+	AddHorizontal(TopRow, MajorOperationsButton, 7.0f);
 	UButton* PauseButton = MakeButton(
 		WidgetTree,
 		TEXT("RegionalPause"),
@@ -1245,6 +1265,9 @@ TSharedRef<SWidget> UAMSimRegionalOperationsView::RebuildWidget()
 	Phase5View = WidgetTree->ConstructWidget<UAMSimPhase5View>(
 		UAMSimPhase5View::StaticClass(),
 		TEXT("Phase5OperationsView"));
+	Phase5View->OnReturnRequested.BindUObject(
+		this,
+		&UAMSimRegionalOperationsView::CloseAdvancedOperations);
 	AddAnchored(
 		Root,
 		Phase5View,
@@ -1275,14 +1298,6 @@ TSharedRef<SWidget> UAMSimRegionalOperationsView::RebuildWidget()
 			: ESlateVisibility::Collapsed);
 	RefreshFromSimulation();
 	return Super::RebuildWidget();
-}
-
-void UAMSimRegionalOperationsView::NativeTick(
-	const FGeometry& MyGeometry,
-	const float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
-	RefreshFromSimulation();
 }
 
 bool UAMSimRegionalOperationsView::Submit(
@@ -1556,31 +1571,6 @@ void UAMSimRegionalOperationsView::SubmitSpeed(
 	Subsystem->SubmitPhase1Command(Command);
 }
 
-void UAMSimRegionalOperationsView::PauseSimulation()
-{
-	SubmitSpeed(0, true);
-}
-
-void UAMSimRegionalOperationsView::SetSpeedOne()
-{
-	SubmitSpeed(1);
-}
-
-void UAMSimRegionalOperationsView::SetSpeedTwo()
-{
-	SubmitSpeed(2);
-}
-
-void UAMSimRegionalOperationsView::SetSpeedFour()
-{
-	SubmitSpeed(4);
-}
-
-void UAMSimRegionalOperationsView::SetSpeedEight()
-{
-	SubmitSpeed(8);
-}
-
 void UAMSimRegionalOperationsView::SaveGame()
 {
 	UAMSimAirportSimulationSubsystem* Simulation =
@@ -1671,21 +1661,26 @@ void UAMSimRegionalOperationsView::RefreshFromSimulation()
 	{
 		return;
 	}
-	if (Phase5Query.bUnlocked || Phase5Query.bInitialized)
+	const bool bAdvancedAvailable =
+		Phase5Query.bUnlocked || Phase5Query.bInitialized;
+	if (!bAdvancedAvailable)
+	{
+		bAdvancedOperationsOpen = false;
+	}
+	if (AdvancedOperationsButton)
+	{
+		AdvancedOperationsButton->SetVisibility(
+			bAdvancedAvailable
+				? ESlateVisibility::Visible
+				: ESlateVisibility::Collapsed);
+	}
+	if (bAdvancedAvailable && bAdvancedOperationsOpen)
 	{
 		SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		if (RootSurface)
+		if (Phase5View)
 		{
-			for (int32 Index = 0;
-				Index < RootSurface->GetChildrenCount();
-				++Index)
-			{
-				UWidget* Child = RootSurface->GetChildAt(Index);
-				Child->SetVisibility(
-					Child == Phase5View
-						? ESlateVisibility::SelfHitTestInvisible
-						: ESlateVisibility::Collapsed);
-			}
+			Phase5View->SetVisibility(
+				ESlateVisibility::SelfHitTestInvisible);
 		}
 		return;
 	}
@@ -1695,6 +1690,10 @@ void UAMSimRegionalOperationsView::RefreshFromSimulation()
 		return;
 	}
 	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (Phase5View)
+	{
+		Phase5View->SetVisibility(ESlateVisibility::Collapsed);
+	}
 	UpdateWorldPresentation(Query, State);
 	if (ProgressionView)
 	{
@@ -1888,6 +1887,17 @@ void UAMSimRegionalOperationsView::RefreshFromSimulation()
 						: TEXT("○"))
 				: ViewState.IncidentLifecycle));
 	CaptionText->SetText(FText::FromString(ViewState.Caption));
+	if (UAMSimRadioSubsystem* Radio =
+		GetGameInstance()
+			? GetGameInstance()->GetSubsystem<
+				UAMSimRadioSubsystem>()
+			: nullptr)
+	{
+		Radio->PresentCaption(
+			GetWorld(),
+			TEXT("Phase4.Operations"),
+			ViewState.Caption);
+	}
 	RenewalText->SetText(FText::FromString(
 		bCompactLayout
 			? Query.RenewalAcceptedCount > 0
@@ -1917,6 +1927,15 @@ void UAMSimRegionalOperationsView::RefreshFromSimulation()
 			It->SetMatureOverviewMode(true);
 			break;
 		}
+	}
+	const bool bProgressionProof = !ViewState.bIncidentMode &&
+		Query.bFixtureCompleted &&
+		FParse::Param(FCommandLine::Get(),
+			TEXT("AMSimPhase45ProgressionProof"));
+	if (bProgressionProof)
+	{
+		bProgressionOpen = true;
+		bOverviewOpen = false;
 	}
 	const bool bOverviewProof =
 		!ViewState.bIncidentMode &&
@@ -1978,21 +1997,4 @@ void UAMSimRegionalOperationsView::RefreshFromSimulation()
 	SetActionVisible(RecoveryButton, ViewState.bCanRecover);
 	SetActionVisible(RenewalButton, ViewState.bCanRenew);
 	ForceLayoutPrepass();
-}
-
-void UAMSimRegionalOperationsView::UpdateWorldPresentation(
-	const AMSim::FPhase4QuerySnapshot& Query,
-	const AMSim::FPhase4State& State)
-{
-	for (TActorIterator<AAMSimWorldPresenter> It(GetWorld()); It; ++It)
-	{
-		It->ApplyPhase4Snapshot(Query, State);
-		const bool bIncidentMode =
-			Query.IncidentLifecycle >=
-				AMSim::EPhase4IncidentLifecycle::Alerted &&
-			Query.IncidentLifecycle <
-				AMSim::EPhase4IncidentLifecycle::Recovered;
-		It->SetMatureOverviewMode(bOverviewOpen || bIncidentMode);
-		break;
-	}
 }

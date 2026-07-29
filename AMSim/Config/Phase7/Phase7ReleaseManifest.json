@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "releaseId": "Riverbend-RC1",
+  "status": "implementation-active",
+  "engine": "5.8.0",
+  "platform": "Win64",
+  "saveSchema": 8,
+  "minimumSupportedSaveSchema": 1,
+  "mapIds": [
+    "Map.TemperateStarter"
+  ],
+  "specializationPaths": [
+    "GeneralAviation",
+    "FlightSchool",
+    "Charter",
+    "Cargo",
+    "Passenger",
+    "Mixed"
+  ],
+  "conceptReferences": [
+    "VA-01",
+    "VA-02",
+    "VA-03",
+    "VA-04",
+    "VA-05",
+    "VA-06",
+    "VA-07"
+  ],
+  "runtimeBoundaries": {
+    "offlineRequired": true,
+    "required3DAssets": 0,
+    "runtimeStringAssetLoads": 0,
+    "realOperatorBrands": 0,
+    "unapprovedAircraft": 0,
+    "unreviewedMusicIncluded": false
+  },
+  "technicalGates": {
+    "focusedAutomation": "pending",
+    "fullAutomation": "pending",
+    "migrationMatrix": "pending",
+    "developmentPackage": "pending",
+    "shippingPackage": "pending",
+    "cookInventory": "pending",
+    "offlineSocketAudit": "pending",
+    "securityAudit": "pending",
+    "actualVisualAudit": "pending"
+  },
+  "ownerGates": {
+    "phase5AdvancedJourneys": "pending",
+    "phase6MajorJourneys": "pending",
+    "maximumLoadObservation": "pending",
+    "pacingJourney": "pending",
+    "referenceTierFourHourSoak": "pending",
+    "unassistedTesterProtocol": "pending",
+    "finalVisualApproval": "pending"
+  },
+  "packageIdentity": {
+    "sourceCommit": "",
+    "contentManifestSha256": "",
+    "developmentLauncherSha256": "",
+    "developmentRuntimeSha256": "",
+    "shippingLauncherSha256": "",
+    "shippingRuntimeSha256": ""
+  }
+}

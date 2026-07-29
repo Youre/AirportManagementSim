@@ -17,6 +17,7 @@ class AMSIMUI_API UAMSimPhase5View final : public UUserWidget
 
 public:
 	void RefreshFromSimulation();
+	FSimpleDelegate OnReturnRequested;
 
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
@@ -47,6 +48,8 @@ private:
 	void ShowEvents();
 	UFUNCTION()
 	void ShowCapabilities();
+	UFUNCTION()
+	void ReturnToPrevious();
 
 	bool Submit(
 		AMSim::EPhase5CommandType Type,

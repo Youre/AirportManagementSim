@@ -1,4 +1,5 @@
 #include "AMSimStarterAirfieldSimulation.h"
+#include "AMSimContextHelp.h"
 
 namespace AMSim
 {
@@ -224,6 +225,22 @@ namespace AMSim
 			break;
 
 		case EPhase1CommandType::SetPaused:
+			break;
+
+		case EPhase1CommandType::AcknowledgeContextHelp:
+			if (!FindPhase1ContextHelp(Command.ContextHelpId))
+			{
+				Result.Result =
+					EPhase1CommandResult::RejectedInvalidCommand;
+				return Result;
+			}
+			if (State.AcknowledgedContextHelp.Contains(
+				Command.ContextHelpId))
+			{
+				Result.Result =
+					EPhase1CommandResult::RejectedInvalidState;
+				return Result;
+			}
 			break;
 		}
 
@@ -471,6 +488,17 @@ namespace AMSim
 		case EPhase1CommandType::SetSpeed:
 			State.bPaused = false;
 			State.SpeedMultiplier = Command.SpeedMultiplier;
+			break;
+
+		case EPhase1CommandType::AcknowledgeContextHelp:
+			State.AcknowledgedContextHelp.Add(Command.ContextHelpId);
+			EmitEvent(
+				EPhase1EventType::ContextHelpAcknowledged,
+				Command.Id,
+				FString::Printf(
+					TEXT("Context help acknowledged: %s"),
+					*Command.ContextHelpId.ToString()),
+				CurrentGameMilliseconds);
 			break;
 		}
 	}
@@ -930,6 +958,10 @@ namespace AMSim
 			HashBytes(Hash, &Phrase.Id.Value, sizeof(uint64));
 			HashString(Hash, Phrase.Caption);
 		}
+		for (const FName HelpId : State.AcknowledgedContextHelp)
+		{
+			HashString(Hash, HelpId.ToString());
+		}
 		return Hash;
 	}
 
@@ -976,9 +1008,21 @@ namespace AMSim
 			InState.Facilities.Num() > 10000 ||
 			InState.Teams.Num() > 10000 ||
 			InState.Transactions.Num() > 100000 ||
-			InState.PhraseIntents.Num() > 100000)
+			InState.PhraseIntents.Num() > 100000 ||
+			InState.AcknowledgedContextHelp.Num() >
+				GetPhase1ContextHelpCatalog().Num())
 		{
 			return false;
+		}
+		TSet<FName> SeenHelpIds;
+		for (const FName HelpId : InState.AcknowledgedContextHelp)
+		{
+			if (!FindPhase1ContextHelp(HelpId) ||
+				SeenHelpIds.Contains(HelpId))
+			{
+				return false;
+			}
+			SeenHelpIds.Add(HelpId);
 		}
 		if (InState.bInitialized && (!InState.AirportId.IsValid() || InState.MapId.IsNone()))
 		{

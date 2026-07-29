@@ -121,6 +121,7 @@ $packageAudit = [ordered]@{
     forbiddenFiles = @()
     forbiddenTextMatches = @()
     cookReferenceManifest = ''
+    cookedPackageCount = 0
     cookedPhase7Assets = @()
     missingCookedPhase7Assets = @()
     passed = $true
@@ -192,6 +193,13 @@ if ($packageAudit.requested) {
     }
     $packageAudit.cookReferenceManifest = $cookReferenceManifest
     $inventory = @(Get-Content -LiteralPath $cookReferenceManifest)
+    $packageAudit.cookedPackageCount = @(
+        $inventory |
+            Where-Object {
+                -not [string]::IsNullOrWhiteSpace($_) -and
+                -not $_.StartsWith('#')
+            }
+    ).Count
     $packageAudit.cookedPhase7Assets = @(
         $inventory |
             Where-Object {

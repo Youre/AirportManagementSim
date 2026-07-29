@@ -33,7 +33,10 @@ public:
 	FName GetProviderId() const;
 
 private:
+	void InitializeProviderIfNeeded();
+
 	TUniquePtr<IAMSimSpeechProvider> SpeechProvider;
 	FAMSimCaptionDeduplicator Deduplicator;
+	bool bInitializationAttempted = false;
 	bool bSpeechReady = false;
 };

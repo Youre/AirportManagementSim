@@ -32,8 +32,8 @@ void UAMSimRadioSubsystem::Initialize(
 {
 	Super::Initialize(Collection);
 	SpeechProvider = CreateAMSimLocalSpeechProvider();
-	bSpeechReady =
-		SpeechProvider && SpeechProvider->Initialize();
+	bInitializationAttempted = false;
+	bSpeechReady = false;
 }
 
 void UAMSimRadioSubsystem::Deinitialize()
@@ -44,8 +44,20 @@ void UAMSimRadioSubsystem::Deinitialize()
 		SpeechProvider.Reset();
 	}
 	Deduplicator.Reset();
+	bInitializationAttempted = false;
 	bSpeechReady = false;
 	Super::Deinitialize();
+}
+
+void UAMSimRadioSubsystem::InitializeProviderIfNeeded()
+{
+	if (bInitializationAttempted)
+	{
+		return;
+	}
+	bInitializationAttempted = true;
+	bSpeechReady =
+		SpeechProvider && SpeechProvider->Initialize();
 }
 
 bool UAMSimRadioSubsystem::PresentCaption(
@@ -57,6 +69,7 @@ bool UAMSimRadioSubsystem::PresentCaption(
 	{
 		return false;
 	}
+	InitializeProviderIfNeeded();
 	if (SpeechProvider)
 	{
 		SpeechProvider->Speak(World, Caption);

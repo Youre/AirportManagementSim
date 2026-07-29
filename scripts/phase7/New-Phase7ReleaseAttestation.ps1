@@ -65,8 +65,8 @@ function Get-AggregateIdentity {
             [BitConverter]::ToString($digest) -replace '-', ''
         ).ToLowerInvariant()
         files = $entries.Count
-        bytes = ($entries |
-            Measure-Object -Property bytes -Sum).Sum
+        bytes = ($Files |
+            Measure-Object -Property Length -Sum).Sum
         entries = $entries
     }
 }
@@ -95,7 +95,10 @@ $releaseContentFiles = @(
     Get-ChildItem `
         -LiteralPath (Join-Path $repoRoot 'AMSim\Config\Phase7') `
         -File `
-        -Recurse
+        -Recurse |
+        Where-Object {
+            $_.Name -ne 'Phase7ReleaseManifest.json'
+        }
     Get-ChildItem `
         -LiteralPath (Join-Path $repoRoot 'AMSim\Content\Phase7') `
         -File `

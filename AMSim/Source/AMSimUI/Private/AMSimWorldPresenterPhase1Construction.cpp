@@ -9,6 +9,7 @@
 namespace
 {
 	constexpr float SpritePlaneRoll = -90.0f;
+	constexpr int32 ConstructionBedSortPriority = 5;
 
 	double SegmentLength(
 		const AMSim::FPhase1Point& Start,
@@ -72,6 +73,20 @@ namespace
 		Location.Z = Height;
 		return Location;
 	}
+
+	void FaceMovement(
+		UPaperSpriteComponent* Component,
+		const FVector& Direction)
+	{
+		if (!Component || Direction.IsNearlyZero())
+		{
+			return;
+		}
+		Component->SetRelativeRotation(FRotator(
+			0.0f,
+			AMSim::MakePhase1TopDownMovementYawDegrees(Direction),
+			SpritePlaneRoll));
+	}
 }
 
 void AAMSimWorldPresenter::InitializePhase1ConstructionPresentation()
@@ -84,18 +99,18 @@ void AAMSimWorldPresenter::InitializePhase1ConstructionPresentation()
 	}
 	Phase1RunwayEarthwork = CreateSpriteComponent(
 		TEXT("Phase1RunwayEarthwork"),
-		9,
+		ConstructionBedSortPriority,
 		FLinearColor(0.64f, 0.45f, 0.25f, 0.92f));
 	for (int32 Index = 0; Index < 8; ++Index)
 	{
 		Phase1TaxiwayEarthworks.Add(CreateSpriteComponent(
 			*FString::Printf(TEXT("Phase1TaxiwayEarthwork%d"), Index),
-			19 + Index,
+			ConstructionBedSortPriority,
 			FLinearColor(0.69f, 0.49f, 0.27f, 0.94f)));
 	}
 	Phase1RoadEarthwork = CreateSpriteComponent(
 		TEXT("Phase1RoadEarthwork"),
-		19,
+		ConstructionBedSortPriority,
 		FLinearColor(0.58f, 0.40f, 0.24f, 0.92f));
 	for (int32 Index = 0; Index < 3; ++Index)
 	{
@@ -255,19 +270,75 @@ void AAMSimWorldPresenter::RefreshPhase1ConstructionPresentation(
 			(Index - 1.5f) * 750.0f,
 			(Index % 2 == 0 ? -650.0f : 650.0f),
 			0.0f);
+		const FVector TravelOrigin = TerminalOrigin + DepartureOffset;
 		FVector WorkerLocation = FMath::Lerp(
-			TerminalOrigin + DepartureOffset,
+			TravelOrigin,
 			CrewTargets[Index],
 			TravelAlpha);
-		if (State.Project.Stage == AMSim::EConstructionStage::Building)
+		FVector MovementDirection = CrewTargets[Index] - TravelOrigin;
+		if (State.Project.Stage == AMSim::EConstructionStage::Building ||
+			State.Project.Stage == AMSim::EConstructionStage::Inspection)
 		{
-			const float WorkAlpha = FMath::Frac(
-				Visual.SurfaceProgress + Index * 0.21f);
-			WorkerLocation = Index < 2
-				? FMath::Lerp(RunwayStart, RunwayEnd, WorkAlpha)
-				: FMath::Lerp(TaxiTarget, Phase1StandCenter, WorkAlpha);
+			FVector PatrolStart;
+			FVector PatrolEnd;
+			if (Index == 0)
+			{
+				PatrolStart = FMath::Lerp(RunwayStart, RunwayEnd, 0.12f);
+				PatrolEnd = FMath::Lerp(RunwayStart, RunwayEnd, 0.42f);
+			}
+			else if (Index == 1)
+			{
+				PatrolStart = FMath::Lerp(RunwayStart, RunwayEnd, 0.58f);
+				PatrolEnd = FMath::Lerp(RunwayStart, RunwayEnd, 0.88f);
+			}
+			else if (Index == 2 && !TaxiSegments.IsEmpty())
+			{
+				PatrolStart = AMSim::MapPhase1PointToWorld(
+					PointAt(TaxiSegments[0].Start, TaxiSegments[0].End, 0.12f),
+					58.0);
+				PatrolEnd = AMSim::MapPhase1PointToWorld(
+					PointAt(TaxiSegments[0].Start, TaxiSegments[0].End, 0.88f),
+					58.0);
+			}
+			else if (Index == 3 && bRoadPresent)
+			{
+				PatrolStart = AMSim::MapPhase1PointToWorld(
+					PointAt(Proposal.AccessStart, Proposal.AccessEnd, 0.12f),
+					59.0);
+				PatrolEnd = AMSim::MapPhase1PointToWorld(
+					PointAt(Proposal.AccessStart, Proposal.AccessEnd, 0.88f),
+					59.0);
+			}
+			else if (!TaxiSegments.IsEmpty())
+			{
+				const AMSim::FTaxiwaySegment& GateSegment = TaxiSegments.Last();
+				PatrolStart = AMSim::MapPhase1PointToWorld(
+					PointAt(GateSegment.Start, GateSegment.End, 0.12f),
+					59.0);
+				PatrolEnd = AMSim::MapPhase1PointToWorld(
+					PointAt(GateSegment.Start, GateSegment.End, 0.88f),
+					59.0);
+			}
+			else
+			{
+				PatrolStart = TaxiTarget;
+				PatrolEnd = Phase1StandCenter;
+			}
+			const AMSim::FPhase1PatrolMotion Motion =
+				AMSim::FPhase1ConstructionPresentation::CalculatePatrolMotion(
+					Query.GameTimeMilliseconds -
+						State.Project.FundedAtGameMilliseconds,
+					Index);
+			WorkerLocation = FMath::Lerp(
+				PatrolStart,
+				PatrolEnd,
+				Motion.Progress);
+			MovementDirection = Motion.bForward
+				? PatrolEnd - PatrolStart
+				: PatrolStart - PatrolEnd;
 		}
 		Worker->SetRelativeLocation(WithHeight(WorkerLocation, 56.0 + Index));
+		FaceMovement(Worker, MovementDirection);
 		Worker->SetVisibility(bWorldAllowed && Visual.bCrewVisible);
 	}
 
@@ -294,6 +365,7 @@ void AAMSimWorldPresenter::RefreshPhase1ConstructionPresentation(
 				57.0)
 			: RunwayStart + FVector(4500.0, 2500.0, 1.0);
 		Truck->SetRelativeLocation(FMath::Lerp(TruckOrigin, TruckTarget, TravelAlpha));
+		FaceMovement(Truck, TruckTarget - TruckOrigin);
 		Truck->SetVisibility(bWorldAllowed && Visual.bTruckVisible);
 	}
 	if (Phase1ConstructionProxies.IsValidIndex(2))
@@ -323,4 +395,66 @@ int32 AAMSimWorldPresenter::GetActivePhase1EarthworkProxyCount() const
 	}
 	Count += Phase1RoadEarthwork && Phase1RoadEarthwork->IsVisible() ? 1 : 0;
 	return Count;
+}
+
+bool AAMSimWorldPresenter::ArePhase1ConstructionBedsBelowSurfaces() const
+{
+	const auto IsBelow = [](
+		const UPaperSpriteComponent* Bed,
+		const UPaperSpriteComponent* Surface)
+	{
+		return Bed && Surface &&
+			Bed->GetRelativeLocation().Z < Surface->GetRelativeLocation().Z &&
+			Bed->TranslucencySortPriority < Surface->TranslucencySortPriority;
+	};
+	if (!IsBelow(Phase1RunwayEarthwork, Runway))
+	{
+		return false;
+	}
+	for (int32 Index = 0; Index < ActivePhase1TaxiwaySegmentCount; ++Index)
+	{
+		if (!Phase1TaxiwayEarthworks.IsValidIndex(Index) ||
+			!Phase1TaxiwaySegments.IsValidIndex(Index) ||
+			!IsBelow(
+				Phase1TaxiwayEarthworks[Index],
+				Phase1TaxiwaySegments[Index]))
+		{
+			return false;
+		}
+	}
+	return !bPhase1RoadPresent || IsBelow(Phase1RoadEarthwork, Access);
+}
+
+FVector AAMSimWorldPresenter::GetPhase1ConstructionWorkerLocation(
+	const int32 WorkerIndex) const
+{
+	const UPaperSpriteComponent* Worker = WorkerIndex == 0
+		? (Phase1ConstructionProxies.IsValidIndex(1)
+			? Phase1ConstructionProxies[1].Get()
+			: nullptr)
+		: (Phase1ConstructionCrew.IsValidIndex(WorkerIndex - 1)
+			? Phase1ConstructionCrew[WorkerIndex - 1].Get()
+			: nullptr);
+	return Worker ? Worker->GetRelativeLocation() : FVector::ZeroVector;
+}
+
+float AAMSimWorldPresenter::GetPhase1ConstructionWorkerFacingYawDegrees(
+	const int32 WorkerIndex) const
+{
+	const UPaperSpriteComponent* Worker = WorkerIndex == 0
+		? (Phase1ConstructionProxies.IsValidIndex(1)
+			? Phase1ConstructionProxies[1].Get()
+			: nullptr)
+		: (Phase1ConstructionCrew.IsValidIndex(WorkerIndex - 1)
+			? Phase1ConstructionCrew[WorkerIndex - 1].Get()
+			: nullptr);
+	return Worker ? Worker->GetRelativeRotation().Yaw : 0.0f;
+}
+
+float AAMSimWorldPresenter::GetPhase1ConstructionTruckFacingYawDegrees() const
+{
+	const UPaperSpriteComponent* Truck = Phase1ConstructionProxies.IsValidIndex(0)
+		? Phase1ConstructionProxies[0].Get()
+		: nullptr;
+	return Truck ? Truck->GetRelativeRotation().Yaw : 0.0f;
 }

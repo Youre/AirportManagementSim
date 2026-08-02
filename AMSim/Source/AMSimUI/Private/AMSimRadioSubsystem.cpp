@@ -27,6 +27,32 @@ void FAMSimCaptionDeduplicator::Reset()
 	LastCaptionByChannel.Reset();
 }
 
+void FAMSimSpeechQueue::Enqueue(const FString& Caption)
+{
+	if (!Caption.TrimStartAndEnd().IsEmpty())
+	{
+		PendingCaptions.Add(Caption);
+	}
+}
+
+bool FAMSimSpeechQueue::TryBeginNext(
+	const bool bProviderSpeaking,
+	FString& OutCaption)
+{
+	if (bProviderSpeaking || PendingCaptions.IsEmpty())
+	{
+		return false;
+	}
+	OutCaption = MoveTemp(PendingCaptions[0]);
+	PendingCaptions.RemoveAt(0);
+	return true;
+}
+
+void FAMSimSpeechQueue::Reset()
+{
+	PendingCaptions.Reset();
+}
+
 void UAMSimRadioSubsystem::Initialize(
 	FSubsystemCollectionBase& Collection)
 {
@@ -44,9 +70,28 @@ void UAMSimRadioSubsystem::Deinitialize()
 		SpeechProvider.Reset();
 	}
 	Deduplicator.Reset();
+	SpeechQueue.Reset();
+	PresentationWorld.Reset();
 	bInitializationAttempted = false;
 	bSpeechReady = false;
 	Super::Deinitialize();
+}
+
+void UAMSimRadioSubsystem::Tick(const float DeltaTime)
+{
+	PumpSpeech();
+}
+
+bool UAMSimRadioSubsystem::IsTickable() const
+{
+	return !HasAnyFlags(RF_ClassDefaultObject) && SpeechQueue.Num() > 0;
+}
+
+TStatId UAMSimRadioSubsystem::GetStatId() const
+{
+	RETURN_QUICK_DECLARE_CYCLE_STAT(
+		UAMSimRadioSubsystem,
+		STATGROUP_Tickables);
 }
 
 void UAMSimRadioSubsystem::InitializeProviderIfNeeded()
@@ -70,11 +115,24 @@ bool UAMSimRadioSubsystem::PresentCaption(
 		return false;
 	}
 	InitializeProviderIfNeeded();
-	if (SpeechProvider)
-	{
-		SpeechProvider->Speak(World, Caption);
-	}
+	PresentationWorld = World;
+	SpeechQueue.Enqueue(Caption);
+	PumpSpeech();
 	return true;
+}
+
+void UAMSimRadioSubsystem::PumpSpeech()
+{
+	if (!SpeechProvider)
+	{
+		SpeechQueue.Reset();
+		return;
+	}
+	FString Caption;
+	if (SpeechQueue.TryBeginNext(SpeechProvider->IsSpeaking(), Caption))
+	{
+		SpeechProvider->Speak(PresentationWorld.Get(), Caption);
+	}
 }
 
 FName UAMSimRadioSubsystem::GetProviderId() const

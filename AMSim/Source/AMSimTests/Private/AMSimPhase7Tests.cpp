@@ -305,6 +305,32 @@ bool FAMSimPhase7RadioTest::RunTest(
 		Deduplicator.Accept(
 			TEXT("Phase4.Operations"),
 			TEXT("")));
+	FAMSimSpeechQueue SpeechQueue;
+	SpeechQueue.Enqueue(TEXT("First operational call."));
+	SpeechQueue.Enqueue(TEXT("Second operational call."));
+	FString NextCaption;
+	TestFalse(
+		TEXT("A new call cannot interrupt active speech"),
+		SpeechQueue.TryBeginNext(true, NextCaption));
+	TestEqual(
+		TEXT("Both calls remain queued while the provider is busy"),
+		SpeechQueue.Num(),
+		2);
+	TestTrue(
+		TEXT("The first call begins when the provider becomes idle"),
+		SpeechQueue.TryBeginNext(false, NextCaption));
+	TestEqual(
+		TEXT("Speech queue preserves first-in-first-out order"),
+		NextCaption,
+		FString(TEXT("First operational call.")));
+	TestTrue(
+		TEXT("The second call follows after the first finishes"),
+		SpeechQueue.TryBeginNext(false, NextCaption));
+	TestEqual(
+		TEXT("Second queued call is not scrambled into the first"),
+		NextCaption,
+		FString(TEXT("Second operational call.")));
+	TestEqual(TEXT("Speech queue drains cleanly"), SpeechQueue.Num(), 0);
 	return true;
 }
 

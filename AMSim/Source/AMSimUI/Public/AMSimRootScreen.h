@@ -16,11 +16,13 @@ class UVerticalBox;
 class UWidget;
 class UAMSimConstructionProposalView;
 class UAMSimContextHelpCard;
+class UAMSimExpandingToolButton;
 class UAMSimReleaseGuideView;
 class UAMSimSaveLoadView;
 class UAMSimSchedulePickerView;
 class UAMSimTerminalView;
 class UAMSimTurnaroundView;
+class UTexture2D;
 
 namespace AMSim
 {
@@ -39,6 +41,7 @@ public:
 	UAMSimRootScreen(const FObjectInitializer& ObjectInitializer);
 	static FUIInputConfig MakeGameplayInputConfig();
 	void ShowReleaseGuide();
+	int32 GetLoadedNavigationIconCount() const;
 
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
@@ -166,6 +169,9 @@ private:
 		const AMSim::FPhase4QuerySnapshot& Phase4Query,
 		const AMSim::FPhase5QuerySnapshot& Phase5Query,
 		const AMSim::FPhase6QuerySnapshot& Phase6Query);
+	void RefreshPhase1ContextPanel(
+		const AMSim::FPhase1QuerySnapshot& Query,
+		const AMSim::FPhase1State& State);
 	static void SetButtonLabel(UButton* Button, const FString& Label);
 
 	UPROPERTY(Transient)
@@ -258,7 +264,7 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<UBorder> CreateAirportTray;
 	UPROPERTY(Transient)
-	TObjectPtr<UBorder> ObjectiveDrawer;
+	TObjectPtr<UWidget> ObjectiveDrawer;
 	UPROPERTY(Transient)
 	TObjectPtr<UBorder> OperationsDrawer;
 	UPROPERTY(Transient)
@@ -273,6 +279,10 @@ private:
 	TObjectPtr<UTextBlock> ContextBodyText;
 	UPROPERTY(Transient)
 	TObjectPtr<UTextBlock> ContextStatusText;
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> ContextCompactText;
+	UPROPERTY(Transient)
+	TObjectPtr<UWidget> ContextDetailRowWidget;
 
 	UPROPERTY(Transient)
 	TObjectPtr<UButton> CreateButton;
@@ -281,13 +291,13 @@ private:
 	UPROPERTY()
 	TSubclassOf<UUserWidget> PrimaryButtonWidgetClass;
 	UPROPERTY(Transient)
-	TObjectPtr<UButton> BuildButton;
+	TObjectPtr<UAMSimExpandingToolButton> BuildButton;
 	UPROPERTY(Transient)
-	TObjectPtr<UButton> CancelBuildButton;
+	TObjectPtr<UAMSimExpandingToolButton> CancelBuildButton;
 	UPROPERTY(Transient)
-	TObjectPtr<UButton> OpenButton;
+	TObjectPtr<UAMSimExpandingToolButton> OpenButton;
 	UPROPERTY(Transient)
-	TObjectPtr<UButton> CloseButton;
+	TObjectPtr<UAMSimExpandingToolButton> CloseButton;
 	UPROPERTY(Transient)
 	TObjectPtr<UButton> PinOfferButton;
 	UPROPERTY(Transient)
@@ -297,7 +307,7 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<UButton> ScheduleButton;
 	UPROPERTY(Transient)
-	TObjectPtr<UButton> RecoveryButton;
+	TObjectPtr<UAMSimExpandingToolButton> RecoveryButton;
 	UPROPERTY(Transient)
 	TObjectPtr<UButton> TerminalNavigationButton;
 	UPROPERTY(Transient)
@@ -338,11 +348,16 @@ private:
 	TObjectPtr<UButton> StartPhase2ExpansionButton;
 	UPROPERTY(Transient)
 	TObjectPtr<UButton> RespondPhase2IncidentButton;
+	UPROPERTY()
+	TArray<TObjectPtr<UTexture2D>> NavigationIcons;
+	UPROPERTY(Transient)
+	TArray<TObjectPtr<UAMSimExpandingToolButton>> NavigationButtons;
 
 	AMSim::FPhase1ViewState CurrentViewState;
 	AMSim::FPhase2ViewState CurrentPhase2ViewState;
 	uint64 LastAppliedRevision = MAX_uint64;
 	int32 LastPhraseCount = 0;
+	bool bPhraseCursorInitialized = false;
 	bool bAudioFeedbackPrimed = false;
 	uint8 LastAudioOfferState = 0;
 	uint8 LastAudioPhase2Incident = 0;

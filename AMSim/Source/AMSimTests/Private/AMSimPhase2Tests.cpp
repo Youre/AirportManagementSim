@@ -109,7 +109,8 @@ namespace
 		}
 		AdvanceTo(
 			Simulation,
-			Schedule.ScheduledArrivalGameMilliseconds + 130000);
+			Schedule.ScheduledArrivalGameMilliseconds +
+				GetPhase1Fixture().FlightCompletedOffsetMilliseconds);
 		return Test.TestEqual(
 			TEXT("Phase 1 visit completed"),
 			Simulation.GetPhase1State().Flight.State,

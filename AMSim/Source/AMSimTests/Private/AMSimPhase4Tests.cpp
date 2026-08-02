@@ -146,7 +146,8 @@ namespace
 		}
 		AdvanceTo(
 			Simulation,
-			Schedule.ScheduledArrivalGameMilliseconds + 130000);
+			Schedule.ScheduledArrivalGameMilliseconds +
+				GetPhase1Fixture().FlightCompletedOffsetMilliseconds);
 
 		FPhase2Command InitializeLiving;
 		InitializeLiving.Id = {1};

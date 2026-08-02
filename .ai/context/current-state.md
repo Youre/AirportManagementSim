@@ -6,6 +6,14 @@ Material profile: documents
 Initialization mode: augment-existing
 
 Active priorities:
+- Treat the autonomous first-GA-visit journey as the Phase 1 operational
+  baseline: scheduled aircraft stay off-map, movement follows the committed
+  runway/taxi network, the 1x journey lasts about one minute, and speech calls
+  serialize without interruption. The next owner replay should judge pacing
+  and local-voice cadence with sound enabled.
+- Use the compact icon-only map rail and concise corner activity card as the
+  baseline for future HUD tools. New rail actions must reuse the expanding tool
+  button and supply icon, hover/focus label, tooltip, and disabled explanation.
 - Use the verified slower starter-airfield construction balance and distinct
   marked movement-surface kit as the baseline for the next owner build-mode
   journey. Construction now takes 3 minutes 30 seconds at 1x, while 2x-8x and
@@ -34,15 +42,13 @@ Next verification command:
   protocol against the schema-9 candidate.
 
 Last verification:
-- 2026-08-02 EDT: the runway-surface and construction-pacing correction passes
-  all 73 automation tests, editor/game builds, integrated and packaged rendered
-  smoke, a clean 658-package Development cook, direct IoStore asset inspection,
-  offline socket observation, and runtime dependency/load scans. The final
-  world uses separate marked runway/taxiway surfaces, preserves unmarked roads
-  and earthwork, slows the 1x project to 3 minutes 30 seconds, and faces the
-  09/27 overlays toward their corresponding approaches. Cache usage remained
-  stable and no cache was cleared. Consolidated Phase 7 owner acceptance still
-  remains.
+- 2026-08-02 EDT: the first GA visit now follows the actual runway and complete
+  taxi network through approach, landing, rollout, taxi-in, a 40-game-minute
+  automatic turnaround, taxi-out, takeoff, and outbound flight. Scheduled and
+  completed aircraft remain off-map. Editor/Game builds, all 75 automation
+  tests, and the integrated 1920x1080 journey/save-load/render smoke pass;
+  speech FIFO coverage proves calls cannot interrupt each other. The next
+  owner replay should judge subjective pacing and voice cadence with sound.
 <!-- ai-project-init:end managed -->
 
 ## Project-specific state
@@ -319,6 +325,14 @@ Verification note:
   and both the integrated and refreshed packaged 1920x1080 rendered journeys
   pass. The current owner-test package is
   `D:/AMSimConstructionProgressDev/Windows/AMSim.exe`.
+- The construction-motion follow-up replaces the building-stage surface sweep
+  with short staggered out-and-back work patrols. Two crews cover separate
+  runway zones, one follows an active taxi segment, and one follows the optional
+  road or gate-side taxi route. Patrols continue through inspection; every
+  moving worker and the delivery truck faces its current direction, reversals
+  are continuous, and pause preserves both position and facing. Focused and
+  complete automation pass 1/1 and 73/73, editor/game builds pass, and the
+  integrated 1920x1080 construction captures pass visual inspection.
 - The 2026-08-02 UI audio pass approves and integrates all 28 nonverbal MP3
   source masters in `SourceAssets/Audio/UI`. Checksums match the generation
   manifest; Unreal imports short stereo, non-looping UI sound waves under

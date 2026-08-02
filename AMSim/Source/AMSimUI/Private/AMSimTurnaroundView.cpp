@@ -1,6 +1,7 @@
 #include "AMSimTurnaroundView.h"
 
 #include "AMSimAirportSimulationSubsystem.h"
+#include "AMSimPhase1Fixture.h"
 #include "AMSimUITheme.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
@@ -339,14 +340,17 @@ void UAMSimTurnaroundView::RefreshFromSimulation()
 
 	const AMSim::FPhase1State& State =
 		Subsystem->GetSimulation().GetPhase1State();
+	const AMSim::FPhase1Fixture& Fixture = AMSim::GetPhase1Fixture();
 	const int64 TurnaroundStart =
-		State.Flight.ScheduledArrivalGameMilliseconds + 50000;
+		State.Flight.ScheduledArrivalGameMilliseconds +
+			Fixture.FlightTurnaroundOffsetMilliseconds;
 	const int64 ReadyAt =
-		State.Flight.ScheduledArrivalGameMilliseconds + 80000;
+		State.Flight.ScheduledArrivalGameMilliseconds +
+			Fixture.FlightReadyOffsetMilliseconds;
 	const float ActiveProgress = FMath::Clamp(
 		static_cast<float>(
 			Query.GameTimeMilliseconds - TurnaroundStart) /
-			30000.0f,
+			static_cast<float>(ReadyAt - TurnaroundStart),
 		0.0f,
 		1.0f);
 	const float InspectionValue =
@@ -404,10 +408,10 @@ void UAMSimTurnaroundView::RefreshFromSimulation()
 		*Clock(State.Flight.ScheduledArrivalGameMilliseconds),
 		*Clock(ReadyAt))));
 
-	const int64 RemainingSeconds = FMath::Max<int64>(
+	const int64 RemainingGameMinutes = FMath::Max<int64>(
 		0,
-		(ReadyAt - Query.GameTimeMilliseconds + 999) / 1000);
+		(ReadyAt - Query.GameTimeMilliseconds + 59999) / 60000);
 	PredictionText->SetText(FText::FromString(FString::Printf(
-		TEXT("AUTO-DISPATCHED  /  MARKED SAFE PATHS  /  PLAYER SETS PRIORITY, NOT STEERING  /  READY IN %lld SEC"),
-		RemainingSeconds)));
+		TEXT("AUTO-DISPATCHED  /  INSPECTION + FUEL  /  NO PLAYER ACTION REQUIRED  /  READY IN %lld GAME MIN"),
+		RemainingGameMinutes)));
 }

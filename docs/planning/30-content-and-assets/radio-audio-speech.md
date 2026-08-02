@@ -24,7 +24,7 @@ The game must remain fully functional if speech initialization or synthesis fail
 
 ## Captions and mixing
 
-Captions are on by default and include speaker label, exact operational meaning, and urgent visual treatment. They remain readable at accelerated time; low-priority calls may be summarized when the queue is crowded, but safety calls are never dropped.
+Captions are on by default and include speaker label, exact operational meaning, and urgent visual treatment. They remain readable at accelerated time; low-priority calls may be summarized when the queue is crowded, but safety calls are never dropped. Synthesized calls are serialized in phrase-intent order: a newly emitted call must never stop or overwrite speech already in progress. Accelerated simulation may build a bounded speech backlog, but it must not scramble calls.
 
 Mix groups are radio, aircraft, ground vehicles, terminal ambience, weather, construction, incidents, UI, and music. Speed-up compresses ambient repetition without pitch-shifting critical speech into unintelligibility. Pause may finish the current safety phrase, then holds new calls.
 

@@ -5,8 +5,10 @@
 #include "AMSimCameraPawn.h"
 #include "AMSimConstructionProposalView.h"
 #include "AMSimContextHelpCard.h"
+#include "AMSimExpandingToolButton.h"
 #include "AMSimGameInstanceSubsystem.h"
 #include "AMSimPhase1Fixture.h"
+#include "AMSimPhase1HudPresentation.h"
 #include "AMSimRadioSubsystem.h"
 #include "AMSimReleaseGuideView.h"
 #include "AMSimSaveLoadView.h"
@@ -32,6 +34,7 @@
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
 #include "Engine/GameInstance.h"
+#include "Engine/Texture2D.h"
 #include "Engine/UserInterfaceSettings.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
@@ -93,6 +96,33 @@ namespace AMSimRootScreenPrivate
 		LabelText->SetJustification(ETextJustify::Center);
 		Button->SetContent(LabelText);
 		return Button;
+	}
+
+	UAMSimExpandingToolButton* MakeNavigationButton(
+		UWidgetTree* Tree,
+		const TCHAR* Name,
+		const FString& Label,
+		UTexture2D* Icon,
+		const AMSim::UITheme::EButton Kind = AMSim::UITheme::EButton::Tool)
+	{
+		UAMSimExpandingToolButton* Button =
+			Tree->ConstructWidget<UAMSimExpandingToolButton>(
+				UAMSimExpandingToolButton::StaticClass(),
+				FName(Name));
+		Button->Configure(Icon, Label, Kind);
+		return Button;
+	}
+
+	void PlaceNavigationButton(
+		UCanvasPanel* Canvas,
+		UAMSimExpandingToolButton* Button,
+		const int32 Row)
+	{
+		UCanvasPanelSlot* Slot = Canvas->AddChildToCanvas(Button);
+		Slot->SetAnchors(FAnchors(0.0f, 0.0f));
+		Slot->SetPosition(FVector2D(10.0f, 10.0f + Row * 64.0f));
+		Slot->SetSize(FVector2D(88.0f, 56.0f));
+		Slot->SetZOrder(2);
 	}
 
 	UEditableTextBox* MakeEntry(
@@ -294,6 +324,29 @@ UAMSimRootScreen::UAMSimRootScreen(const FObjectInitializer& ObjectInitializer)
 	{
 		PrimaryButtonWidgetClass = PrimaryButtonWidget.Class;
 	}
+	static ConstructorHelpers::FObjectFinder<UTexture2D> BuildIcon(
+		TEXT("/Game/Phase45/Presentation/Textures/UI/T_Build.T_Build"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> ScheduleIcon(
+		TEXT("/Game/Phase45/Presentation/Textures/UI/T_Timetable.T_Timetable"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> StaffIcon(
+		TEXT("/Game/Phase45/Presentation/Textures/UI/T_Staff.T_Staff"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> OverlayIcon(
+		TEXT("/Game/Phase45/Presentation/Textures/UI/T_Overlays.T_Overlays"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> AlertIcon(
+		TEXT("/Game/Phase45/Presentation/Textures/UI/T_Alerts.T_Alerts"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> ProjectIcon(
+		TEXT("/Game/Phase45/Presentation/Textures/UI/T_Projects.T_Projects"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> ServiceIcon(
+		TEXT("/Game/Phase45/Presentation/Textures/UI/T_Services.T_Services"));
+	NavigationIcons = {
+		BuildIcon.Object,
+		ScheduleIcon.Object,
+		StaffIcon.Object,
+		OverlayIcon.Object,
+		AlertIcon.Object,
+		ProjectIcon.Object,
+		ProjectIcon.Object,
+		ServiceIcon.Object};
 }
 
 FUIInputConfig UAMSimRootScreen::MakeGameplayInputConfig()
@@ -421,56 +474,40 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	HeaderSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
 
 	const float RailWrapWidth = 350.0f / FMath::Max(InterfaceScale, 1.0f);
+	UOverlay* MainLayer = WidgetTree->ConstructWidget<UOverlay>(
+		UOverlay::StaticClass(),
+		TEXT("MainLayer"));
+	UVerticalBoxSlot* MainSlot = Page->AddChildToVerticalBox(MainLayer);
+	MainSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+	MainSlot->SetPadding(FMargin(10.0f, 8.0f));
 	UHorizontalBox* Main = WidgetTree->ConstructWidget<UHorizontalBox>(
 		UHorizontalBox::StaticClass(),
 		TEXT("Main"));
-	UVerticalBoxSlot* MainSlot = Page->AddChildToVerticalBox(Main);
-	MainSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
-	MainSlot->SetPadding(FMargin(10.0f, 8.0f));
+	UOverlaySlot* MainLayerSlot = MainLayer->AddChildToOverlay(Main);
+	MainLayerSlot->SetHorizontalAlignment(HAlign_Fill);
+	MainLayerSlot->SetVerticalAlignment(VAlign_Fill);
 
+	UCanvasPanel* NavigationLayer = WidgetTree->ConstructWidget<UCanvasPanel>(
+		UCanvasPanel::StaticClass(),
+		TEXT("NavigationLayer"));
+	NavigationLayer->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	BuildModeLeftChrome = NavigationLayer;
+	ObjectiveDrawer = NavigationLayer;
+	UOverlaySlot* NavigationLayerSlot = MainLayer->AddChildToOverlay(NavigationLayer);
+	NavigationLayerSlot->SetHorizontalAlignment(HAlign_Fill);
+	NavigationLayerSlot->SetVerticalAlignment(VAlign_Fill);
 	UBorder* LeftPanel = MakePanel(WidgetTree, TEXT("LeftPanel"));
-	ObjectiveDrawer = LeftPanel;
-	UVerticalBox* Left = WidgetTree->ConstructWidget<UVerticalBox>(
-		UVerticalBox::StaticClass(),
-		TEXT("LeftColumn"));
-	UScrollBox* LeftScroll = WidgetTree->ConstructWidget<UScrollBox>(
-		UScrollBox::StaticClass(),
-		TEXT("LeftScroll"));
 	AMSim::UITheme::StyleSurface(
 		LeftPanel,
 		AMSim::UITheme::ESurface::Panel,
-		FMargin(10.0f),
+		FMargin(6.0f),
 		18.0f,
 		1.5f);
-	LeftPanel->SetContent(LeftScroll);
-	LeftScroll->AddChild(Left);
-	AddVertical(
-		Left,
-		MakeText(
-			WidgetTree,
-			TEXT("ToolsHeader"),
-			TEXT("AIRFIELD"),
-			13,
-			Cyan,
-			true),
-		0.0f);
-	ProjectText = MakeText(
-		WidgetTree,
-		TEXT("Project"),
-		TEXT("Starter plan"),
-		14,
-		Muted,
-		true);
-	ProjectText->SetWrapTextAt(RailWrapWidth);
-	UBorder* ProjectChip = MakeSurface(
-		WidgetTree,
-		TEXT("ProjectChip"),
-		AMSim::UITheme::ESurface::Chip,
-		FMargin(10.0f, 8.0f),
-		10.0f,
-		1.0f);
-	ProjectChip->SetContent(ProjectText);
-	AddVertical(Left, ProjectChip, 5.0f);
+	PlaceCanvas(
+		NavigationLayer,
+		LeftPanel,
+		FAnchors(0.0f, 0.0f, 0.0f, 1.0f),
+		FMargin(0.0f, 0.0f, 112.0f, 0.0f));
 	AirportNameEntry = MakeEntry(
 		WidgetTree,
 		TEXT("AirportNameEntry"),
@@ -489,76 +526,76 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		16);
 	CreateButtonWidget = nullptr;
 	CreateButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::CreateAirport);
-	BuildButton = MakeButton(
+	NavigationButtons.Reset();
+	BuildButton = MakeNavigationButton(
 		WidgetTree,
 		TEXT("BuildStarter"),
 		TEXT("BUILD"),
-		AMSim::UITheme::EButton::Primary,
-		14);
-	BuildButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::ToggleConstructionProposal);
-	AddVertical(Left, BuildButton);
+		NavigationIcons.IsValidIndex(0) ? NavigationIcons[0] : nullptr,
+		AMSim::UITheme::EButton::Primary);
+	BuildButton->OnActivated.BindUObject(this, &UAMSimRootScreen::ToggleConstructionProposal);
+	PlaceNavigationButton(NavigationLayer, BuildButton, 0);
+	NavigationButtons.Add(BuildButton);
+	int32 NavigationIndex = 1;
 	for (const TPair<const TCHAR*, const TCHAR*>& Tool : {
 		TPair<const TCHAR*, const TCHAR*>(TEXT("ScheduleTool"), TEXT("SCHEDULE")),
 		TPair<const TCHAR*, const TCHAR*>(TEXT("StaffTool"), TEXT("STAFF")),
 		TPair<const TCHAR*, const TCHAR*>(TEXT("OverlayTool"), TEXT("OVERLAYS"))})
 	{
-		UButton* ToolButton = MakeButton(
+		UAMSimExpandingToolButton* ToolButton = MakeNavigationButton(
 			WidgetTree,
 			Tool.Key,
 			Tool.Value,
-			AMSim::UITheme::EButton::Tool,
-			12);
-		ToolButton->SetIsEnabled(false);
-		AddVertical(Left, ToolButton);
+			NavigationIcons.IsValidIndex(NavigationIndex)
+				? NavigationIcons[NavigationIndex]
+				: nullptr);
+		ToolButton->SetActionEnabled(false);
+		PlaceNavigationButton(NavigationLayer, ToolButton, NavigationIndex);
+		NavigationButtons.Add(ToolButton);
+		++NavigationIndex;
 	}
-	CancelBuildButton = MakeButton(
+	CancelBuildButton = MakeNavigationButton(
 		WidgetTree,
 		TEXT("CancelStarter"),
-		TEXT("CANCEL"),
-		AMSim::UITheme::EButton::Destructive,
-		13);
-	CancelBuildButton->SetToolTipText(FText::FromString(TEXT("Cancel starter-airfield construction")));
-	CancelBuildButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::CancelStarterPlan);
-	AddVertical(Left, CancelBuildButton);
-	OpenButton = MakeButton(
+		TEXT("CANCEL PROJECT"),
+		NavigationIcons.IsValidIndex(4) ? NavigationIcons[4] : nullptr,
+		AMSim::UITheme::EButton::Destructive);
+	CancelBuildButton->OnActivated.BindUObject(this, &UAMSimRootScreen::CancelStarterPlan);
+	PlaceNavigationButton(NavigationLayer, CancelBuildButton, 4);
+	NavigationButtons.Add(CancelBuildButton);
+	OpenButton = MakeNavigationButton(
 		WidgetTree,
 		TEXT("OpenAirport"),
-		TEXT("OPEN"),
-		AMSim::UITheme::EButton::Positive,
-		14);
-	OpenButton->SetToolTipText(FText::FromString(TEXT("Open the airport")));
-	OpenButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::OpenAirport);
-	AddVertical(Left, OpenButton);
-	CloseButton = MakeButton(
+		TEXT("OPEN AIRPORT"),
+		NavigationIcons.IsValidIndex(5) ? NavigationIcons[5] : nullptr,
+		AMSim::UITheme::EButton::Positive);
+	OpenButton->OnActivated.BindUObject(this, &UAMSimRootScreen::OpenAirport);
+	PlaceNavigationButton(NavigationLayer, OpenButton, 4);
+	NavigationButtons.Add(OpenButton);
+	CloseButton = MakeNavigationButton(
 		WidgetTree,
 		TEXT("CloseAirport"),
-		TEXT("CLOSE"),
-		AMSim::UITheme::EButton::Destructive,
-		13);
-	CloseButton->SetToolTipText(FText::FromString(TEXT("Close the airport")));
-	CloseButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::CloseAirport);
-	AddVertical(Left, CloseButton);
-	RecoveryButton = MakeButton(
+		TEXT("CLOSE AIRPORT"),
+		NavigationIcons.IsValidIndex(6) ? NavigationIcons[6] : nullptr,
+		AMSim::UITheme::EButton::Destructive);
+	CloseButton->OnActivated.BindUObject(this, &UAMSimRootScreen::CloseAirport);
+	PlaceNavigationButton(NavigationLayer, CloseButton, 4);
+	NavigationButtons.Add(CloseButton);
+	RecoveryButton = MakeNavigationButton(
 		WidgetTree,
 		TEXT("Recovery"),
 		TEXT("RECOVERY"),
-		AMSim::UITheme::EButton::Secondary,
-		13);
-	RecoveryButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::RequestRecovery);
-	AddVertical(Left, RecoveryButton);
-	USizeBox* LeftRailWidth = WidgetTree->ConstructWidget<USizeBox>(
-		USizeBox::StaticClass(),
-		TEXT("LeftRailWidth"));
-	BuildModeLeftChrome = LeftRailWidth;
-	LeftRailWidth->SetWidthOverride(190.0f / FMath::Max(InterfaceScale, 1.0f));
-	LeftRailWidth->SetContent(LeftPanel);
-	UHorizontalBoxSlot* LeftSlot = Main->AddChildToHorizontalBox(LeftRailWidth);
-	LeftSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
-	LeftSlot->SetPadding(FMargin(0.0f, 0.0f, 12.0f, 0.0f));
-	if (bCompactLayout)
+		NavigationIcons.IsValidIndex(7) ? NavigationIcons[7] : nullptr,
+		AMSim::UITheme::EButton::Secondary);
+	RecoveryButton->OnActivated.BindUObject(this, &UAMSimRootScreen::RequestRecovery);
+	PlaceNavigationButton(NavigationLayer, RecoveryButton, 4);
+	NavigationButtons.Add(RecoveryButton);
+#if WITH_DEV_AUTOMATION_TESTS
+	if (FParse::Param(FCommandLine::Get(), TEXT("AMSimCompactHudHoverProof")))
 	{
-		LeftPanel->SetVisibility(ESlateVisibility::Collapsed);
+		BuildButton->SetExpandedForTest(true);
 	}
+#endif
 
 	UBorder* MapPanel = MakePanel(WidgetTree, TEXT("MapPanel"));
 	MapPanel->SetPadding(FMargin(10.0f));
@@ -732,6 +769,16 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		Cyan,
 		true);
 	AddVertical(ContextColumn, ContextHeaderText, 2.0f);
+	ContextCompactText = MakeText(
+		WidgetTree,
+		TEXT("ContextCompactDetail"),
+		TEXT("RWY 09/27  •  3,400 CR"),
+		bCompactLayout ? 14 : 16,
+		White,
+		true,
+		true);
+	ContextCompactText->SetVisibility(ESlateVisibility::Collapsed);
+	AddVertical(ContextColumn, ContextCompactText, 3.0f);
 	ContextBodyText = MakeText(
 		WidgetTree,
 		TEXT("ContextBody"),
@@ -750,6 +797,7 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	UHorizontalBox* ContextDetailRow = WidgetTree->ConstructWidget<UHorizontalBox>(
 		UHorizontalBox::StaticClass(),
 		TEXT("ContextDetailRow"));
+	ContextDetailRowWidget = ContextDetailRow;
 	UBorder* ContextIdentitySurface = MakeSurface(
 		WidgetTree,
 		TEXT("ContextIdentitySurface"),
@@ -784,7 +832,7 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		TEXT("ContextActions"));
 	AddVertical(ContextColumn, ContextActions, 4.0f);
 	ContextPanel->SetVisibility(ESlateVisibility::Hidden);
-	PlaceCanvas(Map, ContextPanel, FAnchors(0.10f, 0.61f, 0.90f, 0.95f));
+	PlaceCanvas(Map, ContextPanel, FAnchors(0.68f, 0.02f, 0.985f, 0.15f));
 	ConstructionProposalView =
 		WidgetTree->ConstructWidget<UAMSimConstructionProposalView>(
 			UAMSimConstructionProposalView::StaticClass(),
@@ -1589,7 +1637,10 @@ void UAMSimRootScreen::ToggleObjectiveDrawer()
 		return;
 	}
 	const bool bOpen = ObjectiveDrawer->GetVisibility() == ESlateVisibility::Collapsed;
-	ObjectiveDrawer->SetVisibility(bOpen ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+	ObjectiveDrawer->SetVisibility(
+		bOpen
+			? ESlateVisibility::SelfHitTestInvisible
+			: ESlateVisibility::Collapsed);
 	OperationsDrawer->SetVisibility(ESlateVisibility::Collapsed);
 }
 
@@ -1783,7 +1834,16 @@ void UAMSimRootScreen::RefreshFromSimulation()
 				? ESlateVisibility::Visible
 				: ESlateVisibility::Collapsed);
 	}
-	if (State.PhraseIntents.Num() > LastPhraseCount)
+	if (!bPhraseCursorInitialized)
+	{
+		LastPhraseCount = State.PhraseIntents.Num();
+		bPhraseCursorInitialized = true;
+	}
+	else if (State.PhraseIntents.Num() < LastPhraseCount)
+	{
+		LastPhraseCount = State.PhraseIntents.Num();
+	}
+	else if (State.PhraseIntents.Num() > LastPhraseCount)
 	{
 		if (UAMSimRadioSubsystem* Radio =
 			GetGameInstance()
@@ -1791,12 +1851,17 @@ void UAMSimRootScreen::RefreshFromSimulation()
 					UAMSimRadioSubsystem>()
 				: nullptr)
 		{
-			const AMSim::FPhraseIntentRecord& Phrase =
-				State.PhraseIntents.Last();
-			Radio->PresentCaption(
-				GetWorld(),
-				Phrase.PhraseId,
-				Phrase.Caption);
+			for (int32 Index = LastPhraseCount;
+				Index < State.PhraseIntents.Num();
+				++Index)
+			{
+				const AMSim::FPhraseIntentRecord& Phrase =
+					State.PhraseIntents[Index];
+				Radio->PresentCaption(
+					GetWorld(),
+					Phrase.PhraseId,
+					Phrase.Caption);
+			}
 		}
 	}
 
@@ -1812,119 +1877,38 @@ void UAMSimRootScreen::RefreshFromSimulation()
 		break;
 	}
 
-	if (ContextPanel)
-	{
-		FString ContextHeader;
-		FString ContextBody;
-		FString ContextStatus;
-		if (Query.FlightState == AMSim::EFlightState::Turnaround)
-		{
-			ContextHeader = TEXT("AIRCRAFT TURNAROUND  •  STAND A1");
-			ContextBody = FString::Printf(
-				TEXT("%s  •  PARKED"),
-				State.Airframe.TailNumber.IsEmpty() ? TEXT("RB-021") : *State.Airframe.TailNumber);
-			ContextStatus = CurrentViewState.Services;
-		}
-		else if (Query.OfferState == AMSim::EOfferState::Available ||
-			Query.OfferState == AMSim::EOfferState::Accepted)
-		{
-			ContextHeader = TEXT("FIRST-FLIGHT OFFER  •  RIVERBEND");
-			ContextBody = TEXT("RIVERBEND 21  •  TRAINER  •  STAND A1");
-			ContextStatus = TEXT("D1 00:10  •  45 MIN  •  600 CR + 5 AP");
-		}
-		else if (Query.ConstructionStage >= AMSim::EConstructionStage::Funded &&
-			Query.ConstructionStage < AMSim::EConstructionStage::ReadyToOpen)
-		{
-			const AMSim::FRunwayDesignation Designation =
-				AMSim::CalculateRunwayDesignation(
-					State.Project.Proposal.RunwayStart,
-					State.Project.Proposal.RunwayEnd);
-			ContextHeader = TEXT("STARTER AIRFIELD  •  CONSTRUCTION");
-			ContextBody = FString::Printf(
-				TEXT("RWY %02d/%02d  •  TAXI NET  •  GATE"),
-				Designation.PrimaryNumber,
-				Designation.ReciprocalNumber);
-			ContextStatus = Query.ConstructionStage == AMSim::EConstructionStage::Building
-				? TEXT("3,400 CR  •  SURFACE WORK ACTIVE")
-				: Query.ConstructionStage == AMSim::EConstructionStage::Inspection
-					? TEXT("3,400 CR  •  SAFETY INSPECTION")
-					: TEXT("3,400 CR  •  CREW EN ROUTE");
-		}
-		const bool bShowContext =
-			!ContextHeader.IsEmpty() &&
-			Query.FlightState != AMSim::EFlightState::Turnaround;
-		ContextPanel->SetVisibility(
-			bShowContext ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
-		if (bShowContext)
-		{
-			SetText(ContextHeaderText, ContextHeader);
-			SetText(ContextBodyText, ContextBody);
-			SetText(ContextStatusText, ContextStatus);
-			if (UCanvasPanelSlot* ContextSlot = Cast<UCanvasPanelSlot>(ContextPanel->Slot))
-			{
-				const UUserInterfaceSettings* InterfaceSettings =
-					GetDefault<UUserInterfaceSettings>();
-				const float ContextScale = InterfaceSettings
-					? InterfaceSettings->GetDPIScaleBasedOnSize(FIntPoint(1920, 1080))
-					: 1.0f;
-				const bool bCompactContext = ContextScale >= 1.75f;
-				const bool bMediumContext = ContextScale >= 1.20f && !bCompactContext;
-				if (Query.FlightState == AMSim::EFlightState::Turnaround)
-				{
-					ContextSlot->SetAnchors(
-						bCompactContext
-							? FAnchors(0.04f, 0.04f, 0.72f, 0.42f)
-							: bMediumContext
-								? FAnchors(0.06f, 0.06f, 0.62f, 0.36f)
-							: FAnchors(0.07f, 0.07f, 0.56f, 0.27f));
-				}
-				else if (Query.OfferState == AMSim::EOfferState::Available ||
-					Query.OfferState == AMSim::EOfferState::Accepted)
-				{
-					ContextSlot->SetAnchors(
-						bCompactContext
-							? FAnchors(0.05f, 0.28f, 0.95f, 0.90f)
-							: bMediumContext
-								? FAnchors(0.08f, 0.45f, 0.92f, 0.89f)
-							: FAnchors(0.10f, 0.57f, 0.90f, 0.82f));
-				}
-				else
-				{
-					ContextSlot->SetAnchors(
-						bCompactContext
-							? FAnchors(0.04f, 0.08f, 0.72f, 0.42f)
-							: bMediumContext
-								? FAnchors(0.06f, 0.07f, 0.68f, 0.31f)
-								: FAnchors(0.08f, 0.06f, 0.62f, 0.23f));
-				}
-			}
-		}
-	}
+	RefreshPhase1ContextPanel(Query, State);
 
 	if (CreateButton) CreateButton->SetIsEnabled(!CurrentViewState.bAirportInitialized);
 	if (AirportNameEntry) AirportNameEntry->SetIsReadOnly(CurrentViewState.bAirportInitialized);
 	if (BuildButton)
 	{
-		BuildButton->SetIsEnabled(CurrentViewState.bCanBuild);
+		BuildButton->SetActionEnabled(CurrentViewState.bCanBuild);
 		BuildButton->SetVisibility(ESlateVisibility::Visible);
 	}
 	if (CancelBuildButton)
 	{
-		CancelBuildButton->SetIsEnabled(CurrentViewState.bCanCancelBuild);
+		CancelBuildButton->SetActionEnabled(CurrentViewState.bCanCancelBuild);
 		CancelBuildButton->SetVisibility(
-			CurrentViewState.bCanCancelBuild ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+			CurrentViewState.bCanCancelBuild
+				? ESlateVisibility::Visible
+				: ESlateVisibility::Collapsed);
 	}
 	if (OpenButton)
 	{
-		OpenButton->SetIsEnabled(CurrentViewState.bCanOpen);
+		OpenButton->SetActionEnabled(CurrentViewState.bCanOpen);
 		OpenButton->SetVisibility(
-			CurrentViewState.bCanOpen ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+			CurrentViewState.bCanOpen
+				? ESlateVisibility::Visible
+				: ESlateVisibility::Collapsed);
 	}
 	if (CloseButton)
 	{
-		CloseButton->SetIsEnabled(CurrentViewState.bCanClose);
+		CloseButton->SetActionEnabled(CurrentViewState.bCanClose);
 		CloseButton->SetVisibility(
-			CurrentViewState.bCanClose ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+			CurrentViewState.bCanClose
+				? ESlateVisibility::Visible
+				: ESlateVisibility::Collapsed);
 	}
 	if (PinOfferButton)
 	{
@@ -1960,7 +1944,7 @@ void UAMSimRootScreen::RefreshFromSimulation()
 	}
 	if (RecoveryButton)
 	{
-		RecoveryButton->SetIsEnabled(CurrentViewState.bCanRequestRecovery);
+		RecoveryButton->SetActionEnabled(CurrentViewState.bCanRequestRecovery);
 		RecoveryButton->SetVisibility(
 			CurrentViewState.bCanRequestRecovery
 				? ESlateVisibility::Visible

@@ -23,4 +23,6 @@ namespace AMSim
 	AMSIMUI_API float MakePhase1RunwayNumberYawDegrees(
 		float RunwayYawDegrees,
 		bool bReciprocalEnd);
+	AMSIMUI_API float MakePhase1TopDownMovementYawDegrees(
+		const FVector& Direction);
 }

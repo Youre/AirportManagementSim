@@ -170,6 +170,31 @@ bool FAMSimPhase1FixtureTest::RunTest(const FString& Parameters)
 	TestEqual(TEXT("Surface work begins after one game hour"), Fixture.BuildingAtMilliseconds, 3600000ll);
 	TestEqual(TEXT("Surface work lasts two game hours"), Fixture.InspectionAtMilliseconds - Fixture.BuildingAtMilliseconds, 7200000ll);
 	TestEqual(TEXT("Starter airfield takes three and a half game hours"), Fixture.ReadyToOpenAtMilliseconds, 12600000ll);
+	TestEqual(
+		TEXT("The aircraft enters the airport area three game minutes before arrival"),
+		Fixture.FlightInboundOffsetMilliseconds,
+		-180000ll);
+	TestTrue(
+		TEXT("The first visit remains observable for at least one game hour"),
+		Fixture.FlightCompletedOffsetMilliseconds - Fixture.FlightInboundOffsetMilliseconds >=
+			3600000ll);
+	TestTrue(
+		TEXT("Turnaround remains readable for at least thirty game minutes"),
+		Fixture.FlightReadyOffsetMilliseconds - Fixture.FlightTurnaroundOffsetMilliseconds >=
+			1800000ll);
+	TestTrue(
+		TEXT("Flight timeline remains strictly ordered"),
+		Fixture.FlightInboundOffsetMilliseconds < Fixture.FlightApproachOffsetMilliseconds &&
+		Fixture.FlightApproachOffsetMilliseconds < Fixture.FlightLandingOffsetMilliseconds &&
+		Fixture.FlightLandingOffsetMilliseconds < Fixture.FlightRunwayRollOffsetMilliseconds &&
+		Fixture.FlightRunwayRollOffsetMilliseconds < Fixture.FlightTaxiInOffsetMilliseconds &&
+		Fixture.FlightTaxiInOffsetMilliseconds < Fixture.FlightParkedOffsetMilliseconds &&
+		Fixture.FlightParkedOffsetMilliseconds < Fixture.FlightTurnaroundOffsetMilliseconds &&
+		Fixture.FlightTurnaroundOffsetMilliseconds < Fixture.FlightReadyOffsetMilliseconds &&
+		Fixture.FlightReadyOffsetMilliseconds < Fixture.FlightTaxiOutOffsetMilliseconds &&
+		Fixture.FlightTaxiOutOffsetMilliseconds < Fixture.FlightTakeoffOffsetMilliseconds &&
+		Fixture.FlightTakeoffOffsetMilliseconds < Fixture.FlightOutboundOffsetMilliseconds &&
+		Fixture.FlightOutboundOffsetMilliseconds < Fixture.FlightCompletedOffsetMilliseconds);
 	TestTrue(TEXT("Default starter proposal validates"), ValidateStarterPlan(CreateDefaultStarterPlan()).bValid);
 	const FStarterPlanProposal DefaultPlan = CreateDefaultStarterPlan();
 	TestEqual(
@@ -290,7 +315,8 @@ bool FAMSimPhase1JourneyTest::RunTest(const FString& Parameters)
 		return false;
 	}
 	const int64 CompletionAt =
-		Simulation.GetPhase1State().Flight.ScheduledArrivalGameMilliseconds + 130000;
+		Simulation.GetPhase1State().Flight.ScheduledArrivalGameMilliseconds +
+			GetPhase1Fixture().FlightCompletedOffsetMilliseconds;
 	AdvanceTo(Simulation, CompletionAt);
 
 	const FPhase1State& State = Simulation.GetPhase1State();
@@ -327,7 +353,8 @@ bool FAMSimPhase1SaveMigrationTest::RunTest(const FString& Parameters)
 		return false;
 	}
 	const int64 TurnaroundAt =
-		Simulation.GetPhase1State().Flight.ScheduledArrivalGameMilliseconds + 60000;
+		Simulation.GetPhase1State().Flight.ScheduledArrivalGameMilliseconds +
+			GetPhase1Fixture().FlightTurnaroundOffsetMilliseconds;
 	AdvanceTo(Simulation, TurnaroundAt);
 	TestEqual(TEXT("Fixture reaches turnaround"), Simulation.GetPhase1State().Flight.State, EFlightState::Turnaround);
 
@@ -339,7 +366,9 @@ bool FAMSimPhase1SaveMigrationTest::RunTest(const FString& Parameters)
 
 	FSimulation Restored;
 	TestTrue(TEXT("Schema 2 snapshot restores"), Restored.RestoreSnapshot(Loaded));
-	const int64 CompletionAt = Loaded.Phase1.Flight.ScheduledArrivalGameMilliseconds + 130000;
+	const int64 CompletionAt =
+		Loaded.Phase1.Flight.ScheduledArrivalGameMilliseconds +
+			GetPhase1Fixture().FlightCompletedOffsetMilliseconds;
 	AdvanceTo(Simulation, CompletionAt);
 	AdvanceTo(Restored, CompletionAt);
 	TestEqual(
@@ -426,12 +455,23 @@ bool FAMSimPhase1SaveBoundaryMatrixTest::RunTest(const FString& Parameters)
 		return false;
 	}
 	const int64 Arrival = Schedule.ScheduledArrivalGameMilliseconds;
+	const FPhase1Fixture& Fixture = GetPhase1Fixture();
 	for (const TPair<int64, FString>& Boundary : {
-		TPair<int64, FString>(Arrival - 30000, TEXT("Inbound")),
-		TPair<int64, FString>(Arrival + 30000, TEXT("Taxi in")),
-		TPair<int64, FString>(Arrival + 60000, TEXT("Turnaround")),
-		TPair<int64, FString>(Arrival + 120000, TEXT("Outbound")),
-		TPair<int64, FString>(Arrival + 130000, TEXT("Reward recognized"))})
+		TPair<int64, FString>(
+			Arrival + Fixture.FlightInboundOffsetMilliseconds,
+			TEXT("Inbound")),
+		TPair<int64, FString>(
+			Arrival + Fixture.FlightTaxiInOffsetMilliseconds,
+			TEXT("Taxi in")),
+		TPair<int64, FString>(
+			Arrival + Fixture.FlightTurnaroundOffsetMilliseconds,
+			TEXT("Turnaround")),
+		TPair<int64, FString>(
+			Arrival + Fixture.FlightOutboundOffsetMilliseconds,
+			TEXT("Outbound")),
+		TPair<int64, FString>(
+			Arrival + Fixture.FlightCompletedOffsetMilliseconds,
+			TEXT("Reward recognized"))})
 	{
 		AdvanceTo(Simulation, Boundary.Key);
 		if (!VerifyRoundTripContinuation(*this, Simulation, Boundary.Value))
@@ -701,7 +741,8 @@ bool FAMSimPhase1SecondaryLifecycleTest::RunTest(const FString& Parameters)
 	TestTrue(
 		TEXT("Departure buffer follows the operation"),
 		Flight.StandOccupancyEndGameMilliseconds >
-			Flight.ScheduledArrivalGameMilliseconds + 130000);
+			Flight.ScheduledArrivalGameMilliseconds +
+				GetPhase1Fixture().FlightCompletedOffsetMilliseconds);
 	TestEqual(
 		TEXT("Airport cannot close with an active scheduled flight"),
 		Simulation.QueuePhase1Command(MakeCommand(14, EPhase1CommandType::CloseAirport)),
@@ -727,7 +768,8 @@ bool FAMSimPhase1MovementSafetyTest::RunTest(const FString& Parameters)
 	EFlightState PreviousState = Simulation.GetPhase1State().Flight.State;
 	TSet<EFlightState> ObservedStates;
 	const int64 Completion =
-		Simulation.GetPhase1State().Flight.ScheduledArrivalGameMilliseconds + 130000;
+		Simulation.GetPhase1State().Flight.ScheduledArrivalGameMilliseconds +
+			GetPhase1Fixture().FlightCompletedOffsetMilliseconds;
 	while (Simulation.CreateQuerySnapshot().GameTimeMilliseconds < Completion)
 	{
 		Simulation.Step();
@@ -840,7 +882,9 @@ bool FAMSimPhase1FlightCatchUpTest::RunTest(const FString& Parameters)
 
 	FSnapshot CatchUp = Simulation.CreateSnapshot();
 	CatchUp.GameTimeMilliseconds =
-		CatchUp.Phase1.Flight.ScheduledArrivalGameMilliseconds + 129750;
+		CatchUp.Phase1.Flight.ScheduledArrivalGameMilliseconds +
+			GetPhase1Fixture().FlightCompletedOffsetMilliseconds -
+			FixedStepMilliseconds;
 	CatchUp.Revision =
 		static_cast<uint64>(CatchUp.GameTimeMilliseconds / FixedStepMilliseconds);
 	FSimulation Restored;
@@ -928,7 +972,8 @@ bool FAMSimPhase1ReplayTest::RunTest(const FString& Parameters)
 		return false;
 	}
 	const int64 CompletionAt =
-		First.GetPhase1State().Flight.ScheduledArrivalGameMilliseconds + 130000;
+		First.GetPhase1State().Flight.ScheduledArrivalGameMilliseconds +
+			GetPhase1Fixture().FlightCompletedOffsetMilliseconds;
 	AdvanceTo(First, CompletionAt);
 	AdvanceTo(Second, CompletionAt);
 	TestEqual(TEXT("Identical S01 checksum"), First.CalculateChecksum(), Second.CalculateChecksum());

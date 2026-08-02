@@ -67,6 +67,15 @@ The target for a first engaged save to reach one Major specialization is 10–15
 
 Simulation data defines real task quantities and type-relative performance. Initial schedule planning reserves a 5-game-minute arrival and departure stand buffer. Queue warnings begin at 70% sustained capacity and become high risk at 90%. A service or passenger entity reports blocked after 5 game minutes without progress.
 
+The guided first GA visit enters the airport area 3 game minutes before its
+scheduled landing and completes 58 game minutes after landing. Its readable
+stages are inbound, approach, landing, runway roll, taxi-in, parked,
+turnaround, ready, taxi-out, takeoff, and outbound. The automatic inspection
+and fueling window spans 40 game minutes. With the standard Phase 1 clock of
+one game minute per real second, the full visible journey is approximately 61
+real seconds at 1x and 7.6 seconds at 8x. A scheduled-but-not-yet-inbound
+aircraft has no world proxy.
+
 Near-term weather forecast covers 6 game hours with high confidence; trend forecast extends to 24 game hours. Ordinary offers remain available for 2 game days; pinned offers remain for 4.
 
 ## Balance validation

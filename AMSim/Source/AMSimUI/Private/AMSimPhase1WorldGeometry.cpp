@@ -52,4 +52,16 @@ namespace AMSim
 			RunwayYawDegrees + (bReciprocalEnd ? 0.0f : 180.0f) + 360.0f,
 			360.0f);
 	}
+
+	float MakePhase1TopDownMovementYawDegrees(const FVector& Direction)
+	{
+		const FVector2D PlanarDirection(Direction.X, Direction.Y);
+		if (PlanarDirection.IsNearlyZero())
+		{
+			return 0.0f;
+		}
+		const float DirectionYaw = FMath::RadiansToDegrees(
+			FMath::Atan2(PlanarDirection.Y, PlanarDirection.X));
+		return FMath::Fmod(DirectionYaw + 450.0f, 360.0f);
+	}
 }

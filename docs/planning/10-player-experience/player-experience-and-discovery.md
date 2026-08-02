@@ -25,6 +25,12 @@ A new save follows this experience:
 8. Observe landing, taxi, parking, service or passenger exchange, fee award, taxi, and departure.
 9. Receive optional achievement suggestions, not a mandatory next mission.
 
+Routine flight movement and ground handling are autonomous. During the first
+visit, the interface explicitly says that no player action is required and
+offers the normal pause/speed controls for pacing. Aircraft appear in the
+world only while inbound, moving, parked, or outbound; timetable entries do
+not create idle aircraft sprites before the operational journey begins.
+
 The first playable loop is successful when the player can explain why the aircraft was compatible, where it went, what it needed, and what reward the airport earned.
 
 ## Guidance model

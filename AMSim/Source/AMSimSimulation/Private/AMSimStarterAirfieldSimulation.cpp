@@ -463,9 +463,10 @@ namespace AMSim
 			State.Flight.StateChangedAtGameMilliseconds = CurrentGameMilliseconds;
 			State.Flight.ScheduledArrivalGameMilliseconds = Command.ScheduledArrivalGameMilliseconds;
 			State.Flight.StandOccupancyStartGameMilliseconds =
-				Command.ScheduledArrivalGameMilliseconds - 60000;
+				Command.ScheduledArrivalGameMilliseconds - 300000;
 			State.Flight.StandOccupancyEndGameMilliseconds =
-				Command.ScheduledArrivalGameMilliseconds + 170000;
+				Command.ScheduledArrivalGameMilliseconds +
+					Fixture.FlightCompletedOffsetMilliseconds + 300000;
 			State.Flight.AssignedRunway = FindFacility(EFacilityType::GrassRunway);
 			State.Flight.AssignedStand = FindFacility(EFacilityType::GAStand);
 			EmitEvent(
@@ -624,18 +625,18 @@ namespace AMSim
 
 		const int64 Arrival = State.Flight.ScheduledArrivalGameMilliseconds;
 		EFlightState Desired = State.Flight.State;
-		if (CurrentGameMilliseconds >= Arrival + 130000) Desired = EFlightState::Completed;
-		else if (CurrentGameMilliseconds >= Arrival + 120000) Desired = EFlightState::Outbound;
-		else if (CurrentGameMilliseconds >= Arrival + 110000) Desired = EFlightState::Takeoff;
-		else if (CurrentGameMilliseconds >= Arrival + 90000) Desired = EFlightState::TaxiOut;
-		else if (CurrentGameMilliseconds >= Arrival + 80000) Desired = EFlightState::Ready;
-		else if (CurrentGameMilliseconds >= Arrival + 50000) Desired = EFlightState::Turnaround;
-		else if (CurrentGameMilliseconds >= Arrival + 45000) Desired = EFlightState::Parked;
-		else if (CurrentGameMilliseconds >= Arrival + 30000) Desired = EFlightState::TaxiIn;
-		else if (CurrentGameMilliseconds >= Arrival + 10000) Desired = EFlightState::RunwayRoll;
-		else if (CurrentGameMilliseconds >= Arrival) Desired = EFlightState::Landing;
-		else if (CurrentGameMilliseconds >= Arrival - 15000) Desired = EFlightState::Approach;
-		else if (CurrentGameMilliseconds >= Arrival - 30000) Desired = EFlightState::Inbound;
+		for (uint8 Value = static_cast<uint8>(EFlightState::Completed);
+			Value >= static_cast<uint8>(EFlightState::Inbound);
+			--Value)
+		{
+			const EFlightState Candidate = static_cast<EFlightState>(Value);
+			if (CurrentGameMilliseconds >=
+				Arrival + GetPhase1FlightStateOffsetMilliseconds(Candidate))
+			{
+				Desired = Candidate;
+				break;
+			}
+		}
 
 		while (static_cast<uint8>(State.Flight.State) < static_cast<uint8>(Desired))
 		{
@@ -670,7 +671,8 @@ namespace AMSim
 				TEXT("Movement.Runway09"),
 				State.Airframe.Id,
 				CurrentGameMilliseconds,
-				CurrentGameMilliseconds + 30000
+				State.Flight.ScheduledArrivalGameMilliseconds +
+					GetPhase1FlightStateEndOffsetMilliseconds(NewState)
 			});
 		}
 		else if (NewState == EFlightState::TaxiIn || NewState == EFlightState::TaxiOut)
@@ -679,7 +681,8 @@ namespace AMSim
 				TEXT("Movement.TaxiA"),
 				State.Airframe.Id,
 				CurrentGameMilliseconds,
-				CurrentGameMilliseconds + 30000
+				State.Flight.ScheduledArrivalGameMilliseconds +
+					GetPhase1FlightStateEndOffsetMilliseconds(NewState)
 			});
 		}
 		else if (NewState == EFlightState::Parked || NewState == EFlightState::Turnaround ||
@@ -689,7 +692,7 @@ namespace AMSim
 				TEXT("Stand.A1"),
 				State.Airframe.Id,
 				CurrentGameMilliseconds,
-				CurrentGameMilliseconds + 120000
+				State.Flight.StandOccupancyEndGameMilliseconds
 			});
 		}
 
@@ -926,11 +929,17 @@ namespace AMSim
 		else if (State.Flight.State != EFlightState::None)
 		{
 			Query.PrimaryStatus = FlightStateText(State.Flight.State);
-			Query.Cause = State.Flight.Blocker;
+			Query.Cause = State.Flight.Blocker.IsEmpty()
+				? TEXT("Routine ATC and ground services are automatic.")
+				: State.Flight.Blocker;
 			Query.Remedy = State.Flight.State == EFlightState::Completed
 				? TEXT("Review the itemized reward, rating contributions, and aircraft history.")
+				: State.Flight.State == EFlightState::Scheduled
+				? TEXT("No action required. The aircraft appears when it enters the airport area.")
+				: State.Flight.State == EFlightState::Turnaround
+				? TEXT("No action required. Inspection and fueling dispatch automatically; use time controls to wait faster.")
 				: State.Flight.Blocker.IsEmpty()
-				? TEXT("Watch the captioned automated operation.")
+				? TEXT("No action required. Watch the captioned automated operation.")
 				: TEXT("Select the highlighted route or service to inspect the blocker.");
 		}
 		else

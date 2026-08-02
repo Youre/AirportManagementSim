@@ -1346,7 +1346,7 @@ void AAMSimWorldPresenter::ApplySnapshot(
 	const bool bFacilitiesVisible = Query.ConstructionStage != AMSim::EConstructionStage::None;
 	const bool bOperational = Query.ConstructionStage >= AMSim::EConstructionStage::ReadyToOpen;
 	SetFacilitiesVisible(bFacilitiesVisible, bOperational, State.bInitialized);
-	SetAircraftState(Query);
+	SetAircraftState(Query, State);
 	RefreshPhase1OperationsPresentation(Query, State);
 }
 
@@ -1943,47 +1943,4 @@ int32 AAMSimWorldPresenter::GetActiveMatureSiteProxyCount() const
 			{
 				return Component && Component->IsVisible();
 			});
-}
-
-void AAMSimWorldPresenter::SetAircraftState(const AMSim::FPhase1QuerySnapshot& Query)
-{
-	const bool bVisible =
-		Query.FlightState != AMSim::EFlightState::None &&
-		Query.FlightState != AMSim::EFlightState::Completed;
-	Aircraft->SetVisibility(bVisible);
-	Selection->SetVisibility(bVisible);
-	if (!bVisible)
-	{
-		return;
-	}
-
-	const int32 HeadingIndex = GetHeadingIndex(Query.FlightState);
-	if (AircraftHeadingSprites.IsValidIndex(HeadingIndex))
-	{
-		Aircraft->SetSprite(AircraftHeadingSprites[HeadingIndex]);
-	}
-
-	FVector Position = Phase1RunwayCenter + FVector(24000.0, -24000.0, 50.0);
-	if (Query.FlightState >= AMSim::EFlightState::Approach &&
-		Query.FlightState <= AMSim::EFlightState::RunwayRoll)
-	{
-		Position = FVector(Phase1RunwayCenter.X, Phase1RunwayCenter.Y, 60.0);
-	}
-	else if (Query.FlightState >= AMSim::EFlightState::TaxiIn &&
-		Query.FlightState <= AMSim::EFlightState::Ready)
-	{
-		Position = FVector(Phase1StandCenter.X, Phase1StandCenter.Y, 60.0);
-	}
-	else if (Query.FlightState >= AMSim::EFlightState::TaxiOut)
-	{
-		Position = FVector(Phase1TaxiCenter.X, Phase1TaxiCenter.Y, 60.0);
-	}
-	Aircraft->SetRelativeLocation(Position);
-	Selection->SetRelativeLocation(FVector(Position.X, Position.Y, 70.0));
-
-	const bool bTurnaround = Query.FlightState == AMSim::EFlightState::Turnaround;
-	Aircraft->SetRelativeScale3D(FVector(
-		bTurnaround ? 13.0 : 10.0,
-		1.0,
-		bTurnaround ? 13.0 : 10.0));
 }

@@ -16,6 +16,7 @@ public class AMSimTests : ModuleRules
 			"CoreUObject",
 			"Engine",
 			"Json",
+			"UMG",
 			"SlateCore"
 		});
 	}

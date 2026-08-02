@@ -1,5 +1,7 @@
 #include "AMSimRootScreen.h"
 
+#include "AMSimExpandingToolButton.h"
+
 #include "AMSimAirportSimulationSubsystem.h"
 #include "AMSimPhase2Fixture.h"
 #include "AMSimTerminalView.h"

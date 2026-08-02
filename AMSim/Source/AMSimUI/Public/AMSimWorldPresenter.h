@@ -63,6 +63,7 @@ public:
 	int32 GetActiveMatureSiteProxyCount() const;
 	int32 GetActivePhase1ConstructionProxyCount() const;
 	int32 GetActivePhase1EarthworkProxyCount() const;
+	bool ArePhase1ConstructionBedsBelowSurfaces() const;
 	int32 GetActiveTurnaroundSupportProxyCount() const;
 	float GetPhase1ConstructionTravelProgress() const
 	{
@@ -72,6 +73,9 @@ public:
 	{
 		return Phase1ConstructionSurfaceProgress;
 	}
+	FVector GetPhase1ConstructionWorkerLocation(int32 WorkerIndex) const;
+	float GetPhase1ConstructionWorkerFacingYawDegrees(int32 WorkerIndex) const;
+	float GetPhase1ConstructionTruckFacingYawDegrees() const;
 	int32 GetTerminalAccessibleDashProxyCount() const
 	{
 		return Phase3AccessibleDashes.Num();
@@ -113,7 +117,9 @@ private:
 		bool bNetworkVisible,
 		bool bOperational,
 		bool bStarterContextVisible = false);
-	void SetAircraftState(const AMSim::FPhase1QuerySnapshot& Query);
+	void SetAircraftState(
+		const AMSim::FPhase1QuerySnapshot& Query,
+		const AMSim::FPhase1State& State);
 	void ApplyPhase1Geometry(const AMSim::FStarterPlanProposal& Proposal);
 	void InitializePhase1ConstructionPresentation();
 	void FinalizePhase1OperationsPresentation(

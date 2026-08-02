@@ -61,6 +61,14 @@ namespace
 			PlayFallbackCue(World);
 		}
 
+		virtual bool IsSpeaking() const override
+		{
+			return SpeechSubsystem &&
+				SpeechSubsystem->DoesChannelExist(RadioChannel) &&
+				SpeechSubsystem->IsChannelActive(RadioChannel) &&
+				SpeechSubsystem->IsSpeakingOnChannel(RadioChannel);
+		}
+
 		virtual void Shutdown() override
 		{
 			if (SpeechSubsystem && SpeechSubsystem->DoesChannelExist(RadioChannel))

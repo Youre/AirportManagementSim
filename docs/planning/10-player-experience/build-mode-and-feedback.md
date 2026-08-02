@@ -79,6 +79,15 @@ taxiway crews can work in parallel. Runway numbers, final markings, and the
 windsock appear only after the surface reaches inspection. Workers, vehicles,
 work-zone markers, and surface reveal are presentation derived from immutable
 project state; they never feed positions or completion back into simulation.
+The shared construction bed occupies a dedicated render depth and sort layer
+below every in-progress and completed movement surface. Bed and surface sprites
+must never be coplanar; the bed is hidden once the completed surface is active.
+During building and inspection, workers follow short, staggered, deterministic
+out-and-back patrols within their assigned runway, taxiway, gate-side, or road
+work area. Every moving construction sprite faces its current travel direction;
+stationary sprites retain their last stable facing. These patrols use game time,
+so pause freezes both position and orientation and time-speed controls accelerate
+them consistently with construction progress.
 
 The starter-airfield balance allocates 30 game minutes to travel, 30 to site
 preparation, 120 to visible surface work, and 30 to inspection. At the normal
@@ -86,6 +95,13 @@ preparation, 120 to visible surface work, and 30 to inspection. At the normal
 percent when the optional service road is useful. The finished runway and
 taxiway use separate marked aggregate textures; roads and unfinished earthwork
 remain unmarked. Reciprocal runway numbers face their corresponding approach.
+
+Once a project is funded, the large proposal summary gives way to a concise
+map-corner activity card. It shows only the activity and stage plus the most
+useful identity/cost line (for example, `CONSTRUCTION • SURFACE WORK` and
+`RWY 09/27 • 3,400 CR`). Detailed network composition, validation, and recovery
+controls remain in the build or project surface rather than being repeated over
+the world view.
 
 ## Closures
 

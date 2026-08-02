@@ -2,7 +2,7 @@
 
 **Status:** Systems implementation verified; visual and interaction polish active
 **Owner:** Production and integration
-**Last updated:** 2026-07-26
+**Last updated:** 2026-08-02
 **Roadmap phase:** Phase 1
 
 Implementation evidence is recorded in the [Phase 1 verification record](../../../.ai/reviews/2026-07-26-phase-1-verification.md). All P1-00 through P1-08 systems exits, the reviewed player-facing content lock, the code/package gates, and elevated network-denied S15 pass. Active follow-up is visual fidelity and interaction polish, including concept-art comparison and persistent mouse behavior. The four-hour physical-tier measurement and [formal unassisted new-tester/audio/comprehension protocol](phase-1-new-tester-protocol.md) are retained but deferred to Phase 7 release hardening.
@@ -83,9 +83,13 @@ terminal/gate, and required starter teams are valid and open:
 - a compatible one-time GA offer appears immediately while the simulation remains paused;
 - the player accepts it, chooses an exact five-minute slot, and assigns the stand;
 - after schedule confirmation, the first aircraft arrives within three game minutes of resumed simulation;
+- a merely scheduled aircraft remains off-map; it becomes visible only when it enters the airport area and remains visible while moving or parked;
 - the timetable shows the arrival, stand occupancy/buffers, and departure;
 - automated ATC selects the open runway and emits captioned arrival, landing, taxi, hold, and takeoff phrase intents;
-- one persistent light-piston airframe lands, rolls out, taxis through reserved blocks, parks, receives inspection and fuel service, taxis out, departs, and retains its identity/history;
+- one persistent light-piston airframe visibly approaches, lands, rolls out, follows the committed taxiway network to the connected gate, parks, receives inspection and fuel service, follows that network back to the runway, takes off, departs the map, and retains its identity/history;
+- routine ATC, taxi, and service dispatch are autonomous. The player is not expected to steer the aircraft or press a hidden continuation action; the time controls are the optional pacing control;
+- at 1x the visible inbound-to-outbound journey lasts about one real minute, including about forty real seconds parked for inspection and fueling. At 8x it remains a readable accelerated journey rather than a same-frame state cascade;
+- operational speech calls play in first-in-first-out order without interrupting an active call, including when simulation speed produces calls faster than they can be spoken;
 - the economy records itemized service/flight revenue and awards the first-loop capability evidence;
 - rating feedback identifies at least safety/readiness and operational-reliability contributions;
 - a suggested objective may update, but ignoring it never blocks play.

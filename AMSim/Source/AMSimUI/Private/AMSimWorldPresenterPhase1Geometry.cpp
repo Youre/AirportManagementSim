@@ -8,6 +8,7 @@
 namespace
 {
 	constexpr float SpritePlaneRoll = -90.0f;
+	constexpr double ConstructionBedHeight = 5.0;
 
 	void ApplySegment(
 		UPaperSpriteComponent* Component,
@@ -45,7 +46,13 @@ void AAMSimWorldPresenter::ApplyPhase1Geometry(
 			Proposal.RunwayWidthCentimeters,
 			10.0);
 	ApplySegment(Runway, RunwayGeometry);
-	ApplySegment(Phase1RunwayEarthwork, RunwayGeometry);
+	ApplySegment(
+		Phase1RunwayEarthwork,
+		AMSim::MakePhase1WorldSegmentGeometry(
+			Proposal.RunwayStart,
+			Proposal.RunwayEnd,
+			Proposal.RunwayWidthCentimeters,
+			ConstructionBedHeight));
 	const TArray<AMSim::FTaxiwaySegment> TaxiSegments =
 		AMSim::GetTaxiwaySegments(Proposal);
 	ActivePhase1TaxiwaySegmentCount = FMath::Min(
@@ -65,7 +72,13 @@ void AAMSimWorldPresenter::ApplyPhase1Geometry(
 			ApplySegment(Phase1TaxiwaySegments[Index], SegmentGeometry);
 			if (Phase1TaxiwayEarthworks.IsValidIndex(Index))
 			{
-				ApplySegment(Phase1TaxiwayEarthworks[Index], SegmentGeometry);
+				ApplySegment(
+					Phase1TaxiwayEarthworks[Index],
+					AMSim::MakePhase1WorldSegmentGeometry(
+						TaxiSegments[Index].Start,
+						TaxiSegments[Index].End,
+						1200,
+						ConstructionBedHeight));
 			}
 		}
 		Phase1TaxiwaySegments[Index]->SetVisibility(bHasSegment);
@@ -86,7 +99,7 @@ void AAMSimWorldPresenter::ApplyPhase1Geometry(
 				Proposal.AccessStart,
 				Proposal.AccessEnd,
 				1000,
-				19.0));
+				ConstructionBedHeight));
 	}
 
 	Phase1RunwayCenter = RunwayGeometry.Center;

@@ -174,6 +174,50 @@ namespace AMSim
 		return Result;
 	}
 
+	int64 GetPhase1FlightStateOffsetMilliseconds(const EFlightState State)
+	{
+		const FPhase1Fixture& Fixture = GetPhase1Fixture();
+		switch (State)
+		{
+		case EFlightState::Inbound:
+			return Fixture.FlightInboundOffsetMilliseconds;
+		case EFlightState::Approach:
+			return Fixture.FlightApproachOffsetMilliseconds;
+		case EFlightState::Landing:
+			return Fixture.FlightLandingOffsetMilliseconds;
+		case EFlightState::RunwayRoll:
+			return Fixture.FlightRunwayRollOffsetMilliseconds;
+		case EFlightState::TaxiIn:
+			return Fixture.FlightTaxiInOffsetMilliseconds;
+		case EFlightState::Parked:
+			return Fixture.FlightParkedOffsetMilliseconds;
+		case EFlightState::Turnaround:
+			return Fixture.FlightTurnaroundOffsetMilliseconds;
+		case EFlightState::Ready:
+			return Fixture.FlightReadyOffsetMilliseconds;
+		case EFlightState::TaxiOut:
+			return Fixture.FlightTaxiOutOffsetMilliseconds;
+		case EFlightState::Takeoff:
+			return Fixture.FlightTakeoffOffsetMilliseconds;
+		case EFlightState::Outbound:
+			return Fixture.FlightOutboundOffsetMilliseconds;
+		case EFlightState::Completed:
+			return Fixture.FlightCompletedOffsetMilliseconds;
+		default:
+			return 0;
+		}
+	}
+
+	int64 GetPhase1FlightStateEndOffsetMilliseconds(const EFlightState State)
+	{
+		if (State < EFlightState::Inbound || State >= EFlightState::Completed)
+		{
+			return GetPhase1FlightStateOffsetMilliseconds(State);
+		}
+		return GetPhase1FlightStateOffsetMilliseconds(static_cast<EFlightState>(
+			static_cast<uint8>(State) + 1));
+	}
+
 	FPhase1Point ClosestPointOnSegment(
 		const FPhase1Point& Point,
 		const FPhase1Point& SegmentStart,

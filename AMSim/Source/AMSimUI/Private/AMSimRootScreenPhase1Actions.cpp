@@ -86,9 +86,9 @@ void UAMSimRootScreen::SetConstructionModeChrome(const bool bOpen)
 	if (BuildModeLeftChrome)
 	{
 		BuildModeLeftChrome->SetVisibility(
-			bOpen || bCompactLayoutActive
+			bOpen
 				? ESlateVisibility::Collapsed
-				: ESlateVisibility::Visible);
+				: ESlateVisibility::SelfHitTestInvisible);
 	}
 	if (BuildModeRightChrome)
 	{

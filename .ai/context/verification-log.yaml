@@ -1141,3 +1141,67 @@ entries:
       loads, forbidden runtime dependencies, or line-limit violations. C: remained
       near 228.47 GiB free; tracked cache totals stayed 8.76/0.79 GiB; nothing was
       cleared.'
+  - timestamp: '2026-08-02T20:59:26.521900+00:00'
+    commit: fbefa2c7d1fa40f27c2010434cc0509e7467901f
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Construction patrol and movement facing: focused Paper2D world automation,
+      complete AMSim automation, UE 5.8 editor/game builds, and integrated 1920x1080
+      rendered smoke'
+    result: passed
+    notes: Focused test passed 1/1 and complete automation passed 73/73 with
+      only the retained warning-only missing-save recovery probe. Development
+      Editor and Game targets compiled. Integrated smoke exited 0 with journey,
+      state assertions, save/load continuity, screenshots, and performance
+      sample passing. Visual inspection confirms separated runway/taxiway crews
+      and correct horizontal/vertical movement facing. The VA-02 comparison
+      board records three continuing visual-polish differences and accepts the
+      bounded movement/facing iteration. No schema, asset, balance, or cook
+      dependency changed.
+  - timestamp: '2026-08-02T21:47:43.445812+00:00'
+    commit: fbefa2c7d1fa40f27c2010434cc0509e7467901f
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Compact HUD density: UE 5.8 Game build; 74-test automation; integrated
+      1920x1080 rendered smoke; hover-state proof; VA-01/VA-02 comparison; line, diff,
+      and asset-reference scans'
+    result: passed
+    notes: Icon-only left navigation now reveals rounded labels on hover/focus
+      without map shift; disabled actions remain explainable. The active
+      construction summary is a concise stage/runway/cost map-corner card. Full
+      automation passed 74/74 and rendered journey/save-load/screenshots passed.
+      VA-01/VA-02 accept the bounded density correction while recording richer
+      illustration and remaining root-HUD density as visual debt. No new
+      asset/schema/cook dependency; clean-package exemption applies.
+  - timestamp: '2026-08-02T21:56:29.846062+00:00'
+    commit: fbefa2c7d1fa40f27c2010434cc0509e7467901f
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Construction surface layering: UE 5.8 Editor/Game builds; focused Paper2D
+      world test; 74-test automation; integrated 1920x1080 rendered smoke; progress/completion
+      visual inspection; line and diff scans'
+    result: passed
+    notes: All unfinished runway, taxiway, and road beds now use physical
+      height/sort layer 5, below all in-progress and completed movement surfaces
+      at layer 10+. Focused test covers purchase, partial reveal, and
+      completion; full automation passed 74/74. Fresh rendered progress and
+      completed captures show the expected stack. No asset/schema/cook
+      dependency changed; clean-package exemption applies.
+  - timestamp: '2026-08-02T22:24:36.751102+00:00'
+    commit: fbefa2c7d1fa40f27c2010434cc0509e7467901f
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'First GA visit readability: UE 5.8 Editor/Game builds; autonomous
+      route and speech FIFO tests; complete 75-test automation; integrated
+      1920x1080 rendered smoke; turnaround inspection; line, diff, and runtime-load scans'
+    result: passed
+    notes: Scheduled and completed aircraft are now off-map. The operational
+      aircraft continuously follows the committed runway and complete taxiway
+      graph through landing, gate turnaround, and departure, with directionally
+      correct sprites. Named Phase 1 balance offsets provide a 61-second 1x
+      visible journey and 40-second 1x automatic service window. All 75 tests
+      passed with only the retained warning-only missing-save recovery probe;
+      rendered journey, state, screenshots, save/load, and zero-backlog checks
+      passed. Speech queue coverage proves FIFO calls never interrupt active
+      local speech. No schema, asset, cook, network, 3D, or runtime string-load
+      dependency changed.

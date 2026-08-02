@@ -1,10 +1,13 @@
 #include "AMSimCameraPawn.h"
 #include "AMSimConstructionProposalView.h"
+#include "AMSimExpandingToolButton.h"
 #include "AMSimPhase1WorldGeometry.h"
 #include "AMSimGameMode.h"
 #include "AMSimOverviewView.h"
+#include "AMSimPhase1AircraftPresentation.h"
 #include "AMSimPhase1ConstructionPresentation.h"
 #include "AMSimPhase1Fixture.h"
+#include "AMSimPhase1HudPresentation.h"
 #include "AMSimPhase1ViewState.h"
 #include "AMSimPlayerController.h"
 #include "AMSimPresentationProxyPool.h"
@@ -18,6 +21,7 @@
 #include "AMSimUITheme.h"
 #include "AMSimWorldPresenter.h"
 #include "Camera/CameraComponent.h"
+#include "Components/Button.h"
 #include "Misc/AutomationTest.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
@@ -67,6 +71,78 @@ bool FAMSimOrthographicCameraTest::RunTest(const FString& Parameters)
 	TestFalse(
 		TEXT("Root screen does not hide the cursor during capture"),
 		InputConfig.HideCursorDuringViewportCapture());
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+	FAMSimCompactHudPresentationTest,
+	"AMSim.Phase1_5.Presentation.CompactHud",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FAMSimCompactHudPresentationTest::RunTest(const FString& Parameters)
+{
+	const UAMSimRootScreen* RootScreen = GetDefault<UAMSimRootScreen>();
+	TestEqual(
+		TEXT("Compact navigation loads every cooker-visible icon reference"),
+		RootScreen->GetLoadedNavigationIconCount(),
+		8);
+
+	UAMSimExpandingToolButton* Tool = NewObject<UAMSimExpandingToolButton>();
+	Tool->Configure(nullptr, TEXT("BUILD"), AMSim::UITheme::EButton::Primary);
+	Tool->TakeWidget();
+	TestNotNull(TEXT("Compact tool exposes a stable action button"), Tool->GetActionButton());
+	TestEqual(TEXT("Compact tool retains its accessible label"), Tool->GetActionLabel(), TEXT("BUILD"));
+	TestEqual(
+		TEXT("Compact tool uses its label as a tooltip"),
+		Tool->GetActionButton()->GetToolTipText().ToString(),
+		TEXT("BUILD"));
+	TestEqual(
+		TEXT("Compact tool begins without a flyout"),
+		Tool->GetFlyoutVisibilityForTest(),
+		ESlateVisibility::Collapsed);
+	Tool->GetActionButton()->OnHovered.Broadcast();
+	TestEqual(
+		TEXT("The actual hover event reveals a hit-test-inert label flyout"),
+		Tool->GetFlyoutVisibilityForTest(),
+		ESlateVisibility::HitTestInvisible);
+	Tool->GetActionButton()->OnUnhovered.Broadcast();
+	TestEqual(
+		TEXT("The actual unhover event collapses the label flyout"),
+		Tool->GetFlyoutVisibilityForTest(),
+		ESlateVisibility::Collapsed);
+	Tool->SetActionEnabled(false);
+	TestFalse(TEXT("Disabled compact tools remain non-interactive"), Tool->IsActionEnabled());
+	TestTrue(TEXT("Disabled tools retain an enabled explanatory wrapper"), Tool->GetIsEnabled());
+	Tool->SetExpandedForTest(true);
+	TestEqual(
+		TEXT("Disabled tools can still explain themselves on hover"),
+		Tool->GetFlyoutVisibilityForTest(),
+		ESlateVisibility::HitTestInvisible);
+
+	const AMSim::FStarterPlanProposal Proposal = AMSim::CreateDefaultStarterPlan();
+	const AMSim::FPhase1ConstructionActivityCard Building =
+		AMSim::FPhase1HudPresentation::MakeConstructionActivityCard(
+			AMSim::EConstructionStage::Building,
+			Proposal);
+	const AMSim::FPhase1ConstructionActivityCard Inspection =
+		AMSim::FPhase1HudPresentation::MakeConstructionActivityCard(
+			AMSim::EConstructionStage::Inspection,
+			Proposal);
+	TestEqual(
+		TEXT("Building card presents one concise stage eyebrow"),
+		Building.Header,
+		TEXT("CONSTRUCTION  •  SURFACE WORK"));
+	TestEqual(
+		TEXT("Construction detail keeps only runway identity and cost"),
+		Building.Detail,
+		TEXT("RWY 09/27  •  3,400 CR"));
+	TestEqual(
+		TEXT("Inspection card presents the explicit safety stage"),
+		Inspection.Header,
+		TEXT("CONSTRUCTION  •  SAFETY INSPECTION"));
+	TestFalse(TEXT("Compact card omits repeated starter title"), Building.Header.Contains(TEXT("STARTER")));
+	TestFalse(TEXT("Compact card omits taxi-network prose"), Building.Detail.Contains(TEXT("TAXI")));
+	TestFalse(TEXT("Compact card omits gate prose"), Building.Detail.Contains(TEXT("GATE")));
 	return true;
 }
 
@@ -515,6 +591,95 @@ bool FAMSimPhase1ConstructionPresentationMappingTest::RunTest(
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+	FAMSimPhase15AircraftJourneyPresentationTest,
+	"AMSim.Phase1_5.Presentation.AutonomousAircraftJourney",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FAMSimPhase15AircraftJourneyPresentationTest::RunTest(
+	const FString& Parameters)
+{
+	using namespace AMSim;
+	FPhase1State State;
+	State.Project.Proposal = CreateDefaultStarterPlan();
+	State.Flight.ScheduledArrivalGameMilliseconds = 600000;
+	FPhase1QuerySnapshot Query;
+	Query.FlightState = EFlightState::Scheduled;
+	Query.GameTimeMilliseconds = 300000;
+	TestFalse(
+		TEXT("A merely scheduled aircraft remains off-map"),
+		FPhase1AircraftPresentation::Derive(Query, State).bVisible);
+
+	const TArray<FVector> DirectTaxiPath =
+		FPhase1AircraftPresentation::BuildTaxiPath(State.Project.Proposal);
+	if (!TestTrue(
+		TEXT("The committed starter network yields a runway-to-gate taxi path"),
+		DirectTaxiPath.Num() >= 2))
+	{
+		return false;
+	}
+
+	FStarterPlanProposal Chained = State.Project.Proposal;
+	Chained.TaxiwaySegments = {
+		{{45000, 40000}, {45000, 57000}},
+		{{45000, 57000}, {45000, 74000}}};
+	Chained.TaxiStart = Chained.TaxiwaySegments[0].Start;
+	Chained.TaxiEnd = Chained.TaxiwaySegments.Last().End;
+	const TArray<FVector> ChainedTaxiPath =
+		FPhase1AircraftPresentation::BuildTaxiPath(Chained);
+	TestTrue(
+		TEXT("A connected multi-segment network retains its intermediate join"),
+		ChainedTaxiPath.Num() >= 3);
+
+	const auto VisualAt = [&Query, &State](
+		const EFlightState FlightState,
+		const float Progress)
+	{
+		Query.FlightState = FlightState;
+		const int64 Start = State.Flight.ScheduledArrivalGameMilliseconds +
+			GetPhase1FlightStateOffsetMilliseconds(FlightState);
+		const int64 End = State.Flight.ScheduledArrivalGameMilliseconds +
+			GetPhase1FlightStateEndOffsetMilliseconds(FlightState);
+		Query.GameTimeMilliseconds = FMath::RoundToInt64(FMath::Lerp(
+			static_cast<double>(Start),
+			static_cast<double>(End),
+			Progress));
+		return FPhase1AircraftPresentation::Derive(Query, State);
+	};
+
+	for (const EFlightState MovingState : {
+		EFlightState::Inbound,
+		EFlightState::Approach,
+		EFlightState::Landing,
+		EFlightState::RunwayRoll,
+		EFlightState::TaxiIn,
+		EFlightState::TaxiOut,
+		EFlightState::Takeoff,
+		EFlightState::Outbound})
+	{
+		const FPhase1AircraftVisualState Early = VisualAt(MovingState, 0.25f);
+		const FPhase1AircraftVisualState Late = VisualAt(MovingState, 0.75f);
+		TestTrue(TEXT("Active movement state is visible"), Early.bVisible);
+		TestFalse(
+			TEXT("Aircraft advances continuously within each movement state"),
+			Early.Location.Equals(Late.Location, 1.0f));
+		TestFalse(
+			TEXT("Movement supplies a stable facing direction"),
+			Early.Direction.IsNearlyZero());
+	}
+
+	const FPhase1AircraftVisualState Parked = VisualAt(EFlightState::Turnaround, 0.5f);
+	TestTrue(TEXT("Aircraft remains visible while parked for services"), Parked.bVisible);
+	TestTrue(
+		TEXT("Parked aircraft is located at the connected gate"),
+		Parked.Location.Equals(DirectTaxiPath.Last(), 1.0f));
+	Query.FlightState = EFlightState::Completed;
+	TestFalse(
+		TEXT("Aircraft leaves the map after outbound completion"),
+		FPhase1AircraftPresentation::Derive(Query, State).bVisible);
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 	FAMSimPhase15WorldPresenterTest,
 	"AMSim.Phase1_5.Presentation.Paper2DWorld",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
@@ -559,6 +724,38 @@ bool FAMSimPhase15WorldPresenterTest::RunTest(const FString& Parameters)
 		AMSim::MakePhase1RunwayNumberYawDegrees(90.0f, false),
 		270.0f);
 	TestEqual(
+		TEXT("Positive X movement faces the negative-Y-forward sprite east"),
+		AMSim::MakePhase1TopDownMovementYawDegrees(FVector(1.0, 0.0, 0.0)),
+		90.0f);
+	TestEqual(
+		TEXT("Positive Y movement faces the negative-Y-forward sprite north"),
+		AMSim::MakePhase1TopDownMovementYawDegrees(FVector(0.0, 1.0, 0.0)),
+		180.0f);
+	TestEqual(
+		TEXT("Negative X movement faces the negative-Y-forward sprite west"),
+		AMSim::MakePhase1TopDownMovementYawDegrees(FVector(-1.0, 0.0, 0.0)),
+		270.0f);
+	TestEqual(
+		TEXT("Negative Y movement preserves the source-art forward axis"),
+		AMSim::MakePhase1TopDownMovementYawDegrees(FVector(0.0, -1.0, 0.0)),
+		0.0f);
+	const AMSim::FPhase1PatrolMotion PatrolStart =
+		AMSim::FPhase1ConstructionPresentation::CalculatePatrolMotion(0, 0);
+	const AMSim::FPhase1PatrolMotion PatrolTurn =
+		AMSim::FPhase1ConstructionPresentation::CalculatePatrolMotion(450000, 0);
+	const AMSim::FPhase1PatrolMotion PatrolLoop =
+		AMSim::FPhase1ConstructionPresentation::CalculatePatrolMotion(900000, 0);
+	const AMSim::FPhase1PatrolMotion StaggeredWorker =
+		AMSim::FPhase1ConstructionPresentation::CalculatePatrolMotion(0, 1);
+	TestTrue(TEXT("Patrol begins at its first endpoint"),
+		FMath::IsNearlyZero(PatrolStart.Progress) && PatrolStart.bForward);
+	TestTrue(TEXT("Patrol reverses continuously at its far endpoint"),
+		FMath::IsNearlyEqual(PatrolTurn.Progress, 1.0f) && !PatrolTurn.bForward);
+	TestTrue(TEXT("Patrol cycle returns to its first endpoint"),
+		FMath::IsNearlyZero(PatrolLoop.Progress) && PatrolLoop.bForward);
+	TestTrue(TEXT("Adjacent workers use staggered patrol phases"),
+		FMath::IsNearlyEqual(StaggeredWorker.Progress, 0.5f));
+	TestEqual(
 		TEXT("Parked aircraft uses the stand-facing heading"),
 		AAMSimWorldPresenter::GetHeadingIndex(AMSim::EFlightState::Parked),
 		8);
@@ -578,6 +775,9 @@ bool FAMSimPhase15WorldPresenterTest::RunTest(const FString& Parameters)
 		TEXT("Purchase exposes runway, taxiway, and road earthwork beds"),
 		Presenter->GetActivePhase1EarthworkProxyCount(),
 		3);
+	TestTrue(
+		TEXT("Every placeholder bed renders below its in-progress surface"),
+		Presenter->ArePhase1ConstructionBedsBelowSurfaces());
 	TestTrue(
 		TEXT("Crew begins at the travel origin"),
 		FMath::IsNearlyZero(Presenter->GetPhase1ConstructionTravelProgress()));
@@ -600,9 +800,56 @@ bool FAMSimPhase15WorldPresenterTest::RunTest(const FString& Parameters)
 	TestTrue(
 		TEXT("Road-assisted build reveals half of the total network at its midpoint"),
 		FMath::IsNearlyEqual(Presenter->GetPhase1ConstructionSurfaceProgress(), 0.5f));
+	TestTrue(
+		TEXT("Placeholder beds remain below partially revealed surfaces"),
+		Presenter->ArePhase1ConstructionBedsBelowSurfaces());
+	const FVector FirstPatrolLocation =
+		Presenter->GetPhase1ConstructionWorkerLocation(0);
+	const float FirstPatrolFacing =
+		Presenter->GetPhase1ConstructionWorkerFacingYawDegrees(0);
+	Construction.Revision = 903;
+	Construction.GameTimeMilliseconds += 112500;
+	Presenter->ApplySnapshot(Construction, ConstructionState);
+	const FVector SecondPatrolLocation =
+		Presenter->GetPhase1ConstructionWorkerLocation(0);
+	const float SecondPatrolFacing =
+		Presenter->GetPhase1ConstructionWorkerFacingYawDegrees(0);
+	TestFalse(
+		TEXT("A construction worker changes position during active surface work"),
+		FirstPatrolLocation.Equals(SecondPatrolLocation));
+	TestFalse(
+		TEXT("A construction worker turns when its patrol reverses"),
+		FMath::IsNearlyEqual(FirstPatrolFacing, SecondPatrolFacing));
+	Construction.Revision = 904;
+	Construction.bPaused = true;
+	Presenter->ApplySnapshot(Construction, ConstructionState);
+	TestTrue(
+		TEXT("Paused game time freezes worker position"),
+		Presenter->GetPhase1ConstructionWorkerLocation(0).Equals(
+			SecondPatrolLocation));
+	TestTrue(
+		TEXT("Paused game time freezes worker facing"),
+		FMath::IsNearlyEqual(
+			Presenter->GetPhase1ConstructionWorkerFacingYawDegrees(0),
+			SecondPatrolFacing));
+	Construction.Revision = 905;
+	Construction.bPaused = false;
+	Construction.ConstructionStage = AMSim::EConstructionStage::Inspection;
+	ConstructionState.Project.Stage = AMSim::EConstructionStage::Inspection;
+	Presenter->ApplySnapshot(Construction, ConstructionState);
+	TestTrue(
+		TEXT("Inspection exposes the complete finished network"),
+		FMath::IsNearlyEqual(Presenter->GetPhase1ConstructionSurfaceProgress(), 1.0f));
+	TestEqual(
+		TEXT("Completed movement surfaces hide every placeholder bed"),
+		Presenter->GetActivePhase1EarthworkProxyCount(),
+		0);
+	TestTrue(
+		TEXT("Completed surfaces retain the explicit layer order"),
+		Presenter->ArePhase1ConstructionBedsBelowSurfaces());
 
 	AMSim::FPhase1QuerySnapshot Turnaround;
-	Turnaround.Revision = 903;
+	Turnaround.Revision = 906;
 	Turnaround.ConstructionStage = AMSim::EConstructionStage::Operational;
 	Turnaround.FlightState = AMSim::EFlightState::Turnaround;
 	Turnaround.InspectionState = AMSim::EServiceTaskState::Active;
@@ -620,7 +867,7 @@ bool FAMSimPhase15WorldPresenterTest::RunTest(const FString& Parameters)
 		Presenter->GetActivePhase1ConstructionProxyCount(),
 		0);
 	AMSim::FPhase1QuerySnapshot MovedQuery = Turnaround;
-	MovedQuery.Revision = 904;
+	MovedQuery.Revision = 907;
 	AMSim::FPhase1State MovedState = TurnaroundState;
 	const FVector OriginalRunwayCenter = Presenter->GetPhase1RunwayCenter();
 	UAMSimConstructionProposalView::TranslateProposal(
@@ -636,7 +883,7 @@ bool FAMSimPhase15WorldPresenterTest::RunTest(const FString& Parameters)
 		Presenter->GetPhase1GeometryOffset().IsNearlyZero());
 
 	AMSim::FPhase1QuerySnapshot Cleared;
-	Cleared.Revision = 905;
+	Cleared.Revision = 908;
 	Presenter->ApplySnapshot(Cleared, AMSim::FPhase1State());
 	TestTrue(
 		TEXT("Empty airport resets proposal geometry"),

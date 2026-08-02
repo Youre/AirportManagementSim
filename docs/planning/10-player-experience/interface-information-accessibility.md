@@ -19,6 +19,14 @@ The root HUD contains:
 - bottom context panel: selected entity or facility;
 - modal stack: save/load, region selection, settings, destructive confirmations only.
 
+During normal map play, the left tool rail uses one consistent icon family and
+keeps its labels collapsed. Hover or keyboard focus reveals a short label in a
+rounded flyout beside the icon without resizing the rail or shifting the map.
+Every icon keeps a tooltip and at least a 44 px-equivalent target; unavailable
+actions remain explainable on hover/focus even though activation is disabled.
+Catalogs, settings, and compact-drawer alternatives continue to pair icons with
+persistent text.
+
 Panels are layered through CommonUI. Only one primary management panel occupies the workspace at a time. Inspect panels may remain pinned while the player opens a primary panel.
 
 ## Inspectable entities

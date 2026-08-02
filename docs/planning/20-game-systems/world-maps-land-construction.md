@@ -2,7 +2,7 @@
 
 **Status:** Approved baseline  
 **Owner:** World and construction  
-**Last updated:** 2026-07-25
+**Last updated:** 2026-08-02
 
 ## Outcome and scope
 
@@ -35,6 +35,13 @@ presentation. Finished runway, taxiway, and road surfaces replace their
 earthwork treatment progressively during `Building`; markings wait for
 `Inspection`. Pausing freezes the derived movement and reveal without losing
 progress.
+
+While active work or inspection is visible, crews use short deterministic
+patrols bounded to the committed runway, taxiway, gate-side, or optional-road
+geometry. Moving workers and delivery vehicles face their current direction of
+travel, reverse cleanly at patrol endpoints, and retain their last stable
+facing while stationary. The motion derives only from authoritative game time
+and does not change construction progress, routing, persistence, or outcomes.
 
 For the starter fixture, the authored thresholds are 30 game minutes for
 delivery travel, 60 cumulative minutes before surface work, 180 cumulative

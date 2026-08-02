@@ -67,6 +67,48 @@ Template-first rule:
   `UAMSimRootScreen`.
 - Accepted placeholder content: `Test objective`, `No active item`, and `Ready`.
 
+## Compact expanding tool rail
+
+- Purpose: keep persistent navigation discoverable without permanently
+  consuming world width or repeating long labels.
+- Applicable screens or flows: the normal gameplay left rail and future
+  map-dominant tool palettes that contain stable destinations rather than form
+  controls.
+- Composition: a 112-unit rounded rail overlays the map edge; each project-owned
+  icon sits in an 88-by-56 button. Only the hovered or keyboard-focused
+  item reveals a rounded text flyout to the right. The flyout overlays the world
+  and never resizes or shifts it.
+- Interaction: icon, hover/focus treatment, tooltip, and accessible label all
+  use the same concise name. Hover expansion is immediate and stable; focus is
+  visibly retained; disabled tools remain recognizable but cannot emit a
+  success cue. Click remains the only action trigger.
+- Visual rules: use the existing cooker-visible Riverbend icon kit; do not use
+  emoji, abbreviations, or mixed icon families. Icons are 38-42 units, labels
+  use compact uppercase text, and selected/available/disabled states use the
+  shared tool-button style plus text-independent contrast.
+- Component: `UAMSimExpandingToolButton`, hosted by `UAMSimRootScreen`.
+- Accepted placeholder content: `BUILD`, `SCHEDULE`, and `OVERLAYS`.
+
+## Compact map activity card
+
+- Purpose: communicate one active world operation without covering the world
+  or repeating information already visible in persistent rails.
+- Applicable screens or flows: starter-airfield construction and later single
+  active-project summaries.
+- Composition: one small rounded card in the upper-right map corner, clear of
+  the compact tool rail and objective rail. It has one stage eyebrow and one identity/economy line;
+  nested cards and side-by-side evidence boxes are prohibited.
+- Content: construction uses `CONSTRUCTION  •  <STAGE>` and
+  `RWY <DESIGNATORS>  •  <COST>`. Taxiway/gate membership, package title, and
+  explanatory prose stay in contextual inspection or world cues unless they
+  are the current blocker.
+- Responsive behavior: retain two concise lines at 100-150%; allow wrapping to
+  three lines at 175-200% without shrinking type. Status remains explicit and
+  never depends on amber/cyan alone.
+- Component: the compact state of `UAMSimRootScreen::ContextPanel`.
+- Accepted placeholder content: `CONSTRUCTION  •  BUILDING` and
+  `RWY 09/27  •  3,400 CR`.
+
 ## Evidence card
 
 - Purpose: pair an operational result with cause and corrective action without

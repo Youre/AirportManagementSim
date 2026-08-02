@@ -16,6 +16,12 @@ namespace AMSim
 		bool bFinishedMarkingsVisible = false;
 	};
 
+	struct FPhase1PatrolMotion
+	{
+		float Progress = 0.0f;
+		bool bForward = true;
+	};
+
 	class AMSIMUI_API FPhase1ConstructionPresentation
 	{
 	public:
@@ -26,5 +32,9 @@ namespace AMSim
 		static TArray<float> AllocateLengthProgress(
 			float OverallProgress,
 			TConstArrayView<double> SegmentLengths);
+
+		static FPhase1PatrolMotion CalculatePatrolMotion(
+			int64 ElapsedGameMilliseconds,
+			int32 WorkerIndex);
 	};
 }

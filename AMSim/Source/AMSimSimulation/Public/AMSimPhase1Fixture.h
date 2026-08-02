@@ -40,6 +40,18 @@ namespace AMSim
 		int32 ServiceRoadConstructionBonusPercent = 20;
 		int64 TimetableIncrementMilliseconds = 300000;
 		int64 MaximumArrivalDelayMilliseconds = 3600000;
+		int64 FlightInboundOffsetMilliseconds = -180000;
+		int64 FlightApproachOffsetMilliseconds = -60000;
+		int64 FlightLandingOffsetMilliseconds = 0;
+		int64 FlightRunwayRollOffsetMilliseconds = 60000;
+		int64 FlightTaxiInOffsetMilliseconds = 120000;
+		int64 FlightParkedOffsetMilliseconds = 300000;
+		int64 FlightTurnaroundOffsetMilliseconds = 360000;
+		int64 FlightReadyOffsetMilliseconds = 2760000;
+		int64 FlightTaxiOutOffsetMilliseconds = 3060000;
+		int64 FlightTakeoffOffsetMilliseconds = 3240000;
+		int64 FlightOutboundOffsetMilliseconds = 3300000;
+		int64 FlightCompletedOffsetMilliseconds = 3480000;
 		int64 FlightRewardCredits = 600;
 		int32 FlightRewardAirportPoints = 5;
 		TArray<FDefinition> ContentDefinitions;
@@ -50,6 +62,10 @@ namespace AMSim
 	AMSIMSIMULATION_API FRunwayDesignation CalculateRunwayDesignation(
 		const FPhase1Point& Start,
 		const FPhase1Point& End);
+	AMSIMSIMULATION_API int64 GetPhase1FlightStateOffsetMilliseconds(
+		EFlightState State);
+	AMSIMSIMULATION_API int64 GetPhase1FlightStateEndOffsetMilliseconds(
+		EFlightState State);
 	AMSIMSIMULATION_API FPhase1Point ClosestPointOnSegment(
 		const FPhase1Point& Point,
 		const FPhase1Point& SegmentStart,

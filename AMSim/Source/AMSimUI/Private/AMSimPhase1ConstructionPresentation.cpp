@@ -86,4 +86,24 @@ namespace AMSim
 		}
 		return Result;
 	}
+
+	FPhase1PatrolMotion FPhase1ConstructionPresentation::CalculatePatrolMotion(
+		const int64 ElapsedGameMilliseconds,
+		const int32 WorkerIndex)
+	{
+		constexpr int64 PatrolCycleMilliseconds = 900000;
+		const int64 SafeElapsed = FMath::Max<int64>(0, ElapsedGameMilliseconds);
+		const int64 Stagger =
+			FMath::Max(0, WorkerIndex) * PatrolCycleMilliseconds / 4;
+		const int64 CyclePosition =
+			(SafeElapsed + Stagger) % PatrolCycleMilliseconds;
+		const float CycleAlpha =
+			static_cast<float>(CyclePosition) / PatrolCycleMilliseconds;
+		FPhase1PatrolMotion Result;
+		Result.bForward = CycleAlpha < 0.5f;
+		Result.Progress = Result.bForward
+			? CycleAlpha * 2.0f
+			: (1.0f - CycleAlpha) * 2.0f;
+		return Result;
+	}
 }

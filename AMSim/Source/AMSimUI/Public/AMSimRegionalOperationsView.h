@@ -35,6 +35,7 @@ public:
 	FSimpleDelegate OnReturnRequested;
 	void ShowAdvancedOperations();
 	void ShowMajorOperations();
+	void ShowRegionalOperations();
 	bool IsAdvancedOperationsOpen() const
 	{
 		return bAdvancedOperationsOpen;

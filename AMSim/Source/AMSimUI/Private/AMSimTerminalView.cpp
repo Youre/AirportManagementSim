@@ -1108,6 +1108,27 @@ void UAMSimTerminalView::OpenMajorOperations()
 	}
 }
 
+void UAMSimTerminalView::ShowRegionalOperations()
+{
+	ShowPresentation();
+	if (RegionalOperationsView)
+	{
+		RegionalOperationsView->ShowRegionalOperations();
+	}
+}
+
+void UAMSimTerminalView::ShowAdvancedOperations()
+{
+	ShowPresentation();
+	OpenAdvancedOperations();
+}
+
+void UAMSimTerminalView::ShowMajorOperations()
+{
+	ShowPresentation();
+	OpenMajorOperations();
+}
+
 void UAMSimTerminalView::ShowPresentation()
 {
 	bHasBeenOpened = true;

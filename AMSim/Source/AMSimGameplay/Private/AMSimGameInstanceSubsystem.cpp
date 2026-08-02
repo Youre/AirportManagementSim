@@ -166,6 +166,7 @@ void UAMSimGameInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collectio
 		for (const TCHAR* ProofName : {
 			TEXT("va01-new-airport.png"),
 			TEXT("va02-construction-proposal.png"),
+			TEXT("va02-construction-dispatch.png"),
 			TEXT("va02-construction.png"),
 			TEXT("va04-offer.png"),
 			TEXT("va05-turnaround.png"),
@@ -645,8 +646,8 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 				Build.Type = AMSim::EPhase1CommandType::CommitStarterPlan;
 				Build.Proposal = AMSim::CreateDefaultStarterPlan();
 				Submit(MoveTemp(Build));
-				SetSpeed(1);
-				Phase1SmokeStage = 2;
+				SetSpeed(8);
+				Phase1SmokeStage = 46;
 			}
 		}
 		break;
@@ -665,18 +666,61 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 			Build.Type = AMSim::EPhase1CommandType::CommitStarterPlan;
 			Build.Proposal = AMSim::CreateDefaultStarterPlan();
 			Submit(MoveTemp(Build));
-			SetSpeed(1);
+			SetSpeed(8);
+			Phase1SmokeStage = 46;
+		}
+		break;
+	case 46:
+	{
+		const AMSim::FPhase1State& Phase1State =
+			SimulationSubsystem->GetSimulation().GetPhase1State();
+		const int32 DurationPercent =
+			AMSim::HasConstructionRoadBenefit(Phase1State.Project.Proposal)
+				? 100 - AMSim::GetPhase1Fixture().ServiceRoadConstructionBonusPercent
+				: 100;
+		const int64 DispatchCaptureAt =
+			AMSim::GetPhase1Fixture().DeliveryAtMilliseconds * DurationPercent / 200;
+		const int64 ConstructionElapsed =
+			Query.GameTimeMilliseconds - Phase1State.Project.FundedAtGameMilliseconds;
+		if (Query.ConstructionStage == AMSim::EConstructionStage::AwaitingDelivery &&
+			ConstructionElapsed >= DispatchCaptureAt)
+		{
+			Pause();
+			RequestProof(TEXT("va02-construction-dispatch.png"));
+			Phase1SmokeStage = 47;
+		}
+		break;
+	}
+	case 47:
+		if (ProofReady())
+		{
+			SetSpeed(8);
 			Phase1SmokeStage = 2;
 		}
 		break;
 	case 2:
-		if (Query.ConstructionStage == AMSim::EConstructionStage::Building)
+	{
+		const AMSim::FPhase1State& Phase1State =
+			SimulationSubsystem->GetSimulation().GetPhase1State();
+		const int32 DurationPercent =
+			AMSim::HasConstructionRoadBenefit(Phase1State.Project.Proposal)
+				? 100 - AMSim::GetPhase1Fixture().ServiceRoadConstructionBonusPercent
+				: 100;
+		const int64 MidBuildAt =
+			(AMSim::GetPhase1Fixture().BuildingAtMilliseconds +
+			 AMSim::GetPhase1Fixture().InspectionAtMilliseconds) *
+			DurationPercent / 200;
+		const int64 ConstructionElapsed =
+			Query.GameTimeMilliseconds - Phase1State.Project.FundedAtGameMilliseconds;
+		if (Query.ConstructionStage == AMSim::EConstructionStage::Building &&
+			ConstructionElapsed >= MidBuildAt)
 		{
 			Pause();
 			RequestProof(TEXT("va02-construction.png"));
 			Phase1SmokeStage = 3;
 		}
 		break;
+	}
 	case 3:
 		if (ProofReady())
 		{
@@ -1265,6 +1309,37 @@ bool UAMSimGameInstanceSubsystem::LoadSnapshot(
 		FPaths::Combine(SaveRootDirectory, SanitizedSlotId),
 		Snapshot,
 		bUsedBackup);
+}
+
+TArray<AMSim::FSaveSlotSummary>
+UAMSimGameInstanceSubsystem::ListSaveSlots() const
+{
+	TArray<AMSim::FSaveSlotSummary> Result;
+	TArray<FString> SlotDirectories;
+	IFileManager::Get().FindFiles(
+		SlotDirectories,
+		*FPaths::Combine(SaveRootDirectory, TEXT("*")),
+		false,
+		true);
+	for (const FString& SlotId : SlotDirectories)
+	{
+		AMSim::FSaveMetadata Metadata;
+		if (!AMSim::FSaveStore::LoadMetadata(
+				FPaths::Combine(SaveRootDirectory, SlotId),
+				Metadata))
+		{
+			continue;
+		}
+		Result.Add({SlotId, MoveTemp(Metadata)});
+	}
+	Result.Sort(
+		[](const AMSim::FSaveSlotSummary& Left,
+			const AMSim::FSaveSlotSummary& Right)
+		{
+			return Left.Metadata.LastPlayedUnixSeconds >
+				Right.Metadata.LastPlayedUnixSeconds;
+		});
+	return Result;
 }
 
 bool UAMSimGameInstanceSubsystem::SanitizeSlotId(

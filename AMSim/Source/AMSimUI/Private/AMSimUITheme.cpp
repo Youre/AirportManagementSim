@@ -1,5 +1,7 @@
 #include "AMSimUITheme.h"
 
+#include "AMSimUISoundSubsystem.h"
+
 #include "Brushes/SlateRoundedBoxBrush.h"
 #include "Components/Border.h"
 #include "Components/TextBlock.h"
@@ -193,6 +195,20 @@ namespace AMSim::UITheme
 			bKeepSelectedOutline ? 1.6f : 1.0f));
 		Style.SetNormalPadding(FMargin(14.0f, 10.0f));
 		Style.SetPressedPadding(FMargin(14.0f, 11.0f, 14.0f, 9.0f));
+		FSlateSound HoverSound;
+		HoverSound.SetResourceObject(
+			UAMSimUISoundSubsystem::GetDefaultCue(EAMSimUISound::HoverSoft));
+		Style.SetHoveredSound(HoverSound);
+		const EAMSimUISound PressCue =
+			Kind == EButton::Primary || Kind == EButton::Positive
+				? EAMSimUISound::ClickPrimary
+				: Kind == EButton::Tool
+					? EAMSimUISound::FocusTick
+					: EAMSimUISound::ClickSecondary;
+		FSlateSound PressSound;
+		PressSound.SetResourceObject(
+			UAMSimUISoundSubsystem::GetDefaultCue(PressCue));
+		Style.SetPressedSound(PressSound);
 		return Style;
 	}
 

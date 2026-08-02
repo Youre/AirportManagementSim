@@ -18,10 +18,11 @@ namespace AMSim
 				TEXT("Help.Start.Build"),
 				TEXT("STARTER PLAN"),
 				TEXT("Build one connected airfield"),
-				TEXT("The starter plan joins a grass runway, Taxiway A, "
-					"Stand A1, road access, and an operations hut. Cyan "
-					"proposal marks show where each part will go."),
-				TEXT("Review the cost and commit the valid proposal.")
+				TEXT("A basic terminal and Gates A and B are already marked. "
+					"Draw a grass runway, then draw one or more taxiway segments "
+					"until the complete network links the runway to either gate. "
+					"Service roads are optional and help construction crews travel faster."),
+				TEXT("Connect the runway to a highlighted gate, review the cost, and build.")
 			},
 			{
 				TEXT("Help.Start.Open"),

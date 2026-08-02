@@ -106,6 +106,48 @@ Template-first rule:
 - Component: `UAMSimConstructionProposalView` and
   `AAMSimWorldPresenter::RefreshPhase1OperationsPresentation`.
 
+## Construction proposal editor
+
+- Purpose: let a first-time player assemble and repair a starter airfield by
+  reasoning from the map before any authoritative construction command is sent.
+- Applicable screens or flows: starter-airfield proposal and later
+  construction planning surfaces that reuse its direct-manipulation language.
+- Composition: keep the persistent airport/time/funds header; replace normal
+  gameplay rails and the footer with one categorized tool palette, one concise
+  validation rail, a dominant owned-parcel map, and a single cancel/commit tray.
+- World cues: begin with an empty aircraft-movement network but retain the
+  map-authored basic operations terminal and its two preset gate ports. Never
+  pre-lay a runway, taxiway, or player road. Show the parcel boundary, subdued
+  major planning grid, cyan patterned committed proposal geometry, compact
+  endpoint circles, snap targets, and coral patterned diagnostics attached to
+  the exact invalid point or segment. The map must explain every validation
+  message.
+- Interaction: runway, taxiway, and road tools use compact unlabeled endpoint
+  circles. The first press fixes one circle; pointer movement draws only a thin
+  centerline to the second; the second press or drag release commits the path.
+  Completed endpoints remain draggable. Taxi mode highlights compatible gates,
+  the runway surface, and existing taxi segments, and allows repeated segments
+  to form one graph. Selected geometry follows a 10 m grid; reset restores the
+  map-authored terminal with no player network; undo, cancel, and Escape remain
+  recoverable and never mutate simulation.
+- Crossing behavior: a taxiway may meet or cross a runway at any point. Mark a
+  detected crossing with a symbol and `RUNWAY CROSSING` text; do not reject or
+  visually clip the taxiway merely because its centerline intersects the runway.
+- Network behavior: readiness requires the complete proposed taxi graph to
+  connect a runway to at least one terminal gate. Joins through other taxiways
+  are valid; an orphan proposed segment remains a localized blocker. Roads are
+  optional and communicate worker travel benefit rather than a stand-connection
+  requirement.
+- Evidence: after a runway is committed, derive and draw both runway numbers
+  from its actual map heading and show its actual heading/length/width. Before
+  commit, show only endpoint instructions and live length. Also show selected-
+  item geometry, cost, connectivity, surface/workforce summary, and capability
+  gain. Keep copy concise and use color plus pattern, border, handle, and text.
+- Component: `UAMSimConstructionProposalView`, hosted by
+  `UAMSimRootScreen` while normal gameplay chrome is temporarily collapsed.
+- Accepted placeholder content: `Select a tool`, `No placement issue`, and
+  `Connect the highlighted endpoints`.
+
 ## Phase 3 terminal flow surface
 
 - Purpose: present one complete domestic terminal journey without replacing
@@ -233,3 +275,22 @@ Template-first rule:
   `UAMSimAccessibilityProfile`, and the shared Riverbend theme.
 - Accepted placeholder content: `Select a section`, `No help needed here`,
   and `Captions on`.
+
+## Riverbend UI audio
+
+- Purpose: reinforce interaction and state without becoming required for
+  comprehension or adding screen-specific audio plumbing.
+- Every new button must use `AMSim::UITheme::ButtonStyle` or an approved style
+  derived from it. This supplies the shared hover cue and the appropriate
+  primary, secondary, or compact-tool press cue automatically.
+- Play semantic cues through `EAMSimUISound` and `AMSim::UIAudio::Play`; never
+  select sounds from display text and never load a runtime asset by string.
+- Generic button audio confirms the physical interaction. Semantic audio
+  confirms the authoritative outcome after its command or persistence result.
+- Hover, focus, snap, alert, and notification cues retain bounded cooldowns.
+  Disabled controls do not emit semantic success sounds.
+- Text, captions, patterns, borders, and state labels remain authoritative;
+  no control, warning, or progression state may depend on sound alone.
+- Source masters live in `SourceAssets/Audio/UI`; cooked `USoundWave` assets
+  live in `/Game/Audio/UI` and are validated as short, stereo, non-looping UI
+  sounds with reviewed per-cue level trims.

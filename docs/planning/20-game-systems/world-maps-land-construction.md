@@ -28,6 +28,21 @@ Every project follows `Proposed -> Funded -> Awaiting delivery -> Building -> In
 5. Completed facilities pass automatic connectivity and safety inspection.
 6. The player explicitly opens eligible facilities; a global or per-facility open/close control remains available.
 
+For the starter project, confirmation immediately creates the visible graded
+earthwork footprint and dispatches the truck and crew. A useful service road
+shortens the same deterministic travel threshold used by simulation and
+presentation. Finished runway, taxiway, and road surfaces replace their
+earthwork treatment progressively during `Building`; markings wait for
+`Inspection`. Pausing freezes the derived movement and reveal without losing
+progress.
+
+For the starter fixture, the authored thresholds are 30 game minutes for
+delivery travel, 60 cumulative minutes before surface work, 180 cumulative
+minutes before inspection, and 210 cumulative minutes before ready-to-open.
+The existing useful-road rule reduces every threshold by 20 percent. These are
+authoritative simulation thresholds; visual workers and surface reveal only
+derive from them.
+
 Routine construction cannot instantly appear. Small markings and movable objects may complete quickly, while buildings and paved networks require staged work. Exact durations come from CT-04 data and GS-20 defaults.
 
 ## Closures and continuity

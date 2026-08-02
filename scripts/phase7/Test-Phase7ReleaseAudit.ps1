@@ -14,12 +14,17 @@ $configRoot = Join-Path $repoRoot 'AMSim\Config'
 $releaseManifestPath = Join-Path $configRoot 'Phase7\Phase7ReleaseManifest.json'
 $rightsPath = Join-Path $configRoot 'Phase7\Phase7RightsInventory.json'
 $radioPath = Join-Path $configRoot 'Phase7\Phase7RadioPhraseCatalog.json'
+$uiSoundManifestPath = Join-Path $repoRoot 'SourceAssets\Audio\UI\ui-sfx-manifest.json'
+$uiSoundSourceRoot = Join-Path $repoRoot 'SourceAssets\Audio\UI'
+$uiSoundContentRoot = Join-Path $contentRoot 'Audio\UI'
 
 foreach ($required in @(
     $phase7Content,
     $releaseManifestPath,
     $rightsPath,
-    $radioPath
+    $radioPath,
+    $uiSoundManifestPath,
+    $uiSoundContentRoot
 )) {
     if (-not (Test-Path -LiteralPath $required)) {
         throw "Required Phase 7 audit path is missing: $required"
@@ -33,6 +38,24 @@ $rights = Get-Content -LiteralPath $rightsPath -Raw |
     ConvertFrom-Json
 $radio = Get-Content -LiteralPath $radioPath -Raw |
     ConvertFrom-Json
+$uiSoundManifest = Get-Content -LiteralPath $uiSoundManifestPath -Raw |
+    ConvertFrom-Json
+$uiSoundAssets = @(
+    Get-ChildItem -LiteralPath $uiSoundContentRoot -Filter '*.uasset' -File
+)
+$uiSoundChecksumFailures = @(
+    foreach ($entry in $uiSoundManifest.checksums.PSObject.Properties) {
+        $sourcePath = Join-Path $uiSoundSourceRoot ($entry.Name + '.mp3')
+        if (-not (Test-Path -LiteralPath $sourcePath -PathType Leaf)) {
+            $entry.Name + ':missing'
+            continue
+        }
+        $actual = (Get-FileHash -LiteralPath $sourcePath -Algorithm SHA256).Hash.ToLowerInvariant()
+        if ($actual -ne ([string]$entry.Value).ToLowerInvariant()) {
+            $entry.Name + ':checksum'
+        }
+    }
+)
 $phase7Assets = @(
     Get-ChildItem -LiteralPath $phase7Content -Filter '*.uasset' -File
 )
@@ -124,6 +147,8 @@ $packageAudit = [ordered]@{
     cookedPackageCount = 0
     cookedPhase7Assets = @()
     missingCookedPhase7Assets = @()
+    cookedUiSoundAssets = @()
+    missingCookedUiSoundAssets = @()
     passed = $true
 }
 if ($packageAudit.requested) {
@@ -217,24 +242,52 @@ if ($packageAudit.requested) {
             Where-Object { $_.SideIndicator -eq '<=' } |
             ForEach-Object { $_.InputObject }
     )
+    $packageAudit.cookedUiSoundAssets = @(
+        $inventory |
+            Where-Object {
+                $_ -like '/game/audio/ui/*'
+            } |
+            ForEach-Object {
+                ($_ -split '/')[-1]
+            } |
+            Sort-Object -Unique
+    )
+    $packageAudit.missingCookedUiSoundAssets = @(
+        Compare-Object `
+            -ReferenceObject @(
+                $uiSoundAssets |
+                    ForEach-Object { $_.BaseName.ToLowerInvariant() } |
+                    Sort-Object
+            ) `
+            -DifferenceObject @($packageAudit.cookedUiSoundAssets | Sort-Object) |
+            Where-Object { $_.SideIndicator -eq '<=' } |
+            ForEach-Object { $_.InputObject }
+    )
     $packageAudit.passed =
         $packageAudit.forbiddenFiles.Count -eq 0 -and
         $packageAudit.forbiddenTextMatches.Count -eq 0 -and
-        $packageAudit.missingCookedPhase7Assets.Count -eq 0
+        $packageAudit.missingCookedPhase7Assets.Count -eq 0 -and
+        $packageAudit.missingCookedUiSoundAssets.Count -eq 0
 }
 
 $passed =
     $release.engine -eq '5.8.0' -and
     $release.platform -eq 'Win64' -and
-    $release.saveSchema -eq 8 -and
+    $release.saveSchema -eq 9 -and
     $release.mapIds.Count -eq 1 -and
     $release.specializationPaths.Count -eq 6 -and
     $release.runtimeBoundaries.offlineRequired -and
+    $release.runtimeBoundaries.uiSoundEffects -eq 28 -and
     $rights.excluded.unreviewedSourceAssetsAudioMusic -and
     $radio.captionsFirst -and
     $radio.offlineOnly -and
     $radio.families.Count -eq 15 -and
     $phase7Assets.Count -eq 15 -and
+    $uiSoundManifest.generationStatus -eq 'complete' -and
+    $uiSoundManifest.generatedFileCount -eq 28 -and
+    @($uiSoundManifest.checksums.PSObject.Properties).Count -eq 28 -and
+    $uiSoundAssets.Count -eq 28 -and
+    $uiSoundChecksumFailures.Count -eq 0 -and
     $runtimeStringLoads.Count -eq 0 -and
     $forbiddenRuntimeDependencies.Count -eq 0 -and
     $required3DAssets.Count -eq 0 -and
@@ -254,6 +307,9 @@ $result = [ordered]@{
     specializationPaths = $release.specializationPaths
     phase7Assets = $phase7Assets.Count
     radioFamilies = $radio.families.Count
+    uiSoundSourceFiles = $uiSoundManifest.generatedFileCount
+    uiSoundRuntimeAssets = $uiSoundAssets.Count
+    uiSoundChecksumFailures = $uiSoundChecksumFailures
     runtimeStringAssetLoads = $runtimeStringLoads.Count
     forbiddenRuntimeDependencies = $forbiddenRuntimeDependencies.Count
     required3DAssetCandidates = $required3DAssets.Count

@@ -5,6 +5,15 @@
 #include "Tickable.h"
 #include "AMSimGameInstanceSubsystem.generated.h"
 
+namespace AMSim
+{
+	struct FSaveSlotSummary
+	{
+		FString SlotId;
+		FSaveMetadata Metadata;
+	};
+}
+
 UCLASS()
 class AMSIMGAMEPLAY_API UAMSimGameInstanceSubsystem final
 	: public UGameInstanceSubsystem
@@ -30,6 +39,7 @@ public:
 		const FString& SlotId,
 		AMSim::FSnapshot& Snapshot,
 		bool& bUsedBackup) const;
+	TArray<AMSim::FSaveSlotSummary> ListSaveSlots() const;
 
 private:
 	static bool SanitizeSlotId(const FString& SlotId, FString& SanitizedSlotId);

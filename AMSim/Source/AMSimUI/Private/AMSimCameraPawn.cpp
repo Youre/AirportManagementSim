@@ -73,7 +73,39 @@ void AAMSimCameraPawn::Pan(const FVector Direction)
 	{
 		return;
 	}
-	AddActorWorldOffset(Direction * 5000.0);
+	AddActorWorldOffset(Direction * 1250.0);
+	ClampManagementLocation();
+}
+
+void AAMSimCameraPawn::PanByScreenDelta(const FVector2D& ScreenDelta)
+{
+	if (bCloseOperationsMode || !Camera)
+	{
+		return;
+	}
+	AddActorWorldOffset(
+		CalculateScreenPanDelta(ScreenDelta, Camera->OrthoWidth));
+	ClampManagementLocation();
+}
+
+FVector AAMSimCameraPawn::CalculateScreenPanDelta(
+	const FVector2D& ScreenDelta,
+	const float OrthoWidth)
+{
+	const float UnitsPerPixel =
+		FMath::Max(OrthoWidth / 1080.0f, 1.0f);
+	return FVector(
+		ScreenDelta.Y * UnitsPerPixel,
+		-ScreenDelta.X * UnitsPerPixel,
+		0.0);
+}
+
+void AAMSimCameraPawn::ClampManagementLocation()
+{
+	FVector Location = GetActorLocation();
+	Location.X = FMath::Clamp(Location.X, -60000.0, 60000.0);
+	Location.Y = FMath::Clamp(Location.Y, -60000.0, 60000.0);
+	SetActorLocation(Location);
 }
 
 void AAMSimCameraPawn::Zoom(const FInputActionValue& Value)

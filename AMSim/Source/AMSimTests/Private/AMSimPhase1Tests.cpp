@@ -104,7 +104,7 @@ namespace
 			return false;
 		}
 		return Test.TestTrue(
-			TEXT("Arrival is within three game minutes of schedule confirmation"),
+			TEXT("Arrival is within the configured booking horizon"),
 			Schedule.ScheduledArrivalGameMilliseconds - Now <=
 				GetPhase1Fixture().MaximumArrivalDelayMilliseconds);
 	}
@@ -166,6 +166,10 @@ bool FAMSimPhase1FixtureTest::RunTest(const FString& Parameters)
 		CalculateContingencyPercent(Fixture.StartingCredits, Fixture.StarterPlanCost) >=
 			Fixture.MinimumContingencyPercent);
 	TestTrue(TEXT("Definition catalog validates"), ValidatePhase1FixtureDefinitions().bValid);
+	TestEqual(TEXT("Construction delivery takes thirty game minutes"), Fixture.DeliveryAtMilliseconds, 1800000ll);
+	TestEqual(TEXT("Surface work begins after one game hour"), Fixture.BuildingAtMilliseconds, 3600000ll);
+	TestEqual(TEXT("Surface work lasts two game hours"), Fixture.InspectionAtMilliseconds - Fixture.BuildingAtMilliseconds, 7200000ll);
+	TestEqual(TEXT("Starter airfield takes three and a half game hours"), Fixture.ReadyToOpenAtMilliseconds, 12600000ll);
 	TestTrue(TEXT("Default starter proposal validates"), ValidateStarterPlan(CreateDefaultStarterPlan()).bValid);
 	const FStarterPlanProposal DefaultPlan = CreateDefaultStarterPlan();
 	TestEqual(
@@ -189,8 +193,42 @@ bool FAMSimPhase1FixtureTest::RunTest(const FString& Parameters)
 		TEXT("Short runway remedy names the reviewed minimum"),
 		TooShortResult.Remedy.Contains(TEXT("600 m")));
 
+	FStarterPlanProposal CrossingPlan = DefaultPlan;
+	CrossingPlan.RunwayStart = {15000, 20000};
+	CrossingPlan.RunwayEnd = {85000, 80000};
+	CrossingPlan.TaxiStart = {50000, 70000};
+	CrossingPlan.TaxiEnd = {50000, 30000};
+	CrossingPlan.StandCenter = CrossingPlan.TaxiStart;
+	CrossingPlan.AccessStart = CrossingPlan.StandCenter;
+	CrossingPlan.AccessEnd = {CrossingPlan.StandCenter.X, 100000};
+	CrossingPlan.OperationsHutCenter = {56000, 72000};
+	TestTrue(
+		TEXT("A taxiway may cross a rotated runway and connect from either direction"),
+		ValidateStarterPlan(CrossingPlan).bValid);
+	FPhase1Point CrossingPoint;
+	TestTrue(
+		TEXT("Runway crossing is detected geometrically"),
+		TryFindSegmentIntersection(
+			CrossingPlan.RunwayStart,
+			CrossingPlan.RunwayEnd,
+			CrossingPlan.TaxiStart,
+			CrossingPlan.TaxiEnd,
+			CrossingPoint));
+	TestEqual(TEXT("Detected crossing X is stable"), CrossingPoint.X, 50000ll);
+	TestEqual(TEXT("Detected crossing Y is stable"), CrossingPoint.Y, 50000ll);
+	const FRunwayDesignation EastWest = CalculateRunwayDesignation(
+		DefaultPlan.RunwayStart,
+		DefaultPlan.RunwayEnd);
+	TestEqual(TEXT("Eastbound runway end is numbered 09"), EastWest.PrimaryNumber, 9);
+	TestEqual(TEXT("Westbound reciprocal runway end is numbered 27"), EastWest.ReciprocalNumber, 27);
+	const FRunwayDesignation NorthSouth = CalculateRunwayDesignation(
+		{50000, 80000},
+		{50000, 20000});
+	TestEqual(TEXT("Northbound runway end is numbered 36"), NorthSouth.PrimaryNumber, 36);
+	TestEqual(TEXT("Southbound reciprocal runway end is numbered 18"), NorthSouth.ReciprocalNumber, 18);
+
 	FStarterPlanProposal Outside = CreateDefaultStarterPlan();
-	Outside.OperationsHutCenter.X = 110000;
+	Outside.RunwayStart.X = -1000;
 	const FPhase1Validation OutsideResult = ValidateStarterPlan(Outside);
 	TestEqual(
 		TEXT("Outside-land result is stable"),
@@ -435,6 +473,8 @@ bool FAMSimPhase1ValidationContractTest::RunTest(const FString& Parameters)
 
 	FStarterPlanProposal Disconnected = CreateDefaultStarterPlan();
 	Disconnected.TaxiStart = {1000, 1000};
+	Disconnected.TaxiEnd = {1000, 10000};
+	Disconnected.TaxiwaySegments = {{Disconnected.TaxiStart, Disconnected.TaxiEnd}};
 	const FPhase1Validation DisconnectedResult = ValidateStarterPlan(Disconnected);
 	TestFalse(TEXT("Disconnected proposal is invalid"), DisconnectedResult.bValid);
 	TestEqual(
@@ -451,6 +491,97 @@ bool FAMSimPhase1ValidationContractTest::RunTest(const FString& Parameters)
 		Simulation.QueuePhase1Command(InvalidSpeed),
 		EPhase1CommandResult::RejectedInvalidCommand);
 	TestTrue(TEXT("Rejected commands do not mutate state"), !Simulation.GetPhase1State().bInitialized);
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+	FAMSimPhase1TaxiwayNetworkGraphTest,
+	"AMSim.Phase1.Validation.TaxiwayNetworkGraph",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FAMSimPhase1TaxiwayNetworkGraphTest::RunTest(const FString& Parameters)
+{
+	using namespace AMSim;
+	FStarterPlanProposal Chained = CreateDefaultStarterPlan();
+	Chained.TaxiwaySegments = {
+		{{30000, 40000}, {30000, 55000}},
+		{{30000, 55000}, {55000, 55000}},
+		{{55000, 55000}, {55000, 74000}},
+		{{40000, 55000}, {45000, 62000}}};
+	Chained.TaxiStart = Chained.TaxiwaySegments[0].Start;
+	Chained.TaxiEnd = Chained.TaxiwaySegments[0].End;
+	const FTaxiwayNetworkValidation ChainedNetwork =
+		ValidateTaxiwayNetwork(Chained);
+	TestTrue(TEXT("A chained and branched taxi graph reaches the runway"),
+		ChainedNetwork.bHasRunwayConnection);
+	TestTrue(TEXT("A chained and branched taxi graph reaches gate B"),
+		ChainedNetwork.bHasGateConnection);
+	TestTrue(TEXT("Every branch belongs to the same usable graph"),
+		ChainedNetwork.bAllSegmentsConnected);
+	TestEqual(TEXT("The reached fixed terminal gate is stable"),
+		ChainedNetwork.ConnectedGateIndex, 1);
+	TestTrue(TEXT("Whole-network validation accepts indirect connectivity"),
+		ValidateStarterPlan(Chained).bValid);
+
+	FStarterPlanProposal Orphaned = Chained;
+	Orphaned.TaxiwaySegments.Add({{90000, 90000}, {96000, 96000}});
+	const FPhase1Validation OrphanedResult = ValidateStarterPlan(Orphaned);
+	TestFalse(TEXT("A disconnected taxi branch invalidates the whole proposal"),
+		OrphanedResult.bValid);
+	TestEqual(TEXT("The orphan reason is localized and stable"),
+		OrphanedResult.ReasonCode,
+		FName(TEXT("Build.Network.OrphanSegment")));
+
+	FStarterPlanProposal NoGate = CreateDefaultStarterPlan();
+	NoGate.TaxiwaySegments = {{{30000, 40000}, {30000, 60000}}};
+	NoGate.TaxiStart = NoGate.TaxiwaySegments[0].Start;
+	NoGate.TaxiEnd = NoGate.TaxiwaySegments[0].End;
+	const FPhase1Validation NoGateResult = ValidateStarterPlan(NoGate);
+	TestFalse(TEXT("Runway contact alone does not complete a taxi network"),
+		NoGateResult.bValid);
+	TestEqual(TEXT("Missing terminal access reports the gate-specific reason"),
+		NoGateResult.ReasonCode,
+		FName(TEXT("Build.Network.NoGateConnection")));
+
+	FStarterPlanProposal NoRoad = Chained;
+	NoRoad.AccessStart = {};
+	NoRoad.AccessEnd = {};
+	TestTrue(TEXT("A service road is optional"), ValidateStarterPlan(NoRoad).bValid);
+	TestFalse(TEXT("Workers walk when no service road is authored"),
+		HasConstructionRoadBenefit(NoRoad));
+	TestTrue(TEXT("A useful service road grants the deterministic travel bonus"),
+		HasConstructionRoadBenefit(Chained));
+	FStarterPlanProposal RemoteRoad = Chained;
+	RemoteRoad.AccessStart = {1000, 1000};
+	RemoteRoad.AccessEnd = {8000, 1000};
+	TestFalse(TEXT("A remote road does not grant the construction bonus"),
+		HasConstructionRoadBenefit(RemoteRoad));
+
+	const FStarterPlanProposal Normalized = NormalizeStarterPlanConnections(Chained);
+	TestEqual(TEXT("Committed network normalizes the active stand to gate B"),
+		Normalized.StandCenter,
+		GetStarterGatePoints()[1]);
+	TestEqual(TEXT("Committed network preserves the fixed basic terminal"),
+		Normalized.OperationsHutCenter,
+		GetStarterTerminalCenter());
+
+	FSimulation RestoreSource(0xA17F0109);
+	FPhase1Command Create = MakeCommand(1, EPhase1CommandType::CreateAirport);
+	Create.AirportName = TEXT("Graph Restore Field");
+	Create.MapId = GetPhase1Fixture().MapId;
+	FPhase1Command Build = MakeCommand(2, EPhase1CommandType::CommitStarterPlan);
+	Build.Proposal = Chained;
+	if (!QueueAndStep(*this, RestoreSource, Create, TEXT("Graph restore airport created")) ||
+		!QueueAndStep(*this, RestoreSource, Build, TEXT("Graph restore project committed")))
+	{
+		return false;
+	}
+	FSnapshot CorruptSnapshot = RestoreSource.CreateSnapshot();
+	CorruptSnapshot.Phase1.Project.Proposal.TaxiwaySegments.Add(
+		{{90000, 90000}, {96000, 96000}});
+	FSimulation RestoreTarget(0xA17F0110);
+	TestFalse(TEXT("Restore rejects an orphaned authoritative taxi segment"),
+		RestoreTarget.RestoreSnapshot(CorruptSnapshot));
 	return true;
 }
 

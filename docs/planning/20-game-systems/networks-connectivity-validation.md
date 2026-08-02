@@ -25,6 +25,10 @@ Utilities are abstract. A building needs an enabled utility connection flag deri
 - Drawn networks snap to the hierarchical grid while presenting smooth, readable paths.
 - Each facility definition declares typed ports, capacity, direction, accessibility, security side, and compatible network.
 - Connections occur only between compatible ports within tolerance and with a traversable link.
+- Network validity is evaluated over the complete connected component. A
+  facility-to-runway path may traverse any number of compatible intermediate
+  segments; a valid path does not excuse a separate orphan segment in the same
+  proposal.
 - Crossings are explicit objects. A road may not silently cross a taxiway, secure boundary, belt, or pedestrian route.
 - Closing a node or segment updates reachability and reservations at the next simulation boundary.
 - Zones group cells and facilities for staff coverage, security, terminal rooms, construction, and emergency response. Overlap is allowed only between compatible zone types.
@@ -55,4 +59,3 @@ Network edits are evaluated as proposals before commitment. Committed constructi
 ## Acceptance
 
 Automated graph fixtures must prove directionality, crossings, disconnected components, security boundaries, capacity degradation, closure propagation, and restoration after reopening. Every blocked facility in the fixtures must produce one primary reason and an actionable remedy. Identical topology and commands must yield identical validation results after save/load.
-

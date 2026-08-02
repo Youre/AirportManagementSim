@@ -12,6 +12,13 @@ Aircraft visibly and safely travel between runways and compatible parking positi
 
 Taxiways and apron taxilanes are directional graph segments with centerline, width class, pavement class, speed, clearance envelope, and optional name. Holding points and crossings divide routes into reservable blocks. Routes reject inadequate width, surface, turning radius, wingtip clearance, closed links, and incompatible crossings.
 
+For the starter-airfield construction journey, the curated map provides a
+small operations terminal shell with two aircraft-side gate/stand ports. The
+player draws the runway and one or more taxiway segments. The starter network
+is usable when one connected component reaches a runway and at least one of
+those ports; taxiway-to-taxiway joins and legal runway intersections count as
+ordinary graph connections.
+
 The automatic dispatcher chooses a safe route minimizing travel time, conflicts, and runway crossings. The player may set one-way directions, close segments, set route preferences, assign a different stand, or request a tow. Direct waypoint driving is out of scope.
 
 ## Reservations and movement
@@ -33,4 +40,3 @@ Runway crossings require ATC authority. Aircraft have priority on movement areas
 ## Acceptance
 
 Tests must prove size and pavement compatibility, rolling reservations, head-on avoidance, runway-crossing authority, pushback clearance, stand exclusivity, towing, deadlock recovery, closure rerouting, and deterministic post-load continuation. A dense fixture must show no overlapping aircraft footprints and no unbounded route recalculation.
-

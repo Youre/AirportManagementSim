@@ -9,6 +9,8 @@
 #include "AMSimPhase1Fixture.h"
 #include "AMSimRadioSubsystem.h"
 #include "AMSimReleaseGuideView.h"
+#include "AMSimSaveLoadView.h"
+#include "AMSimSchedulePickerView.h"
 #include "AMSimTerminalView.h"
 #include "AMSimTurnaroundView.h"
 #include "AMSimUITheme.h"
@@ -336,6 +338,7 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		? InterfaceSettings->GetDPIScaleBasedOnSize(FIntPoint(1920, 1080))
 		: 1.0f;
 	const bool bCompactLayout = InterfaceScale >= 1.75f;
+	bCompactLayoutActive = bCompactLayout;
 	const int32 AirportHeaderSize = bCompactLayout ? 18 : 24;
 	const int32 ClockHeaderSize = bCompactLayout ? 14 : 16;
 	const int32 FundsHeaderSize = bCompactLayout ? 16 : 19;
@@ -546,6 +549,7 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	USizeBox* LeftRailWidth = WidgetTree->ConstructWidget<USizeBox>(
 		USizeBox::StaticClass(),
 		TEXT("LeftRailWidth"));
+	BuildModeLeftChrome = LeftRailWidth;
 	LeftRailWidth->SetWidthOverride(190.0f / FMath::Max(InterfaceScale, 1.0f));
 	LeftRailWidth->SetContent(LeftPanel);
 	UHorizontalBoxSlot* LeftSlot = Main->AddChildToHorizontalBox(LeftRailWidth);
@@ -641,18 +645,7 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 				Cyan,
 				true),
 			0.0f);
-		UHorizontalBox* CompactEntryRow = WidgetTree->ConstructWidget<UHorizontalBox>(
-			UHorizontalBox::StaticClass(),
-			TEXT("CompactEntryRow"));
-		UHorizontalBoxSlot* CompactNameSlot =
-			CompactEntryRow->AddChildToHorizontalBox(AirportNameEntry);
-		CompactNameSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
-		CompactNameSlot->SetPadding(FMargin(0.0f, 0.0f, 4.0f, 0.0f));
-		UHorizontalBoxSlot* CompactSaveSlot =
-			CompactEntryRow->AddChildToHorizontalBox(SaveSlotEntry);
-		CompactSaveSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
-		CompactSaveSlot->SetPadding(FMargin(4.0f, 0.0f, 0.0f, 0.0f));
-		AddVertical(CreateColumn, CompactEntryRow, 3.0f);
+		AddVertical(CreateColumn, AirportNameEntry, 3.0f);
 		AddVertical(CreateColumn, CreateButton, 4.0f);
 	}
 	else
@@ -707,26 +700,7 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		AddVertical(NameColumn, AirportNameEntry, 2.0f);
 		UHorizontalBoxSlot* NameSlot = CreateRow->AddChildToHorizontalBox(NameColumn);
 		NameSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
-		NameSlot->SetPadding(FMargin(0.0f, 0.0f, 12.0f, 0.0f));
-
-		UVerticalBox* SaveColumn = WidgetTree->ConstructWidget<UVerticalBox>(
-			UVerticalBox::StaticClass(),
-			TEXT("SaveSlotColumn"));
-		AddVertical(
-			SaveColumn,
-			MakeText(
-				WidgetTree,
-				TEXT("SaveSlotEntryHeader"),
-				TEXT("SAVE SLOT"),
-				11,
-				Muted,
-				true),
-			0.0f);
-		AddVertical(SaveColumn, SaveSlotEntry, 2.0f);
-		UHorizontalBoxSlot* SaveSlot = CreateRow->AddChildToHorizontalBox(SaveColumn);
-		SaveSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
-		SaveSlot->SetPadding(FMargin(0.0f, 0.0f, 12.0f, 0.0f));
-		SaveSlot->SetVerticalAlignment(VAlign_Center);
+		NameSlot->SetPadding(FMargin(0.0f, 0.0f, 16.0f, 0.0f));
 
 		UHorizontalBoxSlot* CreateSlot = CreateRow->AddChildToHorizontalBox(CreateButton);
 		CreateSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
@@ -815,6 +789,8 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		WidgetTree->ConstructWidget<UAMSimConstructionProposalView>(
 			UAMSimConstructionProposalView::StaticClass(),
 			TEXT("ConstructionProposalView"));
+	ConstructionProposalView->OnBuildModeVisibilityChanged.BindUObject(
+		this, &UAMSimRootScreen::SetConstructionModeChrome);
 	PlaceCanvas(
 		Map,
 		ConstructionProposalView,
@@ -1290,6 +1266,7 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	USizeBox* RightRailWidth = WidgetTree->ConstructWidget<USizeBox>(
 		USizeBox::StaticClass(),
 		TEXT("RightRailWidth"));
+	BuildModeRightChrome = RightRailWidth;
 	RightRailWidth->SetWidthOverride(320.0f / FMath::Max(InterfaceScale, 1.0f));
 	RightRailWidth->SetContent(RightPanel);
 	UHorizontalBoxSlot* RightSlot = Main->AddChildToHorizontalBox(RightRailWidth);
@@ -1301,6 +1278,7 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	}
 
 	UBorder* Footer = MakePanel(WidgetTree, TEXT("Footer"));
+	BuildModeFooterChrome = Footer;
 	AMSim::UITheme::StyleSurface(
 		Footer,
 		AMSim::UITheme::ESurface::Chrome,
@@ -1352,14 +1330,17 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	{
 		AddVertical(FooterColumn, Controls, 2.0f);
 	}
-	UButton* Pause = MakeButton(
+	PauseButton = MakeButton(
 		WidgetTree,
 		TEXT("Pause"),
-		TEXT("PAUSE"),
+		TEXT("PLAY 1x"),
 		AMSim::UITheme::EButton::Tool,
 		12);
-	Pause->OnClicked.AddDynamic(this, &UAMSimRootScreen::PauseSimulation);
-	Controls->AddChildToHorizontalBox(Pause)->SetPadding(FMargin(3.0f));
+	PauseButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimRootScreen::PauseSimulation);
+	Controls->AddChildToHorizontalBox(
+		PauseButton)->SetPadding(FMargin(3.0f));
 	UButton* SpeedOne = MakeButton(
 		WidgetTree,
 		TEXT("SpeedOne"),
@@ -1399,7 +1380,7 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		AMSim::UITheme::EButton::Secondary,
 		12);
 	Save->OnClicked.AddDynamic(this, &UAMSimRootScreen::SaveGame);
-	Controls->AddChildToHorizontalBox(Save)->SetPadding(FMargin(16.0f, 3.0f, 3.0f, 3.0f));
+	Controls->AddChildToHorizontalBox(Save)->SetPadding(FMargin(3.0f));
 	UButton* Load = MakeButton(
 		WidgetTree,
 		TEXT("Load"),
@@ -1408,6 +1389,17 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		12);
 	Load->OnClicked.AddDynamic(this, &UAMSimRootScreen::LoadGame);
 	Controls->AddChildToHorizontalBox(Load)->SetPadding(FMargin(3.0f));
+	UButton* AirportNavigation = MakeButton(
+		WidgetTree,
+		TEXT("AirportNavigation"),
+		TEXT("AIRPORT"),
+		AMSim::UITheme::EButton::Primary,
+		11);
+	AirportNavigation->SetIsEnabled(false);
+	AirportNavigation->SetToolTipText(
+		FText::FromString(TEXT("Current destination")));
+	Controls->AddChildToHorizontalBox(
+		AirportNavigation)->SetPadding(FMargin(12.0f, 3.0f, 3.0f, 3.0f));
 	TerminalNavigationButton = MakeButton(
 		WidgetTree,
 		TEXT("TerminalNavigation"),
@@ -1417,10 +1409,54 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	TerminalNavigationButton->OnClicked.AddDynamic(
 		this,
 		&UAMSimRootScreen::ToggleTerminalPresentation);
-	TerminalNavigationButton->SetVisibility(
-		ESlateVisibility::Collapsed);
+	TerminalNavigationButton->SetToolTipText(
+		FText::FromString(TEXT("Locked until terminal planning is available")));
 	Controls->AddChildToHorizontalBox(
 		TerminalNavigationButton)->SetPadding(FMargin(3.0f));
+	RegionalNavigationButton = MakeButton(
+		WidgetTree,
+		TEXT("RegionalNavigation"),
+		TEXT("REGIONAL (LOCKED)"),
+		AMSim::UITheme::EButton::Secondary,
+		11);
+	RegionalNavigationButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimRootScreen::OpenRegionalPresentation);
+	Controls->AddChildToHorizontalBox(
+		RegionalNavigationButton)->SetPadding(FMargin(3.0f));
+	AdvancedNavigationButton = MakeButton(
+		WidgetTree,
+		TEXT("AdvancedNavigation"),
+		TEXT("ADVANCED (LOCKED)"),
+		AMSim::UITheme::EButton::Secondary,
+		11);
+	AdvancedNavigationButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimRootScreen::OpenAdvancedPresentation);
+	Controls->AddChildToHorizontalBox(
+		AdvancedNavigationButton)->SetPadding(FMargin(3.0f));
+	MajorNavigationButton = MakeButton(
+		WidgetTree,
+		TEXT("MajorNavigation"),
+		TEXT("MAJOR (LOCKED)"),
+		AMSim::UITheme::EButton::Secondary,
+		11);
+	MajorNavigationButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimRootScreen::OpenMajorPresentation);
+	Controls->AddChildToHorizontalBox(
+		MajorNavigationButton)->SetPadding(FMargin(3.0f));
+	WindowModeButton = MakeButton(
+		WidgetTree,
+		TEXT("WindowMode"),
+		TEXT("WINDOWED"),
+		AMSim::UITheme::EButton::Quiet,
+		11);
+	WindowModeButton->OnClicked.AddDynamic(
+		this,
+		&UAMSimRootScreen::ToggleWindowMode);
+	Controls->AddChildToHorizontalBox(
+		WindowModeButton)->SetPadding(FMargin(3.0f));
 	UButton* Help = MakeButton(
 		WidgetTree,
 		TEXT("Help"),
@@ -1469,6 +1505,31 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		Root->AddChildToOverlay(ReleaseGuideView);
 	ReleaseGuideSlot->SetHorizontalAlignment(HAlign_Fill);
 	ReleaseGuideSlot->SetVerticalAlignment(VAlign_Fill);
+	SchedulePickerView =
+		WidgetTree->ConstructWidget<UAMSimSchedulePickerView>(
+			UAMSimSchedulePickerView::StaticClass(),
+			TEXT("SchedulePickerView"));
+	SchedulePickerView->OnScheduleRequested =
+		[this](const int64 ScheduledArrival)
+		{
+			return SubmitScheduleAt(ScheduledArrival);
+		};
+	UOverlaySlot* SchedulePickerSlot =
+		Root->AddChildToOverlay(SchedulePickerView);
+	SchedulePickerSlot->SetHorizontalAlignment(HAlign_Fill);
+	SchedulePickerSlot->SetVerticalAlignment(VAlign_Fill);
+	SaveLoadView =
+		WidgetTree->ConstructWidget<UAMSimSaveLoadView>(
+			UAMSimSaveLoadView::StaticClass(),
+			TEXT("SaveLoadView"));
+	SaveLoadView->OnLoadRequested =
+		[this](const FString& SlotId)
+		{
+			return LoadSlotById(SlotId);
+		};
+	UOverlaySlot* SaveLoadSlot = Root->AddChildToOverlay(SaveLoadView);
+	SaveLoadSlot->SetHorizontalAlignment(HAlign_Fill);
+	SaveLoadSlot->SetVerticalAlignment(VAlign_Fill);
 	if (bOpenReleaseGuideWhenReady ||
 		FParse::Param(
 			FCommandLine::Get(),
@@ -1476,6 +1537,23 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	{
 		ReleaseGuideView->OpenGuide();
 	}
+	RefreshSaveSlots();
+#if !UE_BUILD_SHIPPING
+	if (FParse::Param(FCommandLine::Get(), TEXT("AMSimLoadMenuProof")))
+	{
+		if (UAMSimGameInstanceSubsystem* GameSubsystem =
+			GetGameInstance()->GetSubsystem<UAMSimGameInstanceSubsystem>())
+		{
+			SaveLoadView->OpenPicker(GameSubsystem->ListSaveSlots());
+		}
+	}
+	if (FParse::Param(FCommandLine::Get(), TEXT("AMSimSchedulePickerProof")))
+	{
+		SchedulePickerView->OpenPicker(
+			{600000, 900000, 1200000, 1500000},
+			360000);
+	}
+#endif
 
 	const UAMSimRadioSubsystem* Radio =
 		GetGameInstance()
@@ -1502,88 +1580,6 @@ void UAMSimRootScreen::NativeTick(const FGeometry& MyGeometry, const float InDel
 void UAMSimRootScreen::NativeDestruct()
 {
 	Super::NativeDestruct();
-}
-
-void UAMSimRootScreen::PauseSimulation()
-{
-	AMSim::FPhase1Command Command;
-	Command.Type = AMSim::EPhase1CommandType::SetPaused;
-	Command.bPaused = true;
-	const bool bAccepted =
-		GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>()->SubmitPhase1Command(Command) ==
-		AMSim::EPhase1CommandResult::Accepted;
-	SetInteractionMessage(TEXT("Simulation paused."), bAccepted);
-}
-
-void UAMSimRootScreen::SetSpeedOne()
-{
-	SubmitSpeed(1);
-}
-
-void UAMSimRootScreen::SetSpeedTwo()
-{
-	SubmitSpeed(2);
-}
-
-void UAMSimRootScreen::SetSpeedFour()
-{
-	SubmitSpeed(4);
-}
-
-void UAMSimRootScreen::SetSpeedEight()
-{
-	SubmitSpeed(8);
-}
-
-void UAMSimRootScreen::SubmitSpeed(const int32 Multiplier)
-{
-	AMSim::FPhase1Command Command;
-	Command.Type = AMSim::EPhase1CommandType::SetSpeed;
-	Command.SpeedMultiplier = Multiplier;
-	const bool bAccepted =
-		GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>()->SubmitPhase1Command(Command) ==
-		AMSim::EPhase1CommandResult::Accepted;
-	SetInteractionMessage(FString::Printf(TEXT("Simulation running at %dx."), Multiplier), bAccepted);
-}
-
-void UAMSimRootScreen::SaveGame()
-{
-	UAMSimAirportSimulationSubsystem* SimulationSubsystem =
-		GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>();
-	UAMSimGameInstanceSubsystem* GameInstanceSubsystem =
-		GetGameInstance()->GetSubsystem<UAMSimGameInstanceSubsystem>();
-	AMSim::FSaveMetadata Metadata;
-	Metadata.PlayerLabel = TEXT("Phase 1");
-	Metadata.AirportName = SimulationSubsystem->GetPhase1Query().AirportName;
-	const FString SlotId = SaveSlotEntry
-		? SaveSlotEntry->GetText().ToString().TrimStartAndEnd()
-		: TEXT("Phase1Auto");
-	const AMSim::FSaveResult Result = GameInstanceSubsystem->SaveSnapshotAsync(
-		SlotId,
-		SimulationSubsystem->CreateSnapshot(),
-		MoveTemp(Metadata)).Get();
-	SetInteractionMessage(
-		Result.bSucceeded ? TEXT("Phase 1 save completed.") : FString::Printf(TEXT("Save failed: %s"), *Result.Error),
-		Result.bSucceeded);
-}
-
-void UAMSimRootScreen::LoadGame()
-{
-	UAMSimGameInstanceSubsystem* GameInstanceSubsystem =
-		GetGameInstance()->GetSubsystem<UAMSimGameInstanceSubsystem>();
-	AMSim::FSnapshot Snapshot;
-	bool bUsedBackup = false;
-	const FString SlotId = SaveSlotEntry
-		? SaveSlotEntry->GetText().ToString().TrimStartAndEnd()
-		: TEXT("Phase1Auto");
-	const bool bLoaded =
-		GameInstanceSubsystem->LoadSnapshot(SlotId, Snapshot, bUsedBackup) &&
-		GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>()->RestoreSnapshot(Snapshot);
-	SetInteractionMessage(
-		bLoaded
-			? bUsedBackup ? TEXT("Backup save restored.") : TEXT("Phase 1 save restored.")
-			: TEXT("No valid Phase 1 save was found."),
-		bLoaded);
 }
 
 void UAMSimRootScreen::ToggleObjectiveDrawer()
@@ -1625,12 +1621,29 @@ void UAMSimRootScreen::RefreshFromSimulation()
 	const AMSim::FPhase2QuerySnapshot Phase2Query = Subsystem->GetPhase2Query();
 	const AMSim::FPhase2State& Phase2State = Subsystem->GetSimulation().GetPhase2State();
 	const AMSim::FPhase3QuerySnapshot Phase3Query = Subsystem->GetPhase3Query();
-	if (TerminalNavigationButton)
+	const AMSim::FPhase4QuerySnapshot Phase4Query =
+		Subsystem->GetPhase4Query();
+	const AMSim::FPhase5QuerySnapshot Phase5Query =
+		Subsystem->GetPhase5Query();
+	const AMSim::FPhase6QuerySnapshot Phase6Query =
+		Subsystem->GetPhase6Query();
+	RefreshAudioFeedback(
+		Query,
+		State,
+		Phase2Query,
+		Phase4Query,
+		Phase5Query,
+		Phase6Query);
+	RefreshDestinationButtons(
+		Phase3Query,
+		Phase4Query,
+		Phase5Query,
+		Phase6Query);
+	if (PauseButton)
 	{
-		TerminalNavigationButton->SetVisibility(
-			Phase3Query.bUnlocked || Phase3Query.bInitialized
-				? ESlateVisibility::Visible
-				: ESlateVisibility::Collapsed);
+		SetButtonLabel(
+			PauseButton,
+			Query.bPaused ? TEXT("PLAY 1x") : TEXT("PAUSE"));
 	}
 	const bool bOperationalEvidence =
 		FParse::Param(
@@ -1793,7 +1806,7 @@ void UAMSimRootScreen::RefreshFromSimulation()
 			Phase3Query.TerminalStage <
 				AMSim::ETerminalConstructionStage::ShellReady)
 		{
-			It->ApplySnapshot(Query);
+			It->ApplySnapshot(Query, State);
 			It->ApplyPhase2Snapshot(Phase2Query, Phase2State);
 		}
 		break;
@@ -1822,9 +1835,20 @@ void UAMSimRootScreen::RefreshFromSimulation()
 		else if (Query.ConstructionStage >= AMSim::EConstructionStage::Funded &&
 			Query.ConstructionStage < AMSim::EConstructionStage::ReadyToOpen)
 		{
+			const AMSim::FRunwayDesignation Designation =
+				AMSim::CalculateRunwayDesignation(
+					State.Project.Proposal.RunwayStart,
+					State.Project.Proposal.RunwayEnd);
 			ContextHeader = TEXT("STARTER AIRFIELD  •  CONSTRUCTION");
-			ContextBody = TEXT("RUNWAY 09/27  •  TAXI A  •  STAND A1  •  HUT");
-			ContextStatus = TEXT("3,400 CR  •  ") + CurrentViewState.Status;
+			ContextBody = FString::Printf(
+				TEXT("RWY %02d/%02d  •  TAXI NET  •  GATE"),
+				Designation.PrimaryNumber,
+				Designation.ReciprocalNumber);
+			ContextStatus = Query.ConstructionStage == AMSim::EConstructionStage::Building
+				? TEXT("3,400 CR  •  SURFACE WORK ACTIVE")
+				: Query.ConstructionStage == AMSim::EConstructionStage::Inspection
+					? TEXT("3,400 CR  •  SAFETY INSPECTION")
+					: TEXT("3,400 CR  •  CREW EN ROUTE");
 		}
 		const bool bShowContext =
 			!ContextHeader.IsEmpty() &&
@@ -1868,10 +1892,10 @@ void UAMSimRootScreen::RefreshFromSimulation()
 				{
 					ContextSlot->SetAnchors(
 						bCompactContext
-							? FAnchors(0.04f, 0.52f, 0.72f, 0.88f)
+							? FAnchors(0.04f, 0.08f, 0.72f, 0.42f)
 							: bMediumContext
-								? FAnchors(0.06f, 0.58f, 0.68f, 0.90f)
-							: FAnchors(0.08f, 0.70f, 0.62f, 0.89f));
+								? FAnchors(0.06f, 0.07f, 0.68f, 0.31f)
+								: FAnchors(0.08f, 0.06f, 0.62f, 0.23f));
 				}
 			}
 		}
@@ -1957,32 +1981,5 @@ void UAMSimRootScreen::SetInteractionMessage(const FString& Message, const bool 
 	{
 		InteractionText->SetText(FText::FromString(Message));
 		InteractionText->SetColorAndOpacity(FSlateColor(bSucceeded ? Cyan : ErrorColor));
-	}
-}
-
-void UAMSimRootScreen::ShowReleaseGuide()
-{
-	bOpenReleaseGuideWhenReady = true;
-	if (ReleaseGuideView)
-	{
-		ReleaseGuideView->OpenGuide();
-	}
-}
-
-void UAMSimRootScreen::ToggleReleaseGuide()
-{
-	if (!ReleaseGuideView)
-	{
-		return;
-	}
-	if (ReleaseGuideView->IsGuideOpen())
-	{
-		bOpenReleaseGuideWhenReady = false;
-		ReleaseGuideView->CloseGuide();
-	}
-	else
-	{
-		bOpenReleaseGuideWhenReady = true;
-		ReleaseGuideView->OpenGuide();
 	}
 }

@@ -22,6 +22,9 @@ public:
 	void RefreshFromSimulation();
 	void ShowPresentation();
 	void ClosePresentation();
+	void ShowRegionalOperations();
+	void ShowAdvancedOperations();
+	void ShowMajorOperations();
 	bool IsPresentationOpen() const { return bPresentationOpen; }
 	bool HasBeenOpened() const { return bHasBeenOpened; }
 	FSimpleDelegate OnReturnRequested;

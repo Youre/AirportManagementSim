@@ -130,9 +130,11 @@ do not replace the remaining owner-operated and time-based acceptance gates.
 
 ## Phase 7: Content, accessibility, and release hardening
 
-**Status:** Release candidate ready for owner acceptance. Technical
-implementation and release audits passed on 2026-07-29 UTC; the consolidated
-owner test remains. See [PI-10](phase-7-release-hardening-implementation-plan.md),
+**Status:** RC1 superseded by owner-smoke corrections; the direct-placement
+Development candidate passed internal packaged replay on 2026-08-02 and is
+pending short owner-flow retest before consolidated acceptance. Technical
+implementation and release audits passed on 2026-07-29 UTC. See
+[PI-10](phase-7-release-hardening-implementation-plan.md),
 the [verification record](../../../.ai/reviews/2026-07-28-phase-7-verification.md),
 and [actual-product visual audit](phase7-visual-validation/README.md).
 
@@ -144,13 +146,26 @@ Run the retained physical reference-tier four-hour soak and formal unassisted te
 
 **Gate:** zero release-blocking issues; all traceability rows verified; package runs with network denied; every supported old save migrates; no 3D or unapproved source asset ships.
 
-The schema-8 migration matrix, 68-test suite, deterministic rendered fixtures,
+The original schema-8 release migration matrix, 68-test suite, deterministic rendered fixtures,
 five-scale Release Guide, actual VA-01 through VA-07 comparisons, clean
 Development and Shipping packages, 628-package cook inventory, all 15 Phase 7
 assets, audio-enabled packaged smoke, save/load, zero Shipping TCP sockets,
 and release-boundary scans pass. Owner journeys, time-based observations,
 formal unassisted/audio/caption protocol, and final visual approval remain
 open and are not represented as automated passes.
+
+The corrected starter build flow now launches windowed by default and replaces
+nudge controls with full-map mouse placement, concise live validation, and a
+clear persistent build/cancel action bar. Its focused test, complete 68-result
+automation run, clean Development package, and Computer Use interaction replay
+pass. Replacement Shipping verification and owner acceptance remain open.
+
+The subsequent starter-network correction makes a small basic terminal and
+two gate anchors permanent map context, advances saves to schema 9, and lets
+players draw up to eight visible taxiway segments. Validation now traverses the
+complete graph from runway to either gate, accepts intersections and indirect
+links, rejects orphan branches, and treats service roads as optional worker
+travel infrastructure rather than a required stand connection.
 
 ## Cross-phase integration rules
 

@@ -1,7 +1,9 @@
 #include "AMSimCameraPawn.h"
 #include "AMSimConstructionProposalView.h"
+#include "AMSimPhase1WorldGeometry.h"
 #include "AMSimGameMode.h"
 #include "AMSimOverviewView.h"
+#include "AMSimPhase1ConstructionPresentation.h"
 #include "AMSimPhase1Fixture.h"
 #include "AMSimPhase1ViewState.h"
 #include "AMSimPlayerController.h"
@@ -33,6 +35,19 @@ bool FAMSimOrthographicCameraTest::RunTest(const FString& Parameters)
 	const FUIInputConfig InputConfig = UAMSimRootScreen::MakeGameplayInputConfig();
 	TestEqual(TEXT("Camera projection is orthographic"), Pawn->GetCamera()->ProjectionMode, ECameraProjectionMode::Orthographic);
 	TestEqual(TEXT("Camera frames the Phase 1.5 parcel"), Pawn->GetCamera()->OrthoWidth, 105000.0f);
+	const FVector MousePan = AAMSimCameraPawn::CalculateScreenPanDelta(
+		FVector2D(120.0f, -60.0f),
+		108000.0f);
+	TestTrue(
+		TEXT("Middle-drag produces a non-zero world pan"),
+		!MousePan.IsNearlyZero());
+	TestTrue(
+		TEXT("Middle-drag maps screen axes into the top-down world"),
+		MousePan.Equals(FVector(-6000.0f, -12000.0f, 0.0f)));
+	TestTrue(
+		TEXT("Phase 1 timetable exposes multiple selectable increments"),
+		AMSim::GetPhase1Fixture().MaximumArrivalDelayMilliseconds >=
+			4 * AMSim::GetPhase1Fixture().TimetableIncrementMilliseconds);
 	TestFalse(TEXT("Camera pawn has no per-frame tick"), Pawn->PrimaryActorTick.bCanEverTick);
 	TestTrue(
 		TEXT("Game mode uses the cursor-preserving player controller"),
@@ -132,6 +147,17 @@ bool FAMSimPhase45ConstructionValidationContentTest::RunTest(
 	TestTrue(
 		TEXT("Normal construction presentation uses a valid authoritative proposal"),
 		Valid.bValid);
+	const AMSim::FStarterPlanProposal Empty =
+		UAMSimConstructionProposalView::MakeEmptyProposal();
+	TestTrue(TEXT("Empty editor has no runway extent"), Empty.RunwayStart == Empty.RunwayEnd);
+	TestTrue(TEXT("Empty editor has no taxiway extent"), Empty.TaxiStart == Empty.TaxiEnd);
+	TestFalse(
+		TEXT("An empty completion mask cannot confirm construction"),
+		UAMSimConstructionProposalView::AreAllRequiredPlacementsComplete(0));
+	TestTrue(
+		TEXT("Runway and taxiway satisfy the required completion gate"),
+		UAMSimConstructionProposalView::AreAllRequiredPlacementsComplete(
+			UAMSimConstructionProposalView::AllPlacementParts));
 	TestFalse(
 		TEXT("Conflict proof is rejected by the authoritative validator"),
 		Conflict.bValid);
@@ -142,6 +168,121 @@ bool FAMSimPhase45ConstructionValidationContentTest::RunTest(
 	TestTrue(
 		TEXT("Conflict proof exposes a concise corrective remedy"),
 		Conflict.Remedy.Contains(TEXT("cyan parcel boundary")));
+	AMSim::FStarterPlanProposal Moved =
+		UAMSimConstructionProposalView::MakePresentationProposal(false);
+	UAMSimConstructionProposalView::TranslateProposal(Moved, 5000, -5000);
+	const AMSim::FPhase1Validation MovedValidation =
+		AMSim::ValidateStarterPlan(Moved);
+	TestFalse(
+		TEXT("Moving a network away from fixed gates requires a reconnect"),
+		MovedValidation.bValid);
+	TestEqual(
+		TEXT("Repositioning moves the optional road with the editable plan"),
+		Moved.AccessEnd.Y,
+		95000ll);
+	const AMSim::FPhase1Point TopLeft =
+		UAMSimConstructionProposalView::MapLocalPositionToParcel(
+			FVector2D(205.0, 135.0),
+			FVector2D(1000.0, 1000.0));
+	const AMSim::FPhase1Point BottomRight =
+		UAMSimConstructionProposalView::MapLocalPositionToParcel(
+			FVector2D(785.0, 825.0),
+			FVector2D(1000.0, 1000.0));
+	TestEqual(TEXT("Full map left edge maps to parcel origin"), TopLeft.X, 0ll);
+	TestEqual(TEXT("Full map top edge maps to parcel origin"), TopLeft.Y, 0ll);
+	TestEqual(
+		TEXT("Full map right edge reaches the parcel boundary"),
+		BottomRight.X,
+		100000ll);
+	TestEqual(
+		TEXT("Full map bottom edge reaches the parcel boundary"),
+		BottomRight.Y,
+		100000ll);
+	const AMSim::FStarterPlanProposal RunwayOnly =
+		UAMSimConstructionProposalView::TranslateToolPlacement(
+			AMSim::CreateDefaultStarterPlan(),
+			UAMSimConstructionProposalView::EPlacementTool::Runway,
+			3000,
+			-2000);
+	TestEqual(
+		TEXT("Direct runway drag moves the runway"),
+		RunwayOnly.RunwayStart.X,
+		23000ll);
+	TestEqual(
+		TEXT("Direct runway drag does not move the taxiway"),
+		RunwayOnly.TaxiStart.X,
+		45000ll);
+	const AMSim::FStarterPlanProposal TaxiOnly =
+		UAMSimConstructionProposalView::TranslateToolPlacement(
+			AMSim::CreateDefaultStarterPlan(),
+			UAMSimConstructionProposalView::EPlacementTool::Taxiway,
+			-4000,
+			1000,
+			0);
+	TestEqual(
+		TEXT("Taxiway drag moves only the selected network segment"),
+		TaxiOnly.TaxiwaySegments[0].Start.X,
+		41000ll);
+	TestEqual(
+		TEXT("Taxiway drag leaves the fixed starter terminal in place"),
+		TaxiOnly.OperationsHutCenter.X,
+		50000ll);
+	TestEqual(
+		TEXT("Taxiway drag does not silently move optional road access"),
+		TaxiOnly.AccessStart.X,
+		50000ll);
+	const AMSim::FStarterPlanProposal RoadOnly =
+		UAMSimConstructionProposalView::TranslateToolPlacement(
+			AMSim::CreateDefaultStarterPlan(),
+			UAMSimConstructionProposalView::EPlacementTool::RoadAccess,
+			5000,
+			0);
+	TestEqual(TEXT("Road drag moves its first endpoint"), RoadOnly.AccessStart.X, 55000ll);
+	TestEqual(TEXT("Road drag moves its second endpoint"), RoadOnly.AccessEnd.X, 55000ll);
+	TestEqual(TEXT("Road drag leaves the fixed terminal gate in place"), RoadOnly.StandCenter.X, 45000ll);
+
+	const AMSim::FStarterPlanProposal SnappedTaxi =
+		UAMSimConstructionProposalView::SetToolEndpoint(
+			AMSim::CreateDefaultStarterPlan(),
+			UAMSimConstructionProposalView::EPlacementTool::Taxiway,
+			0,
+			{30000, 43000});
+	TestEqual(
+		TEXT("Taxi start magnetically snaps to the authoritative runway centerline"),
+		SnappedTaxi.TaxiStart.Y,
+		40000ll);
+	AMSim::FStarterPlanProposal DisconnectedStand = AMSim::CreateDefaultStarterPlan();
+	DisconnectedStand.TaxiwaySegments = {{{1000, 1000}, {1000, 12000}}};
+	DisconnectedStand.TaxiStart = DisconnectedStand.TaxiwaySegments[0].Start;
+	DisconnectedStand.TaxiEnd = DisconnectedStand.TaxiwaySegments[0].End;
+	const AMSim::FPhase1Validation DisconnectedValidation =
+		AMSim::ValidateStarterPlan(DisconnectedStand);
+	const TArray<UAMSimConstructionProposalView::FPlacementDiagnostic> Diagnostics =
+		UAMSimConstructionProposalView::MakePlacementDiagnostics(
+			DisconnectedStand,
+			DisconnectedValidation);
+	TestTrue(
+		TEXT("Disconnected proposal produces localized map diagnostics"),
+		Diagnostics.ContainsByPredicate([](
+			const UAMSimConstructionProposalView::FPlacementDiagnostic& Diagnostic)
+		{
+			return Diagnostic.Label == TEXT("CONNECT TAXIWAY TO RUNWAY");
+		}));
+	TestTrue(
+		TEXT("Runway inspector reports actual heading, length, and width"),
+		UAMSimConstructionProposalView::DescribeRunwayGeometry(
+			AMSim::CreateDefaultStarterPlan()).Contains(TEXT("09/27")) &&
+		UAMSimConstructionProposalView::DescribeRunwayGeometry(
+			AMSim::CreateDefaultStarterPlan()).Contains(TEXT("600 M x 20 M")));
+	const AMSim::FPhase1WorldSegmentGeometry WorldRunway =
+		AMSim::MakePhase1WorldSegmentGeometry(
+			AMSim::CreateDefaultStarterPlan().RunwayStart,
+			AMSim::CreateDefaultStarterPlan().RunwayEnd,
+			2000,
+			10.0);
+	TestEqual(TEXT("Placed runway world length follows drawn length"), WorldRunway.Scale.X, 45.0, 0.01);
+	TestEqual(TEXT("Placed runway world width follows chosen width"), WorldRunway.Scale.Z, 1.5, 0.01);
+	TestEqual(TEXT("East-west map runway rotates correctly in world"), WorldRunway.YawDegrees, 90.0f, 0.01f);
 	return true;
 }
 
@@ -311,6 +452,69 @@ bool FAMSimPhase45TimetableGeometryTest::RunTest(
 }
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+	FAMSimPhase1ConstructionPresentationMappingTest,
+	"AMSim.Phase1_5.Presentation.ConstructionProgressMapping",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FAMSimPhase1ConstructionPresentationMappingTest::RunTest(
+	const FString& Parameters)
+{
+	AMSim::FConstructionProjectRecord Project;
+	Project.Stage = AMSim::EConstructionStage::AwaitingDelivery;
+	Project.Proposal = AMSim::CreateDefaultStarterPlan();
+	Project.Proposal.AccessEnd = Project.Proposal.AccessStart;
+	Project.FundedAtGameMilliseconds = 1000;
+	AMSim::FPhase1QuerySnapshot Query;
+	Query.GameTimeMilliseconds = 1000;
+	AMSim::FPhase1ConstructionVisualState Visual =
+		AMSim::FPhase1ConstructionPresentation::Derive(Query, Project);
+	const AMSim::FPhase1Fixture& Fixture = AMSim::GetPhase1Fixture();
+	TestTrue(TEXT("Crew dispatch is visible immediately"), Visual.bCrewVisible);
+	TestTrue(TEXT("Truck dispatch is visible immediately"), Visual.bTruckVisible);
+	TestTrue(TEXT("Earthwork bed appears immediately"), Visual.bEarthworkVisible);
+	TestTrue(TEXT("Travel begins at the access origin"),
+		FMath::IsNearlyZero(Visual.DeliveryTravelProgress));
+	TestTrue(TEXT("Finished surface is absent before building"),
+		FMath::IsNearlyZero(Visual.SurfaceProgress));
+
+	Query.GameTimeMilliseconds = Project.FundedAtGameMilliseconds +
+		Fixture.DeliveryAtMilliseconds / 2;
+	Visual = AMSim::FPhase1ConstructionPresentation::Derive(Query, Project);
+	TestTrue(TEXT("Travel is halfway to the site at 15 seconds"),
+		FMath::IsNearlyEqual(Visual.DeliveryTravelProgress, 0.5f));
+
+	Project.Stage = AMSim::EConstructionStage::Building;
+	Project.bDeliveryArrived = true;
+	Query.GameTimeMilliseconds = Project.FundedAtGameMilliseconds +
+		(Fixture.BuildingAtMilliseconds + Fixture.InspectionAtMilliseconds) / 2;
+	Visual = AMSim::FPhase1ConstructionPresentation::Derive(Query, Project);
+	TestTrue(TEXT("Surface reveal is halfway through the build stage"),
+		FMath::IsNearlyEqual(Visual.SurfaceProgress, 0.5f));
+
+	Project.Stage = AMSim::EConstructionStage::Inspection;
+	Visual = AMSim::FPhase1ConstructionPresentation::Derive(Query, Project);
+	TestTrue(TEXT("Inspection receives the complete surface"),
+		FMath::IsNearlyEqual(Visual.SurfaceProgress, 1.0f));
+	TestFalse(TEXT("Inspection removes the graded-earth underlay"),
+		Visual.bEarthworkVisible);
+	TestTrue(TEXT("Inspection exposes runway markings"),
+		Visual.bFinishedMarkingsVisible);
+
+	const TArray<double> Lengths{60.0, 30.0, 10.0};
+	const TArray<float> Progress =
+		AMSim::FPhase1ConstructionPresentation::AllocateLengthProgress(
+			0.65f,
+			Lengths);
+	TestTrue(TEXT("Runway receives proportional build progress"),
+		FMath::IsNearlyEqual(Progress[0], 0.65f));
+	TestTrue(TEXT("Taxiway receives proportional build progress"),
+		FMath::IsNearlyEqual(Progress[1], 0.65f));
+	TestTrue(TEXT("Road receives proportional build progress"),
+		FMath::IsNearlyEqual(Progress[2], 0.65f));
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 	FAMSimPhase15WorldPresenterTest,
 	"AMSim.Phase1_5.Presentation.Paper2DWorld",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
@@ -339,26 +543,74 @@ bool FAMSimPhase15WorldPresenterTest::RunTest(const FString& Parameters)
 	TestTrue(
 		TEXT("Mature overview owns a selected-entity world proxy"),
 		Presenter->HasMatureSelectionProxy());
+	TestTrue(
+		TEXT("Runway, taxiway, and service-road surfaces resolve independently"),
+		Presenter->HasDistinctPhase1MovementSurfaceAssets());
+	TestEqual(
+		TEXT("Primary runway number faces the reciprocal approach"),
+		AMSim::MakePhase1RunwayNumberYawDegrees(0.0f, false),
+		180.0f);
+	TestEqual(
+		TEXT("Reciprocal runway number faces the primary approach"),
+		AMSim::MakePhase1RunwayNumberYawDegrees(0.0f, true),
+		0.0f);
+	TestEqual(
+		TEXT("Vertical primary number remains reciprocally oriented"),
+		AMSim::MakePhase1RunwayNumberYawDegrees(90.0f, false),
+		270.0f);
 	TestEqual(
 		TEXT("Parked aircraft uses the stand-facing heading"),
 		AAMSimWorldPresenter::GetHeadingIndex(AMSim::EFlightState::Parked),
 		8);
 	AMSim::FPhase1QuerySnapshot Construction;
 	Construction.Revision = 901;
-	Construction.ConstructionStage = AMSim::EConstructionStage::Building;
-	Presenter->ApplySnapshot(Construction);
+	Construction.GameTimeMilliseconds = 0;
+	Construction.ConstructionStage = AMSim::EConstructionStage::AwaitingDelivery;
+	AMSim::FPhase1State ConstructionState;
+	ConstructionState.Project.Stage = AMSim::EConstructionStage::AwaitingDelivery;
+	ConstructionState.Project.Proposal = AMSim::CreateDefaultStarterPlan();
+	Presenter->ApplySnapshot(Construction, ConstructionState);
 	TestEqual(
-		TEXT("Building stage exposes localized truck, worker, cones, and work zone"),
+		TEXT("Purchase exposes truck, four workers, bounded cones, and work zone immediately"),
 		Presenter->GetActivePhase1ConstructionProxyCount(),
-		4);
+		11);
+	TestEqual(
+		TEXT("Purchase exposes runway, taxiway, and road earthwork beds"),
+		Presenter->GetActivePhase1EarthworkProxyCount(),
+		3);
+	TestTrue(
+		TEXT("Crew begins at the travel origin"),
+		FMath::IsNearlyZero(Presenter->GetPhase1ConstructionTravelProgress()));
+	TestTrue(
+		TEXT("No final surface is visible before building"),
+		FMath::IsNearlyZero(Presenter->GetPhase1ConstructionSurfaceProgress()));
+
+	Construction.Revision = 902;
+	const AMSim::FPhase1Fixture& Fixture = AMSim::GetPhase1Fixture();
+	const int64 RoadBuildingAt = Fixture.BuildingAtMilliseconds * 80 / 100;
+	const int64 RoadInspectionAt = Fixture.InspectionAtMilliseconds * 80 / 100;
+	Construction.GameTimeMilliseconds = (RoadBuildingAt + RoadInspectionAt) / 2;
+	Construction.ConstructionStage = AMSim::EConstructionStage::Building;
+	ConstructionState.Project.Stage = AMSim::EConstructionStage::Building;
+	ConstructionState.Project.bDeliveryArrived = true;
+	Presenter->ApplySnapshot(Construction, ConstructionState);
+	TestTrue(
+		TEXT("Workers reach the site before construction begins"),
+		FMath::IsNearlyEqual(Presenter->GetPhase1ConstructionTravelProgress(), 1.0f));
+	TestTrue(
+		TEXT("Road-assisted build reveals half of the total network at its midpoint"),
+		FMath::IsNearlyEqual(Presenter->GetPhase1ConstructionSurfaceProgress(), 0.5f));
 
 	AMSim::FPhase1QuerySnapshot Turnaround;
-	Turnaround.Revision = 902;
+	Turnaround.Revision = 903;
 	Turnaround.ConstructionStage = AMSim::EConstructionStage::Operational;
 	Turnaround.FlightState = AMSim::EFlightState::Turnaround;
 	Turnaround.InspectionState = AMSim::EServiceTaskState::Active;
 	Turnaround.FuelingState = AMSim::EServiceTaskState::Active;
-	Presenter->ApplySnapshot(Turnaround);
+	AMSim::FPhase1State TurnaroundState;
+	TurnaroundState.Project.Stage = AMSim::EConstructionStage::Operational;
+	TurnaroundState.Project.Proposal = AMSim::CreateDefaultStarterPlan();
+	Presenter->ApplySnapshot(Turnaround, TurnaroundState);
 	TestEqual(
 		TEXT("Turnaround exposes two safe paths plus vehicle, worker, cones, and zone"),
 		Presenter->GetActiveTurnaroundSupportProxyCount(),
@@ -367,10 +619,28 @@ bool FAMSimPhase15WorldPresenterTest::RunTest(const FString& Parameters)
 		TEXT("Operational airport clears construction support"),
 		Presenter->GetActivePhase1ConstructionProxyCount(),
 		0);
+	AMSim::FPhase1QuerySnapshot MovedQuery = Turnaround;
+	MovedQuery.Revision = 904;
+	AMSim::FPhase1State MovedState = TurnaroundState;
+	const FVector OriginalRunwayCenter = Presenter->GetPhase1RunwayCenter();
+	UAMSimConstructionProposalView::TranslateProposal(
+		MovedState.Project.Proposal,
+		5000,
+		0);
+	Presenter->ApplySnapshot(MovedQuery, MovedState);
+	TestFalse(
+		TEXT("Committed runway placement drives world geometry"),
+		Presenter->GetPhase1RunwayCenter().Equals(OriginalRunwayCenter));
+	TestTrue(
+		TEXT("The starter terminal and gate anchor remain fixed"),
+		Presenter->GetPhase1GeometryOffset().IsNearlyZero());
 
 	AMSim::FPhase1QuerySnapshot Cleared;
-	Cleared.Revision = 903;
-	Presenter->ApplySnapshot(Cleared);
+	Cleared.Revision = 905;
+	Presenter->ApplySnapshot(Cleared, AMSim::FPhase1State());
+	TestTrue(
+		TEXT("Empty airport resets proposal geometry"),
+		Presenter->GetPhase1GeometryOffset().IsNearlyZero());
 	TestEqual(
 		TEXT("Uncommitted site clears every construction proxy"),
 		Presenter->GetActivePhase1ConstructionProxyCount(),

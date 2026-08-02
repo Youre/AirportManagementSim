@@ -5,7 +5,7 @@
 namespace AMSim
 {
 	inline constexpr int64 FixedStepMilliseconds = 250;
-	inline constexpr uint32 SnapshotSchemaVersion = 8;
+	inline constexpr uint32 SnapshotSchemaVersion = 9;
 	inline constexpr uint32 MinimumSupportedSnapshotSchemaVersion = 1;
 
 	struct FEntityId

@@ -8,8 +8,12 @@
 #include "Engine/Texture2D.h"
 #include "FileHelpers.h"
 #include "IAssetTools.h"
+#include "Misc/Parse.h"
 #include "Misc/Paths.h"
 #include "PaperSprite.h"
+#include "Sound/SoundGroups.h"
+#include "Sound/SoundWave.h"
+#include "Sound/SoundWaveLoadingBehavior.h"
 #include "SpriteEditorOnlyTypes.h"
 #include "UObject/Package.h"
 #include "WidgetBlueprint.h"
@@ -24,6 +28,96 @@ namespace
 		FString TexturePath;
 		FString SpritePackage;
 	};
+
+	struct FUISoundSource
+	{
+		const TCHAR* StableId;
+		float RuntimeVolume;
+	};
+
+	bool ImportUISounds(
+		const FString& SourceRoot,
+		TArray<UPackage*>& PackagesToSave)
+	{
+		static const FUISoundSource Sources[] = {
+			{TEXT("ui_hover_soft"), 0.70f},
+			{TEXT("ui_focus_tick"), 0.90f},
+			{TEXT("ui_click_primary"), 8.00f},
+			{TEXT("ui_click_secondary"), 1.60f},
+			{TEXT("ui_tab_switch"), 0.40f},
+			{TEXT("ui_panel_open"), 0.80f},
+			{TEXT("ui_panel_close"), 0.95f},
+			{TEXT("ui_back"), 1.15f},
+			{TEXT("ui_build_start"), 0.60f},
+			{TEXT("ui_build_place"), 0.60f},
+			{TEXT("ui_build_snap"), 0.65f},
+			{TEXT("ui_build_confirm"), 0.50f},
+			{TEXT("ui_build_cancel"), 1.90f},
+			{TEXT("ui_invalid_geometry"), 0.65f},
+			{TEXT("ui_offer_available"), 0.65f},
+			{TEXT("ui_offer_accept"), 0.70f},
+			{TEXT("ui_offer_decline"), 3.30f},
+			{TEXT("ui_schedule_confirm"), 1.10f},
+			{TEXT("ui_schedule_rejected"), 0.80f},
+			{TEXT("ui_notification"), 3.80f},
+			{TEXT("ui_save_success"), 1.85f},
+			{TEXT("ui_load_success"), 0.50f},
+			{TEXT("ui_load_failure"), 0.75f},
+			{TEXT("ui_warning_attention"), 1.05f},
+			{TEXT("ui_objective_complete"), 1.10f},
+			{TEXT("ui_capability_unlock"), 1.30f},
+			{TEXT("ui_incident_alert"), 0.75f},
+			{TEXT("ui_recovery_success"), 0.55f}};
+
+		bool bPassed = true;
+		for (const FUISoundSource& Source : Sources)
+		{
+			const FString DiskPath = FPaths::Combine(
+				SourceRoot,
+				FString(Source.StableId) + TEXT(".mp3"));
+			const FString ObjectPath = FString::Printf(
+				TEXT("/Game/Audio/UI/%s.%s"),
+				Source.StableId,
+				Source.StableId);
+			UAutomatedAssetImportData* ImportData =
+				NewObject<UAutomatedAssetImportData>();
+			ImportData->Filenames = {DiskPath};
+			ImportData->DestinationPath = TEXT("/Game/Audio/UI");
+			ImportData->bReplaceExisting = true;
+			ImportData->bSkipReadOnly = true;
+			const TArray<UObject*> Imported =
+				FAssetToolsModule::GetModule().Get().ImportAssetsAutomated(ImportData);
+			USoundWave* Sound = Imported.IsEmpty()
+				? LoadObject<USoundWave>(nullptr, *ObjectPath)
+				: Cast<USoundWave>(Imported[0]);
+			if (!Sound || Sound->GetDuration() <= 0.0f ||
+				Sound->GetDuration() > 2.0f || Sound->NumChannels != 2)
+			{
+				UE_LOG(
+					LogTemp,
+					Error,
+					TEXT("Failed UI sound import validation: %s"),
+					*DiskPath);
+				bPassed = false;
+				continue;
+			}
+			Sound->bLooping = false;
+			Sound->SoundGroup = SOUNDGROUP_UI;
+			Sound->Volume = Source.RuntimeVolume;
+			Sound->OverrideLoadingBehavior(
+				ESoundWaveLoadingBehavior::RetainOnLoad);
+			Sound->MarkPackageDirty();
+			PackagesToSave.AddUnique(Sound->GetPackage());
+			UE_LOG(
+				LogTemp,
+				Display,
+				TEXT("Prepared UI sound: %s (%.2fs, volume %.2f)"),
+				Source.StableId,
+				Sound->GetDuration(),
+				Source.RuntimeVolume);
+		}
+		return bPassed;
+	}
 
 	bool ImportTexture(
 		const FPresentationSpriteSource& Source,
@@ -173,6 +267,23 @@ UAMSimPresentationAssetCommandlet::UAMSimPresentationAssetCommandlet()
 
 int32 UAMSimPresentationAssetCommandlet::Main(const FString& Params)
 {
+	const FString UIAudioSourceRoot = FPaths::ConvertRelativePathToFull(
+		FPaths::Combine(FPaths::ProjectDir(), TEXT("../SourceAssets/Audio/UI")));
+	if (FParse::Param(*Params, TEXT("UISoundsOnly")))
+	{
+		TArray<UPackage*> UIAudioPackages;
+		if (!ImportUISounds(UIAudioSourceRoot, UIAudioPackages) ||
+			!UEditorLoadingAndSavingUtils::SavePackages(UIAudioPackages, true))
+		{
+			UE_LOG(LogTemp, Error, TEXT("UI sound asset generation failed."));
+			return 1;
+		}
+		UE_LOG(
+			LogTemp,
+			Display,
+			TEXT("UI sound asset generation complete: 28 sounds."));
+		return 0;
+	}
 	const FString SourceRoot = FPaths::ConvertRelativePathToFull(
 		FPaths::Combine(FPaths::ProjectDir(), TEXT("../SourceAssets/Phase1.5")));
 	const FString Phase45SourceRoot = FPaths::ConvertRelativePathToFull(
@@ -209,6 +320,8 @@ int32 UAMSimPresentationAssetCommandlet::Main(const FString& Params)
 		MakeSource(TEXT("Surfaces"), TEXT("T_TemperateGrass"), TEXT("S_TemperateGrass")),
 		MakeSource(TEXT("Surfaces"), TEXT("T_GrassRunway"), TEXT("S_GrassRunway")),
 		MakeSource(TEXT("Surfaces"), TEXT("T_TaxiWear"), TEXT("S_TaxiWear")),
+		MakeSource(TEXT("Surfaces"), TEXT("T_RunwayMarked"), TEXT("S_RunwayMarked")),
+		MakeSource(TEXT("Surfaces"), TEXT("T_TaxiwayMarked"), TEXT("S_TaxiwayMarked")),
 		MakeSource(TEXT("Surfaces"), TEXT("T_WarmStand"), TEXT("S_WarmStand")),
 		MakeSource(TEXT("Props"), TEXT("T_WhiteSquare"), TEXT("S_WhiteSquare")),
 		MakeSource(TEXT("Props"), TEXT("T_OperationsHut"), TEXT("S_OperationsHut")),
@@ -390,6 +503,17 @@ int32 UAMSimPresentationAssetCommandlet::Main(const FString& Params)
 	{
 		Sources.Add(MakePhase6AircraftSource(HeadingIndex));
 	}
+	const bool bPhase1MovementSurfacesOnly =
+		FParse::Param(*Params, TEXT("Phase1MovementSurfacesOnly"));
+	if (bPhase1MovementSurfacesOnly)
+	{
+		Sources = Sources.FilterByPredicate(
+			[](const FPresentationSpriteSource& Source)
+			{
+				return Source.TexturePath.Contains(TEXT("/T_RunwayMarked.")) ||
+					Source.TexturePath.Contains(TEXT("/T_TaxiwayMarked."));
+			});
+	}
 
 	bool bPassed = true;
 	TArray<UPackage*> PackagesToSave;
@@ -401,17 +525,24 @@ int32 UAMSimPresentationAssetCommandlet::Main(const FString& Params)
 	{
 		bPassed &= CreateOrUpdateSprite(Source, PackagesToSave);
 	}
-	bPassed &= CreateProductionRootBlueprint(PackagesToSave);
-	bPassed &= CreateComponentGalleryBlueprint(PackagesToSave);
+	if (!bPhase1MovementSurfacesOnly)
+	{
+		bPassed &= ImportUISounds(UIAudioSourceRoot, PackagesToSave);
+		bPassed &= CreateProductionRootBlueprint(PackagesToSave);
+		bPassed &= CreateComponentGalleryBlueprint(PackagesToSave);
+	}
 	if (!bPassed || !UEditorLoadingAndSavingUtils::SavePackages(PackagesToSave, true))
 	{
 		UE_LOG(LogTemp, Error, TEXT("Presentation asset generation failed."));
 		return 1;
 	}
-	UE_LOG(
-		LogTemp,
-		Display,
-		TEXT("Presentation asset generation complete: %d sprites."),
-		Sources.Num());
+	if (bPhase1MovementSurfacesOnly)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Phase 1 movement-surface generation complete: %d sprites."), Sources.Num());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Display, TEXT("Presentation asset generation complete: %d sprites and 28 UI sounds."), Sources.Num());
+	}
 	return 0;
 }

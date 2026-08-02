@@ -31,6 +31,11 @@
       "scope": "Phase6",
       "decision": "owner-approved-derived-asset",
       "record": "docs/planning/30-content-and-assets/phase-6-content-provenance.md"
+    },
+    {
+      "scope": "Phase7-UI-Audio",
+      "decision": "approved-generated-ui-only",
+      "record": "docs/planning/30-content-and-assets/phase-7-release-content-provenance.md"
     }
   ],
   "excluded": {

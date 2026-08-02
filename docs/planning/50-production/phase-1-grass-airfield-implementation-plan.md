@@ -45,21 +45,40 @@ The map-selection surface presents only content that actually exists. Warm-dry a
 
 The Phase 1 catalog contains:
 
+- one map-authored basic operations terminal shell with two preset
+  gate/stand connection ports; it provides construction context but no Phase 3
+  passenger, baggage, or security behavior;
 - grass runway with heading-derived numbering and required markings/windsock;
-- grass-compatible taxi connection;
-- one light-aircraft stand/tie-down;
-- essential access connection;
-- small operations hut serving as the starter team/home facility.
+- one or more player-drawn grass-compatible taxi segments forming a connected
+  runway-to-gate network;
+- optional player-drawn service road segments that can shorten construction
+  worker travel without blocking the airfield when absent.
 
 The player may compose these items in a planning layer and commit them as one deterministic starter-airfield project. Preview shows land ownership, footprint, safety clearance, connection validity, total quoted cost, closures, and a specific remedy for every blocking result.
 
-The project visibly advances through funded, delivery, building, inspection, and player-opened states. One construction team, worker arrival, and material delivery are authoritative Phase 1 state; animation remains presentation.
+The project visibly advances through funded, delivery, building, inspection,
+and player-opened states. Confirmation immediately dispatches the visible
+truck and construction crew; accepted runway, taxiway, and optional road
+geometry begins as graded earthwork and reveals its final surface
+proportionally during building. Runway markings wait for inspection. Worker
+arrival, material delivery, project stage, and timing are authoritative Phase
+1 state; movement and surface reveal remain presentation.
+
+At 1x, the starter project now allocates 30 game minutes to travel, 30 minutes
+to site preparation, two game hours to visible surface work, and 30 minutes to
+inspection. Because one game minute advances per real second at 1x, the full
+project takes three and a half real minutes without a useful service road and
+2 minutes 48 seconds with its 20 percent road benefit. Pause and 2x-8x speed
+controls remain available. The finished compacted runway uses edge, center,
+threshold, and correctly faced reciprocal number markings; taxiways use their
+own amber center/edge treatment, distinct from unmarked service roads.
 
 The complete valid starter plan must cost no more than 3,500 of the initial 5,000 Credits.
 
 ### First flight
 
-Once runway, taxi route, stand, access, operations hut, and required starter teams are valid and open:
+Once a runway, complete runway-to-gate taxi route, the inherited starter
+terminal/gate, and required starter teams are valid and open:
 
 - a compatible one-time GA offer appears immediately while the simulation remains paused;
 - the player accepts it, chooses an exact five-minute slot, and assigns the stand;
@@ -297,7 +316,9 @@ release-candidate gate rather than a blocker for continued development.
 
 Phase 1 does not add:
 
-- passenger terminals, baggage, security, landside transport, cargo, tenants, or incidents;
+- passenger-terminal interiors, baggage, security, landside transport, cargo,
+  tenants, or incidents; the map-authored starter operations shell is only an
+  aircraft gate and construction anchor;
 - multiple-aircraft congestion, recurring schedules, flight school, charter, towing, pushback, deicing, or changing weather;
 - advanced staff scheduling/morale, full specialization progression, or a complete release roster;
 - controller support, multiplayer, accounts, telemetry, cloud services, or runtime MCP;

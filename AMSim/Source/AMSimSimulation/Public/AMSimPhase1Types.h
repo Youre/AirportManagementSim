@@ -145,6 +145,13 @@ namespace AMSim
 		auto operator<=>(const FPhase1Point&) const = default;
 	};
 
+	struct FTaxiwaySegment
+	{
+		FPhase1Point Start;
+		FPhase1Point End;
+		auto operator<=>(const FTaxiwaySegment&) const = default;
+	};
+
 	struct FStarterPlanProposal
 	{
 		FPhase1Point RunwayStart;
@@ -156,6 +163,7 @@ namespace AMSim
 		FPhase1Point AccessStart;
 		FPhase1Point AccessEnd;
 		FPhase1Point OperationsHutCenter;
+		TArray<FTaxiwaySegment> TaxiwaySegments;
 	};
 
 	struct FPhase1Validation

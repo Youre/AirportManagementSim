@@ -125,14 +125,14 @@ bool FAMSimPhase7ContextHelpTest::RunTest(
 	TArray<uint8> Bytes;
 	const FSnapshot Snapshot = Simulation.CreateSnapshot();
 	TestTrue(
-		TEXT("Schema 8 help snapshot serializes"),
+		TEXT("Current help and taxi-network snapshot serializes"),
 		SerializeSnapshot(Snapshot, Bytes));
 	FSnapshot RoundTrip;
 	TestTrue(
-		TEXT("Schema 8 help snapshot deserializes"),
+		TEXT("Current help and taxi-network snapshot deserializes"),
 		DeserializeSnapshot(Bytes, RoundTrip));
 	TestEqual(
-		TEXT("Schema 8 is current"),
+		TEXT("Schema 9 is current"),
 		RoundTrip.SchemaVersion,
 		SnapshotSchemaVersion);
 	TestTrue(
@@ -159,7 +159,7 @@ bool FAMSimPhase7ContextHelpTest::RunTest(
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 	FAMSimPhase7MigrationMatrixTest,
-	"AMSim.Phase7.Persistence.Schemas1Through8",
+	"AMSim.Phase7.Persistence.Schemas1Through9",
 	EAutomationTestFlags::EditorContext |
 		EAutomationTestFlags::EngineFilter)
 
@@ -176,6 +176,11 @@ bool FAMSimPhase7MigrationMatrixTest::RunTest(
 		FSnapshot Legacy = Current;
 		Legacy.SchemaVersion = Schema;
 		Legacy.Phase1.AcknowledgedContextHelp.Reset();
+		if (Schema == 8)
+		{
+			Legacy.Phase1.Project.Proposal = CreateDefaultStarterPlan();
+			Legacy.Phase1.Project.Proposal.TaxiwaySegments.Reset();
+		}
 		TArray<uint8> Bytes;
 		TestTrue(
 			*FString::Printf(
@@ -198,6 +203,13 @@ bool FAMSimPhase7MigrationMatrixTest::RunTest(
 			TEXT("Migrated help history starts empty"),
 			Migrated.Phase1
 				.AcknowledgedContextHelp.IsEmpty());
+		if (Schema == 8)
+		{
+			TestEqual(
+				TEXT("Schema 8 legacy taxi geometry becomes one graph segment"),
+				Migrated.Phase1.Project.Proposal.TaxiwaySegments.Num(),
+				1);
+		}
 	}
 	return true;
 }

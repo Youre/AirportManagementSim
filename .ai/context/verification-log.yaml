@@ -853,27 +853,26 @@ entries:
     commit: fafbdca990f708c44f74897038882414dc4d1e30
     branch: codex/planning-docs-concept-art
     worktree: C:/Users/dave/Documents/AirportManagementSim
-    command: 'Phase 5 closeout: Unreal 5.8 editor and game builds; focused and
-      full automation; Development/Shipping BuildCookRun; direct Shipping
-      IoStore inventory; dependency/runtime-load/3D scans; offline packaged
-      smoke; Figma validation and documentation'
+    command: 'Phase 5 closeout: Unreal 5.8 editor and game builds; focused and full
+      automation; Development/Shipping BuildCookRun; direct Shipping IoStore inventory;
+      dependency/runtime-load/3D scans; offline packaged smoke; Figma validation and
+      documentation'
     result: passed
     notes: Phase 5 focused automation passed 5 of 5. Full AMSim automation
-      reported 54 succeeded and one retained warning-only legacy save test
-      with zero failed or not-run tests. Development and Shipping BuildCookRun
-      passed with 553 cooked packages. Direct Shipping IoStore inspection
-      found all 44 Phase 5 definitions and four freighter presentation assets
-      (50 entries including two texture bulk-data entries), plus the production
-      root Widget Blueprint. Shipping executable/module scans found zero
-      forbidden editor, MCP, toolset, test, Python, or RemoteControl matches;
-      runtime modules contain zero string asset loads; Phase 5 contains zero
-      required 3D assets. The packaged Shipping game remained responsive after
-      eight seconds and opened zero TCP connections. Four 1920 x 1080 Figma
-      frames and repository exports record cargo/warehouse, cargo turnaround,
-      Advanced capability, and active-airshow comparisons. Phase 4.5 is
-      accepted as the continuing-development baseline with aesthetic polish
-      retained as debt. Major/wide-body work and long-form human gates remain
-      deferred.
+      reported 54 succeeded and one retained warning-only legacy save test with
+      zero failed or not-run tests. Development and Shipping BuildCookRun passed
+      with 553 cooked packages. Direct Shipping IoStore inspection found all 44
+      Phase 5 definitions and four freighter presentation assets (50 entries
+      including two texture bulk-data entries), plus the production root Widget
+      Blueprint. Shipping executable/module scans found zero forbidden editor,
+      MCP, toolset, test, Python, or RemoteControl matches; runtime modules
+      contain zero string asset loads; Phase 5 contains zero required 3D assets.
+      The packaged Shipping game remained responsive after eight seconds and
+      opened zero TCP connections. Four 1920 x 1080 Figma frames and repository
+      exports record cargo/warehouse, cargo turnaround, Advanced capability, and
+      active-airshow comparisons. Phase 4.5 is accepted as the
+      continuing-development baseline with aesthetic polish retained as debt.
+      Major/wide-body work and long-form human gates remain deferred.
   - timestamp: '2026-07-28T03:33:20.1097933+00:00'
     commit: fafbdca990f708c44f74897038882414dc4d1e30
     branch: codex/planning-docs-concept-art
@@ -888,57 +887,57 @@ entries:
     commit: b6ea2b5cd4c9a78d5c77aaa721651da5c886b8db
     branch: codex/planning-docs-concept-art
     worktree: C:/Users/dave/Documents/AirportManagementSim
-    command: 'Clean-tree build audit and Phase 5 recurring-cargo reachability
-      proof'
+    command: Clean-tree build audit and Phase 5 recurring-cargo reachability
+      proof
     result: passed
     notes: The clean-tree audit exposed and corrected Unreal unity translation
       unit collisions by making project modules explicitly non-unity. A full
       clean editor rebuild compiled 108 actions successfully. Phase 5 now
       creates deterministic recurring cargo offers after the authored fixture
       set, and the ordinary-dispatch automation completes 12 shipments while
-      retaining all four classes, all three directions, belly freight,
-      schema-6 persistence, and cargo conservation. Focused automation passed
-      5 of 5; the full suite passed 54 plus one retained warning-only legacy
-      test with zero failures/not-run. Clean-tree Development and Shipping
-      packages passed with 553 cooked packages. Shipping retained all 48 Phase
-      5 assets, the production root widget, zero forbidden binary matches, and
-      zero TCP connections during the eight-second smoke.
+      retaining all four classes, all three directions, belly freight, schema-6
+      persistence, and cargo conservation. Focused automation passed 5 of 5; the
+      full suite passed 54 plus one retained warning-only legacy test with zero
+      failures/not-run. Clean-tree Development and Shipping packages passed with
+      553 cooked packages. Shipping retained all 48 Phase 5 assets, the
+      production root widget, zero forbidden binary matches, and zero TCP
+      connections during the eight-second smoke.
   - timestamp: '2026-07-28T11:01:01.0330507+00:00'
     commit: 2876538c71ae09a31c04cb7b731504a9e1c64e3f
     branch: codex/planning-docs-concept-art
     worktree: C:/Users/dave/Documents/AirportManagementSim
-    command: 'Phase 6 pre-art approval gate: Unreal 5.8 editor build; focused
-      AMSim.Phase6 automation; source line-limit and diff checks'
+    command: 'Phase 6 pre-art approval gate: Unreal 5.8 editor build; focused AMSim.Phase6
+      automation; source line-limit and diff checks'
     result: passed
     notes: The editor target builds successfully. All eight Phase 6 tests pass
-      with zero warnings, failures, or not-run tests, covering cooker-visible
-      2D content, incident recovery, large-aircraft compatibility and ordinary
-      dispatch, schema-7 persistence and schema-6 migration, view-state
-      revision gating, six independent Major paths, parallel-runway numbering,
-      and the exact 10,000-logical/2,000-visible scale contract. Source files
-      remain at or below 2,000 lines and git diff --check passes outside the
-      preserved unrelated audio work. The reviewed 787 source remains outside
-      project content pending explicit owner approval.
+      with zero warnings, failures, or not-run tests, covering cooker-visible 2D
+      content, incident recovery, large-aircraft compatibility and ordinary
+      dispatch, schema-7 persistence and schema-6 migration, view-state revision
+      gating, six independent Major paths, parallel-runway numbering, and the
+      exact 10,000-logical/2,000-visible scale contract. Source files remain at
+      or below 2,000 lines and git diff --check passes outside the preserved
+      unrelated audio work. The reviewed 787 source remains outside project
+      content pending explicit owner approval.
   - timestamp: '2026-07-28T22:14:22.8900432Z'
     commit: 2876538c71ae09a31c04cb7b731504a9e1c64e3f
     branch: codex/planning-docs-concept-art
     worktree: C:/Users/dave/Documents/AirportManagementSim
-    command: 'Phase 6 technical closeout: focused/full Unreal automation;
-      Development/Shipping BuildCookRun; direct Shipping IoStore inventory;
-      dependency, runtime-load, and 3D scans; offline packaged smoke; River &
-      Sun aircraft and equivalent-state visual review'
+    command: 'Phase 6 technical closeout: focused/full Unreal automation; Development/Shipping
+      BuildCookRun; direct Shipping IoStore inventory; dependency, runtime-load, and
+      3D scans; offline packaged smoke; River & Sun aircraft and equivalent-state
+      visual review'
     result: passed
     notes: Phase 6 focused automation passed 8 of 8. Full AMSim automation
       reported 62 clean passes and one retained warning-only Phase 0 backup
       probe with zero failed or not-run tests. Fresh Development and Shipping
-      packages each cooked 613 packages. Direct Shipping inventory found all
-      28 Phase 6 definitions, 16 approved River & Sun textures, 16 matching
-      PaperSprites, and the production root widget. Shipping has zero
-      forbidden editor, MCP, test, tool, direct runtime string-load, required
-      3D, or TCP matches. The deterministic maximum fixture reached 10,000
-      logical agents, 2,000 visible agents, 150 aircraft, and 500 vehicles
-      without backlog. Owner Phase 5/6 journeys, final visual approval, and the
-      bounded 15-minute maximum-load observation remain open.
+      packages each cooked 613 packages. Direct Shipping inventory found all 28
+      Phase 6 definitions, 16 approved River & Sun textures, 16 matching
+      PaperSprites, and the production root widget. Shipping has zero forbidden
+      editor, MCP, test, tool, direct runtime string-load, required 3D, or TCP
+      matches. The deterministic maximum fixture reached 10,000 logical agents,
+      2,000 visible agents, 150 aircraft, and 500 vehicles without backlog.
+      Owner Phase 5/6 journeys, final visual approval, and the bounded 15-minute
+      maximum-load observation remain open.
   - timestamp: '2026-07-28T22:20:00.0000000Z'
     commit: 2876538c71ae09a31c04cb7b731504a9e1c64e3f
     branch: codex/planning-docs-concept-art
@@ -947,17 +946,17 @@ entries:
     result: passed
     notes: Exited 0 after Phase 6 closeout updates. Only the documented ignored
       Saved token-name, managed-template, lexical-review, legacy-ledger, and
-      project schema/version warnings remain; no Phase 6 structural conflict
-      was reported.
+      project schema/version warnings remain; no Phase 6 structural conflict was
+      reported.
   - timestamp: '2026-07-29T00:29:00.0000000Z'
     commit: 24c17bc933c961d3e7119d70d4e4f32b010c50a6
     branch: codex/planning-docs-concept-art
     worktree: C:/Users/dave/Documents/AirportManagementSim
-    command: 'Phase 7 release-candidate verification: focused/full Unreal
-      automation; actual VA-01 through VA-07 capture audit; five-scale Release
-      Guide; clean Development/Shipping BuildCookRun; cook-reference,
-      dependency, runtime-load, 3D, rights, secret, endpoint, and line-limit
-      audits; audio-enabled offline packaged smoke; release attestation'
+    command: 'Phase 7 release-candidate verification: focused/full Unreal automation;
+      actual VA-01 through VA-07 capture audit; five-scale Release Guide; clean Development/Shipping
+      BuildCookRun; cook-reference, dependency, runtime-load, 3D, rights, secret,
+      endpoint, and line-limit audits; audio-enabled offline packaged smoke; release
+      attestation'
     result: passed
     notes: Phase 7 focused automation passed 5 of 5. Full AMSim automation
       reported 67 clean passes and one retained warning-only Phase 0 backup
@@ -965,8 +964,180 @@ entries:
       packages each contain 628 packages; all 15 Phase 7 definitions are
       present. The audio-enabled Development S01 journey and save/load pass
       after deferring local speech initialization until the first caption.
-      Shipping opened zero TCP sockets during its eight-second launch.
-      Forbidden dependency, runtime string-load, required-3D,
-      unreviewed-music, secret, endpoint, and source-line scans are clean.
-      Exact RC1 hashes are recorded. Consolidated owner acceptance remains
-      pending by explicit owner decision.
+      Shipping opened zero TCP sockets during its eight-second launch. Forbidden
+      dependency, runtime string-load, required-3D, unreviewed-music, secret,
+      endpoint, and source-line scans are clean. Exact RC1 hashes are recorded.
+      Consolidated owner acceptance remains pending by explicit owner decision.
+  - timestamp: '2026-07-29T01:38:30.0000000Z'
+    commit: 24c17bc933c961d3e7119d70d4e4f32b010c50a6
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Owner-smoke correction: editor compile; proposal/world and camera-pan
+      focused automation; complete AMSim automation; clean Development BuildCookRun;
+      packaged UI capture'
+    result: passed
+    notes: The correction adds selectable connected starter-plan placement,
+      committed-proposal Paper2D geometry, automatic 1x continuation after
+      confirmation, middle-mouse pan, a windowed/borderless control, persistent
+      locked destinations, and visible named save-slot selection. Focused tests
+      passed; full automation reported 67 succeeded, one retained warning-only
+      legacy backup probe, zero failed, and zero not-run. The clean Development
+      package visibly exposes windowed presentation, selected slot, and all
+      destinations. RC1 is superseded; exact packaged manual retest and a clean
+      replacement Shipping package remain required before a new RC identity.
+  - timestamp: '2026-07-29T02:33:49.7470104Z'
+    commit: d69c29d5c9f906c150a78e77d7b6d99554345926
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: scripts/unreal/Get-UnrealCacheUsage.ps1 and JSON contract check
+    result: warning
+    notes: >-
+      The read-only tracker reports zero remaining tracked project/shared
+      Unreal cache data and automaticCleanupAllowed false. C: nevertheless has
+      only 0.25 GiB free, below the 8 GiB stop-build threshold. No further
+      deletion was attempted because the remaining disk pressure is not a
+      recognized Unreal cache target.
+  - timestamp: '2026-08-02T15:07:59.4553962Z'
+    commit: d69c29d5c9f906c150a78e77d7b6d99554345926
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Direct starter-airfield placement correction: clean editor compile;
+      focused/full Unreal automation; Development BuildCookRun; packaged Computer
+      Use replay; visual capture; cache audit'
+    result: passed
+    notes: The compact build flow replaces nudge controls with full-map
+      runway/taxiway/stand-service mouse placement, authoritative live
+      validation, and persistent cancel/build actions. Focused automation passed
+      1 of 1; the full suite reported 67 succeeded plus one retained
+      warning-only backup probe with zero failed or not-run. A clean 0.553 GiB
+      Development package launched windowed and passed direct runway drag,
+      taxiway click placement, invalid-layout recovery, reset, confirmation, and
+      committed construction. The read-only tracker remained Healthy at 237.57
+      GiB free with 6.40 GiB project and 0.51 GiB shared tracked cache. Owner
+      replay and replacement Shipping verification remain open.
+  - timestamp: '2026-08-02T12:16:35.4379533-04:00'
+    commit: d69c29d5c9f906c150a78e77d7b6d99554345926
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Build-mode UX completion: architecture/adversarial review; editor compile;
+      focused and full Unreal automation; repeated clean Shipping BuildCookRun; packaged
+      Computer Use replay; VA-02 comparison; dependency, runtime-load, line-limit,
+      diff, and cache audits'
+    result: passed
+    notes: The completed starter-airfield editor collapses normal HUD rails,
+      exposes a map-dominant 10 m parcel, provides independent runway, taxiway,
+      stand, hut, and road tools, supports two-click paths and endpoint edits,
+      and supplies localized text-backed validation with undo/reset recovery.
+      Final automation reported 67 clean passes plus one retained warning-only
+      backup probe with zero failed/not-run. The clean Shipping package cooked
+      628 packages and has zero forbidden dependency, package-text, or runtime
+      string-load matches. Real Windows replay verified default windowed launch,
+      invisible save-slot removal, invalid placement, undo, 610 m runway
+      placement, Escape restoration, confirmation, cost deduction, construction
+      completion, opening, and a visible cursor. The VA-02 board has no
+      actionable P0-P2 finding; richer icon/world art remains P3 debt.
+  - timestamp: '2026-08-02T13:35:00.0000000-04:00'
+    commit: d69c29d5c9f906c150a78e77d7b6d99554345926
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Empty-network runway overhaul: architecture/adversarial review; editor
+      compile; focused and full Unreal automation; clean Shipping BuildCookRun; project/release/package
+      audits; packaged Computer Use replay; VA-02 comparison; disk check'
+    result: passed
+    notes: The construction editor now begins empty and supports circular
+      start/end drawing for arbitrary runway and taxiway segments. Interior
+      taxiway/runway intersections are accepted and marked, runway designators
+      are derived from heading, and the Paper2D world preserves the exact
+      committed geometry. Focused Phase 1 tests passed 14 of 14 and focused
+      construction presentation passed 1 of 1. Full automation reported 67 clean
+      passes plus one retained warning-only legacy backup probe with zero failed
+      or not-run. The clean Shipping package cooked 628 packages and has zero
+      forbidden filename/text matches. Real Windows replay completed an empty
+      parcel, diagonal runway, vertical crossing taxiway, all three facilities,
+      commit, and visible reciprocal 05/23 world labels. The final package is
+      0.310 GiB and drive C retained 232.7 GiB free; no cache was cleared.
+  - timestamp: '2026-08-02T14:40:18.6811420-04:00'
+    commit: d69c29d5c9f906c150a78e77d7b6d99554345926
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Starter-network context correction: architecture/adversarial review;
+      editor compile; full Unreal automation; Development and Shipping BuildCookRun;
+      paired release audit; offline Shipping launch; packaged Computer Use replay;
+      line, diff, dependency, runtime-load, and cache checks'
+    result: passed
+    notes: The starter parcel now includes a fixed non-passenger basic
+      operations terminal and Gate A/Gate B anchors. The player draws the runway
+      and a bounded taxiway graph; whole-network validation accepts indirect and
+      intersecting runway-to-gate routes while rejecting orphan segments.
+      Compact endpoint circles omit START/END text. Service roads are optional,
+      have no required endpoint, and grant a 20 percent construction-travel
+      benefit only when useful. Full automation recorded 68 clean successes plus
+      one retained warning-only legacy backup probe, with zero failures or
+      not-run tests. Development and Shipping each cooked 628 packages; the
+      paired release audit and eight-second zero-socket Shipping smoke passed.
+      Real Windows replay connected a 09/27 runway to Gate A through two taxi
+      segments, placed a disconnected 213 m service road, reached NETWORK READY,
+      and preserved the exact committed geometry. Cache tracking remained
+      Healthy at 231.2 GiB free; no cache was cleared.
+  - timestamp: '2026-08-02T19:16:49.575935+00:00'
+    commit: d69c29d5c9f906c150a78e77d7b6d99554345926
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'UI audio integration: source checksum/media audit; editor compile; 3
+      focused and 72 complete Unreal tests; clean Development/Shipping BuildCookRun;
+      cook/package/release/cache audits'
+    result: passed
+    notes: All 28 source MP3 checksums matched and all 28 typed non-looping UI
+      sound assets cooked. Focused audio automation passed 3/3; full suite
+      passed 72/72 with one retained warning-only recovery probe. Packaged
+      Development journey/save-load, Shipping eight-second zero-socket launch,
+      forbidden dependency/runtime-load scans, and release attestation passed.
+      Cache remained healthy near 230 GiB free; nothing cleared. Subjective
+      relative-level approval remains for the next owner gameplay listen.
+  - timestamp: '2026-08-02T19:57:31.874238+00:00'
+    commit: d69c29d5c9f906c150a78e77d7b6d99554345926
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Construction progress feedback: UE 5.8 editor/game builds; 4 focused
+      and 73 complete Unreal tests; integrated 1920x1080 rendered smoke; visual comparison;
+      runtime dependency/string-load/line/diff scans'
+    result: passed
+    notes: Funding now immediately exposes and advances four workers plus a
+      delivery truck. Brown runway/taxiway/road earthwork beds transition
+      proportionally to finished surfaces; markings wait for inspection. Focused
+      tests passed 4/4. Full automation passed 72 clean plus one retained
+      warning-only backup probe, with zero failures/not-run. The integrated
+      state/save-load/render smoke passed. ComfyUI dirt candidates were rejected
+      and no new runtime asset/cook dependency was retained, so the reviewed
+      package exemption applies.
+  - timestamp: '2026-08-02T20:02:11.051637+00:00'
+    commit: d69c29d5c9f906c150a78e77d7b6d99554345926
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: Construction-progress Development BuildCookRun; packaged 1920x1080
+      Phase 1 smoke; before/after Unreal cache measurement
+    result: passed
+    notes: 'The 0.555 GiB package at D:/AMSimConstructionProgressDev/Windows contains
+      the latest construction behavior. Its packaged journey, state assertions, save/load,
+      and screenshots passed at 1.509 ms p99 with zero 8x backlog. Project caches
+      increased from 8.51 to 8.76 GiB; shared caches stayed at 0.79 GiB; C: retained
+      228.75 GiB free and nothing was cleared.'
+  - timestamp: '2026-08-02T20:34:10.728280+00:00'
+    commit: d69c29d5c9f906c150a78e77d7b6d99554345926
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Runway/taxiway surface and construction pacing: ComfyUI candidate review;
+      deterministic texture processing; UE 5.8 editor/game builds; focused and 73-test
+      automation; integrated rendered smoke; clean Development BuildCookRun; IoStore
+      inventory; packaged rendered smoke; dependency/runtime-load/line/diff/cache
+      audits'
+    result: passed
+    notes: 'Construction now takes 3m30s at 1x or 26.25s at 8x, with the existing
+      useful-road reduction yielding 2m48s at 1x. Distinct marked runway and taxiway
+      textures replace the brown bed on completion; roads and earthwork remain unmarked;
+      09/27 overlays face their approaches. All 73 tests passed, the clean 658-package
+      Development cook contains both textures/sprites and bulk data, packaged journey/save-load/screenshots
+      passed with zero unexpected TCP connections, and scans found zero runtime string
+      loads, forbidden runtime dependencies, or line-limit violations. C: remained
+      near 228.47 GiB free; tracked cache totals stayed 8.76/0.79 GiB; nothing was
+      cleared.'

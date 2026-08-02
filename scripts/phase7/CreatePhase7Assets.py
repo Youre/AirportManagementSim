@@ -150,9 +150,9 @@ definitions = [
     (
         "DA_P7_Scenario_Migration",
         "Scenario.Release.MigrationMatrix",
-        "Schemas 1 through 8 Migration Matrix",
+        "Schemas 1 through 9 Migration Matrix",
         "ReleaseScenario",
-        {"MinimumSchema": "1", "CurrentSchema": "8"},
+        {"MinimumSchema": "1", "CurrentSchema": "9"},
     ),
     (
         "DA_P7_Scenario_Offline",
@@ -183,7 +183,7 @@ definitions = [
         {
             "EngineVersion": "5.8.0",
             "Platform": "Win64",
-            "SaveSchema": "8",
+            "SaveSchema": "9",
             "MapCount": "1",
             "HumanGateStatus": "PendingOwnerTest",
             "ConceptReferences": "VA-01,VA-02,VA-03,VA-04,VA-05,VA-06,VA-07",

@@ -43,4 +43,17 @@
 - 2026-07-26: Elevated Phase 1 S15 passed against the final package hashes with exact-executable inbound/outbound denial, Development journey/save-load continuity, zero Shipping TCP sockets, and complete rule cleanup. Formal closure now depends only on physical reference-tier and unassisted tester/audio/comprehension evidence.
 - 2026-07-26: The four-hour physical-tier soak and formal unassisted tester/audio/comprehension record are deferred to Phase 7 release hardening. Phase 1 continues short automated and hands-on checks and remains focused on visual fidelity and interaction polish rather than blocking subsequent development on premature endurance evidence.
 - 2026-07-26: Visual validation requires equivalent-state side-by-side comparison, prioritized mismatch notes, a bounded mutation, and same-state recapture. OpenAI Image Gen is preferred for concept/UI exploration; local ComfyUI is approved for simple textures, variants, edits, and cutouts subject to full provenance and content review.
+- 2026-08-02: The starter map now supplies a basic operations-terminal shell
+  with two preset aircraft gate/stand ports so construction has visible
+  context. Players draw every runway and a multi-segment taxiway graph;
+  readiness requires the whole proposed graph to connect a runway to at least
+  one gate. Optional service roads never require a stand connection and only
+  accelerate nearby construction travel. Full passenger-terminal mechanics
+  remain Phase 3.
+- 2026-08-02: The complete 28-cue ElevenLabs UI sound inventory is approved
+  for nonverbal UI-only use. Source MP3 masters remain outside cooked content;
+  typed hard references and `/Game/Audio/UI` provide runtime/cooker ownership.
+  All future Riverbend buttons inherit hover/press audio from the shared theme,
+  while semantic cues are emitted only from authoritative results or state
+  transitions and never replace visible/captioned meaning.
 - 2026-07-26: Phase 1.5 establishes the reusable presentation baseline with a cooker-visible production Widget Blueprint, revision-gated native presenter, real Paper2D world, one approved fictional-livery Cessna source, and compact 175–200% drawers. Illustrated environment detail and richer timetable/service animation remain later bounded polish; final Phase 1.5 closure still requires owner acceptance of the four comparison boards.

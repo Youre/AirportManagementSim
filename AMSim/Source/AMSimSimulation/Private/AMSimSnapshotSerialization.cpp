@@ -51,7 +51,10 @@ namespace AMSim
 			Archive << Point.Y;
 		}
 
-		void SerializeProposal(FArchive& Archive, FStarterPlanProposal& Proposal)
+		void SerializeProposal(
+			FArchive& Archive,
+			FStarterPlanProposal& Proposal,
+			const uint32 SchemaVersion)
 		{
 			SerializePoint(Archive, Proposal.RunwayStart);
 			SerializePoint(Archive, Proposal.RunwayEnd);
@@ -62,6 +65,23 @@ namespace AMSim
 			SerializePoint(Archive, Proposal.AccessStart);
 			SerializePoint(Archive, Proposal.AccessEnd);
 			SerializePoint(Archive, Proposal.OperationsHutCenter);
+			if (SchemaVersion >= 9)
+			{
+				int32 SegmentCount = Proposal.TaxiwaySegments.Num();
+				if (!SerializeCount(Archive, SegmentCount, 16))
+				{
+					return;
+				}
+				if (Archive.IsLoading())
+				{
+					Proposal.TaxiwaySegments.SetNum(SegmentCount);
+				}
+				for (FTaxiwaySegment& Segment : Proposal.TaxiwaySegments)
+				{
+					SerializePoint(Archive, Segment.Start);
+					SerializePoint(Archive, Segment.End);
+				}
+			}
 		}
 
 		void SerializeFacility(FArchive& Archive, FFacilityRecord& Record)
@@ -184,7 +204,10 @@ namespace AMSim
 
 			Archive << State.Project.Id.Value;
 			SerializeEnum(Archive, State.Project.Stage);
-			SerializeProposal(Archive, State.Project.Proposal);
+			SerializeProposal(
+				Archive,
+				State.Project.Proposal,
+				SchemaVersion);
 			Archive << State.Project.QuotedCost;
 			Archive << State.Project.FundedAtGameMilliseconds;
 			Archive << State.Project.StageChangedAtGameMilliseconds;
@@ -1271,6 +1294,17 @@ namespace AMSim
 		{
 			Snapshot.Phase1.AcknowledgedContextHelp.Reset();
 			Snapshot.SchemaVersion = 8;
+		}
+		if (Snapshot.SchemaVersion == 8)
+		{
+			FStarterPlanProposal& Proposal =
+				Snapshot.Phase1.Project.Proposal;
+			if (Proposal.TaxiStart != Proposal.TaxiEnd)
+			{
+				Proposal.TaxiwaySegments = {
+					{Proposal.TaxiStart, Proposal.TaxiEnd}};
+			}
+			Snapshot.SchemaVersion = 9;
 		}
 		return Snapshot.SchemaVersion == SnapshotSchemaVersion;
 	}

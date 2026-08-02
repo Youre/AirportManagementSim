@@ -80,6 +80,16 @@ void UAMSimRegionalOperationsView::ShowAdvancedOperations()
 	RefreshFromSimulation();
 }
 
+void UAMSimRegionalOperationsView::ShowRegionalOperations()
+{
+	bAdvancedOperationsOpen = false;
+	bMajorOperationsOpen = false;
+	bOverviewOpen = false;
+	bProgressionOpen = false;
+	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	RefreshFromSimulation();
+}
+
 void UAMSimRegionalOperationsView::ToggleAdvancedOperations()
 {
 	if (bAdvancedOperationsOpen)

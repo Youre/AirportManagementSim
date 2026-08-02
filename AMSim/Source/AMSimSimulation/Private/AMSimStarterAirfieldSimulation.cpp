@@ -282,7 +282,7 @@ namespace AMSim
 			State.Objectives.Add({
 				{AllocateDomainId()},
 				TEXT("Objective.BuildStarterAirfield"),
-				TEXT("Build a grass runway, taxi connection, stand, access, and operations hut."),
+				TEXT("Build a grass runway and connect taxiways to a terminal gate."),
 				false
 			});
 			EmitEvent(
@@ -293,16 +293,20 @@ namespace AMSim
 			break;
 
 		case EPhase1CommandType::CommitStarterPlan:
+		{
+			const FPhase1Validation Validation =
+				ValidateStarterPlan(Command.Proposal);
 			State.Project.Id = {AllocateDomainId()};
-			State.Project.Proposal = Command.Proposal;
-			State.Project.QuotedCost = Fixture.StarterPlanCost;
+			State.Project.Proposal =
+				NormalizeStarterPlanConnections(Command.Proposal);
+			State.Project.QuotedCost = Validation.QuotedCost;
 			State.Project.FundedAtGameMilliseconds = CurrentGameMilliseconds;
 			State.Project.StageChangedAtGameMilliseconds = CurrentGameMilliseconds;
 			State.Project.Stage = EConstructionStage::Funded;
-			State.Credits -= Fixture.StarterPlanCost;
+			State.Credits -= Validation.QuotedCost;
 			RecordTransaction(
 				TEXT("Construction"),
-				-Fixture.StarterPlanCost,
+				-Validation.QuotedCost,
 				TEXT("Reserved for the complete starter grass-airfield project."),
 				CurrentGameMilliseconds);
 			EmitEvent(
@@ -315,6 +319,7 @@ namespace AMSim
 				CurrentGameMilliseconds,
 				TEXT("Materials and the construction team are on the way."));
 			break;
+		}
 
 		case EPhase1CommandType::CancelStarterPlan:
 		{
@@ -344,13 +349,20 @@ namespace AMSim
 		}
 
 		case EPhase1CommandType::OpenAirport:
+		{
+			const FRunwayDesignation Designation = CalculateRunwayDesignation(
+				State.Project.Proposal.RunwayStart,
+				State.Project.Proposal.RunwayEnd);
 			State.bAirportOpen = true;
 			State.bPaused = true;
 			State.SpeedMultiplier = 0;
 			ChangeConstructionStage(
 				EConstructionStage::Operational,
 				CurrentGameMilliseconds,
-				TEXT("Runway 09, Taxiway A, and Stand A1 are open."));
+				FString::Printf(
+					TEXT("Runway %02d/%02d and the terminal-gate taxi network are open."),
+					Designation.PrimaryNumber,
+					Designation.ReciprocalNumber));
 			for (FFacilityRecord& Facility : State.Facilities)
 			{
 				Facility.bOpen = true;
@@ -361,7 +373,7 @@ namespace AMSim
 			State.Offer.AircraftContentId = Fixture.AircraftId;
 			State.Offer.OperatorContentId = Fixture.OperatorId;
 			State.Offer.CompatibilitySummary =
-				TEXT("Compatible: 600 m grass runway, Taxiway A, Stand A1, inspection, and fuel available.");
+				TEXT("Compatible: grass runway, connected terminal gate, inspection, and fuel available.");
 			State.Offer.RewardCredits = Fixture.FlightRewardCredits;
 			State.Offer.bPinned = false;
 			EmitEvent(
@@ -375,6 +387,7 @@ namespace AMSim
 				TEXT("Riverbend Flying Club offer is available immediately while paused."),
 				CurrentGameMilliseconds);
 			break;
+		}
 
 		case EPhase1CommandType::CloseAirport:
 			State.bAirportOpen = false;
@@ -514,17 +527,41 @@ namespace AMSim
 
 		const FPhase1Fixture& Fixture = GetPhase1Fixture();
 		const int64 Elapsed = CurrentGameMilliseconds - State.Project.FundedAtGameMilliseconds;
-		if (Elapsed >= Fixture.ReadyToOpenAtMilliseconds)
+		const bool bRoadAssisted =
+			HasConstructionRoadBenefit(State.Project.Proposal);
+		const int32 DurationPercent = bRoadAssisted
+			? 100 - Fixture.ServiceRoadConstructionBonusPercent
+			: 100;
+		const auto Threshold = [DurationPercent](const int64 Value)
+		{
+			return Value * DurationPercent / 100;
+		};
+		if (Elapsed >= Threshold(Fixture.ReadyToOpenAtMilliseconds))
 		{
 			State.Project.bInspectionPassed = true;
+			const FRunwayDesignation Designation = CalculateRunwayDesignation(
+				State.Project.Proposal.RunwayStart,
+				State.Project.Proposal.RunwayEnd);
 			State.Facilities = {
 				{{AllocateDomainId()}, TEXT("Facility.GrassRunway.Starter"), EFacilityType::GrassRunway, true, false, TEXT("Valid; closed by player")},
-				{{AllocateDomainId()}, TEXT("Facility.GrassTaxiway.Starter"), EFacilityType::GrassTaxiway, true, false, TEXT("Connected; closed by player")},
-				{{AllocateDomainId()}, TEXT("Facility.GAStand.Starter"), EFacilityType::GAStand, true, false, TEXT("Compatible; closed by player")},
-				{{AllocateDomainId()}, TEXT("Facility.AccessConnection.Starter"), EFacilityType::AccessConnection, true, false, TEXT("Connected")},
-				{{AllocateDomainId()}, TEXT("Facility.OperationsHut.Starter"), EFacilityType::OperationsHut, true, false, TEXT("Staff home ready")},
-				{{AllocateDomainId()}, TEXT("Facility.MarkingsWindsock.Starter"), EFacilityType::MarkingsAndWindsock, true, false, TEXT("Runway 09/27 marked")}
+				{{AllocateDomainId()}, TEXT("Facility.GrassTaxiway.Starter"), EFacilityType::GrassTaxiway, true, false, TEXT("Runway-to-gate network connected; closed by player")},
+				{{AllocateDomainId()}, TEXT("Facility.GAStand.Starter"), EFacilityType::GAStand, true, false, TEXT("Terminal gate compatible; closed by player")},
+				{{AllocateDomainId()}, TEXT("Facility.OperationsHut.Starter"), EFacilityType::OperationsHut, true, false, TEXT("Basic operations terminal ready")},
+				{{AllocateDomainId()}, TEXT("Facility.MarkingsWindsock.Starter"), EFacilityType::MarkingsAndWindsock, true, false, FString::Printf(TEXT("Runway %02d/%02d marked"), Designation.PrimaryNumber, Designation.ReciprocalNumber)}
 			};
+			if (State.Project.Proposal.AccessStart !=
+				State.Project.Proposal.AccessEnd)
+			{
+				State.Facilities.Add({
+					{AllocateDomainId()},
+					TEXT("Facility.AccessConnection.Starter"),
+					EFacilityType::AccessConnection,
+					true,
+					false,
+					bRoadAssisted
+						? TEXT("Service road shortened worker travel")
+						: TEXT("Service road available")});
+			}
 			State.Teams = {
 				{{AllocateDomainId()}, TEXT("Staff.Role.Construction"), 3, true, TEXT("Starter project complete")},
 				{{AllocateDomainId()}, TEXT("Staff.Role.Ramp"), 2, true, TEXT("Available for inspection")},
@@ -545,7 +582,7 @@ namespace AMSim
 				CurrentGameMilliseconds,
 				TEXT("Inspection passed. Open the airfield when ready."));
 		}
-		else if (Elapsed >= Fixture.InspectionAtMilliseconds &&
+		else if (Elapsed >= Threshold(Fixture.InspectionAtMilliseconds) &&
 			State.Project.Stage != EConstructionStage::Inspection)
 		{
 			ChangeConstructionStage(
@@ -553,22 +590,26 @@ namespace AMSim
 				CurrentGameMilliseconds,
 				TEXT("Checking runway clearance and network connections."));
 		}
-		else if (Elapsed >= Fixture.BuildingAtMilliseconds &&
+		else if (Elapsed >= Threshold(Fixture.BuildingAtMilliseconds) &&
 			State.Project.Stage != EConstructionStage::Building)
 		{
 			ChangeConstructionStage(
 				EConstructionStage::Building,
 				CurrentGameMilliseconds,
-				TEXT("Workers are building the runway, taxi connection, stand, access, and hut."));
+				bRoadAssisted
+					? TEXT("Workers reached the site by service road and are building the airfield network.")
+					: TEXT("Workers walked from the terminal and are building the airfield network."));
 		}
-		else if (Elapsed >= Fixture.DeliveryAtMilliseconds &&
+		else if (Elapsed >= Threshold(Fixture.DeliveryAtMilliseconds) &&
 			!State.Project.bDeliveryArrived)
 		{
 			State.Project.bDeliveryArrived = true;
 			EmitEvent(
 				EPhase1EventType::ProjectStageChanged,
 				{},
-				TEXT("Materials and workers arrived through construction access."),
+				bRoadAssisted
+					? TEXT("Materials and workers arrived by the optional service road.")
+					: TEXT("Materials arrived; workers walked from the starter terminal."),
 				CurrentGameMilliseconds);
 		}
 	}
@@ -937,6 +978,32 @@ namespace AMSim
 		const uint8 ProjectStage = static_cast<uint8>(State.Project.Stage);
 		HashBytes(Hash, &ProjectStage, sizeof(ProjectStage));
 		HashBytes(Hash, &State.Project.QuotedCost, sizeof(State.Project.QuotedCost));
+		const FStarterPlanProposal& Proposal = State.Project.Proposal;
+		for (const FPhase1Point Point : {
+			Proposal.RunwayStart,
+			Proposal.RunwayEnd,
+			Proposal.TaxiStart,
+			Proposal.TaxiEnd,
+			Proposal.StandCenter,
+			Proposal.AccessStart,
+			Proposal.AccessEnd,
+			Proposal.OperationsHutCenter})
+		{
+			HashBytes(Hash, &Point.X, sizeof(Point.X));
+			HashBytes(Hash, &Point.Y, sizeof(Point.Y));
+		}
+		HashBytes(Hash, &Proposal.RunwayWidthCentimeters,
+			sizeof(Proposal.RunwayWidthCentimeters));
+		const int32 TaxiwaySegmentCount = Proposal.TaxiwaySegments.Num();
+		HashBytes(Hash, &TaxiwaySegmentCount, sizeof(TaxiwaySegmentCount));
+		for (const FTaxiwaySegment& Segment : Proposal.TaxiwaySegments)
+		{
+			for (const FPhase1Point Point : {Segment.Start, Segment.End})
+			{
+				HashBytes(Hash, &Point.X, sizeof(Point.X));
+				HashBytes(Hash, &Point.Y, sizeof(Point.Y));
+			}
+		}
 		const uint8 OfferState = static_cast<uint8>(State.Offer.State);
 		const uint8 FlightState = static_cast<uint8>(State.Flight.State);
 		HashBytes(Hash, &OfferState, sizeof(OfferState));
@@ -1025,6 +1092,11 @@ namespace AMSim
 			SeenHelpIds.Add(HelpId);
 		}
 		if (InState.bInitialized && (!InState.AirportId.IsValid() || InState.MapId.IsNone()))
+		{
+			return false;
+		}
+		if (InState.Project.Stage != EConstructionStage::None &&
+			!ValidateStarterPlan(InState.Project.Proposal).bValid)
 		{
 			return false;
 		}

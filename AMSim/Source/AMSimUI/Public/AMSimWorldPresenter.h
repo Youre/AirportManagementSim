@@ -11,6 +11,7 @@
 
 class UPaperSprite;
 class UPaperSpriteComponent;
+class UTextRenderComponent;
 class USceneComponent;
 
 UCLASS()
@@ -21,7 +22,9 @@ class AMSIMUI_API AAMSimWorldPresenter final : public AActor
 public:
 	AAMSimWorldPresenter();
 
-	void ApplySnapshot(const AMSim::FPhase1QuerySnapshot& Query);
+	void ApplySnapshot(
+		const AMSim::FPhase1QuerySnapshot& Query,
+		const AMSim::FPhase1State& State);
 	void ApplyPhase2Snapshot(
 		const AMSim::FPhase2QuerySnapshot& Query,
 		const AMSim::FPhase2State& State);
@@ -40,8 +43,14 @@ public:
 	void SetPhase3OverlayMode(int32 Mode);
 	void SetMatureOverviewMode(bool bEnabled);
 	void SetMatureSelectionFacility(bool bFacilitySelected);
+	void SetConstructionEditorOverlayVisible(bool bVisible);
 	uint64 GetLastAppliedRevision() const { return LastAppliedRevision; }
 	bool HasRequiredPresentationAssets() const;
+	bool HasDistinctPhase1MovementSurfaceAssets() const
+	{
+		return RunwaySprite && TaxiSprite && AccessSprite &&
+			RunwaySprite != TaxiSprite && TaxiSprite != AccessSprite;
+	}
 	static int32 GetHeadingIndex(AMSim::EFlightState FlightState);
 	static int32 GetPhase2HeadingIndex(AMSim::EPhase2FlightState FlightState);
 	int32 GetActivePhase2AircraftProxyCount() const;
@@ -53,7 +62,16 @@ public:
 	int32 GetActivePhase6ProxyCount() const;
 	int32 GetActiveMatureSiteProxyCount() const;
 	int32 GetActivePhase1ConstructionProxyCount() const;
+	int32 GetActivePhase1EarthworkProxyCount() const;
 	int32 GetActiveTurnaroundSupportProxyCount() const;
+	float GetPhase1ConstructionTravelProgress() const
+	{
+		return Phase1ConstructionTravelProgress;
+	}
+	float GetPhase1ConstructionSurfaceProgress() const
+	{
+		return Phase1ConstructionSurfaceProgress;
+	}
 	int32 GetTerminalAccessibleDashProxyCount() const
 	{
 		return Phase3AccessibleDashes.Num();
@@ -78,6 +96,8 @@ public:
 	{
 		return bPhase4IncidentWorldVisible;
 	}
+	FVector GetPhase1GeometryOffset() const { return Phase1GeometryOffset; }
+	FVector GetPhase1RunwayCenter() const { return Phase1RunwayCenter; }
 
 private:
 	UPaperSpriteComponent* CreateSpriteComponent(
@@ -89,8 +109,13 @@ private:
 		UPaperSprite* Sprite,
 		const FVector& Location,
 		const FVector& Scale);
-	void SetFacilitiesVisible(bool bVisible, bool bOperational);
+	void SetFacilitiesVisible(
+		bool bNetworkVisible,
+		bool bOperational,
+		bool bStarterContextVisible = false);
 	void SetAircraftState(const AMSim::FPhase1QuerySnapshot& Query);
+	void ApplyPhase1Geometry(const AMSim::FStarterPlanProposal& Proposal);
+	void InitializePhase1ConstructionPresentation();
 	void FinalizePhase1OperationsPresentation(
 		UPaperSprite* ConstructionTruckSprite,
 		UPaperSprite* ConstructionWorkerSprite,
@@ -100,7 +125,11 @@ private:
 		UPaperSprite* RampWorkerSprite,
 		UPaperSprite* DirectionArrowSprite);
 	void RefreshPhase1OperationsPresentation(
-		const AMSim::FPhase1QuerySnapshot& Query);
+		const AMSim::FPhase1QuerySnapshot& Query,
+		const AMSim::FPhase1State& State);
+	void RefreshPhase1ConstructionPresentation(
+		const AMSim::FPhase1QuerySnapshot& Query,
+		const AMSim::FPhase1State& State);
 	void SetPhase3WorldVisible(bool bVisible);
 	void RefreshPhase3OverlayVisibility();
 	void RefreshIncidentPresentationVisibility();
@@ -129,13 +158,21 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UPaperSpriteComponent> Taxiway;
 	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1TaxiwaySegments;
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UPaperSpriteComponent> Stand;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPaperSpriteComponent> GateB;
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UPaperSpriteComponent> Access;
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UPaperSpriteComponent> OperationsHut;
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UPaperSpriteComponent> Windsock;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UTextRenderComponent> RunwayStartNumber;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UTextRenderComponent> RunwayEndNumber;
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UPaperSpriteComponent> Aircraft;
 	UPROPERTY(VisibleAnywhere)
@@ -156,6 +193,16 @@ private:
 	TArray<TObjectPtr<UPaperSpriteComponent>> TurnaroundApproachPaths;
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1ConstructionProxies;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPaperSpriteComponent> Phase1RunwayEarthwork;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1TaxiwayEarthworks;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPaperSpriteComponent> Phase1RoadEarthwork;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1ConstructionCrew;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1ConstructionBoundaryMarkers;
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> Phase2Aircraft;
 	UPROPERTY(VisibleAnywhere)
@@ -274,6 +321,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<UPaperSprite> TaxiSprite;
 	UPROPERTY()
+	TObjectPtr<UPaperSprite> AccessSprite;
+	UPROPERTY()
 	TObjectPtr<UPaperSprite> StandSprite;
 	UPROPERTY()
 	TObjectPtr<UPaperSprite> WhiteSprite;
@@ -320,4 +369,16 @@ private:
 	bool bPhase4RunwayClosed = false;
 	bool bPhase4RouteVisible = false;
 	bool bPhase4ProtectionVisible = false;
+	FVector Phase1GeometryOffset = FVector::ZeroVector;
+	FVector Phase1RunwayCenter = FVector::ZeroVector;
+	FVector Phase1TaxiCenter = FVector::ZeroVector;
+	FVector Phase1StandCenter = FVector::ZeroVector;
+	int32 ActivePhase1TaxiwaySegmentCount = 0;
+	bool bPhase1RoadPresent = false;
+	bool bConstructionEditorOverlayVisible = false;
+	bool bRequestedPhase1NetworkVisible = false;
+	bool bRequestedPhase1Operational = false;
+	bool bRequestedStarterContextVisible = false;
+	float Phase1ConstructionTravelProgress = 0.0f;
+	float Phase1ConstructionSurfaceProgress = 0.0f;
 };

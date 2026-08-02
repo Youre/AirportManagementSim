@@ -4,6 +4,7 @@
 #include "AMSimContextHelp.h"
 #include "AMSimHUD.h"
 #include "AMSimUITheme.h"
+#include "AMSimUISoundSubsystem.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
 #include "Components/Button.h"
@@ -394,9 +395,14 @@ TSharedRef<SWidget> UAMSimReleaseGuideView::RebuildWidget()
 
 void UAMSimReleaseGuideView::OpenGuide()
 {
+	const bool bWasOpen = IsGuideOpen();
 	bRequestedOpen = true;
 	SetVisibility(ESlateVisibility::Visible);
 	SetSection(ActiveSection);
+	if (!bWasOpen)
+	{
+		AMSim::UIAudio::Play(this, EAMSimUISound::PanelOpen);
+	}
 	if (APlayerController* Controller = GetOwningPlayer())
 	{
 		Controller->bShowMouseCursor = true;
@@ -405,8 +411,13 @@ void UAMSimReleaseGuideView::OpenGuide()
 
 void UAMSimReleaseGuideView::CloseGuide()
 {
+	const bool bWasOpen = IsGuideOpen();
 	bRequestedOpen = false;
 	SetVisibility(ESlateVisibility::Collapsed);
+	if (bWasOpen)
+	{
+		AMSim::UIAudio::Play(this, EAMSimUISound::PanelClose);
+	}
 }
 
 bool UAMSimReleaseGuideView::IsGuideOpen() const
@@ -427,6 +438,7 @@ void UAMSimReleaseGuideView::ShowAccessibility() { SetSection(4); }
 
 void UAMSimReleaseGuideView::SetSection(const int32 SectionIndex)
 {
+	const int32 PreviousSection = ActiveSection;
 	if (!ContentCards || !SectionEyebrowText ||
 		!SectionHeadlineText || !SectionIntroText)
 	{
@@ -435,6 +447,10 @@ void UAMSimReleaseGuideView::SetSection(const int32 SectionIndex)
 	}
 	using namespace AMSim::UITheme;
 	ActiveSection = FMath::Clamp(SectionIndex, 0, 4);
+	if (ActiveSection != PreviousSection && IsGuideOpen())
+	{
+		AMSim::UIAudio::Play(this, EAMSimUISound::TabSwitch);
+	}
 	ContentCards->ClearChildren();
 	const FString Eyebrows[] = {
 		TEXT("START"),

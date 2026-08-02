@@ -37,6 +37,22 @@ Before considering an MCP-authored runtime asset integrated:
 
 PIE proves editor/runtime integration but does not replace the packaged Shipping journey. Package presence proves cooking but does not prove interactive behavior.
 
+## Runtime UI audio
+
+- Retain generated or externally produced source masters outside `Content` and
+  record provider, model, prompt/session, format, checksum, review decision, and
+  runtime destination before import.
+- Fixed required UI sounds use typed constructor-visible references or
+  serialized UObject properties. Runtime string asset loading is prohibited.
+- Put common button hover/press cues in the shared theme so future components
+  inherit the approved interaction language. Use explicit semantic cues only
+  after an authoritative action result or state transition.
+- Rate-limit dense feedback such as hover, focus, magnetic snap, notifications,
+  and alerts. Audio reinforces visible/captioned state and is never the only
+  way to understand an outcome.
+- Validate duration, channel count, looping, sound group, reviewed level trim,
+  cooker presence, `-NoSound`, and a packaged interaction journey.
+
 ## Primary Epic guidance
 
 - [Coding in UE: Blueprint vs. C++](https://dev.epicgames.com/documentation/en-us/unreal-engine/coding-in-unreal-engine-blueprint-vs-cplusplus)
@@ -45,3 +61,25 @@ PIE proves editor/runtime integration but does not replace the packaged Shipping
 - [Exposing C++ to Blueprints](https://dev.epicgames.com/documentation/unreal-engine/exposing-cplusplus-to-blueprints-visual-scripting-in-unreal-engine)
 
 Unreal MCP and its toolsets are experimental in Unreal Engine 5.8. Re-check the installed engine source and current Epic documentation when changing engine versions or relying on new toolsets.
+
+## Cache and disk-space hygiene
+
+- Run `scripts/unreal/Get-UnrealCacheUsage.ps1` before and after a clean
+  `BuildCookRun`, and whenever system-drive free space approaches 20 GiB.
+- Preserve at least 15 GiB free before starting a clean package. Stop new
+  build/package work below 8 GiB until space is recovered.
+- Build pipelines may report cache pressure, but must never delete caches
+  automatically.
+- Clean project-local reproducible output first: staged builds, cooked output,
+  and then `AMSim/Intermediate/Build`. Retain required verification reports,
+  screenshots, save fixtures, logs, source assets, and cooked-package evidence.
+- Shared Derived Data, Zen, and UBA caches accelerate every Unreal project.
+  Clear them only when project-local cleanup is insufficient and the owner has
+  explicitly approved the broader cleanup.
+- Before deletion, resolve every exact target, confirm no Unreal build/editor
+  process is using it, and verify that it is a known cache directory. Never
+  delete an Unreal, repository, workspace, `Content`, `Source`, `SourceAssets`,
+  or `Saved` root recursively.
+- After cleanup, record the exact cache categories removed, approximate space
+  recovered, remaining free space, and the expected cold-build cost in the
+  verification log or active handoff.

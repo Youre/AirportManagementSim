@@ -13,11 +13,22 @@ class UEditableTextBox;
 class UTextBlock;
 class UUserWidget;
 class UVerticalBox;
+class UWidget;
 class UAMSimConstructionProposalView;
 class UAMSimContextHelpCard;
 class UAMSimReleaseGuideView;
+class UAMSimSaveLoadView;
+class UAMSimSchedulePickerView;
 class UAMSimTerminalView;
 class UAMSimTurnaroundView;
+
+namespace AMSim
+{
+	struct FPhase3QuerySnapshot;
+	struct FPhase4QuerySnapshot;
+	struct FPhase5QuerySnapshot;
+	struct FPhase6QuerySnapshot;
+}
 
 UCLASS(Blueprintable)
 class AMSIMUI_API UAMSimRootScreen : public UCommonActivatableWidget
@@ -34,6 +45,15 @@ protected:
 	virtual TOptional<FUIInputConfig> GetDesiredInputConfig() const override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	virtual void NativeDestruct() override;
+	virtual FReply NativeOnMouseButtonDown(
+		const FGeometry& InGeometry,
+		const FPointerEvent& InMouseEvent) override;
+	virtual FReply NativeOnMouseButtonUp(
+		const FGeometry& InGeometry,
+		const FPointerEvent& InMouseEvent) override;
+	virtual FReply NativeOnMouseMove(
+		const FGeometry& InGeometry,
+		const FPointerEvent& InMouseEvent) override;
 
 private:
 	UFUNCTION()
@@ -73,6 +93,8 @@ private:
 	UFUNCTION()
 	void LoadGame();
 	UFUNCTION()
+	void ToggleWindowMode();
+	UFUNCTION()
 	void ToggleObjectiveDrawer();
 	UFUNCTION()
 	void ToggleOperationsDrawer();
@@ -80,6 +102,12 @@ private:
 	void ToggleReleaseGuide();
 	UFUNCTION()
 	void ToggleTerminalPresentation();
+	UFUNCTION()
+	void OpenRegionalPresentation();
+	UFUNCTION()
+	void OpenAdvancedPresentation();
+	UFUNCTION()
+	void OpenMajorPresentation();
 	void CloseTerminalPresentation();
 	UFUNCTION()
 	void InitializePhase2();
@@ -111,7 +139,16 @@ private:
 	void RespondPhase2Incident();
 
 	void SubmitSpeed(int32 Multiplier);
+	bool SubmitScheduleAt(int64 ScheduledArrivalGameMilliseconds);
+	bool LoadSlotById(const FString& SlotId);
 	void RefreshFromSimulation();
+	void RefreshAudioFeedback(
+		const AMSim::FPhase1QuerySnapshot& Phase1Query,
+		const AMSim::FPhase1State& Phase1State,
+		const AMSim::FPhase2QuerySnapshot& Phase2Query,
+		const AMSim::FPhase4QuerySnapshot& Phase4Query,
+		const AMSim::FPhase5QuerySnapshot& Phase5Query,
+		const AMSim::FPhase6QuerySnapshot& Phase6Query);
 	void SelectPhase2Specialization(AMSim::EAirportSpecialization Specialization);
 	bool SubmitPhase2Command(
 		AMSim::FPhase2Command Command,
@@ -121,6 +158,15 @@ private:
 		const AMSim::FPhase2State& State,
 		const AMSim::FPhase1State& Phase1State);
 	void SetInteractionMessage(const FString& Message, bool bSucceeded);
+	void RefreshSaveSlots();
+	void SetConstructionModeChrome(bool bOpen);
+	FString GetSelectedSaveSlotId() const;
+	void RefreshDestinationButtons(
+		const AMSim::FPhase3QuerySnapshot& Phase3Query,
+		const AMSim::FPhase4QuerySnapshot& Phase4Query,
+		const AMSim::FPhase5QuerySnapshot& Phase5Query,
+		const AMSim::FPhase6QuerySnapshot& Phase6Query);
+	static void SetButtonLabel(UButton* Button, const FString& Label);
 
 	UPROPERTY(Transient)
 	TObjectPtr<UTextBlock> AirportNameText;
@@ -185,7 +231,17 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<UAMSimReleaseGuideView> ReleaseGuideView;
 	UPROPERTY(Transient)
+	TObjectPtr<UAMSimSchedulePickerView> SchedulePickerView;
+	UPROPERTY(Transient)
+	TObjectPtr<UAMSimSaveLoadView> SaveLoadView;
+	UPROPERTY(Transient)
 	TObjectPtr<UVerticalBox> Phase1Page;
+	UPROPERTY(Transient)
+	TObjectPtr<UWidget> BuildModeLeftChrome;
+	UPROPERTY(Transient)
+	TObjectPtr<UWidget> BuildModeRightChrome;
+	UPROPERTY(Transient)
+	TObjectPtr<UWidget> BuildModeFooterChrome;
 
 	UPROPERTY(Transient)
 	TObjectPtr<UBorder> RunwayVisual;
@@ -245,6 +301,16 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<UButton> TerminalNavigationButton;
 	UPROPERTY(Transient)
+	TObjectPtr<UButton> RegionalNavigationButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> AdvancedNavigationButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> MajorNavigationButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> WindowModeButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> PauseButton;
+	UPROPERTY(Transient)
 	TObjectPtr<UButton> InitializePhase2Button;
 	UPROPERTY(Transient)
 	TObjectPtr<UButton> SelectGAButton;
@@ -277,5 +343,19 @@ private:
 	AMSim::FPhase2ViewState CurrentPhase2ViewState;
 	uint64 LastAppliedRevision = MAX_uint64;
 	int32 LastPhraseCount = 0;
+	bool bAudioFeedbackPrimed = false;
+	uint8 LastAudioOfferState = 0;
+	uint8 LastAudioPhase2Incident = 0;
+	uint8 LastAudioPhase4Incident = 0;
+	uint8 LastAudioPhase6Incident = 0;
+	int32 LastAudioCompletedObjectives = 0;
+	int32 LastAudioAdvancedPathCount = 0;
+	int32 LastAudioMajorPathCount = 0;
+	int32 LastAudioRecoveryGrantCount = 0;
 	bool bOpenReleaseGuideWhenReady = false;
+	bool bWorldPanning = false;
+	bool bRightMousePanning = false;
+	bool bCompactLayoutActive = false;
+	TArray<FString> SaveSlotIds;
+	int32 SelectedSaveSlotIndex = 0;
 };

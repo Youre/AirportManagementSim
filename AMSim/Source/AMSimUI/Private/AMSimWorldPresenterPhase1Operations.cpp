@@ -25,7 +25,7 @@ void AAMSimWorldPresenter::FinalizePhase1OperationsPresentation(
 		FVector(-12000.0, 9000.0, 54.0)};
 	const FVector ConstructionScales[] = {
 		FVector(10.0, 1.0, 10.0),
-		FVector(5.0, 1.0, 5.0),
+		FVector(7.0, 1.0, 7.0),
 		FVector(7.0, 1.0, 7.0),
 		FVector(7.0, 1.0, 6.0)};
 	for (int32 Index = 0; Index < Phase1ConstructionProxies.Num(); ++Index)
@@ -36,6 +36,41 @@ void AAMSimWorldPresenter::FinalizePhase1OperationsPresentation(
 			ConstructionLocations[Index],
 			ConstructionScales[Index]);
 		Phase1ConstructionProxies[Index]->SetVisibility(false);
+	}
+	ConfigureSprite(
+		Phase1RunwayEarthwork,
+		AccessSprite,
+		FVector::ZeroVector,
+		FVector::OneVector);
+	Phase1RunwayEarthwork->SetVisibility(false);
+	for (UPaperSpriteComponent* Component : Phase1TaxiwayEarthworks)
+	{
+		ConfigureSprite(Component, AccessSprite, FVector::ZeroVector, FVector::OneVector);
+		Component->SetVisibility(false);
+	}
+	ConfigureSprite(
+		Phase1RoadEarthwork,
+		AccessSprite,
+		FVector::ZeroVector,
+		FVector::OneVector);
+	Phase1RoadEarthwork->SetVisibility(false);
+	for (UPaperSpriteComponent* Crew : Phase1ConstructionCrew)
+	{
+		ConfigureSprite(
+			Crew,
+			ConstructionWorkerSprite,
+			FVector::ZeroVector,
+			FVector(7.0, 1.0, 7.0));
+		Crew->SetVisibility(false);
+	}
+	for (UPaperSpriteComponent* Marker : Phase1ConstructionBoundaryMarkers)
+	{
+		ConfigureSprite(
+			Marker,
+			SafetyConesSprite,
+			FVector::ZeroVector,
+			FVector(4.5, 1.0, 4.5));
+		Marker->SetVisibility(false);
 	}
 
 	ConfigureSprite(
@@ -84,25 +119,10 @@ void AAMSimWorldPresenter::FinalizePhase1OperationsPresentation(
 }
 
 void AAMSimWorldPresenter::RefreshPhase1OperationsPresentation(
-	const AMSim::FPhase1QuerySnapshot& Query)
+	const AMSim::FPhase1QuerySnapshot& Query,
+	const AMSim::FPhase1State& State)
 {
-	const bool bAwaitingDelivery =
-		Query.ConstructionStage == AMSim::EConstructionStage::Funded ||
-		Query.ConstructionStage == AMSim::EConstructionStage::AwaitingDelivery;
-	const bool bBuilding =
-		Query.ConstructionStage == AMSim::EConstructionStage::Building;
-	const bool bInspection =
-		Query.ConstructionStage == AMSim::EConstructionStage::Inspection;
-	const bool ConstructionVisibility[] = {
-		bAwaitingDelivery || bBuilding,
-		bBuilding || bInspection,
-		bAwaitingDelivery || bBuilding || bInspection,
-		bBuilding || bInspection};
-	for (int32 Index = 0; Index < Phase1ConstructionProxies.Num(); ++Index)
-	{
-		Phase1ConstructionProxies[Index]->SetVisibility(
-			ConstructionVisibility[Index]);
-	}
+	RefreshPhase1ConstructionPresentation(Query, State);
 
 	const bool bTurnaround =
 		Query.FlightState == AMSim::EFlightState::Turnaround;
@@ -126,12 +146,25 @@ void AAMSimWorldPresenter::RefreshPhase1OperationsPresentation(
 
 int32 AAMSimWorldPresenter::GetActivePhase1ConstructionProxyCount() const
 {
-	return Algo::CountIf(
+	int32 Count = Algo::CountIf(
 		Phase1ConstructionProxies,
 		[](const UPaperSpriteComponent* Component)
 		{
 			return Component && Component->IsVisible();
 		});
+	Count += Algo::CountIf(
+		Phase1ConstructionCrew,
+		[](const UPaperSpriteComponent* Component)
+		{
+			return Component && Component->IsVisible();
+		});
+	Count += Algo::CountIf(
+		Phase1ConstructionBoundaryMarkers,
+		[](const UPaperSpriteComponent* Component)
+		{
+			return Component && Component->IsVisible();
+		});
+	return Count;
 }
 
 int32 AAMSimWorldPresenter::GetActiveTurnaroundSupportProxyCount() const

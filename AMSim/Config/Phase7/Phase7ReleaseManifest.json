@@ -4,7 +4,7 @@
   "status": "release-candidate-ready-for-owner-acceptance",
   "engine": "5.8.0",
   "platform": "Win64",
-  "saveSchema": 8,
+  "saveSchema": 9,
   "minimumSupportedSaveSchema": 1,
   "mapIds": [
     "Map.TemperateStarter"
@@ -32,6 +32,7 @@
     "runtimeStringAssetLoads": 0,
     "realOperatorBrands": 0,
     "unapprovedAircraft": 0,
+    "uiSoundEffects": 28,
     "unreviewedMusicIncluded": false
   },
   "technicalGates": {

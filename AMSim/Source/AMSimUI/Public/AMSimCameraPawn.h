@@ -19,6 +19,11 @@ public:
 
 	UCameraComponent* GetCamera() const { return Camera; }
 	void SetCloseOperationsMode(bool bEnabled);
+	void PanByScreenDelta(const FVector2D& ScreenDelta);
+	FVector GetManagementLocation() const { return GetActorLocation(); }
+	static FVector CalculateScreenPanDelta(
+		const FVector2D& ScreenDelta,
+		float OrthoWidth);
 
 private:
 	void PanUp();
@@ -27,6 +32,7 @@ private:
 	void PanRight();
 	void Zoom(const struct FInputActionValue& Value);
 	void Pan(FVector Direction);
+	void ClampManagementLocation();
 
 	bool bCloseOperationsMode = false;
 	FVector ManagementCameraLocation = FVector::ZeroVector;

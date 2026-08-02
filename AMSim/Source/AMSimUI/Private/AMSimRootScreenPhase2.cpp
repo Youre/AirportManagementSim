@@ -3,6 +3,7 @@
 #include "AMSimAirportSimulationSubsystem.h"
 #include "AMSimPhase2Fixture.h"
 #include "AMSimTerminalView.h"
+#include "AMSimUISoundSubsystem.h"
 #include "Components/Border.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
@@ -68,6 +69,10 @@ bool UAMSimRootScreen::SubmitPhase2Command(
 	SetInteractionMessage(
 		bAccepted ? SuccessMessage : TEXT("That living-airport action is not available."),
 		bAccepted);
+	if (!bAccepted)
+	{
+		AMSim::UIAudio::Play(this, EAMSimUISound::WarningAttention);
+	}
 	return bAccepted;
 }
 
@@ -123,12 +128,18 @@ void UAMSimRootScreen::AcceptPhase2Contract()
 	if (!Contract)
 	{
 		SetInteractionMessage(TEXT("Select an identity with an available contract."), false);
+		AMSim::UIAudio::Play(this, EAMSimUISound::WarningAttention);
 		return;
 	}
 	AMSim::FPhase2Command Command;
 	Command.Type = AMSim::EPhase2CommandType::AcceptContract;
 	Command.ContractId = Contract->Id;
-	SubmitPhase2Command(Command, TEXT("Recurring contract added to the timetable."));
+	if (SubmitPhase2Command(
+		Command,
+		TEXT("Recurring contract added to the timetable.")))
+	{
+		AMSim::UIAudio::Play(this, EAMSimUISound::OfferAccept);
+	}
 }
 
 void UAMSimRootScreen::CancelPhase2Contract()
@@ -150,12 +161,18 @@ void UAMSimRootScreen::CancelPhase2Contract()
 	if (!Contract)
 	{
 		SetInteractionMessage(TEXT("No selected recurring agreement can be ended."), false);
+		AMSim::UIAudio::Play(this, EAMSimUISound::WarningAttention);
 		return;
 	}
 	AMSim::FPhase2Command Command;
 	Command.Type = AMSim::EPhase2CommandType::CancelContract;
 	Command.ContractId = Contract->Id;
-	SubmitPhase2Command(Command, TEXT("Agreement ended; cancellation cost itemized."));
+	if (SubmitPhase2Command(
+		Command,
+		TEXT("Agreement ended; cancellation cost itemized.")))
+	{
+		AMSim::UIAudio::Play(this, EAMSimUISound::OfferDecline);
+	}
 }
 
 void UAMSimRootScreen::ReschedulePhase2Flight()
@@ -176,6 +193,7 @@ void UAMSimRootScreen::ReschedulePhase2Flight()
 	if (!Flight)
 	{
 		SetInteractionMessage(TEXT("No future flight is available to reschedule."), false);
+		AMSim::UIAudio::Play(this, EAMSimUISound::WarningAttention);
 		return;
 	}
 	AMSim::FPhase2Command Command;
@@ -183,7 +201,12 @@ void UAMSimRootScreen::ReschedulePhase2Flight()
 	Command.FlightId = Flight->Id;
 	Command.RequestedGameTimeMilliseconds =
 		Flight->ScheduledArrivalGameMilliseconds + 15000;
-	SubmitPhase2Command(Command, TEXT("Flight and protected stand buffer moved."));
+	if (SubmitPhase2Command(
+		Command,
+		TEXT("Flight and protected stand buffer moved.")))
+	{
+		AMSim::UIAudio::Play(this, EAMSimUISound::ScheduleConfirm);
+	}
 }
 
 void UAMSimRootScreen::DispatchPhase2Service()

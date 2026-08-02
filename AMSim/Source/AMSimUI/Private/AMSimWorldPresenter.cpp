@@ -3,7 +3,9 @@
 #include "Algo/AllOf.h"
 #include "Algo/Count.h"
 #include "AMSimAircraftPresentation.h"
+#include "AMSimPhase1Fixture.h"
 #include "Components/SceneComponent.h"
+#include "Components/TextRenderComponent.h"
 #include "PaperSprite.h"
 #include "PaperSpriteComponent.h"
 #include "UObject/ConstructorHelpers.h"
@@ -105,10 +107,26 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 	Terrain = CreateSpriteComponent(TEXT("Terrain"), 0);
 	Runway = CreateSpriteComponent(TEXT("Runway"), 10);
 	Taxiway = CreateSpriteComponent(TEXT("Taxiway"), 20);
+	Phase1TaxiwaySegments.Add(Taxiway);
+	for (int32 Index = 1; Index < 8; ++Index)
+	{
+		Phase1TaxiwaySegments.Add(CreateSpriteComponent(
+			*FString::Printf(TEXT("Phase1TaxiwaySegment%d"), Index),
+			20 + Index));
+	}
 	Stand = CreateSpriteComponent(TEXT("Stand"), 30);
+	GateB = CreateSpriteComponent(TEXT("GateB"), 31);
 	Access = CreateSpriteComponent(TEXT("Access"), 20);
 	OperationsHut = CreateSpriteComponent(TEXT("OperationsHut"), 40);
 	Windsock = CreateSpriteComponent(TEXT("Windsock"), 45);
+	RunwayStartNumber = CreateDefaultSubobject<UTextRenderComponent>(
+		TEXT("RunwayStartNumber"));
+	RunwayStartNumber->SetupAttachment(Root);
+	RunwayStartNumber->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	RunwayEndNumber = CreateDefaultSubobject<UTextRenderComponent>(
+		TEXT("RunwayEndNumber"));
+	RunwayEndNumber->SetupAttachment(Root);
+	RunwayEndNumber->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Aircraft = CreateSpriteComponent(TEXT("Aircraft"), 60);
 	Selection = CreateSpriteComponent(TEXT("Selection"), 70);
 	InspectionMarker = CreateSpriteComponent(TEXT("InspectionMarker"), 72, FLinearColor(0.45f, 0.82f, 0.54f, 0.55f));
@@ -127,12 +145,7 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 			*FString::Printf(TEXT("TurnaroundApproachPath%d"), Index),
 			69 + Index));
 	}
-	for (int32 Index = 0; Index < 4; ++Index)
-	{
-		Phase1ConstructionProxies.Add(CreateSpriteComponent(
-			*FString::Printf(TEXT("Phase1ConstructionProxy%d"), Index),
-			54 + Index));
-	}
+	InitializePhase1ConstructionPresentation();
 	for (int32 Index = 0; Index < 4; ++Index)
 	{
 		Phase2Aircraft.Add(CreateSpriteComponent(
@@ -433,8 +446,9 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 	}
 
 	TerrainSprite = FindSprite(TEXT("/Game/Phase1/Presentation/Sprites/Surfaces/S_TemperateGrass.S_TemperateGrass"));
-	RunwaySprite = FindSprite(TEXT("/Game/Phase1/Presentation/Sprites/Surfaces/S_GrassRunway.S_GrassRunway"));
-	TaxiSprite = FindSprite(TEXT("/Game/Phase1/Presentation/Sprites/Surfaces/S_TaxiWear.S_TaxiWear"));
+	RunwaySprite = FindSprite(TEXT("/Game/Phase1/Presentation/Sprites/Surfaces/S_RunwayMarked.S_RunwayMarked"));
+	TaxiSprite = FindSprite(TEXT("/Game/Phase1/Presentation/Sprites/Surfaces/S_TaxiwayMarked.S_TaxiwayMarked"));
+	AccessSprite = FindSprite(TEXT("/Game/Phase1/Presentation/Sprites/Surfaces/S_TaxiWear.S_TaxiWear"));
 	StandSprite = FindSprite(TEXT("/Game/Phase1/Presentation/Sprites/Surfaces/S_WarmStand.S_WarmStand"));
 	WhiteSprite = FindSprite(TEXT("/Game/Phase1/Presentation/Sprites/Props/S_WhiteSquare.S_WhiteSquare"));
 	HutSprite = FindSprite(TEXT("/Game/Phase1/Presentation/Sprites/Props/S_OperationsHut.S_OperationsHut"));
@@ -580,9 +594,23 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 	Terrain->SetSpriteColor(FLinearColor(0.25f, 0.34f, 0.22f, 1.0f));
 	ConfigureSprite(Runway, RunwaySprite, FVector(-5000.0, 0.0, 10.0), FVector(2.5, 1.0, 45.0));
 	ConfigureSprite(Taxiway, TaxiSprite, FVector(-20000.0, 18000.0, 20.0), FVector(10.0, 1.0, 1.25));
+	for (int32 Index = 1; Index < Phase1TaxiwaySegments.Num(); ++Index)
+	{
+		ConfigureSprite(
+			Phase1TaxiwaySegments[Index],
+			TaxiSprite,
+			FVector::ZeroVector,
+			FVector(10.0, 1.0, 1.25));
+		Phase1TaxiwaySegments[Index]->SetVisibility(false);
+	}
 	ConfigureSprite(Stand, StandSprite, FVector(-32000.0, 23000.0, 30.0), FVector(10.0, 1.0, 8.0));
-	ConfigureSprite(Access, TaxiSprite, FVector(-35000.0, 36000.0, 20.0), FVector(7.0, 1.0, 1.25));
-	ConfigureSprite(OperationsHut, HutSprite, FVector(-30000.0, 36000.0, 40.0), FVector(6.0, 1.0, 6.0));
+	ConfigureSprite(GateB, StandSprite, FVector(-22000.0, 23000.0, 31.0), FVector(10.0, 1.0, 8.0));
+	ConfigureSprite(Access, AccessSprite, FVector(-35000.0, 36000.0, 20.0), FVector(7.0, 1.0, 1.25));
+	ConfigureSprite(
+		OperationsHut,
+		SiteSprite(ESiteSprite::RegionalTerminal),
+		FVector(-27000.0, 36000.0, 40.0),
+		FVector(10.0, 1.0, 8.0));
 	ConfigureSprite(Windsock, WindsockSprite, FVector(14000.0, -45000.0, 45.0), FVector(3.0, 1.0, 3.0));
 	Aircraft->SetRelativeScale3D(FVector(10.0, 1.0, 10.0));
 	ConfigureSprite(Selection, SelectionSprite, FVector(-32000.0, 23000.0, 70.0), FVector(2.2, 1.0, 2.2));
@@ -1237,7 +1265,8 @@ void AAMSimWorldPresenter::ConfigureSprite(
 
 bool AAMSimWorldPresenter::HasRequiredPresentationAssets() const
 {
-	return TerrainSprite && RunwaySprite && TaxiSprite && StandSprite && WhiteSprite &&
+	return TerrainSprite && RunwaySprite && TaxiSprite && AccessSprite &&
+		StandSprite && WhiteSprite &&
 		HutSprite && WindsockSprite && SelectionSprite &&
 		AircraftHeadingSprites.Num() == 16 &&
 		Algo::AllOf(
@@ -1297,17 +1326,28 @@ int32 AAMSimWorldPresenter::GetPhase2HeadingIndex(
 	}
 }
 
-void AAMSimWorldPresenter::ApplySnapshot(const AMSim::FPhase1QuerySnapshot& Query)
+void AAMSimWorldPresenter::ApplySnapshot(
+	const AMSim::FPhase1QuerySnapshot& Query,
+	const AMSim::FPhase1State& State)
 {
 	if (LastAppliedRevision == Query.Revision)
 	{
 		return;
 	}
 	LastAppliedRevision = Query.Revision;
+	if (State.Project.Stage != AMSim::EConstructionStage::None)
+	{
+		ApplyPhase1Geometry(State.Project.Proposal);
+	}
+	else
+	{
+		ApplyPhase1Geometry(AMSim::CreateDefaultStarterPlan());
+	}
 	const bool bFacilitiesVisible = Query.ConstructionStage != AMSim::EConstructionStage::None;
 	const bool bOperational = Query.ConstructionStage >= AMSim::EConstructionStage::ReadyToOpen;
-	SetFacilitiesVisible(bFacilitiesVisible, bOperational);
+	SetFacilitiesVisible(bFacilitiesVisible, bOperational, State.bInitialized);
 	SetAircraftState(Query);
+	RefreshPhase1OperationsPresentation(Query, State);
 }
 
 void AAMSimWorldPresenter::ApplyPhase2Snapshot(
@@ -1905,21 +1945,6 @@ int32 AAMSimWorldPresenter::GetActiveMatureSiteProxyCount() const
 			});
 }
 
-void AAMSimWorldPresenter::SetFacilitiesVisible(const bool bVisible, const bool bOperational)
-{
-	for (UPaperSpriteComponent* Component : {Runway, Taxiway, Stand, Access, OperationsHut, Windsock})
-	{
-		Component->SetVisibility(bVisible);
-	}
-	const FLinearColor ProposalTint(0.24f, 0.68f, 0.74f, 0.52f);
-	Runway->SetSpriteColor(bOperational ? FLinearColor::White : ProposalTint);
-	Taxiway->SetSpriteColor(bOperational ? FLinearColor::White : ProposalTint);
-	Stand->SetSpriteColor(bOperational ? FLinearColor::White : ProposalTint);
-	Access->SetSpriteColor(bOperational ? FLinearColor::White : ProposalTint);
-	OperationsHut->SetSpriteColor(bOperational ? FLinearColor::White : ProposalTint);
-	Windsock->SetSpriteColor(bOperational ? FLinearColor::White : ProposalTint);
-}
-
 void AAMSimWorldPresenter::SetAircraftState(const AMSim::FPhase1QuerySnapshot& Query)
 {
 	const bool bVisible =
@@ -1929,7 +1954,6 @@ void AAMSimWorldPresenter::SetAircraftState(const AMSim::FPhase1QuerySnapshot& Q
 	Selection->SetVisibility(bVisible);
 	if (!bVisible)
 	{
-		RefreshPhase1OperationsPresentation(Query);
 		return;
 	}
 
@@ -1939,20 +1963,20 @@ void AAMSimWorldPresenter::SetAircraftState(const AMSim::FPhase1QuerySnapshot& Q
 		Aircraft->SetSprite(AircraftHeadingSprites[HeadingIndex]);
 	}
 
-	FVector Position(18000.0, -42000.0, 60.0);
+	FVector Position = Phase1RunwayCenter + FVector(24000.0, -24000.0, 50.0);
 	if (Query.FlightState >= AMSim::EFlightState::Approach &&
 		Query.FlightState <= AMSim::EFlightState::RunwayRoll)
 	{
-		Position = FVector(-5000.0, 0.0, 60.0);
+		Position = FVector(Phase1RunwayCenter.X, Phase1RunwayCenter.Y, 60.0);
 	}
 	else if (Query.FlightState >= AMSim::EFlightState::TaxiIn &&
 		Query.FlightState <= AMSim::EFlightState::Ready)
 	{
-		Position = FVector(-32000.0, 23000.0, 60.0);
+		Position = FVector(Phase1StandCenter.X, Phase1StandCenter.Y, 60.0);
 	}
 	else if (Query.FlightState >= AMSim::EFlightState::TaxiOut)
 	{
-		Position = FVector(-18000.0, 15000.0, 60.0);
+		Position = FVector(Phase1TaxiCenter.X, Phase1TaxiCenter.Y, 60.0);
 	}
 	Aircraft->SetRelativeLocation(Position);
 	Selection->SetRelativeLocation(FVector(Position.X, Position.Y, 70.0));
@@ -1962,5 +1986,4 @@ void AAMSimWorldPresenter::SetAircraftState(const AMSim::FPhase1QuerySnapshot& Q
 		bTurnaround ? 13.0 : 10.0,
 		1.0,
 		bTurnaround ? 13.0 : 10.0));
-	RefreshPhase1OperationsPresentation(Query);
 }

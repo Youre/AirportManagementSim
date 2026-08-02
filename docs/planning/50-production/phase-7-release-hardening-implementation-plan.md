@@ -1,7 +1,8 @@
 # PI-10: Phase 7 Content, Accessibility, and Release Hardening
 
-**Status:** Release candidate ready for owner acceptance; consolidated owner
-test pending
+**Status:** RC1 superseded by owner-smoke corrections; the direct-placement
+Development candidate passes internal packaged replay and is pending short
+owner-flow retest plus replacement Shipping verification
 **Owner:** Product, presentation, content, quality, and release engineering  
 **Approved:** 2026-07-28  
 **Normative requirements:** PX-01 through PX-03, CT-01 through CT-05,
@@ -21,6 +22,14 @@ implementation. The four-hour reference-tier soak, genuine pacing journey,
 six Phase 5 Advanced journeys, six Phase 6 Major journeys, final visual
 checkpoint, and formal unassisted tester protocol therefore remain the final
 acceptance actions. They are not represented as passed by automation.
+
+The 2026-08-02 starter-airfield correction keeps this release-hardening scope
+presentation-only. First-run packaged play is windowed. Build mode exposes a
+compact runway, taxiway, and stand/service palette over the full world;
+click/drag placement snaps to the parcel grid; the ordinary Phase 1 validator
+drives concise cause/remedy feedback; and one persistent `BUILD AIRFIELD`
+action becomes available only for a valid connected plan. Nudge controls and
+the former always-visible proposal detail wall are removed.
 
 ## Player-visible implementation
 
@@ -72,10 +81,27 @@ cause/consequence language, and VA-07 the approachable progress language.
 - No runtime phrase, voice sample, telemetry, or player data leaves the
   machine.
 
+### UI sound language
+
+- Import the 28 reviewed, nonverbal UI one-shots from
+  `SourceAssets/Audio/UI` into `/Game/Audio/UI` with cooker-visible typed
+  references, the UI sound group, non-looping playback, and reviewed per-cue
+  volume trims.
+- All Riverbend themed buttons inherit shared hover and press feedback.
+  Construction, offers, scheduling, save/load, warnings, objectives,
+  capability unlocks, incidents, and recovery add semantic feedback only after
+  the corresponding authoritative outcome or state transition.
+- Dense feedback uses per-cue cooldowns, `-NoSound` disables explicit runtime
+  playback, and every state remains fully understandable through visible text,
+  pattern, border, and caption treatments.
+
 ## Technical contracts
 
-- Increment snapshots to schema 8 solely for the bounded set of acknowledged
-  contextual-help IDs. Schemas 1-7 migrate with an empty acknowledged set.
+- Phase 7 originally incremented snapshots to schema 8 solely for the bounded
+  set of acknowledged contextual-help IDs. The post-RC starter-network UX
+  correction increments the current schema to 9 so a proposal can retain a
+  graph of taxiway segments. Schemas 1-8 migrate forward; schema 8 creates one
+  taxiway segment from its legacy taxi start/end pair.
 - Help acknowledgement is a typed Phase 1 command/event and contributes to the
   deterministic checksum. It cannot change economy, AP, construction,
   scheduling, services, weather, incidents, or capability evidence.
@@ -88,6 +114,8 @@ cause/consequence language, and VA-07 the approachable progress language.
   regional, world-presenter, or serializer files beyond 2,000 lines.
 - Required release content uses Primary Asset or constructor-visible
   references. Runtime string asset loading remains prohibited.
+- The UI audio source manifest, 28 checksums, runtime asset catalog, theme
+  inheritance, and Shipping cook inventory are automated release gates.
 
 ## Curated content and release identity
 
@@ -130,7 +158,7 @@ Concept art remains directional. Written gameplay, accessibility, child-safety,
 ## Automated and packaged acceptance
 
 - Phase 7 focused tests cover help selection, acknowledgement, duplicate
-  rejection, schema-8 round-trip, schemas 1-7 migration, profile clamping,
+  rejection, current-schema round-trip, schemas 1-8 migration, profile clamping,
   phrase coverage, caption deduplication, content validation, and release
   manifest integrity.
 - The complete Phase 1-7 automation suite passes with no failures or not-run
@@ -145,7 +173,7 @@ Concept art remains directional. Written gameplay, accessibility, child-safety,
   runtime string loads, required 3D assets, secrets, credentials, unexpected
   endpoints, unapproved aircraft, or real operator branding.
 - Offline packaged smoke records zero unexpected TCP connections.
-- Every retained schema fixture migrates to schema 8 and deterministic
+- Every retained schema fixture migrates to schema 9 and deterministic
   continuation remains stable.
 - Source and header files remain at or below 2,000 lines.
 
@@ -170,6 +198,6 @@ not `complete`.
 ## Rollback
 
 The release UI, profile, radio service, Phase 7 data assets, and audit scripts
-can be removed without changing Phase 1-6 simulation behavior. A schema-8 save
-cannot be downgraded in place; the prior schema-7 file remains protected by
+can be removed without changing Phase 1-6 simulation behavior. A schema-9 save
+cannot be downgraded in place; the prior schema-8 file remains protected by
 the existing current/backup/recovery policy.

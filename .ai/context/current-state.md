@@ -6,7 +6,18 @@ Material profile: documents
 Initialization mode: augment-existing
 
 Active priorities:
-- Run the consolidated owner acceptance protocol against Riverbend RC1:
+- Use the verified slower starter-airfield construction balance and distinct
+  marked movement-surface kit as the baseline for the next owner build-mode
+  journey. Construction now takes 3 minutes 30 seconds at 1x, while 2x-8x and
+  the useful-road reduction remain available.
+- Resume the consolidated owner protocol now that the starter-network context
+  correction has passed. The basic terminal and its two gates are fixed map
+  context; the player draws runway and taxiway segments, while service roads
+  are optional worker-speed infrastructure.
+- Track Unreal cache usage before and after clean packages. Keep at least
+  15 GiB free before packaging, stop builds below 8 GiB, and never clear shared
+  DDC/Zen/UBA caches automatically.
+- After that correction passes, resume the consolidated owner protocol:
   Phase 5 Advanced journeys, Phase 6 Major journeys, maximum-load observation,
   pacing journey, reference-tier soak, unassisted test, audio/captions, and
   final concept-art checkpoint.
@@ -19,15 +30,19 @@ Current architectural tensions:
   time-based owner observation.
 
 Next verification command:
-- Begin the consolidated owner test with the GA Advanced and GA Major prepared
-  saves against the exact Riverbend RC1 package hashes.
+- Run the next owner-selected acceptance journey from the consolidated Phase 7
+  protocol against the schema-9 candidate.
 
 Last verification:
-- 2026-07-29 UTC: Phase 7 focused automation passed 5/5 and the full suite
-  passed 67 plus one retained warning-only legacy backup test. Clean
-  Development and Shipping packages each cooked 628 packages; all 15 Phase 7
-  assets are present, the audio-enabled packaged journey and save/load pass,
-  Shipping opens zero TCP sockets, and all release scans are clean.
+- 2026-08-02 EDT: the runway-surface and construction-pacing correction passes
+  all 73 automation tests, editor/game builds, integrated and packaged rendered
+  smoke, a clean 658-package Development cook, direct IoStore asset inspection,
+  offline socket observation, and runtime dependency/load scans. The final
+  world uses separate marked runway/taxiway surfaces, preserves unmarked roads
+  and earthwork, slows the 1x project to 3 minutes 30 seconds, and faces the
+  09/27 overlays toward their corresponding approaches. Cache usage remained
+  stable and no cache was cleared. Consolidated Phase 7 owner acceptance still
+  remains.
 <!-- ai-project-init:end managed -->
 
 ## Project-specific state
@@ -253,7 +268,8 @@ Verification note:
   maximum-load observation. Phase 7 retains the four-hour soak, formal
   unassisted test, and genuine pacing journey.
 - Phase 7 implementation is release-candidate ready under PI-10. Schema 8
-  persists only acknowledged contextual-help IDs and migrates schemas 1-7.
+  introduced acknowledged contextual-help IDs; the current post-RC schema 9
+  adds taxiway-segment graphs and migrates schemas 1-8.
   Six first-use cards, the five-tab Release Guide, a local accessibility
   profile, centralized captions-first radio, 15 phrase families, and 15
   release Primary Assets are integrated without adding simulation mechanics.
@@ -275,6 +291,49 @@ Verification note:
   15-minute maximum-load observation, 10-15 hour pacing journey, four-hour
   reference-tier soak, formal unassisted/audio/caption protocol, and final
   visual approval remain pending by owner decision.
+- The 2026-08-02 direct-placement correction replaces the starter-plan nudge
+  controls with a compact runway/taxiway/stand-service palette and full-map
+  click/drag placement. Live simulation validation now controls an explicit
+  `BUILD AIRFIELD` action and actionable failure card. The new Development
+  candidate passed packaged replay.
+- The follow-up empty-network overhaul removes every pre-placed airfield
+  element, gives runway and taxiway independent circular start/end drawing,
+  accepts and marks interior taxiway/runway crossings, derives reciprocal
+  runway numbers from heading, and renders the exact accepted geometry in the
+  Paper2D world. The final 628-package Shipping candidate passed automated
+  verification and a real Windows replay; owner visual acceptance remains.
+- The 2026-08-02 starter-network context correction restores only a fixed,
+  non-passenger basic terminal shell and two gate anchors. Runways, taxiways,
+  and roads remain player-authored. Taxiways are validated as one graph from
+  the runway to either gate, including intersections, branches, and indirect
+  connections; orphan segments fail. Roads have no mandatory endpoint and
+  grant a deterministic 20% construction-travel benefit only when useful.
+- The construction-feedback pass now dispatches four visible workers and an
+  approaching delivery truck immediately after a starter plan is funded. The
+  accepted runway, taxiway graph, and optional road begin as full-length brown
+  graded beds, reveal their final surfaces proportionally during `Building`,
+  and gain runway markings only at inspection. Travel and reveal derive from
+  authoritative simulation time, freeze while paused, and never alter saved
+  geometry or simulation outcomes. Focused automation passes 4/4, the complete
+  suite passes 72 clean tests plus the retained warning-only recovery probe,
+  and both the integrated and refreshed packaged 1920x1080 rendered journeys
+  pass. The current owner-test package is
+  `D:/AMSimConstructionProgressDev/Windows/AMSim.exe`.
+- The 2026-08-02 UI audio pass approves and integrates all 28 nonverbal MP3
+  source masters in `SourceAssets/Audio/UI`. Checksums match the generation
+  manifest; Unreal imports short stereo, non-looping UI sound waves under
+  `/Game/Audio/UI` with non-destructive reviewed level trims.
+- `UAMSimUISoundSubsystem` owns the typed cooker-visible catalog, per-cue
+  cooldowns, and `-NoSound` behavior. The shared Riverbend button style gives
+  current and future themed buttons hover/press audio automatically; explicit
+  result cues cover construction, offers, schedules, persistence, warnings,
+  objectives, capability changes, incidents, and recovery.
+- UI-audio verification passes 3/3 focused tests and the complete 72-test
+  suite (71 clean plus the retained warning-only backup probe). Clean
+  Development and Shipping packages contain all 28 sounds; the package audit,
+  offline runtime smoke, dependency/runtime-load scan, and release attestation
+  pass with zero missing cooked sounds. Subjective mix approval remains part
+  of the next owner gameplay listen rather than an automated claim.
 - `ai-init doctor . --json` runs from `PATH`; its retained warnings are the
   documented baseline managed-template, lexical-review, legacy-ledger, and
   project schema/version warnings.

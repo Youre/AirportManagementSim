@@ -2,7 +2,7 @@
 
 **Status:** Riverbend RC1 technical identity recorded; owner acceptance pending
 **Owner:** Content and release engineering  
-**Last updated:** 2026-07-29
+**Last updated:** 2026-08-02
 
 ## Retained release content
 
@@ -21,6 +21,23 @@ Files currently present under `SourceAssets/Audio/Music` are not automatically
 release content. They remain outside cooked content and outside the Phase 7
 commit unless a later review records generator/source, prompt or session,
 rights, checksum, mix role, loop treatment, loudness, and explicit retention.
+
+## UI sound effects
+
+The 28 short, nonverbal UI one-shots in `SourceAssets/Audio/UI` are approved
+for UI-only runtime use. They were generated on 2026-08-02 with ElevenLabs
+Sound Effects model `eleven_text_to_sound_v2` in MP3 44.1 kHz / 128 kbps
+format. `ui-sfx-manifest.json` retains the exact prompts, requested durations,
+provider/model, and SHA-256 checksum for every file; all 28 checksums matched
+during integration review.
+
+The source MP3 masters remain outside cooked content. The presentation asset
+commandlet imports them to `/Game/Audio/UI` as short stereo, non-looping UI
+sound waves and applies reviewed, non-destructive per-cue volume trims because
+the generated source levels vary materially. Runtime selection is a typed
+catalog with constructor-visible references; no online generation, endpoint,
+credential, or runtime string asset load is included. UI meaning remains
+redundant in text, captions, patterns, and color-independent state treatments.
 
 ## Release records
 

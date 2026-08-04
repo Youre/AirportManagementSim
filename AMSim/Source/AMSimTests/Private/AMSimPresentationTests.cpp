@@ -8,6 +8,8 @@
 #include "AMSimPhase1ConstructionPresentation.h"
 #include "AMSimPhase1Fixture.h"
 #include "AMSimPhase1HudPresentation.h"
+#include "AMSimPhase1OperationsHubPresentation.h"
+#include "AMSimPhase1StaffPresentation.h"
 #include "AMSimPhase1ViewState.h"
 #include "AMSimPlayerController.h"
 #include "AMSimPresentationProxyPool.h"
@@ -25,6 +27,72 @@
 #include "Misc/AutomationTest.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+	FAMSimFirstVisitOperationsHubTest,
+	"AMSim.Phase1.Presentation.FirstVisitOperationsHub",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FAMSimFirstVisitOperationsHubTest::RunTest(const FString& Parameters)
+{
+	AMSim::FPhase1QuerySnapshot Query;
+	Query.bInitialized = true;
+	Query.bAirportOpen = true;
+	Query.ConstructionStage = AMSim::EConstructionStage::Operational;
+	Query.OfferState = AMSim::EOfferState::Scheduled;
+	Query.FlightState = AMSim::EFlightState::Scheduled;
+	Query.GameTimeMilliseconds = 300000;
+	Query.bPaused = true;
+	AMSim::FPhase1State State;
+	State.bInitialized = true;
+	State.bAirportOpen = true;
+	State.SpeedMultiplier = 1;
+	State.Project.Stage = AMSim::EConstructionStage::Operational;
+	State.Project.Proposal = AMSim::CreateDefaultStarterPlan();
+	State.Flight.State = AMSim::EFlightState::Scheduled;
+	State.Flight.ScheduledArrivalGameMilliseconds = 600000;
+
+	const AMSim::FPhase1OperationsHubState Scheduled =
+		AMSim::FPhase1OperationsHubPresentation::Derive(
+			AMSim::EPhase1OperationsPage::Schedule, Query, State, 0);
+	TestTrue(TEXT("Scheduled visit exposes normal-speed watch"), Scheduled.bShowWatch);
+	TestTrue(TEXT("Scheduled visit exposes bounded arrival advance"), Scheduled.bShowAdvance);
+	TestTrue(TEXT("Scheduling reports its deliberate pause"),
+		Scheduled.Status.Contains(TEXT("PAUSED")));
+	TestTrue(TEXT("Scheduled visit explains automatic operation"),
+		Scheduled.Footer.Contains(TEXT("AUTOMATIC")));
+	Query.bPaused = false;
+	const AMSim::FPhase1OperationsHubState Running =
+		AMSim::FPhase1OperationsHubPresentation::Derive(
+			AMSim::EPhase1OperationsPage::Schedule, Query, State, 0);
+	TestTrue(TEXT("Running visit reports the wall-clock airspace countdown"),
+		Running.Status.Contains(TEXT("IN AIRSPACE IN 2 SEC")));
+
+	const AMSim::FPhase1OperationsHubState Airfield =
+		AMSim::FPhase1OperationsHubPresentation::Derive(
+			AMSim::EPhase1OperationsPage::Airfield, Query, State, 0);
+	TestEqual(TEXT("Committed build is reported truthfully"),
+		Airfield.Title, FString(TEXT("STARTER BUILD COMPLETE")));
+	TestTrue(TEXT("Committed build points to the next construction unlock"),
+		Airfield.Detail.Contains(TEXT("first visit")));
+
+	const AMSim::FPhase1OperationsHubState Connections =
+		AMSim::FPhase1OperationsHubPresentation::Derive(
+			AMSim::EPhase1OperationsPage::Overlays, Query, State, 1);
+	TestEqual(TEXT("Connections mode has an explicit text identity"),
+		Connections.Title, FString(TEXT("CONNECTIONS")));
+	TestTrue(TEXT("Overlay meaning is available without color alone"),
+		Connections.Status.Contains(TEXT("movement surfaces")));
+
+	Query.FlightState = AMSim::EFlightState::Completed;
+	State.Flight.State = AMSim::EFlightState::Completed;
+	const AMSim::FPhase1OperationsHubState Complete =
+		AMSim::FPhase1OperationsHubPresentation::Derive(
+			AMSim::EPhase1OperationsPage::Schedule, Query, State, 0);
+	TestTrue(TEXT("Completed visit exposes the user-facing continuation"),
+		Complete.Detail.Contains(TEXT("START LIVING AIRPORT")));
+	return true;
+}
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 	FAMSimOrthographicCameraTest,
@@ -205,6 +273,16 @@ bool FAMSimPhase15ViewStateTest::RunTest(const FString& Parameters)
 	TestTrue(TEXT("Funds include player-facing units"), View.Funds.Contains(TEXT("1600 CR")));
 	TestTrue(TEXT("Construction status is mapped"), View.Project.Contains(TEXT("Safety inspection")));
 	TestFalse(TEXT("Inspection state cannot be reopened"), View.bCanOpen);
+	const AMSim::FPhase1StaffPanelState Staff =
+		AMSim::FPhase1StaffPresentation::Derive(Query, State);
+	TestEqual(TEXT("Phase 1 exposes the four-person construction crew"),
+		Staff.TotalConstructionWorkers, 4);
+	TestEqual(TEXT("Inspection assigns the complete crew"),
+		Staff.AssignedConstructionWorkers, 4);
+	TestEqual(TEXT("No construction workers remain idle during inspection"),
+		Staff.AvailableConstructionWorkers, 0);
+	TestEqual(TEXT("Staff panel describes inspection support"),
+		Staff.Status, FString(TEXT("SUPPORTING INSPECTION")));
 	return true;
 }
 
@@ -307,6 +385,28 @@ bool FAMSimPhase45ConstructionValidationContentTest::RunTest(
 		TEXT("Taxiway drag does not silently move optional road access"),
 		TaxiOnly.AccessStart.X,
 		50000ll);
+	const AMSim::FStarterPlanProposal TaxiHitProposal =
+		AMSim::CreateDefaultStarterPlan();
+	const auto TaxiEndpointHit =
+		UAMSimConstructionProposalView::ResolveTaxiwayEditHit(
+			TaxiHitProposal,
+			TaxiHitProposal.TaxiwaySegments[0].Start);
+	TestEqual(TEXT("Taxiway endpoint remains directly editable"),
+		TaxiEndpointHit.EndpointIndex, 0);
+	TestEqual(TEXT("Taxiway endpoint identifies its segment"),
+		TaxiEndpointHit.SegmentIndex, 0);
+	const AMSim::FPhase1Point TaxiBodyPoint = {
+		(TaxiHitProposal.TaxiwaySegments[0].Start.X +
+			TaxiHitProposal.TaxiwaySegments[0].End.X) / 2,
+		(TaxiHitProposal.TaxiwaySegments[0].Start.Y +
+			TaxiHitProposal.TaxiwaySegments[0].End.Y) / 2};
+	const auto TaxiBodyHit =
+		UAMSimConstructionProposalView::ResolveTaxiwayEditHit(
+			TaxiHitProposal, TaxiBodyPoint);
+	TestEqual(TEXT("Taxiway body does not select a segment for translation"),
+		TaxiBodyHit.SegmentIndex, INDEX_NONE);
+	TestEqual(TEXT("Taxiway body begins the normal new-segment gesture"),
+		TaxiBodyHit.EndpointIndex, INDEX_NONE);
 	const AMSim::FStarterPlanProposal RoadOnly =
 		UAMSimConstructionProposalView::TranslateToolPlacement(
 			AMSim::CreateDefaultStarterPlan(),
@@ -767,6 +867,11 @@ bool FAMSimPhase15WorldPresenterTest::RunTest(const FString& Parameters)
 	ConstructionState.Project.Stage = AMSim::EConstructionStage::AwaitingDelivery;
 	ConstructionState.Project.Proposal = AMSim::CreateDefaultStarterPlan();
 	Presenter->ApplySnapshot(Construction, ConstructionState);
+	TestTrue(
+		TEXT("Construction truck source art receives its 180-degree facing correction"),
+		FMath::IsNearlyEqual(
+			Presenter->GetPhase1ConstructionTruckFacingYawDegrees(),
+			-90.0f));
 	TestEqual(
 		TEXT("Purchase exposes truck, four workers, bounded cones, and work zone immediately"),
 		Presenter->GetActivePhase1ConstructionProxyCount(),
@@ -858,6 +963,20 @@ bool FAMSimPhase15WorldPresenterTest::RunTest(const FString& Parameters)
 	TurnaroundState.Project.Stage = AMSim::EConstructionStage::Operational;
 	TurnaroundState.Project.Proposal = AMSim::CreateDefaultStarterPlan();
 	Presenter->ApplySnapshot(Turnaround, TurnaroundState);
+	const FLinearColor StandardRunwayTint = Presenter->GetPhase1RunwayTintForTest();
+	Presenter->SetPhase1OverlayMode(1);
+	TestEqual(TEXT("Connections overlay becomes presenter state"),
+		Presenter->GetPhase1OverlayMode(), 1);
+	TestFalse(TEXT("Connections overlay visibly changes movement surfaces"),
+		Presenter->GetPhase1RunwayTintForTest().Equals(StandardRunwayTint));
+	Presenter->SetPhase1OverlayMode(2);
+	TestEqual(TEXT("Activity overlay becomes presenter state"),
+		Presenter->GetPhase1OverlayMode(), 2);
+	TestTrue(TEXT("Activity overlay mutes movement surfaces"),
+		Presenter->GetPhase1RunwayTintForTest().A < 1.0f);
+	Presenter->SetPhase1OverlayMode(0);
+	TestTrue(TEXT("Airfield overlay restores standard surface tint"),
+		Presenter->GetPhase1RunwayTintForTest().Equals(StandardRunwayTint));
 	TestEqual(
 		TEXT("Turnaround exposes two safe paths plus vehicle, worker, cones, and zone"),
 		Presenter->GetActiveTurnaroundSupportProxyCount(),

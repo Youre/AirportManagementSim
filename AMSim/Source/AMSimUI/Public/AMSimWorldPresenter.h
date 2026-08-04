@@ -40,6 +40,7 @@ public:
 	void ApplyPhase6Snapshot(
 		const AMSim::FPhase6QuerySnapshot& Query,
 		const AMSim::FPhase6State& State);
+	void SetPhase1OverlayMode(int32 Mode);
 	void SetPhase3OverlayMode(int32 Mode);
 	void SetMatureOverviewMode(bool bEnabled);
 	void SetMatureSelectionFacility(bool bFacilitySelected);
@@ -102,6 +103,8 @@ public:
 	}
 	FVector GetPhase1GeometryOffset() const { return Phase1GeometryOffset; }
 	FVector GetPhase1RunwayCenter() const { return Phase1RunwayCenter; }
+	int32 GetPhase1OverlayMode() const { return Phase1OverlayMode; }
+	FLinearColor GetPhase1RunwayTintForTest() const;
 
 private:
 	UPaperSpriteComponent* CreateSpriteComponent(
@@ -136,6 +139,7 @@ private:
 	void RefreshPhase1ConstructionPresentation(
 		const AMSim::FPhase1QuerySnapshot& Query,
 		const AMSim::FPhase1State& State);
+	void RefreshPhase1OverlayPresentation();
 	void SetPhase3WorldVisible(bool bVisible);
 	void RefreshPhase3OverlayVisibility();
 	void RefreshIncidentPresentationVisibility();
@@ -358,6 +362,7 @@ private:
 	uint64 LastAppliedPhase5Revision = MAX_uint64;
 	uint64 LastAppliedPhase6Revision = MAX_uint64;
 	int32 Phase3OverlayMode = 0;
+	int32 Phase1OverlayMode = 0;
 	bool bPhase3WorldVisible = false;
 	bool bPhase3RoutesConnected = false;
 	bool bPhase3BaggageExceptionActive = false;

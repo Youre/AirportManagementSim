@@ -564,7 +564,7 @@ namespace AMSim
 						: TEXT("Service road available")});
 			}
 			State.Teams = {
-				{{AllocateDomainId()}, TEXT("Staff.Role.Construction"), 3, true, TEXT("Starter project complete")},
+				{{AllocateDomainId()}, TEXT("Staff.Role.Construction"), Fixture.ConstructionWorkerCount, true, TEXT("Starter project complete")},
 				{{AllocateDomainId()}, TEXT("Staff.Role.Ramp"), 2, true, TEXT("Available for inspection")},
 				{{AllocateDomainId()}, TEXT("Staff.Role.Fueling"), 1, true, TEXT("Available for fueling")}
 			};
@@ -584,7 +584,7 @@ namespace AMSim
 				TEXT("Inspection passed. Open the airfield when ready."));
 		}
 		else if (Elapsed >= Threshold(Fixture.InspectionAtMilliseconds) &&
-			State.Project.Stage != EConstructionStage::Inspection)
+			State.Project.Stage < EConstructionStage::Inspection)
 		{
 			ChangeConstructionStage(
 				EConstructionStage::Inspection,
@@ -592,7 +592,7 @@ namespace AMSim
 				TEXT("Checking runway clearance and network connections."));
 		}
 		else if (Elapsed >= Threshold(Fixture.BuildingAtMilliseconds) &&
-			State.Project.Stage != EConstructionStage::Building)
+			State.Project.Stage < EConstructionStage::Building)
 		{
 			ChangeConstructionStage(
 				EConstructionStage::Building,
@@ -933,9 +933,9 @@ namespace AMSim
 				? TEXT("Routine ATC and ground services are automatic.")
 				: State.Flight.Blocker;
 			Query.Remedy = State.Flight.State == EFlightState::Completed
-				? TEXT("Review the itemized reward, rating contributions, and aircraft history.")
+				? TEXT("Select Start Living Airport to unlock recurring flights, staff, and expansion.")
 				: State.Flight.State == EFlightState::Scheduled
-				? TEXT("No action required. The aircraft appears when it enters the airport area.")
+				? TEXT("Open Schedule to watch at 1x or advance safely to the visible arrival.")
 				: State.Flight.State == EFlightState::Turnaround
 				? TEXT("No action required. Inspection and fueling dispatch automatically; use time controls to wait faster.")
 				: State.Flight.Blocker.IsEmpty()

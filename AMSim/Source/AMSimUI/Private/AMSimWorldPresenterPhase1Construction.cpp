@@ -365,7 +365,8 @@ void AAMSimWorldPresenter::RefreshPhase1ConstructionPresentation(
 				57.0)
 			: RunwayStart + FVector(4500.0, 2500.0, 1.0);
 		Truck->SetRelativeLocation(FMath::Lerp(TruckOrigin, TruckTarget, TravelAlpha));
-		FaceMovement(Truck, TruckTarget - TruckOrigin);
+		// The truck source art faces opposite the shared worker/vehicle axis.
+		FaceMovement(Truck, TruckOrigin - TruckTarget);
 		Truck->SetVisibility(bWorldAllowed && Visual.bTruckVisible);
 	}
 	if (Phase1ConstructionProxies.IsValidIndex(2))

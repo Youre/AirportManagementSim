@@ -114,6 +114,7 @@ FReply UAMSimRootScreen::NativeOnMouseMove(
 
 void UAMSimRootScreen::PauseSimulation()
 {
+	bReturnToOneAtInbound = false;
 	UAMSimAirportSimulationSubsystem* Subsystem = GetWorld()
 		? GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>()
 		: nullptr;
@@ -141,21 +142,25 @@ void UAMSimRootScreen::PauseSimulation()
 
 void UAMSimRootScreen::SetSpeedOne()
 {
+	bReturnToOneAtInbound = false;
 	SubmitSpeed(1);
 }
 
 void UAMSimRootScreen::SetSpeedTwo()
 {
+	bReturnToOneAtInbound = false;
 	SubmitSpeed(2);
 }
 
 void UAMSimRootScreen::SetSpeedFour()
 {
+	bReturnToOneAtInbound = false;
 	SubmitSpeed(4);
 }
 
 void UAMSimRootScreen::SetSpeedEight()
 {
+	bReturnToOneAtInbound = false;
 	SubmitSpeed(8);
 }
 

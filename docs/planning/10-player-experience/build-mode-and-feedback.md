@@ -26,6 +26,12 @@ Every build action follows:
 
 Network tools support click-drag-click paths with editable control points. Runways use centerline, heading, length, width, surface, and threshold options. Roads, taxiways, belts, and tracks use domain-specific curves and turn constraints.
 
+With the taxiway tool active, an endpoint handle edits that endpoint. Pressing
+anywhere else on an existing taxiway body starts a new segment, snapped to the
+nearest point on that segment; it never translates the complete taxiway. This
+keeps branching discoverable while preventing an established network from
+moving when the player intends to extend it.
+
 Connection context is visible before the player draws. When an aircraft-
 movement network tool is active, compatible runway surfaces, gate/stand ports,
 and existing taxi segments receive a non-color highlight and share the same
@@ -88,6 +94,9 @@ work area. Every moving construction sprite faces its current travel direction;
 stationary sprites retain their last stable facing. These patrols use game time,
 so pause freezes both position and orientation and time-speed controls accelerate
 them consistently with construction progress.
+Source-art forward axes are normalized per sprite type. The construction truck
+uses an explicit 180-degree visual offset from the shared worker axis so its cab
+faces its current movement direction.
 
 The starter-airfield balance allocates 30 game minutes to travel, 30 to site
 preparation, 120 to visible surface work, and 30 to inspection. At the normal
@@ -95,6 +104,8 @@ preparation, 120 to visible surface work, and 30 to inspection. At the normal
 percent when the optional service road is useful. The finished runway and
 taxiway use separate marked aggregate textures; roads and unfinished earthwork
 remain unmarked. Reciprocal runway numbers face their corresponding approach.
+Construction stages are strictly monotonic: once safety inspection begins, an
+update may advance it to ready-to-open but can never return it to surface work.
 
 Once a project is funded, the large proposal summary gives way to a concise
 map-corner activity card. It shows only the activity and stage plus the most
@@ -102,6 +113,12 @@ useful identity/cost line (for example, `CONSTRUCTION • SURFACE WORK` and
 `RWY 09/27 • 3,400 CR`). Detailed network composition, validation, and recovery
 controls remain in the build or project surface rather than being repeated over
 the world view.
+
+The Build rail action remains available after funding, but it changes from the
+editable proposal surface to a read-only project/airfield status surface. That
+surface reports the committed network and current construction stage and says
+when additional construction unlocks. It must not imply that a funded starter
+layout can still be edited in place.
 
 ## Closures
 

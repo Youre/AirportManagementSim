@@ -9,6 +9,8 @@
 #include "AMSimGameInstanceSubsystem.h"
 #include "AMSimPhase1Fixture.h"
 #include "AMSimPhase1HudPresentation.h"
+#include "AMSimPhase1OperationsHubView.h"
+#include "AMSimPhase1StaffView.h"
 #include "AMSimRadioSubsystem.h"
 #include "AMSimReleaseGuideView.h"
 #include "AMSimSaveLoadView.h"
@@ -554,6 +556,7 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		NavigationButtons.Add(ToolButton);
 		++NavigationIndex;
 	}
+	BindPhase1UtilityNavigation();
 	CancelBuildButton = MakeNavigationButton(
 		WidgetTree,
 		TEXT("CancelStarter"),
@@ -596,7 +599,6 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		BuildButton->SetExpandedForTest(true);
 	}
 #endif
-
 	UBorder* MapPanel = MakePanel(WidgetTree, TEXT("MapPanel"));
 	MapPanel->SetPadding(FMargin(10.0f));
 	MapPanel->SetBrushColor(FLinearColor::Transparent);
@@ -618,7 +620,6 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		FLinearColor(0.72f, 0.82f, 0.68f, 1.0f));
 	PlaceCanvas(Map, ParcelLabel, FAnchors(0.03f, 0.03f, 0.55f, 0.10f));
 	ParcelLabel->SetVisibility(ESlateVisibility::Hidden);
-
 	RunwayVisual = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("Runway"));
 	RunwayVisual->SetBrushColor(FLinearColor(0.31f, 0.43f, 0.25f, 0.75f));
 	RunwayVisual->SetVisibility(ESlateVisibility::Hidden);
@@ -658,7 +659,6 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	AircraftLabel = MakeText(WidgetTree, TEXT("AircraftLabel"), TEXT("RB-021"), 13, White);
 	AircraftLabel->SetVisibility(ESlateVisibility::Hidden);
 	PlaceCanvas(Map, AircraftLabel, FAnchors(0.03f, 0.27f, 0.17f, 0.32f));
-
 	CreateAirportTray = MakeSurface(
 		WidgetTree,
 		TEXT("CreateAirportTray"),
@@ -749,7 +749,6 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		bCompactLayout
 			? FAnchors(0.05f, 0.50f, 0.95f, 0.91f)
 			: FAnchors(0.06f, 0.73f, 0.94f, 0.96f));
-
 	ContextPanel = MakePanel(WidgetTree, TEXT("ContextPanel"));
 	AMSim::UITheme::StyleSurface(
 		ContextPanel,
@@ -843,6 +842,13 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		Map,
 		ConstructionProposalView,
 		FAnchors(0.0f, 0.0f, 1.0f, 1.0f));
+	StaffView = WidgetTree->ConstructWidget<UAMSimPhase1StaffView>(
+		UAMSimPhase1StaffView::StaticClass(), TEXT("Phase1StaffView"));
+	PlaceCanvas(Map, StaffView, FAnchors(0.09f, 0.08f, 0.40f, 0.51f));
+	StaffView->ClosePanel();
+	Phase1OperationsHubView = WidgetTree->ConstructWidget<UAMSimPhase1OperationsHubView>(
+		UAMSimPhase1OperationsHubView::StaticClass(), TEXT("Phase1OperationsHubView"));
+	PlaceCanvas(Map, Phase1OperationsHubView, FAnchors(0.09f, 0.08f, 0.47f, 0.64f));
 	TurnaroundView =
 		WidgetTree->ConstructWidget<UAMSimTurnaroundView>(
 			UAMSimTurnaroundView::StaticClass(),
@@ -1144,7 +1150,7 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	InitializePhase2Button = MakeButton(
 		WidgetTree,
 		TEXT("InitializeLivingAirport"),
-		TEXT("START PHASE 2"),
+		TEXT("START LIVING AIRPORT"),
 		AMSim::UITheme::EButton::Positive,
 		13);
 	InitializePhase2Button->OnClicked.AddDynamic(
@@ -1726,6 +1732,7 @@ void UAMSimRootScreen::RefreshFromSimulation()
 	{
 		TurnaroundView->RefreshFromSimulation();
 	}
+	RefreshPhase1OperationsHub(Query, State);
 	if (Phase1Page)
 	{
 		Phase1Page->SetVisibility(
@@ -1755,6 +1762,10 @@ void UAMSimRootScreen::RefreshFromSimulation()
 		{
 			ConstructionProposalView->CloseProposal();
 		}
+	}
+	if (StaffView)
+	{
+		StaffView->RefreshFromSnapshot(Query, State);
 	}
 
 	const auto SetText = [](UTextBlock* Widget, const FString& Value)
@@ -1883,8 +1894,27 @@ void UAMSimRootScreen::RefreshFromSimulation()
 	if (AirportNameEntry) AirportNameEntry->SetIsReadOnly(CurrentViewState.bAirportInitialized);
 	if (BuildButton)
 	{
-		BuildButton->SetActionEnabled(CurrentViewState.bCanBuild);
+		BuildButton->SetActionEnabled(Query.bInitialized);
 		BuildButton->SetVisibility(ESlateVisibility::Visible);
+	}
+	if (ScheduleNavigationButton)
+	{
+		ScheduleNavigationButton->SetActionEnabled(
+			Query.bInitialized &&
+			Query.ConstructionStage >= AMSim::EConstructionStage::ReadyToOpen);
+		ScheduleNavigationButton->SetVisibility(ESlateVisibility::Visible);
+	}
+	if (StaffButton)
+	{
+		StaffButton->SetActionEnabled(Query.bInitialized);
+		StaffButton->SetVisibility(ESlateVisibility::Visible);
+	}
+	if (OverlayButton)
+	{
+		OverlayButton->SetActionEnabled(
+			Query.bInitialized &&
+			Query.ConstructionStage >= AMSim::EConstructionStage::ReadyToOpen);
+		OverlayButton->SetVisibility(ESlateVisibility::Visible);
 	}
 	if (CancelBuildButton)
 	{

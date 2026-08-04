@@ -76,6 +76,13 @@ one game minute per real second, the full visible journey is approximately 61
 real seconds at 1x and 7.6 seconds at 8x. A scheduled-but-not-yet-inbound
 aircraft has no world proxy.
 
+The timetable's earliest offered slot is the simulation subsystem's next valid
+five-minute boundary. Confirming that slot pauses time and opens the first-visit
+operations card. `Advance to arrival` uses 8x only for the off-map wait and
+returns to 1x at inbound; `Continue at 4x` is available once the visible journey
+has begun. These are presentation controls over the ordinary deterministic
+clock and do not alter flight-state offsets or rewards.
+
 Near-term weather forecast covers 6 game hours with high confidence; trend forecast extends to 24 game hours. Ordinary offers remain available for 2 game days; pinned offers remain for 4.
 
 ## Balance validation

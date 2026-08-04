@@ -170,6 +170,7 @@ bool FAMSimPhase1FixtureTest::RunTest(const FString& Parameters)
 	TestEqual(TEXT("Surface work begins after one game hour"), Fixture.BuildingAtMilliseconds, 3600000ll);
 	TestEqual(TEXT("Surface work lasts two game hours"), Fixture.InspectionAtMilliseconds - Fixture.BuildingAtMilliseconds, 7200000ll);
 	TestEqual(TEXT("Starter airfield takes three and a half game hours"), Fixture.ReadyToOpenAtMilliseconds, 12600000ll);
+	TestEqual(TEXT("Starter construction uses four visible workers"), Fixture.ConstructionWorkerCount, 4);
 	TestEqual(
 		TEXT("The aircraft enters the airport area three game minutes before arrival"),
 		Fixture.FlightInboundOffsetMilliseconds,
@@ -280,6 +281,32 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 bool FAMSimPhase1ConstructionTest::RunTest(const FString& Parameters)
 {
 	using namespace AMSim;
+	FSimulation InspectionSimulation(GetPhase1Fixture().Seed);
+	FPhase1Command InspectionCreate = MakeCommand(1, EPhase1CommandType::CreateAirport);
+	InspectionCreate.AirportName = TEXT("Riverbend Field");
+	InspectionCreate.MapId = GetPhase1Fixture().MapId;
+	FPhase1Command InspectionBuild = MakeCommand(2, EPhase1CommandType::CommitStarterPlan);
+	InspectionBuild.Proposal = CreateDefaultStarterPlan();
+	if (!QueueAndStep(*this, InspectionSimulation, InspectionCreate, TEXT("Inspection test airport accepted")) ||
+		!QueueAndStep(*this, InspectionSimulation, InspectionBuild, TEXT("Inspection test build accepted")))
+	{
+		return false;
+	}
+	const int32 DurationPercent = HasConstructionRoadBenefit(InspectionBuild.Proposal)
+		? 100 - GetPhase1Fixture().ServiceRoadConstructionBonusPercent
+		: 100;
+	const int64 InspectionAt =
+		InspectionSimulation.GetPhase1State().Project.FundedAtGameMilliseconds +
+		GetPhase1Fixture().InspectionAtMilliseconds * DurationPercent / 100;
+	AdvanceTo(InspectionSimulation, InspectionAt);
+	TestEqual(TEXT("Construction reaches inspection"),
+		InspectionSimulation.GetPhase1State().Project.Stage,
+		EConstructionStage::Inspection);
+	InspectionSimulation.Step();
+	TestEqual(TEXT("Inspection cannot regress to surface work"),
+		InspectionSimulation.GetPhase1State().Project.Stage,
+		EConstructionStage::Inspection);
+
 	FSimulation Simulation(GetPhase1Fixture().Seed);
 	if (!CreateAndBuildStarterAirfield(*this, Simulation))
 	{
@@ -292,6 +319,17 @@ bool FAMSimPhase1ConstructionTest::RunTest(const FString& Parameters)
 	TestTrue(TEXT("Inspection passed"), State.Project.bInspectionPassed);
 	TestEqual(TEXT("Six starter facilities built"), State.Facilities.Num(), 6);
 	TestEqual(TEXT("Three starter teams exist"), State.Teams.Num(), 3);
+	const FStaffTeamRecord* ConstructionTeam = State.Teams.FindByPredicate(
+		[](const FStaffTeamRecord& Team)
+		{
+			return Team.RoleId == TEXT("Staff.Role.Construction");
+		});
+	TestNotNull(TEXT("Construction team remains available after completion"), ConstructionTeam);
+	if (ConstructionTeam)
+	{
+		TestEqual(TEXT("Construction team matches the four presented workers"),
+			ConstructionTeam->TeamSize, 4);
+	}
 	for (const FFacilityRecord& Facility : State.Facilities)
 	{
 		TestTrue(TEXT("Facility is built"), Facility.bBuilt);

@@ -2,7 +2,7 @@
 
 **Status:** Approved baseline  
 **Owner:** Workforce  
-**Last updated:** 2026-07-25
+**Last updated:** 2026-08-03
 
 ## Outcome and scope
 
@@ -28,7 +28,20 @@ Workload is the ratio of assigned effort to available effort over a rolling wind
 
 Routine tasks dispatch automatically through GS-07 and GS-18. Players set role priorities, flight priorities, zone priority, and reserve capacity. A manual reassignment is allowed if it does not abandon an active safety-critical task.
 
+## Phase 1 staff surface
+
+Once the first airport identity exists, the compact map rail exposes a Staff
+action. Its Phase 1 panel is read-only and reports the four-person starter
+construction crew, available and assigned counts, current construction status,
+and automatic-dispatch behavior. Before funding, all four are available. From
+funding through inspection, all four are assigned; after completion they return
+to availability. The panel is closed by default, toggles from the Staff icon,
+and closes when build mode takes over the map.
+
+This early surface does not introduce individual rosters, hiring, manual work
+orders, or shift controls. Later workforce screens extend the same authoritative
+team records rather than replacing this summary with a separate counter.
+
 ## Acceptance
 
 Tests must prove qualification, schedule, reachability, zone priority, overlapping zones, overload, recovery, emergency override, and save/load. Removing or closing the last qualified team for an active safety requirement must warn and identify affected facilities or flights.
-

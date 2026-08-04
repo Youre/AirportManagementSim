@@ -38,6 +38,7 @@ namespace AMSim
 		int64 InspectionAtMilliseconds = 10800000;
 		int64 ReadyToOpenAtMilliseconds = 12600000;
 		int32 ServiceRoadConstructionBonusPercent = 20;
+		int32 ConstructionWorkerCount = 4;
 		int64 TimetableIncrementMilliseconds = 300000;
 		int64 MaximumArrivalDelayMilliseconds = 3600000;
 		int64 FlightInboundOffsetMilliseconds = -180000;

@@ -17,6 +17,8 @@ class UWidget;
 class UAMSimConstructionProposalView;
 class UAMSimContextHelpCard;
 class UAMSimExpandingToolButton;
+class UAMSimPhase1OperationsHubView;
+class UAMSimPhase1StaffView;
 class UAMSimReleaseGuideView;
 class UAMSimSaveLoadView;
 class UAMSimSchedulePickerView;
@@ -26,6 +28,7 @@ class UTexture2D;
 
 namespace AMSim
 {
+	enum class EPhase1OperationsPage : uint8;
 	struct FPhase3QuerySnapshot;
 	struct FPhase4QuerySnapshot;
 	struct FPhase5QuerySnapshot;
@@ -65,6 +68,10 @@ private:
 	void CommitStarterPlan();
 	UFUNCTION()
 	void ToggleConstructionProposal();
+	void ToggleSchedulePanel();
+	void ToggleOverlayPanel();
+	UFUNCTION()
+	void ToggleStaffPanel();
 	UFUNCTION()
 	void CancelStarterPlan();
 	UFUNCTION()
@@ -172,6 +179,14 @@ private:
 	void RefreshPhase1ContextPanel(
 		const AMSim::FPhase1QuerySnapshot& Query,
 		const AMSim::FPhase1State& State);
+	void BindPhase1UtilityNavigation();
+	void OpenPhase1OperationsPage(AMSim::EPhase1OperationsPage Page);
+	void RefreshPhase1OperationsHub(
+		const AMSim::FPhase1QuerySnapshot& Query,
+		const AMSim::FPhase1State& State);
+	void WatchFirstVisitAtOne();
+	void AdvanceToFirstVisit();
+	void SelectPhase1Overlay(int32 Mode);
 	static void SetButtonLabel(UButton* Button, const FString& Label);
 
 	UPROPERTY(Transient)
@@ -230,6 +245,10 @@ private:
 	TObjectPtr<UAMSimTerminalView> TerminalView;
 	UPROPERTY(Transient)
 	TObjectPtr<UAMSimConstructionProposalView> ConstructionProposalView;
+	UPROPERTY(Transient)
+	TObjectPtr<UAMSimPhase1OperationsHubView> Phase1OperationsHubView;
+	UPROPERTY(Transient)
+	TObjectPtr<UAMSimPhase1StaffView> StaffView;
 	UPROPERTY(Transient)
 	TObjectPtr<UAMSimTurnaroundView> TurnaroundView;
 	UPROPERTY(Transient)
@@ -292,6 +311,12 @@ private:
 	TSubclassOf<UUserWidget> PrimaryButtonWidgetClass;
 	UPROPERTY(Transient)
 	TObjectPtr<UAMSimExpandingToolButton> BuildButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UAMSimExpandingToolButton> ScheduleNavigationButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UAMSimExpandingToolButton> StaffButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UAMSimExpandingToolButton> OverlayButton;
 	UPROPERTY(Transient)
 	TObjectPtr<UAMSimExpandingToolButton> CancelBuildButton;
 	UPROPERTY(Transient)
@@ -371,6 +396,8 @@ private:
 	bool bWorldPanning = false;
 	bool bRightMousePanning = false;
 	bool bCompactLayoutActive = false;
+	bool bReturnToOneAtInbound = false;
+	int32 Phase1OverlayMode = 0;
 	TArray<FString> SaveSlotIds;
 	int32 SelectedSaveSlotIndex = 0;
 };

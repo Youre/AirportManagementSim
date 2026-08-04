@@ -53,6 +53,15 @@ namespace AMSim
 			Phase1State.bAirportOpen &&
 			Phase1State.Flight.State == EFlightState::Completed;
 		View.bInitialized = Query.bInitialized;
+		if (View.bUnlocked && !View.bInitialized)
+		{
+			View.Status = TEXT("FIRST VISIT COMPLETE");
+			View.Operations = TEXT("RECURRING FLIGHTS + EXPANSION READY");
+			View.Weather = TEXT("START THE LIVING AIRPORT");
+			View.Staff = TEXT("HIRE AND ASSIGN OPERATING TEAMS");
+			View.Tenant = TEXT("CHOOSE GA, SCHOOL, OR CHARTER FIRST");
+			View.Economy = TEXT("SHARED LEDGER CONTINUES");
+		}
 		View.bCanSelectIdentity = Query.bInitialized;
 		View.bCanAcceptContract =
 			State.SelectedSpecialization != EAirportSpecialization::Unselected &&

@@ -6,6 +6,23 @@ Material profile: documents
 Initialization mode: augment-existing
 
 Active priorities:
+- Use monotonic starter construction stages as the Phase 1 baseline. Inspection
+  no longer regresses to Surface Work on alternating updates; the compact card
+  should show one stable inspection state until Ready to Open.
+- Use the corrected post-construction control loop as the Phase 1 progression
+  baseline. Build reopens committed-airfield status, Schedule owns the paused
+  first-visit timeline and deliberate 1x/arrival/4x pacing choices, and
+  Overlays exposes real Airfield/Connections/Activity modes. First-visit
+  completion now points to the player-facing Start Living Airport action.
+- Run the short owner replay against
+  `D:\AMSimPlayable-20260803-FirstVisit\Windows\AMSim.exe`. A first-launch
+  Windows Firewall prompt was left for the owner; after it is handled, verify
+  the three rail paths, automatic return to 1x at inbound, and Living Airport
+  continuation.
+- Use the verified owner-interaction correction as the current Phase 1 input
+  baseline: ordinary hover is silent, taxiway bodies start connected branches,
+  the construction truck uses its corrected art axis, and Staff exposes the
+  four-worker automatic-dispatch summary.
 - Treat the autonomous first-GA-visit journey as the Phase 1 operational
   baseline: scheduled aircraft stay off-map, movement follows the committed
   runway/taxi network, the 1x journey lasts about one minute, and speech calls
@@ -42,6 +59,21 @@ Next verification command:
   protocol against the schema-9 candidate.
 
 Last verification:
+- 2026-08-03 EDT: corrected the authoritative Building/Inspection oscillation.
+  Focused construction automation, complete 76-result automation, Editor/Game
+  builds, and Development BuildCookRun pass. The refreshed package is under
+  `D:\AMSimPlayable-20260803-FirstVisit`.
+- 2026-08-03 EDT: the Phase 1 post-construction dead end is technically
+  corrected. Editor/Game builds, focused operations-hub and Paper2D overlay
+  tests, complete 76-result automation, and Development BuildCookRun pass.
+  The new package launches windowed; interactive computer-use validation
+  stopped at the new-path Windows Firewall prompt without changing it.
+- 2026-08-03 EDT: Editor and packaged Development builds pass, all 75
+  automation tests pass, and a real Windows replay confirms the Staff panel
+  starts closed, opens clear of the rail, toggles closed, and reports 4/0
+  availability before purchase. The same replay places a runway, completes a
+  runway-to-Gate-A taxiway, then starts a second segment from its center to
+  Gate B without moving the first segment.
 - 2026-08-02 EDT: the first GA visit now follows the actual runway and complete
   taxi network through approach, landing, rollout, taxi-in, a 40-game-minute
   automatic turnaround, taxi-out, takeoff, and outbound flight. Scheduled and
@@ -333,13 +365,21 @@ Verification note:
   are continuous, and pause preserves both position and facing. Focused and
   complete automation pass 1/1 and 73/73, editor/game builds pass, and the
   integrated 1920x1080 construction captures pass visual inspection.
+- The 2026-08-03 owner-interaction correction keeps visual hover/focus but
+  removes repetitive pointer-enter audio from every themed button. Taxiway
+  endpoint handles remain editable while a body press starts a snapped new
+  branch rather than translating an existing segment. The truck applies the
+  source-art-specific 180-degree correction. Staff is now an enabled Phase 1
+  rail action backed by an immutable-state presenter and a concise, dismissible
+  four-worker availability/assignment card.
 - The 2026-08-02 UI audio pass approves and integrates all 28 nonverbal MP3
   source masters in `SourceAssets/Audio/UI`. Checksums match the generation
   manifest; Unreal imports short stereo, non-looping UI sound waves under
   `/Game/Audio/UI` with non-destructive reviewed level trims.
 - `UAMSimUISoundSubsystem` owns the typed cooker-visible catalog, per-cue
   cooldowns, and `-NoSound` behavior. The shared Riverbend button style gives
-  current and future themed buttons hover/press audio automatically; explicit
+  current and future themed buttons press audio automatically while ordinary
+  mouse-over remains intentionally silent; explicit
   result cues cover construction, offers, schedules, persistence, warnings,
   objectives, capability changes, incidents, and recovery.
 - UI-audio verification passes 3/3 focused tests and the complete 72-test

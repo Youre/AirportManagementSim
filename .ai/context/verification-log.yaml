@@ -1205,3 +1205,57 @@ entries:
       passed. Speech queue coverage proves FIFO calls never interrupt active
       local speech. No schema, asset, cook, network, 3D, or runtime string-load
       dependency changed.
+  - timestamp: '2026-08-04T02:55:05.974142+00:00'
+    commit: 9600366a7992f7496e972e8cf523d3d9ee5af86b
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Owner interaction corrections: UE 5.8 Editor/Game builds; complete
+      75-test automation; Development BuildCookRun; real 1280x720 Windows Staff
+      and branching-taxiway replay; line, diff, and cache-scope checks'
+    result: passed
+    notes: Ordinary themed-button hover is silent while press and semantic cues
+      remain. Taxiway endpoints remain editable, but a body press created a
+      snapped second branch to Gate B without translating the original segment.
+      The truck has its source-art-specific 180-degree correction. Staff now
+      opens from the Phase 1 rail, starts closed, clears the rail, toggles closed,
+      and reports the four-worker availability/assignment state. All 75 tests
+      and the 596265700-byte Development package passed; no shared cache was
+      cleared.
+  - timestamp: '2026-08-04T03:35:13.0917186+00:00'
+    commit: 9600366a7992f7496e972e8cf523d3d9ee5af86b
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'First-visit control loop: UE 5.8 Editor/Game builds; focused operations-hub
+      and Paper2D overlay automation; complete AMSim automation; Development BuildCookRun;
+      windowed package launch and safety-bounded computer-use inspection'
+    result: passed-with-manual-follow-up
+    notes: Build now reopens truthful committed-airfield status, Schedule opens
+      a query-derived autonomous-visit timeline, scheduling pauses the prior
+      speed, Advance to arrival uses 8x then returns to 1x inbound, active
+      operation offers 4x, and completion exposes Start Living Airport.
+      Airfield, Connections, and Activity overlays are real presenter modes.
+      Editor/Game builds and 75 success plus one retained warning result pass;
+      Development BuildCookRun produced the 227756544-byte game binary with
+      SHA-256 90EEFF45BC777FC1296374BAE2DE1806612406A01326DA1C9AA7A4AF6F124936.
+      The package launched windowed, but a new-path Windows Firewall prompt was
+      left untouched for the owner and prevented the final post-build click-through
+      and packaged smoke; both bounded smoke attempts were terminated and are not
+      counted as passing evidence.
+      C had 225.0 GiB free and D had 943.7 GiB free after packaging; no shared
+      cache was cleared.
+  - timestamp: '2026-08-04T03:55:17.0908375+00:00'
+    commit: 9600366a7992f7496e972e8cf523d3d9ee5af86b
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Monotonic construction stages: UE 5.8 Editor/Game builds; focused
+      StarterAirfield construction automation; complete AMSim automation; Development
+      BuildCookRun; line and diff checks'
+    result: passed
+    notes: Fixed the authoritative oscillation from Inspection back to Building
+      that made the compact card alternate between Safety Inspection and Surface
+      Work. Threshold transitions now apply only from earlier stages. The focused
+      regression steps beyond the inspection boundary and proves Inspection is
+      retained. Complete automation passed 75 success plus one retained warning,
+      with zero failures. The refreshed 227756544-byte game binary has SHA-256
+      51E5597CBB195E6C7E2C16CF00D828ADB1B26344BE7BE71BD312D1A7CF79B8D8.
+      C retained 224.7 GiB free and D retained 943.7 GiB; no shared cache was cleared.

@@ -1348,6 +1348,7 @@ void AAMSimWorldPresenter::ApplySnapshot(
 	SetFacilitiesVisible(bFacilitiesVisible, bOperational, State.bInitialized);
 	SetAircraftState(Query, State);
 	RefreshPhase1OperationsPresentation(Query, State);
+	RefreshPhase1OverlayPresentation();
 }
 
 void AAMSimWorldPresenter::ApplyPhase2Snapshot(

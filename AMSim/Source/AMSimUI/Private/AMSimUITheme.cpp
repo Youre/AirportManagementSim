@@ -195,10 +195,9 @@ namespace AMSim::UITheme
 			bKeepSelectedOutline ? 1.6f : 1.0f));
 		Style.SetNormalPadding(FMargin(14.0f, 10.0f));
 		Style.SetPressedPadding(FMargin(14.0f, 11.0f, 14.0f, 9.0f));
-		FSlateSound HoverSound;
-		HoverSound.SetResourceObject(
-			UAMSimUISoundSubsystem::GetDefaultCue(EAMSimUISound::HoverSoft));
-		Style.SetHoveredSound(HoverSound);
+		// Hover is communicated visually. Repeated pointer-enter audio made the
+		// compact rail noisy, so sound is reserved for committed actions and
+		// semantic feedback.
 		const EAMSimUISound PressCue =
 			Kind == EButton::Primary || Kind == EButton::Positive
 				? EAMSimUISound::ClickPrimary

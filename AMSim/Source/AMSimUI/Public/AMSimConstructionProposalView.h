@@ -36,6 +36,11 @@ public:
 		AMSim::FPhase1Point Point;
 		FString Label;
 	};
+	struct FTaxiwayEditHit
+	{
+		int32 SegmentIndex = INDEX_NONE;
+		int32 EndpointIndex = INDEX_NONE;
+	};
 
 	DECLARE_DELEGATE_OneParam(FOnBuildModeVisibilityChanged, bool);
 	FOnBuildModeVisibilityChanged OnBuildModeVisibilityChanged;
@@ -73,6 +78,9 @@ public:
 	static AMSim::FPhase1Point MapLocalPositionToParcel(
 		const FVector2D& LocalPosition,
 		const FVector2D& LocalSize);
+	static FTaxiwayEditHit ResolveTaxiwayEditHit(
+		const AMSim::FStarterPlanProposal& Proposal,
+		const AMSim::FPhase1Point& Point);
 
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;

@@ -1517,39 +1517,9 @@ int32 UAMSimConstructionProposalView::ResolveSelectedEndpoint(
 	if (SelectedPlacementTool == EPlacementTool::Taxiway &&
 		(IsToolPlaced(EPlacementTool::Taxiway) || PathPlacementStep == 1))
 	{
-		for (int32 Index = CurrentProposal.TaxiwaySegments.Num() - 1;
-			Index >= 0;
-			--Index)
-		{
-			const AMSim::FTaxiwaySegment& Segment =
-				CurrentProposal.TaxiwaySegments[Index];
-			if (DistanceSquared(Point, Segment.Start) <= HitDistanceSquared)
-			{
-				DraggedTaxiwaySegmentIndex = Index;
-				return 0;
-			}
-			if (DistanceSquared(Point, Segment.End) <= HitDistanceSquared)
-			{
-				DraggedTaxiwaySegmentIndex = Index;
-				return 1;
-			}
-		}
-		for (int32 Index = CurrentProposal.TaxiwaySegments.Num() - 1;
-			Index >= 0;
-			--Index)
-		{
-			const AMSim::FTaxiwaySegment& Segment =
-				CurrentProposal.TaxiwaySegments[Index];
-			const AMSim::FPhase1Point Closest = AMSim::ClosestPointOnSegment(
-				Point,
-				Segment.Start,
-				Segment.End);
-			if (DistanceSquared(Point, Closest) <= HitDistanceSquared)
-			{
-				DraggedTaxiwaySegmentIndex = Index;
-				return INDEX_NONE;
-			}
-		}
+		const FTaxiwayEditHit Hit = ResolveTaxiwayEditHit(CurrentProposal, Point);
+		DraggedTaxiwaySegmentIndex = Hit.SegmentIndex;
+		return Hit.EndpointIndex;
 	}
 	if (SelectedPlacementTool == EPlacementTool::RoadAccess &&
 		(IsToolPlaced(EPlacementTool::RoadAccess) || PathPlacementStep == 1))
@@ -1564,6 +1534,31 @@ int32 UAMSimConstructionProposalView::ResolveSelectedEndpoint(
 		}
 	}
 	return INDEX_NONE;
+}
+
+UAMSimConstructionProposalView::FTaxiwayEditHit
+UAMSimConstructionProposalView::ResolveTaxiwayEditHit(
+	const AMSim::FStarterPlanProposal& Proposal,
+	const AMSim::FPhase1Point& Point)
+{
+	using namespace AMSimConstructionProposalPrivate;
+	const int64 HitDistanceSquared = HandleHitCentimeters * HandleHitCentimeters;
+	for (int32 Index = Proposal.TaxiwaySegments.Num() - 1; Index >= 0; --Index)
+	{
+		const AMSim::FTaxiwaySegment& Segment = Proposal.TaxiwaySegments[Index];
+		if (DistanceSquared(Point, Segment.Start) <= HitDistanceSquared)
+		{
+			return {Index, 0};
+		}
+		if (DistanceSquared(Point, Segment.End) <= HitDistanceSquared)
+		{
+			return {Index, 1};
+		}
+	}
+	// A body press deliberately returns no edit target. The normal taxiway
+	// placement path then snaps a new segment to the existing network instead
+	// of translating the selected segment.
+	return {};
 }
 
 bool UAMSimConstructionProposalView::IsWorldPlacementPosition(

@@ -2,9 +2,12 @@
 
 #include "AMSimAirportSimulationSubsystem.h"
 #include "AMSimConstructionProposalView.h"
+#include "AMSimExpandingToolButton.h"
 #include "AMSimWorldPresenter.h"
 #include "EngineUtils.h"
 #include "AMSimPhase1Fixture.h"
+#include "AMSimPhase1OperationsHubView.h"
+#include "AMSimPhase1StaffView.h"
 #include "AMSimSchedulePickerView.h"
 #include "AMSimUISoundSubsystem.h"
 #include "Components/EditableTextBox.h"
@@ -64,7 +67,14 @@ void UAMSimRootScreen::ToggleConstructionProposal()
 	{
 		return;
 	}
-	if (ConstructionProposalView->IsProposalOpen())
+	const UAMSimAirportSimulationSubsystem* Subsystem =
+		GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>();
+	if (Subsystem &&
+		Subsystem->GetPhase1Query().ConstructionStage != AMSim::EConstructionStage::None)
+	{
+		OpenPhase1OperationsPage(AMSim::EPhase1OperationsPage::Airfield);
+	}
+	else if (ConstructionProposalView->IsProposalOpen())
 	{
 		ConstructionProposalView->CloseProposal();
 	}
@@ -74,8 +84,180 @@ void UAMSimRootScreen::ToggleConstructionProposal()
 	}
 }
 
+void UAMSimRootScreen::BindPhase1UtilityNavigation()
+{
+	ScheduleNavigationButton = NavigationButtons.IsValidIndex(1)
+		? NavigationButtons[1] : nullptr;
+	StaffButton = NavigationButtons.IsValidIndex(2) ? NavigationButtons[2] : nullptr;
+	OverlayButton = NavigationButtons.IsValidIndex(3) ? NavigationButtons[3] : nullptr;
+	if (ScheduleNavigationButton)
+	{
+		ScheduleNavigationButton->OnActivated.BindUObject(
+			this, &UAMSimRootScreen::ToggleSchedulePanel);
+	}
+	if (StaffButton)
+	{
+		StaffButton->OnActivated.BindUObject(this, &UAMSimRootScreen::ToggleStaffPanel);
+	}
+	if (OverlayButton)
+	{
+		OverlayButton->OnActivated.BindUObject(this, &UAMSimRootScreen::ToggleOverlayPanel);
+	}
+}
+
+void UAMSimRootScreen::ToggleSchedulePanel()
+{
+	OpenPhase1OperationsPage(AMSim::EPhase1OperationsPage::Schedule);
+}
+
+void UAMSimRootScreen::ToggleOverlayPanel()
+{
+	OpenPhase1OperationsPage(AMSim::EPhase1OperationsPage::Overlays);
+}
+
+void UAMSimRootScreen::OpenPhase1OperationsPage(
+	const AMSim::EPhase1OperationsPage Page)
+{
+	if (!Phase1OperationsHubView)
+	{
+		return;
+	}
+	if (ConstructionProposalView && ConstructionProposalView->IsProposalOpen())
+	{
+		ConstructionProposalView->CloseProposal();
+	}
+	if (StaffView)
+	{
+		StaffView->ClosePanel();
+	}
+	const bool bClose = Phase1OperationsHubView->IsPanelOpen() &&
+		Phase1OperationsHubView->GetPage() == Page;
+	if (bClose)
+	{
+		Phase1OperationsHubView->ClosePanel();
+		return;
+	}
+	Phase1OperationsHubView->OpenPage(Page);
+	if (UAMSimAirportSimulationSubsystem* Subsystem =
+		GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>())
+	{
+		Phase1OperationsHubView->RefreshFromSnapshot(
+			Subsystem->GetPhase1Query(),
+			Subsystem->GetSimulation().GetPhase1State(),
+			Phase1OverlayMode);
+	}
+}
+
+void UAMSimRootScreen::RefreshPhase1OperationsHub(
+	const AMSim::FPhase1QuerySnapshot& Query,
+	const AMSim::FPhase1State& State)
+{
+	if (!Phase1OperationsHubView)
+	{
+		return;
+	}
+	if (!Phase1OperationsHubView->OnChooseArrival.IsBound())
+	{
+		Phase1OperationsHubView->OnChooseArrival.BindUObject(
+			this, &UAMSimRootScreen::ScheduleFlight);
+		Phase1OperationsHubView->OnWatchAtOne.BindUObject(
+			this, &UAMSimRootScreen::WatchFirstVisitAtOne);
+		Phase1OperationsHubView->OnAdvanceToArrival.BindUObject(
+			this, &UAMSimRootScreen::AdvanceToFirstVisit);
+		Phase1OperationsHubView->OnOverlaySelected.BindUObject(
+			this, &UAMSimRootScreen::SelectPhase1Overlay);
+	}
+	if (bReturnToOneAtInbound &&
+		Query.FlightState >= AMSim::EFlightState::Inbound &&
+		Query.FlightState < AMSim::EFlightState::Completed)
+	{
+		bReturnToOneAtInbound = false;
+		SubmitSpeed(1);
+		SetInteractionMessage(
+			TEXT("Riverbend 21 is inbound. Returned to 1x for the visible arrival."),
+			true);
+	}
+	Phase1OperationsHubView->RefreshFromSnapshot(
+		Query, State, Phase1OverlayMode);
+}
+
+void UAMSimRootScreen::WatchFirstVisitAtOne()
+{
+	bReturnToOneAtInbound = false;
+	SubmitSpeed(1);
+	SetInteractionMessage(
+		TEXT("Watching the autonomous first visit at 1x."), true);
+}
+
+void UAMSimRootScreen::AdvanceToFirstVisit()
+{
+	const UAMSimAirportSimulationSubsystem* Subsystem = GetWorld()
+		? GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>() : nullptr;
+	if (Subsystem &&
+		Subsystem->GetPhase1Query().FlightState == AMSim::EFlightState::Scheduled)
+	{
+		SubmitSpeed(8);
+		bReturnToOneAtInbound = true;
+		SetInteractionMessage(
+			TEXT("Advancing at 8x; the game will return to 1x when the aircraft enters airspace."),
+			true);
+		return;
+	}
+	bReturnToOneAtInbound = false;
+	SubmitSpeed(4);
+	SetInteractionMessage(TEXT("Continuing the automatic visit at 4x."), true);
+}
+
+void UAMSimRootScreen::SelectPhase1Overlay(const int32 Mode)
+{
+	Phase1OverlayMode = FMath::Clamp(Mode, 0, 2);
+	if (UWorld* World = GetWorld())
+	{
+		for (TActorIterator<AAMSimWorldPresenter> It(World); It; ++It)
+		{
+			It->SetPhase1OverlayMode(Phase1OverlayMode);
+			break;
+		}
+	}
+	SetInteractionMessage(
+		Phase1OverlayMode == 1
+			? TEXT("Connections overlay: movement network cyan, road access amber.")
+			: Phase1OverlayMode == 2
+				? TEXT("Activity overlay: infrastructure muted, active operations emphasized.")
+				: TEXT("Standard airfield view restored."),
+		true);
+	if (UAMSimAirportSimulationSubsystem* Subsystem =
+		GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>())
+	{
+		Phase1OperationsHubView->RefreshFromSnapshot(
+			Subsystem->GetPhase1Query(),
+			Subsystem->GetSimulation().GetPhase1State(),
+			Phase1OverlayMode);
+	}
+}
+
+void UAMSimRootScreen::ToggleStaffPanel()
+{
+	if (StaffView)
+	{
+		if (Phase1OperationsHubView)
+		{
+			Phase1OperationsHubView->ClosePanel();
+		}
+		StaffView->TogglePanel();
+	}
+}
+
 void UAMSimRootScreen::SetConstructionModeChrome(const bool bOpen)
 {
+	if (bOpen && StaffView)
+	{
+		StaffView->ClosePanel();
+	}
+	if (bOpen && Phase1OperationsHubView)
+	{
+		Phase1OperationsHubView->ClosePanel();
+	}
 	if (UWorld* World = GetWorld())
 	{
 		for (TActorIterator<AAMSimWorldPresenter> It(World); It; ++It)
@@ -205,8 +387,7 @@ void UAMSimRootScreen::ScheduleFlight()
 		return;
 	}
 	const int64 FirstSlot =
-		Subsystem->GetRecommendedStarterArrivalTime() +
-		AMSim::GetPhase1Fixture().TimetableIncrementMilliseconds;
+		Subsystem->GetRecommendedStarterArrivalTime();
 	TArray<int64> Options;
 	for (int32 Index = 0; Index < 4; ++Index)
 	{
@@ -235,9 +416,17 @@ bool UAMSimRootScreen::SubmitScheduleAt(
 	const AMSim::EPhase1CommandResult Result =
 		Subsystem->SubmitPhase1Command(Command);
 	const bool bAccepted = Result == AMSim::EPhase1CommandResult::Accepted;
+	if (bAccepted)
+	{
+		AMSim::FPhase1Command PauseCommand;
+		PauseCommand.Type = AMSim::EPhase1CommandType::SetPaused;
+		PauseCommand.bPaused = true;
+		Subsystem->SubmitPhase1Command(PauseCommand);
+		bReturnToOneAtInbound = false;
+	}
 	SetInteractionMessage(
 		bAccepted
-			? TEXT("Arrival time reserved at Stand A1.")
+			? TEXT("Arrival reserved and paused. Choose WATCH AT 1x or ADVANCE TO ARRIVAL in Schedule.")
 			: Result == AMSim::EPhase1CommandResult::RejectedInvalidSchedule
 				? TEXT("That time is no longer available. Choose a later slot.")
 				: TEXT("Accept the offer and open the airport before scheduling."),
@@ -245,6 +434,10 @@ bool UAMSimRootScreen::SubmitScheduleAt(
 	AMSim::UIAudio::Play(
 		this,
 		bAccepted ? EAMSimUISound::ScheduleConfirm : EAMSimUISound::ScheduleRejected);
+	if (bAccepted && Phase1OperationsHubView)
+	{
+		Phase1OperationsHubView->OpenPage(AMSim::EPhase1OperationsPage::Schedule);
+	}
 	return bAccepted;
 }
 

@@ -67,10 +67,12 @@ bool FAMSimUISoundThemeTest::RunTest(const FString& Parameters)
 		AMSim::UITheme::ButtonStyle(AMSim::UITheme::EButton::Secondary);
 	const FButtonStyle Tool =
 		AMSim::UITheme::ButtonStyle(AMSim::UITheme::EButton::Tool);
-	TestTrue(
-		TEXT("Every themed button shares the soft hover cue"),
-		Primary.HoveredSlateSound.GetResourceObject() ==
-			UAMSimUISoundSubsystem::GetDefaultCue(EAMSimUISound::HoverSoft));
+	TestNull(
+		TEXT("Themed buttons keep pointer hover silent"),
+		Primary.HoveredSlateSound.GetResourceObject());
+	TestNull(
+		TEXT("Compact tool hover is also silent"),
+		Tool.HoveredSlateSound.GetResourceObject());
 	TestTrue(
 		TEXT("Primary actions use the primary click cue"),
 		Primary.PressedSlateSound.GetResourceObject() ==

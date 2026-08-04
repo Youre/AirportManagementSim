@@ -19,6 +19,17 @@ The root HUD contains:
 - bottom context panel: selected entity or facility;
 - modal stack: save/load, region selection, settings, destructive confirmations only.
 
+In the starter-airfield journey, Build, Schedule, Staff, and Overlays are real
+rail destinations rather than disabled previews. Schedule opens a bounded
+first-visit operations card with the exact arrival, wall-clock countdown,
+arrival-to-departure timeline, current/next state, and an explicit statement
+that aircraft movement and routine ground service are automatic. Scheduling
+pauses the simulation so a previously selected fast construction speed cannot
+skip the arrival. The player then chooses `Watch at 1x` or `Advance to arrival`;
+the latter may use 8x only until the first visible inbound state and then
+returns to 1x. During the visible operation, `Continue at 4x` provides a
+deliberate faster observation path.
+
 During normal map play, the left tool rail uses one consistent icon family and
 keeps its labels collapsed. Hover or keyboard focus reveals a short label in a
 rounded flyout beside the icon without resizing the rail or shifting the map.
@@ -83,6 +94,10 @@ Required overlays:
 - rating and satisfaction drivers.
 
 Overlay legends remain visible and label every color with a symbol or pattern.
+The Phase 1 rail exposes Airfield, Connections, and Activity modes. Connections
+emphasizes the runway-to-gate movement graph and road access; Activity mutes
+infrastructure so aircraft, crews, and service markers remain prominent. Each
+mode also has a text description, so its meaning is not color-only.
 
 ## Readability
 

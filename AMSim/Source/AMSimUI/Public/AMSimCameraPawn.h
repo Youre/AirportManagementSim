@@ -19,11 +19,19 @@ public:
 
 	UCameraComponent* GetCamera() const { return Camera; }
 	void SetCloseOperationsMode(bool bEnabled);
+	void SetTerminalCutawayMode(
+		bool bEnabled,
+		const FVector& TerminalCenter,
+		float DesiredOrthoWidth = 2000.0f);
 	void PanByScreenDelta(const FVector2D& ScreenDelta);
 	FVector GetManagementLocation() const { return GetActorLocation(); }
 	static FVector CalculateScreenPanDelta(
 		const FVector2D& ScreenDelta,
 		float OrthoWidth);
+	static FVector GetInitialManagementCameraOffset()
+	{
+		return FVector(-12000.0f, 0.0f, 0.0f);
+	}
 
 private:
 	void PanUp();
@@ -35,6 +43,8 @@ private:
 	void ClampManagementLocation();
 
 	bool bCloseOperationsMode = false;
+	bool bTerminalCutawayMode = false;
+	FVector TerminalCutawayCenter = FVector::ZeroVector;
 	FVector ManagementCameraLocation = FVector::ZeroVector;
 	float ManagementOrthoWidth = 105000.0f;
 

@@ -35,6 +35,12 @@ namespace AMSim
 			return Records.FindByPredicate(
 				[Id](const RecordType& Record) { return Record.Id == Id; });
 		}
+
+		bool IsTerminalEditCommand(const EPhase3CommandType Type)
+		{
+			return Type >= EPhase3CommandType::PlaceTerminalFloor &&
+				Type <= EPhase3CommandType::UndoTerminalEdit;
+		}
 	}
 
 	FPassengerTerminalSimulation::FPassengerTerminalSimulation(const uint64 MasterSeed)
@@ -52,6 +58,7 @@ namespace AMSim
 		State.NextDomainId = Phase3IdBase;
 		State.NextEventSequence = 1;
 		State.TerminalCostCredits = GetPhase3Fixture().TerminalCostCredits;
+		SeedStarterTerminalLayout(true);
 		PendingCommands.Reset();
 	}
 
@@ -110,6 +117,30 @@ namespace AMSim
 			}
 			Result.bValid = true;
 			Result.Result = EPhase3CommandResult::Accepted;
+			return Result;
+		}
+		if (IsTerminalEditCommand(Command.Type))
+		{
+			if (!Phase1State.bInitialized)
+			{
+				Result.Result = EPhase3CommandResult::RejectedInvalidState;
+				Result.Cause = TEXT("Create the airport before remodeling its terminal.");
+				Result.Remedy = TEXT("Finish airport creation first.");
+				return Result;
+			}
+			if (!ValidateTerminalEdit(Command, Result))
+			{
+				return Result;
+			}
+			Result.QuotedCredits = QuoteTerminalEdit(Command);
+			if (Phase1State.Credits < Result.QuotedCredits)
+			{
+				Result.bValid = false;
+				Result.Result = EPhase3CommandResult::RejectedInsufficientCredits;
+				Result.Cause = TEXT("The terminal edit is not affordable.");
+				Result.Remedy = TEXT("Reduce the edit or earn more credits.");
+				return Result;
+			}
 			return Result;
 		}
 		if (!State.bInitialized)
@@ -268,6 +299,8 @@ namespace AMSim
 			ApplyCommand(Command, CurrentGameMilliseconds, Phase1);
 		}
 		PendingCommands.Reset();
+		AdvanceTerminalConstruction(CurrentGameMilliseconds, Phase1);
+		AdvanceGATerminalVisitors(CurrentGameMilliseconds, Phase1.GetState());
 		if (!State.bInitialized || !Phase2State.bInitialized)
 		{
 			return;
@@ -423,6 +456,16 @@ namespace AMSim
 			}
 			break;
 
+		case EPhase3CommandType::PlaceTerminalFloor:
+		case EPhase3CommandType::PlaceTerminalWall:
+		case EPhase3CommandType::PlaceTerminalDoor:
+		case EPhase3CommandType::PlaceTerminalObject:
+		case EPhase3CommandType::RotateTerminalObject:
+		case EPhase3CommandType::DemolishTerminalElement:
+		case EPhase3CommandType::UndoTerminalEdit:
+			ApplyTerminalEdit(Command, CurrentGameMilliseconds, Phase1);
+			break;
+
 		default:
 			break;
 		}
@@ -434,6 +477,7 @@ namespace AMSim
 		State.bInitialized = true;
 		State.InitializedAtGameMilliseconds = CurrentGameMilliseconds;
 		State.LastUpdatedGameMilliseconds = CurrentGameMilliseconds;
+		ExpandPassengerTerminalLayout(true);
 
 		auto AddRoom = [this](
 			const TCHAR* Id,

@@ -10,7 +10,22 @@ class UCanvasPanel;
 class UProgressBar;
 class UTextBlock;
 class UTexture2D;
+class UVerticalBox;
 class UAMSimRegionalOperationsView;
+class UAMSimExpandingToolButton;
+
+enum class EAMSimTerminalEditorTool : uint8
+{
+	Floor,
+	Wall,
+	Door,
+	Seating,
+	Information,
+	Restroom,
+	StaffDesk,
+	Demolish,
+	Rotate
+};
 
 UCLASS()
 class AMSIMUI_API UAMSimTerminalView final : public UUserWidget
@@ -25,6 +40,8 @@ public:
 	void ShowRegionalOperations();
 	void ShowAdvancedOperations();
 	void ShowMajorOperations();
+	UFUNCTION()
+	void ShowBuildMode();
 	bool IsPresentationOpen() const { return bPresentationOpen; }
 	bool HasBeenOpened() const { return bHasBeenOpened; }
 	FSimpleDelegate OnReturnRequested;
@@ -36,6 +53,15 @@ public:
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	virtual FReply NativeOnMouseButtonDown(
+		const FGeometry& InGeometry,
+		const FPointerEvent& InMouseEvent) override;
+	virtual FReply NativeOnMouseButtonUp(
+		const FGeometry& InGeometry,
+		const FPointerEvent& InMouseEvent) override;
+	virtual FReply NativeOnMouseMove(
+		const FGeometry& InGeometry,
+		const FPointerEvent& InMouseEvent) override;
 
 private:
 	UFUNCTION()
@@ -76,6 +102,19 @@ private:
 	void OpenMajorOperations();
 	UFUNCTION()
 	void ReturnToAirport();
+	UFUNCTION()
+	void ShowOperationsMode();
+	void SelectFloorTool();
+	void CycleFloorFunction();
+	void SelectWallTool();
+	void SelectDoorTool();
+	void SelectSeatingTool();
+	void SelectInformationTool();
+	void SelectRestroomTool();
+	void SelectStaffDeskTool();
+	void SelectDemolishTool();
+	void SelectRotateTool();
+	void UndoTerminalEdit();
 
 	bool Submit(
 		AMSim::FPhase3Command Command,
@@ -84,6 +123,13 @@ private:
 	void UpdateWorldPresentation(
 		const AMSim::FPhase3QuerySnapshot& Query,
 		const AMSim::FPhase3State& State);
+	AMSim::FTerminalCellCoord PointerToTerminalCell(
+		const FGeometry& Geometry,
+		const FVector2D& ScreenPosition) const;
+	void CommitTerminalGesture(
+		const AMSim::FTerminalCellCoord& Start,
+		const AMSim::FTerminalCellCoord& End);
+	void SelectEditorTool(EAMSimTerminalEditorTool Tool, const FString& Label);
 
 	UPROPERTY(Transient)
 	TObjectPtr<UBorder> TerminalChrome;
@@ -94,7 +140,15 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<UBorder> PlanningCard;
 	UPROPERTY(Transient)
+	TObjectPtr<UVerticalBox> TerminalBuildToolsPanel;
+	UPROPERTY(Transient)
+	TObjectPtr<UVerticalBox> TerminalOperationsToolsPanel;
+	UPROPERTY(Transient)
+	TObjectPtr<UBorder> TerminalOperationsInspector;
+	UPROPERTY(Transient)
 	TObjectPtr<UCanvasPanel> TerminalLabels;
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> BrandText;
 	UPROPERTY(Transient)
 	TObjectPtr<UTextBlock> FundsText;
 	UPROPERTY(Transient)
@@ -154,11 +208,28 @@ private:
 	TObjectPtr<UButton> AdvancedOperationsButton;
 	UPROPERTY(Transient)
 	TObjectPtr<UButton> MajorOperationsButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> BuildModeButton;
+	UPROPERTY(Transient)
+	TObjectPtr<UButton> OperationsModeButton;
+	UPROPERTY(Transient)
+	TArray<TObjectPtr<UAMSimExpandingToolButton>> TerminalEditorToolButtons;
+	UPROPERTY(Transient)
+	TArray<TObjectPtr<UTextBlock>> TerminalLegendTexts;
 	UPROPERTY()
 	TObjectPtr<UTexture2D> PassengerFamilyTexture;
+	UPROPERTY()
+	TArray<TObjectPtr<UTexture2D>> TerminalEditorIcons;
 
 	AMSim::FPhase3ViewState ViewState;
 	int32 OverlayMode = 0;
 	bool bPresentationOpen = false;
 	bool bHasBeenOpened = false;
+	bool bBuildMode = false;
+	bool bCompactLayout = false;
+	bool bTerminalGestureActive = false;
+	bool bRightMousePanning = false;
+	AMSim::FTerminalCellCoord TerminalGestureStart;
+	EAMSimTerminalEditorTool ActiveEditorTool = EAMSimTerminalEditorTool::Floor;
+	AMSim::ETerminalFloorKind ActiveFloorKind = AMSim::ETerminalFloorKind::Public;
 };

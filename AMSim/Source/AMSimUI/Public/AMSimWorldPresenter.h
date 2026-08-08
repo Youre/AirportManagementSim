@@ -42,11 +42,31 @@ public:
 		const AMSim::FPhase6State& State);
 	void SetPhase1OverlayMode(int32 Mode);
 	void SetPhase3OverlayMode(int32 Mode);
+	void SetTerminalCutawayMode(bool bEnabled);
+	bool IsTerminalCutawayMode() const { return bTerminalCutawayMode; }
+	FVector GetTerminalWorldCenter() const;
+	int32 GetActiveTerminalFloorProxyCount() const;
+	int32 GetActiveTerminalConstructionProxyCount() const;
+	int32 GetActiveTerminalPlacementPreviewCount() const;
+	void SetTerminalPlacementPreview(
+		const AMSim::FTerminalCellCoord& Start,
+		const AMSim::FTerminalCellCoord& End,
+		int32 VisualState);
+	void ClearTerminalPlacementPreview();
+	int32 GetAllocatedTerminalFloorProxyCount() const
+	{
+		return TerminalLayoutFloorProxies.Num();
+	}
 	void SetMatureOverviewMode(bool bEnabled);
 	void SetMatureSelectionFacility(bool bFacilitySelected);
 	void SetConstructionEditorOverlayVisible(bool bVisible);
 	uint64 GetLastAppliedRevision() const { return LastAppliedRevision; }
 	bool HasRequiredPresentationAssets() const;
+	bool HasDistinctStarterFacilityAssets() const;
+	FVector GetStarterTerminalScaleForTest() const;
+	FVector GetStarterGateScaleForTest() const;
+	float GetStarterTerminalYawForTest() const;
+	float GetStarterGateYawForTest() const;
 	bool HasDistinctPhase1MovementSurfaceAssets() const
 	{
 		return RunwaySprite && TaxiSprite && AccessSprite &&
@@ -158,6 +178,19 @@ private:
 		UPaperSprite* FeederFreighterSprite,
 		UPaperSprite* RegionalFreighterSprite);
 	void InitializePhase6Presentation();
+	void InitializeTerminalLayoutPresentation();
+	void RefreshTerminalLayoutPresentation(
+		const AMSim::FTerminalLayoutQuerySnapshot& Query,
+		const AMSim::FPhase3State& State,
+		bool bForce = false);
+	UPaperSpriteComponent* AcquireTerminalLayoutProxy(
+		TArray<TObjectPtr<UPaperSpriteComponent>>& Pool,
+		int32 Index,
+		const TCHAR* Prefix,
+		int32 SortPriority);
+	void HideTerminalLayoutPool(
+		TArray<TObjectPtr<UPaperSpriteComponent>>& Pool,
+		int32 FirstUnusedIndex);
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USceneComponent> Root;
@@ -262,6 +295,24 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> Phase3Props;
 	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> TerminalLayoutFloorProxies;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> TerminalLayoutRoofProxies;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> TerminalLayoutRoofDetailProxies;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> TerminalLayoutEdgeProxies;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> TerminalLayoutObjectProxies;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> TerminalLayoutConstructionProxies;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> TerminalLayoutWorkerProxies;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> TerminalLayoutVisitorProxies;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> TerminalPlacementPreviewProxies;
+	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> MatureSite;
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> MatureTaxiConnectors;
@@ -349,6 +400,26 @@ private:
 	UPROPERTY()
 	TArray<TObjectPtr<UPaperSprite>> TerminalSprites;
 	UPROPERTY()
+	TObjectPtr<UPaperSprite> TerminalPublicFloorSprite;
+	UPROPERTY()
+	TObjectPtr<UPaperSprite> TerminalServiceFloorSprite;
+	UPROPERTY()
+	TObjectPtr<UPaperSprite> TerminalRoofSurfaceSprite;
+	UPROPERTY()
+	TArray<TObjectPtr<UPaperSprite>> TerminalRoofDetailSprites;
+	UPROPERTY()
+	TArray<TObjectPtr<UPaperSprite>> TerminalEdgeSprites;
+	UPROPERTY()
+	TArray<TObjectPtr<UPaperSprite>> TerminalObjectSprites;
+	UPROPERTY()
+	TArray<TObjectPtr<UPaperSprite>> TerminalConstructionSprites;
+	UPROPERTY()
+	TObjectPtr<UPaperSprite> TerminalConstructionWorkerSprite;
+	UPROPERTY()
+	TObjectPtr<UPaperSprite> TerminalVisitorSprite;
+	UPROPERTY()
+	TArray<TObjectPtr<UPaperSprite>> TerminalPlacementOverlaySprites;
+	UPROPERTY()
 	TArray<TObjectPtr<UPaperSprite>> SiteSprites;
 	UPROPERTY()
 	TArray<TObjectPtr<UPaperSprite>> Phase5FreighterSprites;
@@ -364,6 +435,11 @@ private:
 	int32 Phase3OverlayMode = 0;
 	int32 Phase1OverlayMode = 0;
 	bool bPhase3WorldVisible = false;
+	bool bPhase1AirportInitialized = false;
+	bool bTerminalCutawayMode = false;
+	uint64 LastAppliedTerminalLayoutRevision = MAX_uint64;
+	AMSim::FTerminalLayoutQuerySnapshot CachedTerminalLayoutSnapshot;
+	AMSim::FPhase3State CachedTerminalPhase3State;
 	bool bPhase3RoutesConnected = false;
 	bool bPhase3BaggageExceptionActive = false;
 	bool bMatureOverviewMode = false;

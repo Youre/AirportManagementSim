@@ -298,6 +298,10 @@ int32 UAMSimPresentationAssetCommandlet::Main(const FString& Params)
 		FPaths::Combine(
 			FPaths::ProjectDir(),
 			TEXT("../SourceAssets/Phase6/Aircraft")));
+	const FString TerminalGrowthSourceRoot = FPaths::ConvertRelativePathToFull(
+		FPaths::Combine(
+			FPaths::ProjectDir(),
+			TEXT("../SourceAssets/TerminalGrowth/Runtime/Textures")));
 	const auto MakeSource = [&SourceRoot](
 		const TCHAR* Folder,
 		const TCHAR* TextureName,
@@ -503,6 +507,57 @@ int32 UAMSimPresentationAssetCommandlet::Main(const FString& Params)
 	{
 		Sources.Add(MakePhase6AircraftSource(HeadingIndex));
 	}
+	const auto MakeTerminalGrowthSource = [&TerminalGrowthSourceRoot](
+		const TCHAR* Category,
+		const TCHAR* AssetName)
+	{
+		const FString TextureName = FString::Printf(TEXT("T_%s"), AssetName);
+		const FString SpriteName = FString::Printf(TEXT("S_%s"), AssetName);
+		return FPresentationSpriteSource{
+			FPaths::Combine(TerminalGrowthSourceRoot, TextureName + TEXT(".png")),
+			FString::Printf(TEXT("/Game/TerminalGrowth/Presentation/Textures/%s"), Category),
+			FString::Printf(
+				TEXT("/Game/TerminalGrowth/Presentation/Textures/%s/%s.%s"),
+				Category,
+				*TextureName,
+				*TextureName),
+			FString::Printf(
+				TEXT("/Game/TerminalGrowth/Presentation/Sprites/%s/%s"),
+				Category,
+				*SpriteName)};
+	};
+	struct FTerminalGrowthCategory
+	{
+		const TCHAR* Name;
+		TArray<const TCHAR*> Assets;
+	};
+	const FTerminalGrowthCategory TerminalGrowthCategories[] = {
+		{TEXT("Surface"), {TEXT("PublicFloor"), TEXT("ServiceFloor"), TEXT("RoofSurface")}},
+		{TEXT("Structure"), {TEXT("ExteriorWall"), TEXT("InteriorWall"), TEXT("GlassWall")}},
+		{TEXT("Door"), {TEXT("EntranceDoor"), TEXT("StandardDoor"), TEXT("ServiceDoor"), TEXT("AirsideGateDoor")}},
+		{TEXT("Roof"), {TEXT("RoofEdge"), TEXT("RoofCorner"), TEXT("EntranceCanopy"), TEXT("RoofHVAC")}},
+		{TEXT("Furniture"), {TEXT("StaffDesk"), TEXT("Storage"), TEXT("Vending"), TEXT("Water"), TEXT("WasteRecycling"), TEXT("Noticeboard"), TEXT("Signage"), TEXT("Plant")}},
+		{TEXT("Construction"), {TEXT("ConstructionFoundation"), TEXT("ConstructionDelivery"), TEXT("ConstructionFraming"), TEXT("ConstructionActive"), TEXT("ConstructionInspection"), TEXT("ConstructionClosure")}},
+		{TEXT("Overlay"), {TEXT("PlacementValid"), TEXT("PlacementBlocked"), TEXT("PlacementUnaffordable"), TEXT("PlacementRouteLoss"), TEXT("PlacementSnap"), TEXT("PlacementConnection")}},
+		{TEXT("Icon"), {TEXT("IconStructure"), TEXT("IconDoors"), TEXT("IconFurniture"), TEXT("IconAmenities"), TEXT("IconOperations"), TEXT("IconZones"), TEXT("IconDemolish"), TEXT("IconRotate"), TEXT("IconCopy"), TEXT("IconUndo")}}
+	};
+	for (const FTerminalGrowthCategory& Category : TerminalGrowthCategories)
+	{
+		for (const TCHAR* AssetName : Category.Assets)
+		{
+			Sources.Add(MakeTerminalGrowthSource(Category.Name, AssetName));
+		}
+	}
+	const bool bTerminalGrowthOnly =
+		FParse::Param(*Params, TEXT("TerminalGrowthOnly"));
+	if (bTerminalGrowthOnly)
+	{
+		Sources = Sources.FilterByPredicate(
+			[](const FPresentationSpriteSource& Source)
+			{
+				return Source.TexturePath.Contains(TEXT("/Game/TerminalGrowth/"));
+			});
+	}
 	const bool bPhase1MovementSurfacesOnly =
 		FParse::Param(*Params, TEXT("Phase1MovementSurfacesOnly"));
 	if (bPhase1MovementSurfacesOnly)
@@ -525,7 +580,7 @@ int32 UAMSimPresentationAssetCommandlet::Main(const FString& Params)
 	{
 		bPassed &= CreateOrUpdateSprite(Source, PackagesToSave);
 	}
-	if (!bPhase1MovementSurfacesOnly)
+	if (!bPhase1MovementSurfacesOnly && !bTerminalGrowthOnly)
 	{
 		bPassed &= ImportUISounds(UIAudioSourceRoot, PackagesToSave);
 		bPassed &= CreateProductionRootBlueprint(PackagesToSave);
@@ -539,6 +594,10 @@ int32 UAMSimPresentationAssetCommandlet::Main(const FString& Params)
 	if (bPhase1MovementSurfacesOnly)
 	{
 		UE_LOG(LogTemp, Display, TEXT("Phase 1 movement-surface generation complete: %d sprites."), Sources.Num());
+	}
+	else if (bTerminalGrowthOnly)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Terminal-growth asset generation complete: %d sprites."), Sources.Num());
 	}
 	else
 	{

@@ -1,0 +1,18 @@
+{
+  "prompt_id": "b03a5ad0-0af1-4359-bcb0-e047172bf15b",
+  "server": "http://192.168.5.12:8188",
+  "mode": "t2im",
+  "workflow_preset": "flux",
+  "workflow_path": "C:\\Users\\dave\\Documents\\custom-skills\\skills\\comfyui-imagegen\\assets\\workflows\\flux_2_klein_t2im.json",
+  "prompt": "A seamless square top-down public airport terminal floor surface. Warm light limestone terrazzo tiles with very subtle cream and pale gray aggregate, fine grout on a one-meter modular rhythm, softly worn but clean, friendly stylized realism matching a polished 2D management game. Perfectly orthographic, flat even neutral lighting, uniform scale, no directional shadows, no furniture, no objects, no borders, no text, no symbols, no focal point, edges tile seamlessly.",
+  "seed": 7347873183523990768,
+  "negative": null,
+  "width": 1024,
+  "height": 1024,
+  "megapixels": null,
+  "input_image": null,
+  "output_files": [
+    "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\Candidates\\ComfyUI\\a-seamless-square-top-down-public-airport-terminal-floor-sur_b03a5ad0-0af1-4359-bcb0-e047172bf15b_1.png"
+  ],
+  "timestamp": "2026-08-08T10:48:55-0400"
+}

@@ -3,7 +3,11 @@
 #include "AMSimRootScreen.h"
 #include "Blueprint/UserWidget.h"
 #include "Engine/World.h"
+#include "HAL/FileManager.h"
+#include "HAL/PlatformMisc.h"
+#include "HighResScreenshot.h"
 #include "Misc/CommandLine.h"
+#include "Misc/Paths.h"
 #include "Misc/Parse.h"
 #include "TimerManager.h"
 #include "UObject/ConstructorHelpers.h"
@@ -39,7 +43,10 @@ void AAMSimHUD::BeginPlay()
 	if (APlayerController* Controller = GetOwningPlayerController())
 	{
 #if !UE_BUILD_SHIPPING
-		if (FParse::Param(FCommandLine::Get(), TEXT("AMSimComponentGallery")))
+		const bool bGalleryProof = FParse::Param(
+			FCommandLine::Get(), TEXT("AMSimComponentGalleryProof"));
+		if (bGalleryProof ||
+			FParse::Param(FCommandLine::Get(), TEXT("AMSimComponentGallery")))
 		{
 			DevelopmentGallery = DevelopmentGalleryClass
 				? CreateWidget<UUserWidget>(
@@ -49,6 +56,20 @@ void AAMSimHUD::BeginPlay()
 			if (DevelopmentGallery)
 			{
 				DevelopmentGallery->AddToViewport();
+				DevelopmentGallery->ForceLayoutPrepass();
+				if (bGalleryProof)
+				{
+					const FString ProofPath = FPaths::Combine(
+						FPaths::ProjectSavedDir(),
+						TEXT("TerminalGrowth/component-gallery.png"));
+					IFileManager::Get().Delete(*ProofPath, false, true);
+					GetWorldTimerManager().SetTimer(
+						DevelopmentGalleryProofTimer,
+						this,
+						&AAMSimHUD::TickDevelopmentGalleryProof,
+						0.1f,
+						true);
+				}
 			}
 			return;
 		}
@@ -58,6 +79,33 @@ void AAMSimHUD::BeginPlay()
 				FCommandLine::Get(),
 				TEXT("AMSimReleaseGuide")));
 	}
+}
+
+void AAMSimHUD::TickDevelopmentGalleryProof()
+{
+#if !UE_BUILD_SHIPPING
+	++DevelopmentGalleryProofStage;
+	if (DevelopmentGallery)
+	{
+		DevelopmentGallery->ForceLayoutPrepass();
+	}
+	const FString ProofDirectory = FPaths::Combine(
+		FPaths::ProjectSavedDir(), TEXT("TerminalGrowth"));
+	const FString ProofPath = FPaths::Combine(
+		ProofDirectory, TEXT("component-gallery.png"));
+	if (DevelopmentGalleryProofStage == 10)
+	{
+		IFileManager::Get().MakeDirectory(*ProofDirectory, true);
+		FScreenshotRequest::RequestScreenshot(ProofPath, true, false);
+		return;
+	}
+	if (DevelopmentGalleryProofStage > 10 &&
+		IFileManager::Get().FileExists(*ProofPath))
+	{
+		GetWorldTimerManager().ClearTimer(DevelopmentGalleryProofTimer);
+		FGenericPlatformMisc::RequestExit(false);
+	}
+#endif
 }
 
 void AAMSimHUD::CreateRootScreen(const bool bOpenReleaseGuide)

@@ -67,6 +67,24 @@ Template-first rule:
   `UAMSimRootScreen`.
 - Accepted placeholder content: `Test objective`, `No active item`, and `Ready`.
 
+## Airport naming card
+
+- Purpose: name a newly acquired parcel without turning first use into a
+  full-width form banner.
+- Applicable screens or flows: the initial airport-creation state.
+- Composition: one bounded card centered above the lower map edge; parcel
+  identity on the left, a wider labeled name field in the middle, and one
+  vertically centered primary action on the right. All three regions share one
+  visual centerline and the card uses only the height required by two text rows.
+- Responsive behavior: retain the three-region row at 100-150% on a 1920x1080
+  viewport. At 175-200%, or in windows below 1760x990, use a centered vertical
+  card with the concise parcel identity, field, and action. The card must not
+  span the map or obscure the central planning area.
+- Component: `UAMSimRootScreen::CreateAirportTray`, with bounds supplied by
+  `FPhase1HudPresentation::MakeAirportCreationLayout`.
+- Accepted placeholder content: `RIVERBEND PLAINS`, `Riverbend Field`, and
+  `CREATE AIRPORT`.
+
 ## Compact expanding tool rail
 
 - Purpose: keep persistent navigation discoverable without permanently
@@ -84,8 +102,11 @@ Template-first rule:
   success cue. Click remains the only action trigger.
 - Visual rules: use the existing cooker-visible Riverbend icon kit; do not use
   emoji, abbreviations, or mixed icon families. Icons are 38-42 units, labels
-  use compact uppercase text, and selected/available/disabled states use the
-  shared tool-button style plus text-independent contrast.
+  retain their authored aspect ratio inside that square, and labels use compact
+  uppercase text inside a minimum 156-unit flyout. The widget host must include
+  the translated flyout without intercepting the world beneath its transparent
+  area. Selected/available/disabled states use the shared tool-button style
+  plus text-independent contrast.
 - Component: `UAMSimExpandingToolButton`, hosted by `UAMSimRootScreen`.
 - Accepted placeholder content: `BUILD`, `SCHEDULE`, and `OVERLAYS`.
 

@@ -8,6 +8,7 @@ class UButton;
 class UBorder;
 class UCanvasPanelSlot;
 class UTextBlock;
+class UTexture2D;
 class UWidget;
 
 UCLASS()
@@ -16,6 +17,8 @@ class AMSIMUI_API UAMSimConstructionProposalView final : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	UAMSimConstructionProposalView(const FObjectInitializer& ObjectInitializer);
+
 	enum class EPlacementTool : uint8
 	{
 		Runway,
@@ -81,6 +84,7 @@ public:
 	static FTaxiwayEditHit ResolveTaxiwayEditHit(
 		const AMSim::FStarterPlanProposal& Proposal,
 		const AMSim::FPhase1Point& Point);
+	bool HasRequiredFacilityArtwork() const;
 
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
@@ -238,6 +242,10 @@ private:
 	TArray<TObjectPtr<UBorder>> DiagnosticSurfaces;
 	UPROPERTY(Transient)
 	TArray<TObjectPtr<UTextBlock>> DiagnosticTexts;
+	UPROPERTY()
+	TObjectPtr<UTexture2D> StarterTerminalTexture;
+	UPROPERTY()
+	TObjectPtr<UTexture2D> StarterGateTexture;
 
 	AMSim::FStarterPlanProposal CurrentProposal;
 	AMSim::FPhase1Validation CurrentValidation;

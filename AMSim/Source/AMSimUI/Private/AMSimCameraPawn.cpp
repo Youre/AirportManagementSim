@@ -37,6 +37,10 @@ AAMSimCameraPawn::AAMSimCameraPawn()
 void AAMSimCameraPawn::BeginPlay()
 {
 	Super::BeginPlay();
+	// The gameplay viewport is shallower than the full window because of the
+	// persistent header and footer. Bias the initial view toward the starter
+	// terminal so fixed context is not hidden beneath the footer.
+	SetActorLocation(GetActorLocation() + GetInitialManagementCameraOffset());
 	ManagementCameraLocation = GetActorLocation();
 	ManagementOrthoWidth = Camera->OrthoWidth;
 	if (const APlayerController* PlayerController = Cast<APlayerController>(GetController()))
@@ -73,7 +77,7 @@ void AAMSimCameraPawn::Pan(const FVector Direction)
 	{
 		return;
 	}
-	AddActorWorldOffset(Direction * 1250.0);
+	AddActorWorldOffset(Direction * (bTerminalCutawayMode ? 150.0 : 1250.0));
 	ClampManagementLocation();
 }
 
@@ -105,6 +109,17 @@ void AAMSimCameraPawn::ClampManagementLocation()
 	FVector Location = GetActorLocation();
 	Location.X = FMath::Clamp(Location.X, -60000.0, 60000.0);
 	Location.Y = FMath::Clamp(Location.Y, -60000.0, 60000.0);
+	if (bTerminalCutawayMode)
+	{
+		Location.X = FMath::Clamp(
+			Location.X,
+			TerminalCutawayCenter.X - 4000.0,
+			TerminalCutawayCenter.X + 4000.0);
+		Location.Y = FMath::Clamp(
+			Location.Y,
+			TerminalCutawayCenter.Y - 4000.0,
+			TerminalCutawayCenter.Y + 4000.0);
+	}
 	SetActorLocation(Location);
 }
 
@@ -114,10 +129,11 @@ void AAMSimCameraPawn::Zoom(const FInputActionValue& Value)
 	{
 		return;
 	}
+	const float ZoomStep = bTerminalCutawayMode ? 400.0f : 5000.0f;
 	Camera->OrthoWidth = FMath::Clamp(
-		Camera->OrthoWidth - Value.Get<float>() * 5000.0f,
-		30000.0f,
-		160000.0f);
+		Camera->OrthoWidth - Value.Get<float>() * ZoomStep,
+		bTerminalCutawayMode ? 1800.0f : 30000.0f,
+		bTerminalCutawayMode ? 9000.0f : 160000.0f);
 }
 
 void AAMSimCameraPawn::SetCloseOperationsMode(const bool bEnabled)
@@ -140,4 +156,42 @@ void AAMSimCameraPawn::SetCloseOperationsMode(const bool bEnabled)
 		Camera->OrthoWidth = ManagementOrthoWidth;
 	}
 	bCloseOperationsMode = bEnabled;
+}
+
+void AAMSimCameraPawn::SetTerminalCutawayMode(
+	const bool bEnabled,
+	const FVector& TerminalCenter,
+	const float DesiredOrthoWidth)
+{
+	if (bEnabled && bTerminalCutawayMode)
+	{
+		TerminalCutawayCenter = TerminalCenter;
+		SetActorLocation(FVector(
+			TerminalCenter.X,
+			TerminalCenter.Y,
+			GetActorLocation().Z));
+		Camera->OrthoWidth = FMath::Clamp(DesiredOrthoWidth, 1800.0f, 9000.0f);
+		return;
+	}
+	if (bEnabled == bTerminalCutawayMode)
+	{
+		return;
+	}
+	if (bEnabled)
+	{
+		ManagementCameraLocation = GetActorLocation();
+		ManagementOrthoWidth = Camera->OrthoWidth;
+		TerminalCutawayCenter = TerminalCenter;
+		SetActorLocation(FVector(
+			TerminalCenter.X,
+			TerminalCenter.Y,
+			GetActorLocation().Z));
+		Camera->OrthoWidth = FMath::Clamp(DesiredOrthoWidth, 1800.0f, 9000.0f);
+	}
+	else
+	{
+		SetActorLocation(ManagementCameraLocation);
+		Camera->OrthoWidth = ManagementOrthoWidth;
+	}
+	bTerminalCutawayMode = bEnabled;
 }

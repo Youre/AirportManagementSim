@@ -289,6 +289,7 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 			*FString::Printf(TEXT("Phase3Prop%d"), Index),
 			43 + Index % 4));
 	}
+	InitializeTerminalLayoutPresentation();
 	for (int32 Index = 0;
 		Index < static_cast<int32>(ESiteSprite::Count);
 		++Index)
@@ -603,14 +604,26 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 			FVector(10.0, 1.0, 1.25));
 		Phase1TaxiwaySegments[Index]->SetVisibility(false);
 	}
-	ConfigureSprite(Stand, StandSprite, FVector(-32000.0, 23000.0, 30.0), FVector(10.0, 1.0, 8.0));
-	ConfigureSprite(GateB, StandSprite, FVector(-22000.0, 23000.0, 31.0), FVector(10.0, 1.0, 8.0));
+	ConfigureSprite(
+		Stand,
+		SiteSprite(ESiteSprite::ApronStand),
+		FVector(-32000.0, 23000.0, 30.0),
+		FVector(7.5, 1.0, 7.5));
+	ConfigureSprite(
+		GateB,
+		SiteSprite(ESiteSprite::ApronStand),
+		FVector(-22000.0, 23000.0, 31.0),
+		FVector(7.5, 1.0, 7.5));
 	ConfigureSprite(Access, AccessSprite, FVector(-35000.0, 36000.0, 20.0), FVector(7.0, 1.0, 1.25));
 	ConfigureSprite(
 		OperationsHut,
 		SiteSprite(ESiteSprite::RegionalTerminal),
 		FVector(-27000.0, 36000.0, 40.0),
-		FVector(10.0, 1.0, 8.0));
+		FVector(11.0, 1.0, 11.0));
+	Stand->SetRelativeRotation(FRotator(0.0f, 90.0f, SpritePlaneRoll));
+	GateB->SetRelativeRotation(FRotator(0.0f, 90.0f, SpritePlaneRoll));
+	OperationsHut->SetRelativeRotation(
+		FRotator(0.0f, 90.0f, SpritePlaneRoll));
 	ConfigureSprite(Windsock, WindsockSprite, FVector(14000.0, -45000.0, 45.0), FVector(3.0, 1.0, 3.0));
 	Aircraft->SetRelativeScale3D(FVector(10.0, 1.0, 10.0));
 	ConfigureSprite(Selection, SelectionSprite, FVector(-32000.0, 23000.0, 70.0), FVector(2.2, 1.0, 2.2));
@@ -1301,6 +1314,19 @@ bool AAMSimWorldPresenter::HasRequiredPresentationAssets() const
 				});
 }
 
+bool AAMSimWorldPresenter::HasDistinctStarterFacilityAssets() const
+{
+	const UPaperSprite* GateSprite = Stand ? Stand->GetSprite() : nullptr;
+	const UPaperSprite* SecondGateSprite = GateB ? GateB->GetSprite() : nullptr;
+	const UPaperSprite* TerminalFacilitySprite =
+		OperationsHut ? OperationsHut->GetSprite() : nullptr;
+	return GateSprite && SecondGateSprite && TerminalFacilitySprite &&
+		GateSprite == SecondGateSprite &&
+		GateSprite != StandSprite &&
+		TerminalFacilitySprite != GateSprite &&
+		TerminalFacilitySprite != HutSprite;
+}
+
 int32 AAMSimWorldPresenter::GetHeadingIndex(const AMSim::EFlightState FlightState)
 {
 	const float Degrees = AMSim::GetPhase1AircraftPresentationHeadingDegrees(FlightState);
@@ -1335,6 +1361,7 @@ void AAMSimWorldPresenter::ApplySnapshot(
 		return;
 	}
 	LastAppliedRevision = Query.Revision;
+	bPhase1AirportInitialized = State.bInitialized;
 	if (State.Project.Stage != AMSim::EConstructionStage::None)
 	{
 		ApplyPhase1Geometry(State.Project.Proposal);
@@ -1349,6 +1376,10 @@ void AAMSimWorldPresenter::ApplySnapshot(
 	SetAircraftState(Query, State);
 	RefreshPhase1OperationsPresentation(Query, State);
 	RefreshPhase1OverlayPresentation();
+	RefreshTerminalLayoutPresentation(
+		CachedTerminalLayoutSnapshot,
+		CachedTerminalPhase3State,
+		true);
 }
 
 void AAMSimWorldPresenter::ApplyPhase2Snapshot(
@@ -1492,6 +1523,9 @@ void AAMSimWorldPresenter::ApplyPhase3Snapshot(
 		return;
 	}
 	LastAppliedPhase3Revision = Query.Revision;
+	CachedTerminalLayoutSnapshot = Query.TerminalLayout;
+	CachedTerminalPhase3State = State;
+	RefreshTerminalLayoutPresentation(Query.TerminalLayout, State);
 	const bool bShowWorld =
 		Query.bInitialized &&
 		Query.TerminalStage >= AMSim::ETerminalConstructionStage::ShellReady;
@@ -1670,6 +1704,7 @@ void AAMSimWorldPresenter::ApplyPhase3Snapshot(
 		!bMatureOverviewMode && bPhase3AircraftAvailable);
 	RefreshPhase3OverlayVisibility();
 	RefreshIncidentPresentationVisibility();
+	RefreshTerminalLayoutPresentation(Query.TerminalLayout, State, true);
 }
 
 void AAMSimWorldPresenter::ApplyPhase4Snapshot(

@@ -10,12 +10,16 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
+#include "Components/Image.h"
+#include "Components/ScaleBox.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
 #include "InputCoreTypes.h"
+#include "Engine/Texture2D.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
+#include "UObject/ConstructorHelpers.h"
 namespace AMSimConstructionProposalPrivate
 {
 	constexpr float ParcelLeft = 0.205f;
@@ -188,6 +192,49 @@ namespace AMSimConstructionProposalPrivate
 			2);
 		return Region;
 	}
+	UCanvasPanel* ArtworkPreviewRegion(
+		UWidgetTree* Tree,
+		const TCHAR* Name,
+		UTexture2D* Texture,
+		TObjectPtr<UBorder>& OutSurface)
+	{
+		UCanvasPanel* Region = Tree->ConstructWidget<UCanvasPanel>(
+			UCanvasPanel::StaticClass(),
+			FName(Name));
+		Region->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+
+		UScaleBox* ArtworkScale = Tree->ConstructWidget<UScaleBox>(
+			UScaleBox::StaticClass(),
+			*(FString(Name) + TEXT("ArtworkScale")));
+		ArtworkScale->SetStretch(EStretch::ScaleToFit);
+		ArtworkScale->SetStretchDirection(EStretchDirection::Both);
+		UImage* Artwork = Tree->ConstructWidget<UImage>(
+			UImage::StaticClass(),
+			*(FString(Name) + TEXT("Artwork")));
+		Artwork->SetBrushFromTexture(Texture, true);
+		ArtworkScale->SetContent(Artwork);
+		Place(
+			Region,
+			ArtworkScale,
+			FAnchors(0.0f, 0.0f, 1.0f, 1.0f),
+			FMargin(),
+			0);
+
+		OutSurface = ColorSurface(
+			Tree,
+			*(FString(Name) + TEXT("Interaction")),
+			FLinearColor(0.08f, 0.45f, 0.62f, 0.05f),
+			AMSim::UITheme::Cyan(),
+			1.6f,
+			8.0f);
+		Place(
+			Region,
+			OutSurface,
+			FAnchors(0.0f, 0.0f, 1.0f, 1.0f),
+			FMargin(),
+			1);
+		return Region;
+	}
 	float MapX(const int64 X)
 	{
 		return ParcelLeft +
@@ -329,6 +376,24 @@ namespace AMSimConstructionProposalPrivate
 		}
 		return TEXT("BUILD TOOL");
 	}
+}
+
+UAMSimConstructionProposalView::UAMSimConstructionProposalView(
+	const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	static ConstructorHelpers::FObjectFinder<UTexture2D> Terminal(
+		TEXT("/Game/Phase45/Presentation/Textures/Site/T_RegionalTerminal.T_RegionalTerminal"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> Gate(
+		TEXT("/Game/Phase45/Presentation/Textures/Site/T_ApronStand.T_ApronStand"));
+	StarterTerminalTexture = Terminal.Object;
+	StarterGateTexture = Gate.Object;
+}
+
+bool UAMSimConstructionProposalView::HasRequiredFacilityArtwork() const
+{
+	return StarterTerminalTexture != nullptr && StarterGateTexture != nullptr &&
+		StarterTerminalTexture != StarterGateTexture;
 }
 
 FString UAMSimConstructionProposalView::DescribeRunwayGeometry(
@@ -706,16 +771,11 @@ TSharedRef<SWidget> UAMSimConstructionProposalView::RebuildWidget()
 			6));
 	}
 
-	UTextBlock* TerminalLabel = nullptr;
-	UCanvasPanel* TerminalPreview = PreviewRegion(
+	UCanvasPanel* TerminalPreview = ArtworkPreviewRegion(
 		WidgetTree,
 		TEXT("StarterTerminalPreview"),
-		FLinearColor(0.49f, 0.36f, 0.13f, 0.62f),
-		AMSim::UITheme::Amber(),
-		TEXT("BASIC TERMINAL"),
-		5,
-		TerminalGeometrySurface,
-		TerminalLabel);
+		StarterTerminalTexture,
+		TerminalGeometrySurface);
 	TerminalGeometryWidget = TerminalPreview;
 	TerminalGeometrySlot = Place(
 		Root,
@@ -724,16 +784,11 @@ TSharedRef<SWidget> UAMSimConstructionProposalView::RebuildWidget()
 		FMargin(),
 		7);
 
-	UTextBlock* GateALabel = nullptr;
-	UCanvasPanel* GateAPreview = PreviewRegion(
+	UCanvasPanel* GateAPreview = ArtworkPreviewRegion(
 		WidgetTree,
 		TEXT("StarterGateAPreview"),
-		FLinearColor(0.08f, 0.45f, 0.62f, 0.34f),
-		AMSim::UITheme::Cyan(),
-		TEXT(""),
-		3,
-		GateAGeometrySurface,
-		GateALabel);
+		StarterGateTexture,
+		GateAGeometrySurface);
 	GateAGeometryWidget = GateAPreview;
 	GateAGeometrySlot = Place(
 		Root,
@@ -742,16 +797,11 @@ TSharedRef<SWidget> UAMSimConstructionProposalView::RebuildWidget()
 		FMargin(),
 		7);
 
-	UTextBlock* GateBLabel = nullptr;
-	UCanvasPanel* GateBPreview = PreviewRegion(
+	UCanvasPanel* GateBPreview = ArtworkPreviewRegion(
 		WidgetTree,
 		TEXT("StarterGateBPreview"),
-		FLinearColor(0.08f, 0.45f, 0.62f, 0.34f),
-		AMSim::UITheme::Cyan(),
-		TEXT(""),
-		3,
-		GateBGeometrySurface,
-		GateBLabel);
+		StarterGateTexture,
+		GateBGeometrySurface);
 	GateBGeometryWidget = GateBPreview;
 	GateBGeometrySlot = Place(
 		Root,

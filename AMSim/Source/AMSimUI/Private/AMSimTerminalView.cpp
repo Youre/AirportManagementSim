@@ -1,7 +1,9 @@
 #include "AMSimTerminalView.h"
 
 #include "AMSimAirportSimulationSubsystem.h"
+#include "AMSimCameraPawn.h"
 #include "AMSimGameInstanceSubsystem.h"
+#include "AMSimExpandingToolButton.h"
 #include "AMSimRegionalOperationsView.h"
 #include "AMSimUITheme.h"
 #include "AMSimWorldPresenter.h"
@@ -25,6 +27,7 @@
 #include "Engine/UserInterfaceSettings.h"
 #include "Engine/Texture2D.h"
 #include "EngineUtils.h"
+#include "InputCoreTypes.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
 #include "UObject/ConstructorHelpers.h"
@@ -188,6 +191,37 @@ UAMSimTerminalView::UAMSimTerminalView(
 	static ConstructorHelpers::FObjectFinder<UTexture2D> PassengerFamily(
 		TEXT("/Game/Phase45/Presentation/Textures/Operations/T_PassengerFamily.T_PassengerFamily"));
 	PassengerFamilyTexture = PassengerFamily.Object;
+	static ConstructorHelpers::FObjectFinder<UTexture2D> StructureIcon(
+		TEXT("/Game/TerminalGrowth/Presentation/Textures/Icon/T_IconStructure.T_IconStructure"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> DoorsIcon(
+		TEXT("/Game/TerminalGrowth/Presentation/Textures/Icon/T_IconDoors.T_IconDoors"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> FurnitureIcon(
+		TEXT("/Game/TerminalGrowth/Presentation/Textures/Icon/T_IconFurniture.T_IconFurniture"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> AmenitiesIcon(
+		TEXT("/Game/TerminalGrowth/Presentation/Textures/Icon/T_IconAmenities.T_IconAmenities"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> OperationsIcon(
+		TEXT("/Game/TerminalGrowth/Presentation/Textures/Icon/T_IconOperations.T_IconOperations"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> ZonesIcon(
+		TEXT("/Game/TerminalGrowth/Presentation/Textures/Icon/T_IconZones.T_IconZones"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> DemolishIcon(
+		TEXT("/Game/TerminalGrowth/Presentation/Textures/Icon/T_IconDemolish.T_IconDemolish"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> RotateIcon(
+		TEXT("/Game/TerminalGrowth/Presentation/Textures/Icon/T_IconRotate.T_IconRotate"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> CopyIcon(
+		TEXT("/Game/TerminalGrowth/Presentation/Textures/Icon/T_IconCopy.T_IconCopy"));
+	static ConstructorHelpers::FObjectFinder<UTexture2D> UndoIcon(
+		TEXT("/Game/TerminalGrowth/Presentation/Textures/Icon/T_IconUndo.T_IconUndo"));
+	TerminalEditorIcons = {
+		StructureIcon.Object,
+		DoorsIcon.Object,
+		FurnitureIcon.Object,
+		AmenitiesIcon.Object,
+		OperationsIcon.Object,
+		ZonesIcon.Object,
+		DemolishIcon.Object,
+		RotateIcon.Object,
+		CopyIcon.Object,
+		UndoIcon.Object};
 }
 
 TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
@@ -202,6 +236,7 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		? Settings->GetDPIScaleBasedOnSize(FIntPoint(1920, 1080))
 		: 1.0f;
 	const bool bCompact = Scale >= 1.75f;
+	bCompactLayout = bCompact;
 	const int32 BodySize = bCompact ? 12 : 14;
 	const int32 SmallSize = bCompact ? 10 : 12;
 
@@ -234,7 +269,7 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		UHorizontalBox::StaticClass(),
 		TEXT("TerminalTopRow"));
 	TopBar->SetContent(TopRow);
-	UTextBlock* Brand = MakeText(
+	BrandText = MakeText(
 		WidgetTree,
 		TEXT("TerminalBrand"),
 		bCompact ? TEXT("RIVERBEND  ·  TERMINAL") :
@@ -242,7 +277,7 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		bCompact ? 15 : 18,
 		AMSim::UITheme::White(),
 		true);
-	UHorizontalBoxSlot* BrandSlot = TopRow->AddChildToHorizontalBox(Brand);
+	UHorizontalBoxSlot* BrandSlot = TopRow->AddChildToHorizontalBox(BrandText);
 	BrandSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
 	BrandSlot->SetVerticalAlignment(VAlign_Center);
 	UButton* ReturnButton = MakeButton(
@@ -251,7 +286,7 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		TEXT("BACK"),
 		AMSim::UITheme::EButton::Secondary,
 		SmallSize);
-	ReturnButton->OnClicked.AddDynamic(
+	ReturnButton->OnClicked.AddUniqueDynamic(
 		this,
 		&UAMSimTerminalView::ReturnToAirport);
 	TopRow->AddChildToHorizontalBox(
@@ -278,7 +313,7 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		bCompact ? TEXT("ADV") : TEXT("ADVANCED"),
 		AMSim::UITheme::EButton::Secondary,
 		SmallSize);
-	AdvancedOperationsButton->OnClicked.AddDynamic(
+	AdvancedOperationsButton->OnClicked.AddUniqueDynamic(
 		this,
 		&UAMSimTerminalView::OpenAdvancedOperations);
 	AdvancedOperationsButton->SetVisibility(
@@ -291,7 +326,7 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		TEXT("MAJOR"),
 		AMSim::UITheme::EButton::Secondary,
 		SmallSize);
-	MajorOperationsButton->OnClicked.AddDynamic(
+	MajorOperationsButton->OnClicked.AddUniqueDynamic(
 		this,
 		&UAMSimTerminalView::OpenMajorOperations);
 	MajorOperationsButton->SetVisibility(
@@ -351,66 +386,132 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		AMSim::UITheme::Muted(),
 		true);
 	AddVertical(Tools, ConstructionText, 12.0f);
+	UHorizontalBox* ModeRow = WidgetTree->ConstructWidget<UHorizontalBox>(
+		UHorizontalBox::StaticClass(),
+		TEXT("TerminalModeRow"));
+	BuildModeButton = MakeButton(
+		WidgetTree, TEXT("TerminalBuildMode"), TEXT("BUILD"),
+		AMSim::UITheme::EButton::Primary, SmallSize);
+	BuildModeButton->OnClicked.AddUniqueDynamic(this, &UAMSimTerminalView::ShowBuildMode);
+	OperationsModeButton = MakeButton(
+		WidgetTree, TEXT("TerminalOperationsMode"), TEXT("OPERATE"),
+		AMSim::UITheme::EButton::Secondary, SmallSize);
+	OperationsModeButton->OnClicked.AddUniqueDynamic(
+		this, &UAMSimTerminalView::ShowOperationsMode);
+	ModeRow->AddChildToHorizontalBox(BuildModeButton)->SetPadding(FMargin(0, 0, 3, 0));
+	ModeRow->AddChildToHorizontalBox(OperationsModeButton)->SetPadding(FMargin(3, 0, 0, 0));
+	AddVertical(Tools, ModeRow, 8.0f);
+
+	TerminalBuildToolsPanel = WidgetTree->ConstructWidget<UVerticalBox>(
+		UVerticalBox::StaticClass(),
+		TEXT("TerminalBuildToolsPanel"));
+	AddVertical(Tools, TerminalBuildToolsPanel, 4.0f);
+	const auto AddEditorTool = [this](
+		UVerticalBox* Parent,
+		const TCHAR* Name,
+		const int32 IconIndex,
+		const FString& Label,
+		void (UAMSimTerminalView::*Handler)())
+	{
+		UAMSimExpandingToolButton* Tool =
+			WidgetTree->ConstructWidget<UAMSimExpandingToolButton>(
+				UAMSimExpandingToolButton::StaticClass(), Name);
+		Tool->Configure(
+			TerminalEditorIcons.IsValidIndex(IconIndex)
+				? TerminalEditorIcons[IconIndex].Get() : nullptr,
+			Label);
+		Tool->OnActivated.BindUObject(this, Handler);
+		TerminalEditorToolButtons.Add(Tool);
+		AddVertical(Parent, Tool, 2.0f);
+	};
+	AddEditorTool(TerminalBuildToolsPanel, TEXT("TerminalFloorTool"), 0,
+		TEXT("FLOOR"), &UAMSimTerminalView::SelectFloorTool);
+	AddEditorTool(TerminalBuildToolsPanel, TEXT("TerminalFloorFunction"), 5,
+		TEXT("FLOOR USE"), &UAMSimTerminalView::CycleFloorFunction);
+	AddEditorTool(TerminalBuildToolsPanel, TEXT("TerminalWallTool"), 0,
+		TEXT("WALL"), &UAMSimTerminalView::SelectWallTool);
+	AddEditorTool(TerminalBuildToolsPanel, TEXT("TerminalDoorTool"), 1,
+		TEXT("DOOR"), &UAMSimTerminalView::SelectDoorTool);
+	AddEditorTool(TerminalBuildToolsPanel, TEXT("TerminalSeatingTool"), 2,
+		TEXT("SEATING"), &UAMSimTerminalView::SelectSeatingTool);
+	AddEditorTool(TerminalBuildToolsPanel, TEXT("TerminalInformationTool"), 4,
+		TEXT("INFORMATION"), &UAMSimTerminalView::SelectInformationTool);
+	AddEditorTool(TerminalBuildToolsPanel, TEXT("TerminalRestroomTool"), 3,
+		TEXT("RESTROOM"), &UAMSimTerminalView::SelectRestroomTool);
+	AddEditorTool(TerminalBuildToolsPanel, TEXT("TerminalStaffDeskTool"), 5,
+		TEXT("STAFF DESK"), &UAMSimTerminalView::SelectStaffDeskTool);
+	AddEditorTool(TerminalBuildToolsPanel, TEXT("TerminalDemolishTool"), 6,
+		TEXT("DEMOLISH"), &UAMSimTerminalView::SelectDemolishTool);
+	AddEditorTool(TerminalBuildToolsPanel, TEXT("TerminalRotateTool"), 7,
+		TEXT("ROTATE"), &UAMSimTerminalView::SelectRotateTool);
+	AddEditorTool(TerminalBuildToolsPanel, TEXT("TerminalUndoTool"), 9,
+		TEXT("UNDO"), &UAMSimTerminalView::UndoTerminalEdit);
+	TerminalBuildToolsPanel->SetVisibility(ESlateVisibility::Collapsed);
+
+	TerminalOperationsToolsPanel = WidgetTree->ConstructWidget<UVerticalBox>(
+		UVerticalBox::StaticClass(),
+		TEXT("TerminalOperationsToolsPanel"));
+	AddVertical(Tools, TerminalOperationsToolsPanel, 4.0f);
 
 	InitializeButton = MakeButton(
 		WidgetTree, TEXT("InitializeTerminal"), TEXT("OPEN TERMINAL PLANNING"),
 		AMSim::UITheme::EButton::Primary, SmallSize);
-	InitializeButton->OnClicked.AddDynamic(
+	InitializeButton->OnClicked.AddUniqueDynamic(
 		this, &UAMSimTerminalView::InitializePassengerAirport);
-	AddVertical(Tools, InitializeButton, 7.0f);
+	AddVertical(TerminalOperationsToolsPanel, InitializeButton, 7.0f);
 	FundButton = MakeButton(
 		WidgetTree, TEXT("FundTerminal"), TEXT("FUND TERMINAL SHELL"),
 		AMSim::UITheme::EButton::Positive, SmallSize);
-	FundButton->OnClicked.AddDynamic(this, &UAMSimTerminalView::FundTerminal);
-	AddVertical(Tools, FundButton, 7.0f);
+	FundButton->OnClicked.AddUniqueDynamic(this, &UAMSimTerminalView::FundTerminal);
+	AddVertical(TerminalOperationsToolsPanel, FundButton, 7.0f);
 	ConnectButton = MakeButton(
 		WidgetTree, TEXT("ConnectTerminal"), TEXT("CONNECT NEXT FLOW"),
 		AMSim::UITheme::EButton::Primary, SmallSize);
-	ConnectButton->OnClicked.AddDynamic(
+	ConnectButton->OnClicked.AddUniqueDynamic(
 		this, &UAMSimTerminalView::ConnectNextNetwork);
-	AddVertical(Tools, ConnectButton, 7.0f);
+	AddVertical(TerminalOperationsToolsPanel, ConnectButton, 7.0f);
 	OpenButton = MakeButton(
 		WidgetTree, TEXT("OpenTerminal"), TEXT("OPEN TERMINAL"),
 		AMSim::UITheme::EButton::Positive, SmallSize);
-	OpenButton->OnClicked.AddDynamic(this, &UAMSimTerminalView::OpenTerminal);
-	AddVertical(Tools, OpenButton, 7.0f);
+	OpenButton->OnClicked.AddUniqueDynamic(this, &UAMSimTerminalView::OpenTerminal);
+	AddVertical(TerminalOperationsToolsPanel, OpenButton, 7.0f);
 	ScheduleButton = MakeButton(
 		WidgetTree, TEXT("SchedulePassengerService"),
 		TEXT("SCHEDULE RB 304"),
 		AMSim::UITheme::EButton::Primary, SmallSize);
-	ScheduleButton->OnClicked.AddDynamic(
+	ScheduleButton->OnClicked.AddUniqueDynamic(
 		this, &UAMSimTerminalView::SchedulePassengerService);
-	AddVertical(Tools, ScheduleButton, 12.0f);
+	AddVertical(TerminalOperationsToolsPanel, ScheduleButton, 12.0f);
 
 	AddSectionTitle(
 		WidgetTree,
-		Tools,
+		TerminalOperationsToolsPanel,
 		TEXT("FlowToolsTitle"),
 		TEXT("OPERATIONS"),
 		bCompact ? 12 : 14);
 	SecurityButton = MakeButton(
 		WidgetTree, TEXT("SecurityLane"), TEXT("TOGGLE SECURITY LANE"),
 		AMSim::UITheme::EButton::Tool, SmallSize);
-	SecurityButton->OnClicked.AddDynamic(
+	SecurityButton->OnClicked.AddUniqueDynamic(
 		this, &UAMSimTerminalView::ToggleSecurityLane);
-	AddVertical(Tools, SecurityButton, 7.0f);
+	AddVertical(TerminalOperationsToolsPanel, SecurityButton, 7.0f);
 	AssistanceButton = MakeButton(
 		WidgetTree, TEXT("PassengerAssistance"), TEXT("ASSIGN ROUTE ASSISTANCE"),
 		AMSim::UITheme::EButton::Tool, SmallSize);
-	AssistanceButton->OnClicked.AddDynamic(
+	AssistanceButton->OnClicked.AddUniqueDynamic(
 		this, &UAMSimTerminalView::RequestPassengerAssistance);
-	AddVertical(Tools, AssistanceButton, 7.0f);
+	AddVertical(TerminalOperationsToolsPanel, AssistanceButton, 7.0f);
 	BaggageButton = MakeButton(
 		WidgetTree, TEXT("BaggageRecovery"), TEXT("RESOLVE BAG EXCEPTION"),
 		AMSim::UITheme::EButton::Tool, SmallSize);
-	BaggageButton->OnClicked.AddDynamic(
+	BaggageButton->OnClicked.AddUniqueDynamic(
 		this, &UAMSimTerminalView::ResolveBaggageException);
-	AddVertical(Tools, BaggageButton, 9.0f);
+	AddVertical(TerminalOperationsToolsPanel, BaggageButton, 9.0f);
 	UButton* OverlayButton = MakeButton(
 		WidgetTree, TEXT("OverlayMode"), TEXT("CYCLE FLOW OVERLAY"),
 		AMSim::UITheme::EButton::Secondary, SmallSize);
-	OverlayButton->OnClicked.AddDynamic(this, &UAMSimTerminalView::CycleOverlay);
-	AddVertical(Tools, OverlayButton, 5.0f);
+	OverlayButton->OnClicked.AddUniqueDynamic(this, &UAMSimTerminalView::CycleOverlay);
+	AddVertical(TerminalOperationsToolsPanel, OverlayButton, 5.0f);
 	OverlayText = MakeText(
 		WidgetTree,
 		TEXT("OverlayModeText"),
@@ -418,7 +519,7 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		SmallSize,
 		AMSim::UITheme::Cyan(),
 		true);
-	AddVertical(Tools, OverlayText, 5.0f);
+	AddVertical(TerminalOperationsToolsPanel, OverlayText, 5.0f);
 	InteractionText = MakeText(
 		WidgetTree,
 		TEXT("TerminalInteraction"),
@@ -430,7 +531,7 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		Canvas,
 		LeftRail,
 		bCompact
-			? FAnchors(0.01f, 0.745f, 0.605f, 0.985f)
+			? FAnchors(0.01f, 0.80f, 0.49f, 0.985f)
 			: FAnchors(0.008f, 0.105f, 0.176f, 0.89f),
 		FMargin(0.0f),
 		9);
@@ -441,6 +542,7 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		AMSim::UITheme::ESurface::Panel,
 		bCompact ? FMargin(11.0f) : FMargin(15.0f),
 		17.0f);
+	TerminalOperationsInspector = PartyRail;
 	UVerticalBox* Party = WidgetTree->ConstructWidget<UVerticalBox>(
 		UVerticalBox::StaticClass(),
 		TEXT("PassengerParty"));
@@ -594,7 +696,7 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		Canvas,
 		PartyRail,
 		bCompact
-			? FAnchors(0.615f, 0.105f, 0.992f, 0.985f)
+			? FAnchors(0.74f, 0.105f, 0.992f, 0.43f)
 			: FAnchors(0.802f, 0.105f, 0.992f, 0.89f),
 		FMargin(0.0f),
 		9);
@@ -668,7 +770,7 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		Canvas,
 		TerminalLabels,
 		bCompact
-			? FAnchors(0.01f, 0.10f, 0.605f, 0.65f)
+			? FAnchors(0.01f, 0.10f, 0.99f, 0.985f)
 			: FAnchors(0.185f, 0.105f, 0.793f, 0.89f),
 		FMargin(0.0f),
 		4);
@@ -704,6 +806,7 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 					: AMSim::UITheme::Cyan(),
 			true);
 		Text->SetAutoWrapText(false);
+		TerminalLegendTexts.Add(Text);
 		UHorizontalBoxSlot* LegendSlot = LegendRow->AddChildToHorizontalBox(Text);
 		LegendSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
 		LegendSlot->SetHorizontalAlignment(HAlign_Center);
@@ -714,35 +817,35 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 				TEXT("PAUSE"),
 				[this](UButton* Button)
 					{
-						Button->OnClicked.AddDynamic(
+						Button->OnClicked.AddUniqueDynamic(
 							this, &UAMSimTerminalView::PauseSimulation);
 					}),
 			TPair<FString, TFunction<void(UButton*)>>(
 				TEXT("1x"),
 				[this](UButton* Button)
 					{
-						Button->OnClicked.AddDynamic(
+						Button->OnClicked.AddUniqueDynamic(
 							this, &UAMSimTerminalView::SetSpeedOne);
 					}),
 			TPair<FString, TFunction<void(UButton*)>>(
 				TEXT("2x"),
 				[this](UButton* Button)
 					{
-						Button->OnClicked.AddDynamic(
+						Button->OnClicked.AddUniqueDynamic(
 							this, &UAMSimTerminalView::SetSpeedTwo);
 					}),
 			TPair<FString, TFunction<void(UButton*)>>(
 				TEXT("4x"),
 				[this](UButton* Button)
 					{
-						Button->OnClicked.AddDynamic(
+						Button->OnClicked.AddUniqueDynamic(
 							this, &UAMSimTerminalView::SetSpeedFour);
 					}),
 			TPair<FString, TFunction<void(UButton*)>>(
 				TEXT("8x"),
 				[this](UButton* Button)
 					{
-						Button->OnClicked.AddDynamic(
+						Button->OnClicked.AddUniqueDynamic(
 							this, &UAMSimTerminalView::SetSpeedEight);
 					})
 		})
@@ -765,7 +868,7 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		TEXT("SAVE"),
 		AMSim::UITheme::EButton::Secondary,
 		SmallSize);
-	SaveButton->OnClicked.AddDynamic(this, &UAMSimTerminalView::SaveGame);
+	SaveButton->OnClicked.AddUniqueDynamic(this, &UAMSimTerminalView::SaveGame);
 	LegendRow->AddChildToHorizontalBox(SaveButton)->SetPadding(FMargin(6.0f, 0.0f, 3.0f, 0.0f));
 	UButton* LoadButton = MakeButton(
 		WidgetTree,
@@ -773,13 +876,13 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		TEXT("LOAD"),
 		AMSim::UITheme::EButton::Secondary,
 		SmallSize);
-	LoadButton->OnClicked.AddDynamic(this, &UAMSimTerminalView::LoadGame);
+	LoadButton->OnClicked.AddUniqueDynamic(this, &UAMSimTerminalView::LoadGame);
 	LegendRow->AddChildToHorizontalBox(LoadButton)->SetPadding(FMargin(3.0f, 0.0f));
 	AddAnchored(
 		Canvas,
 		Legend,
 		bCompact
-			? FAnchors(0.01f, 0.66f, 0.605f, 0.735f)
+			? FAnchors(0.51f, 0.80f, 0.99f, 0.885f)
 			: FAnchors(0.008f, 0.895f, 0.992f, 0.985f),
 		FMargin(0.0f),
 		9);
@@ -841,6 +944,381 @@ void UAMSimTerminalView::NativeTick(
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 	RefreshFromSimulation();
+}
+
+FReply UAMSimTerminalView::NativeOnMouseButtonDown(
+	const FGeometry& InGeometry,
+	const FPointerEvent& InMouseEvent)
+{
+	if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
+	{
+		bRightMousePanning = true;
+		return FReply::Handled().CaptureMouse(TakeWidget());
+	}
+	if (bBuildMode && InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton &&
+		TerminalLabels)
+	{
+		const FGeometry MapGeometry = TerminalLabels->GetCachedGeometry();
+		const FVector2D Local = MapGeometry.AbsoluteToLocal(
+			InMouseEvent.GetScreenSpacePosition());
+		const FVector2D Size = MapGeometry.GetLocalSize();
+		if (Local.X >= 0.0f && Local.Y >= 0.0f &&
+			Local.X <= Size.X && Local.Y <= Size.Y)
+		{
+			TerminalGestureStart = PointerToTerminalCell(
+				InGeometry,
+				InMouseEvent.GetScreenSpacePosition());
+			bTerminalGestureActive = true;
+			return FReply::Handled().CaptureMouse(TakeWidget());
+		}
+	}
+	return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+}
+
+FReply UAMSimTerminalView::NativeOnMouseButtonUp(
+	const FGeometry& InGeometry,
+	const FPointerEvent& InMouseEvent)
+{
+	if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton &&
+		bRightMousePanning)
+	{
+		bRightMousePanning = false;
+		return FReply::Handled().ReleaseMouseCapture();
+	}
+	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton &&
+		bTerminalGestureActive)
+	{
+		const AMSim::FTerminalCellCoord End = PointerToTerminalCell(
+			InGeometry,
+			InMouseEvent.GetScreenSpacePosition());
+		bTerminalGestureActive = false;
+		for (TActorIterator<AAMSimWorldPresenter> It(GetWorld()); It; ++It)
+		{
+			It->ClearTerminalPlacementPreview();
+			break;
+		}
+		CommitTerminalGesture(TerminalGestureStart, End);
+		return FReply::Handled().ReleaseMouseCapture();
+	}
+	return Super::NativeOnMouseButtonUp(InGeometry, InMouseEvent);
+}
+
+FReply UAMSimTerminalView::NativeOnMouseMove(
+	const FGeometry& InGeometry,
+	const FPointerEvent& InMouseEvent)
+{
+	if (bRightMousePanning)
+	{
+		if (AAMSimCameraPawn* CameraPawn = GetOwningPlayer()
+			? Cast<AAMSimCameraPawn>(GetOwningPlayer()->GetPawn()) : nullptr)
+		{
+			CameraPawn->PanByScreenDelta(InMouseEvent.GetCursorDelta());
+		}
+		return FReply::Handled();
+	}
+	if (bTerminalGestureActive && InteractionText)
+	{
+		const AMSim::FTerminalCellCoord End = PointerToTerminalCell(
+			InGeometry,
+			InMouseEvent.GetScreenSpacePosition());
+		const int32 Width = FMath::Abs(End.X - TerminalGestureStart.X) + 1;
+		const int32 Height = FMath::Abs(End.Y - TerminalGestureStart.Y) + 1;
+		const int64 PreviewCost = ActiveEditorTool == EAMSimTerminalEditorTool::Floor
+			? static_cast<int64>(Width) * Height * 25
+			: ActiveEditorTool == EAMSimTerminalEditorTool::Wall
+				? static_cast<int64>(Width + Height - 2) * 35
+				: 0;
+		int32 PreviewState = 1;
+		if (const UAMSimAirportSimulationSubsystem* Subsystem =
+			GetWorld() ? GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>() : nullptr)
+		{
+			const AMSim::FTerminalLayoutState& Layout =
+				Subsystem->GetSimulation().GetPhase3State().TerminalLayout;
+			if (PreviewCost > Subsystem->GetSimulation().GetPhase1State().Credits)
+			{
+				PreviewState = 3;
+			}
+			else if (ActiveEditorTool == EAMSimTerminalEditorTool::Floor)
+			{
+				const int32 MinX = FMath::Min(TerminalGestureStart.X, End.X);
+				const int32 MaxX = FMath::Max(TerminalGestureStart.X, End.X);
+				const int32 MinY = FMath::Min(TerminalGestureStart.Y, End.Y);
+				const int32 MaxY = FMath::Max(TerminalGestureStart.Y, End.Y);
+				if (Layout.FloorCells.ContainsByPredicate(
+					[MinX, MaxX, MinY, MaxY](const AMSim::FTerminalFloorCellRecord& Cell)
+					{
+						return Cell.Cell.X >= MinX && Cell.Cell.X <= MaxX &&
+							Cell.Cell.Y >= MinY && Cell.Cell.Y <= MaxY;
+					}))
+				{
+					PreviewState = 2;
+				}
+			}
+		}
+		for (TActorIterator<AAMSimWorldPresenter> It(GetWorld()); It; ++It)
+		{
+			It->SetTerminalPlacementPreview(TerminalGestureStart, End, PreviewState);
+			break;
+		}
+		InteractionText->SetText(FText::FromString(FString::Printf(
+			TEXT("%dm x %dm  \u00b7  %lld CR  \u00b7  release to commit"),
+			Width,
+			Height,
+			PreviewCost)));
+		return FReply::Handled();
+	}
+	return Super::NativeOnMouseMove(InGeometry, InMouseEvent);
+}
+
+AMSim::FTerminalCellCoord UAMSimTerminalView::PointerToTerminalCell(
+	const FGeometry& Geometry,
+	const FVector2D& ScreenPosition) const
+{
+	(void)Geometry;
+	if (APlayerController* PlayerController = GetOwningPlayer())
+	{
+		FVector RayOrigin;
+		FVector RayDirection;
+		if (PlayerController->DeprojectScreenPositionToWorld(
+			ScreenPosition.X, ScreenPosition.Y, RayOrigin, RayDirection) &&
+			!FMath::IsNearlyZero(RayDirection.Z))
+		{
+			for (TActorIterator<AAMSimWorldPresenter> It(GetWorld()); It; ++It)
+			{
+				const AMSim::FTerminalLayoutState* Layout = nullptr;
+				if (const UAMSimAirportSimulationSubsystem* Subsystem =
+					GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>())
+				{
+					Layout = &Subsystem->GetSimulation().GetPhase3State().TerminalLayout;
+				}
+				if (Layout && Layout->bSeeded)
+				{
+					const double Distance = (42.0 - RayOrigin.Z) / RayDirection.Z;
+					const FVector WorldPoint = RayOrigin + RayDirection * Distance;
+					const FVector Center = It->GetTerminalWorldCenter();
+					const double Width = (Layout->MaximumX - Layout->MinimumX + 1) * 100.0;
+					const double Depth = (Layout->MaximumY - Layout->MinimumY + 1) * 100.0;
+					return {
+						Layout->MinimumX + static_cast<int32>(FMath::FloorToInt(
+							(WorldPoint.Y - Center.Y + Width * 0.5) / 100.0)),
+						Layout->MinimumY + static_cast<int32>(FMath::FloorToInt(
+							(WorldPoint.X - Center.X + Depth * 0.5) / 100.0))};
+				}
+				break;
+			}
+		}
+	}
+	const FGeometry MapGeometry = TerminalLabels
+		? TerminalLabels->GetCachedGeometry()
+		: GetCachedGeometry();
+	const FVector2D Local = MapGeometry.AbsoluteToLocal(ScreenPosition);
+	const FVector2D Size = MapGeometry.GetLocalSize();
+	int32 MinimumX = 0;
+	int32 MinimumY = 0;
+	int32 MaximumX = 17;
+	int32 MaximumY = 11;
+	if (const UAMSimAirportSimulationSubsystem* Subsystem =
+		GetWorld() ? GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>() : nullptr)
+	{
+		const AMSim::FTerminalLayoutState& Layout =
+			Subsystem->GetSimulation().GetPhase3State().TerminalLayout;
+		MinimumX = Layout.MinimumX;
+		MinimumY = Layout.MinimumY;
+		MaximumX = Layout.MaximumX;
+		MaximumY = Layout.MaximumY;
+	}
+	const float AlphaX = FMath::Clamp(Local.X / FMath::Max(Size.X, 1.0f), 0.0f, 0.999f);
+	const float AlphaY = FMath::Clamp(Local.Y / FMath::Max(Size.Y, 1.0f), 0.0f, 0.999f);
+	return {
+		MinimumX + FMath::FloorToInt(AlphaX * (MaximumX - MinimumX + 1)),
+		MinimumY + FMath::FloorToInt(AlphaY * (MaximumY - MinimumY + 1))};
+}
+
+void UAMSimTerminalView::CommitTerminalGesture(
+	const AMSim::FTerminalCellCoord& Start,
+	const AMSim::FTerminalCellCoord& End)
+{
+	AMSim::FPhase3Command Command;
+	Command.StartCell = Start;
+	Command.EndCell = End;
+	switch (ActiveEditorTool)
+	{
+	case EAMSimTerminalEditorTool::Floor:
+		Command.Type = AMSim::EPhase3CommandType::PlaceTerminalFloor;
+		Command.FloorKind = ActiveFloorKind;
+		break;
+	case EAMSimTerminalEditorTool::Wall:
+		Command.Type = AMSim::EPhase3CommandType::PlaceTerminalWall;
+		Command.EdgeKind = AMSim::ETerminalEdgeKind::InteriorWall;
+		if (FMath::Abs(End.X - Start.X) >= FMath::Abs(End.Y - Start.Y))
+		{
+			Command.EndCell.Y = Start.Y;
+		}
+		else
+		{
+			Command.EndCell.X = Start.X;
+		}
+		if (Command.StartCell == Command.EndCell)
+		{
+			Command.EndCell.X += 1;
+		}
+		break;
+	case EAMSimTerminalEditorTool::Door:
+		Command.Type = AMSim::EPhase3CommandType::PlaceTerminalDoor;
+		Command.EdgeKind = AMSim::ETerminalEdgeKind::StandardDoor;
+		Command.EndCell = FMath::Abs(End.X - Start.X) >= FMath::Abs(End.Y - Start.Y)
+			? AMSim::FTerminalCellCoord{Start.X + (End.X < Start.X ? -1 : 1), Start.Y}
+			: AMSim::FTerminalCellCoord{Start.X, Start.Y + (End.Y < Start.Y ? -1 : 1)};
+		break;
+	case EAMSimTerminalEditorTool::Seating:
+	case EAMSimTerminalEditorTool::Information:
+	case EAMSimTerminalEditorTool::Restroom:
+	case EAMSimTerminalEditorTool::StaffDesk:
+		Command.Type = AMSim::EPhase3CommandType::PlaceTerminalObject;
+		Command.ObjectKind = ActiveEditorTool == EAMSimTerminalEditorTool::Seating
+			? AMSim::ETerminalObjectKind::SeatGroup4
+			: ActiveEditorTool == EAMSimTerminalEditorTool::Information
+				? AMSim::ETerminalObjectKind::InformationDesk
+				: ActiveEditorTool == EAMSimTerminalEditorTool::Restroom
+					? AMSim::ETerminalObjectKind::Restroom
+					: AMSim::ETerminalObjectKind::StaffDesk;
+		Command.StartCell = End;
+		break;
+	case EAMSimTerminalEditorTool::Demolish:
+	case EAMSimTerminalEditorTool::Rotate:
+	{
+		const UAMSimAirportSimulationSubsystem* Subsystem =
+			GetWorld() ? GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>() : nullptr;
+		if (!Subsystem)
+		{
+			return;
+		}
+		const AMSim::FTerminalLayoutState& Layout =
+			Subsystem->GetSimulation().GetPhase3State().TerminalLayout;
+		const AMSim::FTerminalPlacedObjectRecord* Object = Layout.Objects.FindByPredicate(
+			[End](const AMSim::FTerminalPlacedObjectRecord& Entry)
+			{
+				return End.X >= Entry.Anchor.X &&
+					End.X < Entry.Anchor.X + Entry.FootprintWidth &&
+					End.Y >= Entry.Anchor.Y &&
+					End.Y < Entry.Anchor.Y + Entry.FootprintHeight;
+			});
+		if (Object)
+		{
+			Command.TerminalElementId = Object->Id;
+		}
+		else if (const AMSim::FTerminalFloorCellRecord* Cell = Layout.FloorCells.FindByPredicate(
+			[End](const AMSim::FTerminalFloorCellRecord& Entry) { return Entry.Cell == End; }))
+		{
+			Command.TerminalElementId = Cell->Id;
+		}
+		if (!Command.TerminalElementId.IsValid())
+		{
+			if (InteractionText) InteractionText->SetText(FText::FromString(TEXT("Nothing selectable in this cell.")));
+			return;
+		}
+		Command.Type = ActiveEditorTool == EAMSimTerminalEditorTool::Demolish
+			? AMSim::EPhase3CommandType::DemolishTerminalElement
+			: AMSim::EPhase3CommandType::RotateTerminalObject;
+		break;
+	}
+	}
+	Submit(Command, TEXT("Terminal edit committed; workers are moving to the site."));
+}
+
+void UAMSimTerminalView::ShowBuildMode()
+{
+	bBuildMode = true;
+	ViewState.Revision = MAX_uint64;
+	if (TerminalBuildToolsPanel) TerminalBuildToolsPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (TerminalOperationsToolsPanel) TerminalOperationsToolsPanel->SetVisibility(ESlateVisibility::Collapsed);
+	if (TerminalOperationsInspector) TerminalOperationsInspector->SetVisibility(ESlateVisibility::Collapsed);
+	if (PlanningCard) PlanningCard->SetVisibility(ESlateVisibility::Collapsed);
+	if (InteractionText) InteractionText->SetText(FText::FromString(TEXT("FLOOR  \u00b7  drag on the terminal grid  \u00b7  right-drag to pan")));
+	const TCHAR* BuildLegend[] = {
+		bCompactLayout ? TEXT("FLOOR  ·  25CR") : TEXT("FLOOR  ·  25 CR / CELL"), TEXT("CYAN  ·  VALID"),
+		TEXT("RIGHT-DRAG  ·  PAN"), TEXT("ESC  ·  BACK")};
+	for (int32 Index = 0; Index < TerminalLegendTexts.Num() && Index < UE_ARRAY_COUNT(BuildLegend); ++Index)
+	{
+		TerminalLegendTexts[Index]->SetText(FText::FromString(BuildLegend[Index]));
+		TerminalLegendTexts[Index]->SetVisibility(
+			bCompactLayout ? ESlateVisibility::Collapsed : ESlateVisibility::Visible);
+	}
+	RefreshFromSimulation();
+}
+
+void UAMSimTerminalView::ShowOperationsMode()
+{
+	bBuildMode = false;
+	if (BrandText)
+	{
+		BrandText->SetText(FText::FromString(
+			bCompactLayout ? TEXT("RIVERBEND  ·  DOMESTIC TERMINAL") :
+				TEXT("RIVERBEND AIRPORT\nDOMESTIC TERMINAL")));
+	}
+	const TCHAR* OperationsLegend[] = {
+		TEXT("GREEN  PASSENGER FLOW"), TEXT("CYAN  SECURE AREA"),
+		TEXT("AMBER  CONGESTION"), TEXT("DASHED  ACCESSIBLE ROUTE")};
+	for (int32 Index = 0; Index < TerminalLegendTexts.Num() && Index < UE_ARRAY_COUNT(OperationsLegend); ++Index)
+	{
+		TerminalLegendTexts[Index]->SetText(FText::FromString(OperationsLegend[Index]));
+		TerminalLegendTexts[Index]->SetVisibility(ESlateVisibility::Visible);
+	}
+	if (TerminalBuildToolsPanel) TerminalBuildToolsPanel->SetVisibility(ESlateVisibility::Collapsed);
+	if (TerminalOperationsToolsPanel) TerminalOperationsToolsPanel->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	if (TerminalOperationsInspector) TerminalOperationsInspector->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	RefreshFromSimulation();
+}
+
+void UAMSimTerminalView::SelectEditorTool(
+	const EAMSimTerminalEditorTool Tool,
+	const FString& Label)
+{
+	ActiveEditorTool = Tool;
+	if (InteractionText)
+	{
+		InteractionText->SetText(FText::FromString(FString::Printf(
+			TEXT("%s  \u00b7  drag or click on the grid  \u00b7  release to purchase"), *Label)));
+	}
+}
+
+void UAMSimTerminalView::SelectFloorTool() { SelectEditorTool(EAMSimTerminalEditorTool::Floor, TEXT("FLOOR")); }
+void UAMSimTerminalView::CycleFloorFunction()
+{
+	switch (ActiveFloorKind)
+	{
+	case AMSim::ETerminalFloorKind::Public:
+		ActiveFloorKind = AMSim::ETerminalFloorKind::StaffService;
+		SelectEditorTool(EAMSimTerminalEditorTool::Floor, TEXT("FLOOR: STAFF / SERVICE"));
+		break;
+	case AMSim::ETerminalFloorKind::StaffService:
+		ActiveFloorKind = AMSim::ETerminalFloorKind::Restroom;
+		SelectEditorTool(EAMSimTerminalEditorTool::Floor, TEXT("FLOOR: RESTROOM"));
+		break;
+	case AMSim::ETerminalFloorKind::Restroom:
+		ActiveFloorKind = AMSim::ETerminalFloorKind::EntranceThreshold;
+		SelectEditorTool(EAMSimTerminalEditorTool::Floor, TEXT("FLOOR: ENTRANCE"));
+		break;
+	default:
+		ActiveFloorKind = AMSim::ETerminalFloorKind::Public;
+		SelectEditorTool(EAMSimTerminalEditorTool::Floor, TEXT("FLOOR: PUBLIC"));
+		break;
+	}
+}
+void UAMSimTerminalView::SelectWallTool() { SelectEditorTool(EAMSimTerminalEditorTool::Wall, TEXT("WALL")); }
+void UAMSimTerminalView::SelectDoorTool() { SelectEditorTool(EAMSimTerminalEditorTool::Door, TEXT("DOOR")); }
+void UAMSimTerminalView::SelectSeatingTool() { SelectEditorTool(EAMSimTerminalEditorTool::Seating, TEXT("SEATING")); }
+void UAMSimTerminalView::SelectInformationTool() { SelectEditorTool(EAMSimTerminalEditorTool::Information, TEXT("INFORMATION")); }
+void UAMSimTerminalView::SelectRestroomTool() { SelectEditorTool(EAMSimTerminalEditorTool::Restroom, TEXT("RESTROOM")); }
+void UAMSimTerminalView::SelectStaffDeskTool() { SelectEditorTool(EAMSimTerminalEditorTool::StaffDesk, TEXT("STAFF DESK")); }
+void UAMSimTerminalView::SelectDemolishTool() { SelectEditorTool(EAMSimTerminalEditorTool::Demolish, TEXT("DEMOLISH")); }
+void UAMSimTerminalView::SelectRotateTool() { SelectEditorTool(EAMSimTerminalEditorTool::Rotate, TEXT("ROTATE")); }
+
+void UAMSimTerminalView::UndoTerminalEdit()
+{
+	AMSim::FPhase3Command Command;
+	Command.Type = AMSim::EPhase3CommandType::UndoTerminalEdit;
+	Submit(Command, TEXT("Queued terminal edit undone and fully refunded."));
 }
 
 bool UAMSimTerminalView::Submit(
@@ -1133,12 +1611,47 @@ void UAMSimTerminalView::ShowPresentation()
 {
 	bHasBeenOpened = true;
 	bPresentationOpen = true;
+	FVector TerminalCenter = FVector(-27000.0f, 36000.0f, 40.0f);
+	float TerminalOrthoWidth = 2000.0f;
+	if (const UAMSimAirportSimulationSubsystem* Subsystem =
+		GetWorld() ? GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>() : nullptr)
+	{
+		const AMSim::FTerminalLayoutState& Layout =
+			Subsystem->GetSimulation().GetPhase3State().TerminalLayout;
+		const float HorizontalMeters =
+			static_cast<float>(Layout.MaximumX - Layout.MinimumX + 1);
+		const float VerticalMeters =
+			static_cast<float>(Layout.MaximumY - Layout.MinimumY + 1);
+		if (HorizontalMeters > 18.0f || VerticalMeters > 12.0f)
+		{
+			TerminalOrthoWidth = FMath::Max(
+				2000.0f,
+				FMath::Max(HorizontalMeters * 112.0f, VerticalMeters * 190.0f));
+		}
+	}
+	for (TActorIterator<AAMSimWorldPresenter> It(GetWorld()); It; ++It)
+	{
+		It->SetTerminalCutawayMode(true);
+		TerminalCenter = It->GetTerminalWorldCenter();
+	}
+	for (TActorIterator<AAMSimCameraPawn> It(GetWorld()); It; ++It)
+	{
+		It->SetTerminalCutawayMode(true, TerminalCenter, TerminalOrthoWidth);
+	}
 	RefreshFromSimulation();
 }
 
 void UAMSimTerminalView::ClosePresentation()
 {
 	bPresentationOpen = false;
+	for (TActorIterator<AAMSimWorldPresenter> It(GetWorld()); It; ++It)
+	{
+		It->SetTerminalCutawayMode(false);
+	}
+	for (TActorIterator<AAMSimCameraPawn> It(GetWorld()); It; ++It)
+	{
+		It->SetTerminalCutawayMode(false, FVector::ZeroVector);
+	}
 	SetVisibility(ESlateVisibility::Collapsed);
 }
 
@@ -1177,6 +1690,8 @@ void UAMSimTerminalView::RefreshFromSimulation()
 	const AMSim::FPhase3QuerySnapshot Query = Subsystem->GetPhase3Query();
 	const AMSim::FPhase3State& State =
 		Subsystem->GetSimulation().GetPhase3State();
+	const AMSim::FPhase1State& Phase1 =
+		Subsystem->GetSimulation().GetPhase1State();
 	const AMSim::FPhase4QuerySnapshot Phase4Query =
 		Subsystem->GetPhase4Query();
 	const AMSim::FPhase5QuerySnapshot Phase5Query =
@@ -1228,7 +1743,7 @@ void UAMSimTerminalView::RefreshFromSimulation()
 		}
 		return;
 	}
-	if (!Query.bUnlocked && !Query.bInitialized)
+	if (!Phase1.bInitialized)
 	{
 		SetVisibility(ESlateVisibility::Collapsed);
 		return;
@@ -1247,6 +1762,19 @@ void UAMSimTerminalView::RefreshFromSimulation()
 	ViewState = AMSim::MakePhase3ViewState(Query, State);
 	StatusText->SetText(FText::FromString(ViewState.Status));
 	ConstructionText->SetText(FText::FromString(ViewState.Construction));
+	if (bBuildMode && State.TerminalLayout.bReady)
+	{
+		if (BrandText)
+		{
+			BrandText->SetText(FText::FromString(
+				bCompactLayout ? TEXT("RIVERBEND  ·  STARTER GA TERMINAL") :
+					TEXT("RIVERBEND AIRPORT\nSTARTER GA TERMINAL")));
+		}
+		StatusText->SetText(FText::FromString(TEXT("STARTER TERMINAL  ·  READY")));
+		ConstructionText->SetText(FText::FromString(FString::Printf(
+			TEXT("FURNISHED  ·  %d AIRSIDE GATES  ·  EDITABLE"),
+			State.TerminalLayout.ValidAirsideGateCount)));
+	}
 	FlightText->SetText(FText::FromString(ViewState.Flight));
 	PassengerCountsText->SetText(FText::FromString(ViewState.PassengerCounts));
 	SecurityText->SetText(FText::FromString(ViewState.Security));
@@ -1275,8 +1803,6 @@ void UAMSimTerminalView::RefreshFromSimulation()
 	ConfidenceProgress->SetPercent(
 		static_cast<float>(ViewState.FeaturedTimeConfidencePercent) / 100.0f);
 
-	const AMSim::FPhase1State& Phase1 =
-		Subsystem->GetSimulation().GetPhase1State();
 	const AMSim::FPhase2QuerySnapshot Phase2Query =
 		Subsystem->GetPhase2Query();
 	FundsText->SetText(FText::FromString(FString::Printf(
@@ -1290,13 +1816,16 @@ void UAMSimTerminalView::RefreshFromSimulation()
 		(TotalMinutes / 60) % 24,
 		TotalMinutes % 60)));
 	PlanningCard->SetVisibility(
-		ViewState.bShowTerminal
+		bBuildMode || ViewState.bShowTerminal || !Query.bUnlocked
 			? ESlateVisibility::Collapsed
 			: ESlateVisibility::Visible);
 	TerminalLabels->SetVisibility(
-		ViewState.bShowTerminal
-			? ESlateVisibility::SelfHitTestInvisible
-			: ESlateVisibility::Collapsed);
+		bBuildMode
+			? ESlateVisibility::Collapsed
+			: ViewState.bShowTerminal
+				? ESlateVisibility::SelfHitTestInvisible
+				: ESlateVisibility::Collapsed);
+	TerminalLabels->SetRenderOpacity(1.0f);
 	InitializeButton->SetIsEnabled(ViewState.bCanInitialize);
 	InitializeButton->SetVisibility(
 		ViewState.bCanInitialize

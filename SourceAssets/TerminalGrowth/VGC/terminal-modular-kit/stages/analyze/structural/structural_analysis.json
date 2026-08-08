@@ -1,0 +1,49 @@
+{
+  "artifacts": {
+    "copied_source": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\ingest\\source\\terminal-modular-kit-contact-sheet.svg"
+  },
+  "contours": [],
+  "created_at": "2026-08-08T14:58:52+00:00",
+  "density_grid": null,
+  "entry_path": "vector_cleanup",
+  "image_summary": null,
+  "input_mode": "vector",
+  "input_package_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\ingest\\input_package.json",
+  "next_phase": "WEB-98",
+  "prompt_candidates": [],
+  "regions": [],
+  "schema_version": "0.1",
+  "svg_summary": {
+    "element_counts": {
+      "circle": 15,
+      "defs": 1,
+      "feDropShadow": 1,
+      "filter": 1,
+      "g": 48,
+      "image": 3,
+      "linearGradient": 1,
+      "path": 46,
+      "pattern": 4,
+      "rect": 67,
+      "stop": 2,
+      "style": 1,
+      "svg": 1,
+      "symbol": 23,
+      "text": 49,
+      "use": 23
+    },
+    "group_count": 48,
+    "height": "1080",
+    "path_like_count": 128,
+    "root_tag": "svg",
+    "structural_hints": [
+      "has_groups",
+      "has_path_like_geometry",
+      "has_viewbox",
+      "has_defs"
+    ],
+    "viewBox": "0 0 1920 1080",
+    "width": "1920"
+  },
+  "warnings": []
+}

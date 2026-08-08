@@ -1,0 +1,18 @@
+{
+  "prompt_id": "22ff367d-b573-4f6b-9d75-027555f107b0",
+  "server": "http://192.168.5.12:8188",
+  "mode": "t2im",
+  "workflow_preset": "flux",
+  "workflow_path": "C:\\Users\\dave\\Documents\\custom-skills\\skills\\comfyui-imagegen\\assets\\workflows\\flux_2_klein_t2im.json",
+  "prompt": "A seamless square top-down staff and service-room airport terminal floor surface. Muted blue-gray resilient commercial tile with tiny subtle speckle and fine one-meter modular seams, practical clean slightly worn material, polished 2D management-game stylized realism. Perfectly orthographic, flat even neutral lighting, uniform scale, no directional shadows, no furniture, no objects, no borders, no text, no symbols, no focal point, edges tile seamlessly.",
+  "seed": 7347873183523990770,
+  "negative": null,
+  "width": 1024,
+  "height": 1024,
+  "megapixels": null,
+  "input_image": null,
+  "output_files": [
+    "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\Candidates\\ComfyUI\\a-seamless-square-top-down-staff-and-service-room-airport-te_22ff367d-b573-4f6b-9d75-027555f107b0_1.png"
+  ],
+  "timestamp": "2026-08-08T10:49:08-0400"
+}

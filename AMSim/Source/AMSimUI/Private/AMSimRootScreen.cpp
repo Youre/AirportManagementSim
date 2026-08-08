@@ -35,7 +35,9 @@
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
+#include "Engine/Engine.h"
 #include "Engine/GameInstance.h"
+#include "Engine/GameViewportClient.h"
 #include "Engine/Texture2D.h"
 #include "Engine/UserInterfaceSettings.h"
 #include "Engine/World.h"
@@ -45,6 +47,7 @@
 #include "Misc/Parse.h"
 #include "Styling/CoreStyle.h"
 #include "UObject/ConstructorHelpers.h"
+#include "UnrealClient.h"
 
 namespace AMSimRootScreenPrivate
 {
@@ -123,7 +126,7 @@ namespace AMSimRootScreenPrivate
 		UCanvasPanelSlot* Slot = Canvas->AddChildToCanvas(Button);
 		Slot->SetAnchors(FAnchors(0.0f, 0.0f));
 		Slot->SetPosition(FVector2D(10.0f, 10.0f + Row * 64.0f));
-		Slot->SetSize(FVector2D(88.0f, 56.0f));
+		Slot->SetSize(UAMSimExpandingToolButton::GetHostSize());
 		Slot->SetZOrder(2);
 	}
 
@@ -226,57 +229,6 @@ namespace AMSimRootScreenPrivate
 		UCanvasPanelSlot* Slot = Canvas->AddChildToCanvas(Child);
 		Slot->SetAnchors(Anchors);
 		Slot->SetOffsets(Offsets);
-	}
-
-	FString ConstructionName(const AMSim::EConstructionStage Stage)
-	{
-		switch (Stage)
-		{
-		case AMSim::EConstructionStage::None: return TEXT("Not funded");
-		case AMSim::EConstructionStage::Funded: return TEXT("Funded");
-		case AMSim::EConstructionStage::AwaitingDelivery: return TEXT("Awaiting delivery");
-		case AMSim::EConstructionStage::Building: return TEXT("Building");
-		case AMSim::EConstructionStage::Inspection: return TEXT("Safety inspection");
-		case AMSim::EConstructionStage::ReadyToOpen: return TEXT("Ready to open");
-		case AMSim::EConstructionStage::Operational: return TEXT("Operational");
-		default: return TEXT("Unknown");
-		}
-	}
-
-	FString OfferName(const AMSim::EOfferState State)
-	{
-		switch (State)
-		{
-		case AMSim::EOfferState::Unavailable: return TEXT("No offer");
-		case AMSim::EOfferState::Available: return TEXT("Offer available");
-		case AMSim::EOfferState::Declined: return TEXT("Offer declined");
-		case AMSim::EOfferState::Accepted: return TEXT("Contract accepted");
-		case AMSim::EOfferState::Scheduled: return TEXT("Flight scheduled");
-		case AMSim::EOfferState::Completed: return TEXT("Contract completed");
-		default: return TEXT("Unknown");
-		}
-	}
-
-	FString FlightName(const AMSim::EFlightState State)
-	{
-		switch (State)
-		{
-		case AMSim::EFlightState::None: return TEXT("No active flight");
-		case AMSim::EFlightState::Scheduled: return TEXT("Scheduled");
-		case AMSim::EFlightState::Inbound: return TEXT("Inbound");
-		case AMSim::EFlightState::Approach: return TEXT("On approach");
-		case AMSim::EFlightState::Landing: return TEXT("Landing");
-		case AMSim::EFlightState::RunwayRoll: return TEXT("Runway roll");
-		case AMSim::EFlightState::TaxiIn: return TEXT("Taxiing to stand");
-		case AMSim::EFlightState::Parked: return TEXT("Parked");
-		case AMSim::EFlightState::Turnaround: return TEXT("Turnaround");
-		case AMSim::EFlightState::Ready: return TEXT("Ready for departure");
-		case AMSim::EFlightState::TaxiOut: return TEXT("Taxiing out");
-		case AMSim::EFlightState::Takeoff: return TEXT("Taking off");
-		case AMSim::EFlightState::Outbound: return TEXT("Outbound");
-		case AMSim::EFlightState::Completed: return TEXT("Flight completed");
-		default: return TEXT("Unknown");
-		}
 	}
 
 	FString ServiceName(const AMSim::EServiceTaskState State)
@@ -392,7 +344,20 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	const float InterfaceScale = InterfaceSettings
 		? InterfaceSettings->GetDPIScaleBasedOnSize(FIntPoint(1920, 1080))
 		: 1.0f;
-	const bool bCompactLayout = InterfaceScale >= 1.75f;
+	FIntPoint ViewportSize(1920, 1080);
+	if (GEngine && GEngine->GameViewport && GEngine->GameViewport->Viewport)
+	{
+		const FIntPoint ReportedViewportSize =
+			GEngine->GameViewport->Viewport->GetSizeXY();
+		if (ReportedViewportSize.X > 0 && ReportedViewportSize.Y > 0)
+		{
+			ViewportSize = ReportedViewportSize;
+		}
+	}
+	const bool bCompactLayout =
+		AMSim::FPhase1HudPresentation::ShouldUseCompactLayout(
+			InterfaceScale,
+			ViewportSize);
 	bCompactLayoutActive = bCompactLayout;
 	const int32 AirportHeaderSize = bCompactLayout ? 18 : 24;
 	const int32 ClockHeaderSize = bCompactLayout ? 14 : 16;
@@ -659,11 +624,13 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	AircraftLabel = MakeText(WidgetTree, TEXT("AircraftLabel"), TEXT("RB-021"), 13, White);
 	AircraftLabel->SetVisibility(ESlateVisibility::Hidden);
 	PlaceCanvas(Map, AircraftLabel, FAnchors(0.03f, 0.27f, 0.17f, 0.32f));
+	const AMSim::FPhase1AirportCreationLayout CreationLayout =
+		AMSim::FPhase1HudPresentation::MakeAirportCreationLayout(bCompactLayout);
 	CreateAirportTray = MakeSurface(
 		WidgetTree,
 		TEXT("CreateAirportTray"),
 		AMSim::UITheme::ESurface::RaisedCard,
-		bCompactLayout ? FMargin(12.0f, 10.0f) : FMargin(18.0f, 16.0f),
+		FMargin(CreationLayout.HorizontalPadding, CreationLayout.VerticalPadding),
 		18.0f,
 		1.8f);
 	if (bCompactLayout)
@@ -717,7 +684,9 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 				true),
 			3.0f);
 		UHorizontalBoxSlot* ParcelSlot = CreateRow->AddChildToHorizontalBox(ParcelSummary);
-		ParcelSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+		FSlateChildSize ParcelSize(ESlateSizeRule::Fill);
+		ParcelSize.Value = CreationLayout.ParcelWeight;
+		ParcelSlot->SetSize(ParcelSize);
 		ParcelSlot->SetPadding(FMargin(0.0f, 0.0f, 16.0f, 0.0f));
 		ParcelSlot->SetVerticalAlignment(VAlign_Center);
 
@@ -736,8 +705,11 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 			0.0f);
 		AddVertical(NameColumn, AirportNameEntry, 2.0f);
 		UHorizontalBoxSlot* NameSlot = CreateRow->AddChildToHorizontalBox(NameColumn);
-		NameSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+		FSlateChildSize NameSize(ESlateSizeRule::Fill);
+		NameSize.Value = CreationLayout.NameWeight;
+		NameSlot->SetSize(NameSize);
 		NameSlot->SetPadding(FMargin(0.0f, 0.0f, 16.0f, 0.0f));
+		NameSlot->SetVerticalAlignment(VAlign_Center);
 
 		UHorizontalBoxSlot* CreateSlot = CreateRow->AddChildToHorizontalBox(CreateButton);
 		CreateSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
@@ -746,9 +718,11 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	PlaceCanvas(
 		Map,
 		CreateAirportTray,
-		bCompactLayout
-			? FAnchors(0.05f, 0.50f, 0.95f, 0.91f)
-			: FAnchors(0.06f, 0.73f, 0.94f, 0.96f));
+		FAnchors(
+			CreationLayout.MinX,
+			CreationLayout.MinY,
+			CreationLayout.MaxX,
+			CreationLayout.MaxY));
 	ContextPanel = MakePanel(WidgetTree, TEXT("ContextPanel"));
 	AMSim::UITheme::StyleSurface(
 		ContextPanel,
@@ -1692,6 +1666,7 @@ void UAMSimRootScreen::RefreshFromSimulation()
 		Phase5Query,
 		Phase6Query);
 	RefreshDestinationButtons(
+		Query,
 		Phase3Query,
 		Phase4Query,
 		Phase5Query,
@@ -1717,6 +1692,13 @@ void UAMSimRootScreen::RefreshFromSimulation()
 	}
 	if (TerminalView)
 	{
+		if (!bTerminalGrowthProofOpened && Query.bInitialized &&
+			FParse::Param(FCommandLine::Get(), TEXT("AMSimTerminalGrowthProof")))
+		{
+			TerminalView->ShowPresentation();
+			TerminalView->ShowBuildMode();
+			bTerminalGrowthProofOpened = true;
+		}
 		if (Phase3Query.bInitialized &&
 			!TerminalView->HasBeenOpened())
 		{
@@ -1727,6 +1709,11 @@ void UAMSimRootScreen::RefreshFromSimulation()
 		{
 			TerminalView->SetVisibility(ESlateVisibility::Collapsed);
 		}
+	}
+	if (ContextHelpCard)
+	{
+		ContextHelpCard->SetSuppressed(
+			TerminalView && TerminalView->IsPresentationOpen());
 	}
 	if (TurnaroundView)
 	{

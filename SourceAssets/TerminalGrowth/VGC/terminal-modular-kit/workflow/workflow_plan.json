@@ -1,0 +1,240 @@
+{
+  "artifacts": [],
+  "created_at": "2026-08-08T14:58:52+00:00",
+  "dry_run": false,
+  "entry_decision": {
+    "explicit_entry_path": true,
+    "fidelity_profile": "topology",
+    "input_mode": "vector",
+    "rationale": "Explicit entry path supplied by caller.",
+    "selected_entry_path": "vector_cleanup",
+    "source_kind": "vector"
+  },
+  "entry_path": "vector_cleanup",
+  "from_stage": "ingest",
+  "input_mode": "vector",
+  "metrics": {
+    "artifact_count": 0,
+    "dry_run": false,
+    "executed_stage_count": 0,
+    "failed_stage_count": 0,
+    "planned_stage_count": 7,
+    "skipped_stage_count": 7,
+    "total_duration_seconds": 0.0
+  },
+  "next_phase": "WEB-104",
+  "run_id": "terminal-modular-kit",
+  "schema_version": "0.1",
+  "stages": [
+    {
+      "command": [
+        "C:\\Users\\dave\\ComfyUI-Installs\\ComfyUI\\ComfyUI\\.venv\\Scripts\\python.exe",
+        "C:\\Users\\dave\\Documents\\custom-skills\\skills\\vector-graphic-composer\\scripts\\vgc_ingest.py",
+        "--intent",
+        "preserve and validate the editable semantic vector source for the growable terminal modular runtime asset contact sheet",
+        "--entry-path",
+        "vector_cleanup",
+        "--out",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\ingest",
+        "--source",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\Vector\\terminal-modular-kit-contact-sheet.svg"
+      ],
+      "completed_at": null,
+      "duration_seconds": null,
+      "input_refs": {
+        "intent": "preserve and validate the editable semantic vector source for the growable terminal modular runtime asset contact sheet"
+      },
+      "notes": "Stage planned by VGC orchestrator.",
+      "output_refs": {
+        "input_package": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\ingest\\input_package.json",
+        "run_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\ingest\\run_manifest.json"
+      },
+      "returncode": null,
+      "stage": "ingest",
+      "started_at": null,
+      "status": "planned",
+      "stderr_tail": "",
+      "stdout_tail": "",
+      "warnings": []
+    },
+    {
+      "command": [
+        "C:\\Users\\dave\\ComfyUI-Installs\\ComfyUI\\ComfyUI\\.venv\\Scripts\\python.exe",
+        "C:\\Users\\dave\\Documents\\custom-skills\\skills\\vector-graphic-composer\\scripts\\vgc_analyze.py",
+        "--input-package",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\ingest\\input_package.json",
+        "--out",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\analyze",
+        "--fidelity-profile",
+        "topology"
+      ],
+      "completed_at": null,
+      "duration_seconds": null,
+      "input_refs": {
+        "fidelity_profile": "topology",
+        "input_package": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\ingest\\input_package.json"
+      },
+      "notes": "Stage planned by VGC orchestrator.",
+      "output_refs": {
+        "run_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\analyze\\structural\\run_manifest.json",
+        "structural_analysis": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\analyze\\structural\\structural_analysis.json"
+      },
+      "returncode": null,
+      "stage": "analyze",
+      "started_at": null,
+      "status": "planned",
+      "stderr_tail": "",
+      "stdout_tail": "",
+      "warnings": []
+    },
+    {
+      "command": [
+        "C:\\Users\\dave\\ComfyUI-Installs\\ComfyUI\\ComfyUI\\.venv\\Scripts\\python.exe",
+        "C:\\Users\\dave\\Documents\\custom-skills\\skills\\vector-graphic-composer\\scripts\\vgc_vectorize.py",
+        "--structural-analysis",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\analyze\\structural\\structural_analysis.json",
+        "--out",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize",
+        "--fidelity-profile",
+        "topology"
+      ],
+      "completed_at": null,
+      "duration_seconds": null,
+      "input_refs": {
+        "fidelity_profile": "topology",
+        "structural_analysis": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\analyze\\structural\\structural_analysis.json"
+      },
+      "notes": "Stage planned by VGC orchestrator.",
+      "output_refs": {
+        "raw_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\raw.svg",
+        "run_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\run_manifest.json",
+        "vector_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\vector_manifest.json"
+      },
+      "returncode": null,
+      "stage": "vectorize",
+      "started_at": null,
+      "status": "planned",
+      "stderr_tail": "",
+      "stdout_tail": "",
+      "warnings": []
+    },
+    {
+      "command": [
+        "C:\\Users\\dave\\ComfyUI-Installs\\ComfyUI\\ComfyUI\\.venv\\Scripts\\python.exe",
+        "C:\\Users\\dave\\Documents\\custom-skills\\skills\\vector-graphic-composer\\scripts\\vgc_cleanup.py",
+        "--vector-manifest",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\vector_manifest.json",
+        "--out",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup",
+        "--fidelity-profile",
+        "topology"
+      ],
+      "completed_at": null,
+      "duration_seconds": null,
+      "input_refs": {
+        "fidelity_profile": "topology",
+        "vector_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\vector_manifest.json"
+      },
+      "notes": "Stage planned by VGC orchestrator.",
+      "output_refs": {
+        "cleaned_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\cleaned.svg",
+        "cleanup_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\cleanup_manifest.json",
+        "run_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\run_manifest.json"
+      },
+      "returncode": null,
+      "stage": "cleanup",
+      "started_at": null,
+      "status": "planned",
+      "stderr_tail": "",
+      "stdout_tail": "",
+      "warnings": []
+    },
+    {
+      "command": [
+        "C:\\Users\\dave\\ComfyUI-Installs\\ComfyUI\\ComfyUI\\.venv\\Scripts\\python.exe",
+        "C:\\Users\\dave\\Documents\\custom-skills\\skills\\vector-graphic-composer\\scripts\\vgc_segment.py",
+        "--cleanup-manifest",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\cleanup_manifest.json",
+        "--out",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment"
+      ],
+      "completed_at": null,
+      "duration_seconds": null,
+      "input_refs": {
+        "cleanup_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\cleanup_manifest.json"
+      },
+      "notes": "Stage planned by VGC orchestrator.",
+      "output_refs": {
+        "layered_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\layered.svg",
+        "run_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\run_manifest.json",
+        "segmentation_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\segmentation_manifest.json"
+      },
+      "returncode": null,
+      "stage": "segment",
+      "started_at": null,
+      "status": "planned",
+      "stderr_tail": "",
+      "stdout_tail": "",
+      "warnings": []
+    },
+    {
+      "command": [
+        "C:\\Users\\dave\\ComfyUI-Installs\\ComfyUI\\ComfyUI\\.venv\\Scripts\\python.exe",
+        "C:\\Users\\dave\\Documents\\custom-skills\\skills\\vector-graphic-composer\\scripts\\vgc_mesh.py",
+        "--segmentation-manifest",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\segmentation_manifest.json",
+        "--out",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\mesh"
+      ],
+      "completed_at": null,
+      "duration_seconds": null,
+      "input_refs": {
+        "segmentation_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\segmentation_manifest.json"
+      },
+      "notes": "Stage planned by VGC orchestrator.",
+      "output_refs": {
+        "interaction_mesh": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\mesh\\mesh\\interaction_mesh.json",
+        "mesh_preview_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\mesh\\mesh\\mesh_preview.svg",
+        "run_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\mesh\\mesh\\run_manifest.json"
+      },
+      "returncode": null,
+      "stage": "mesh",
+      "started_at": null,
+      "status": "planned",
+      "stderr_tail": "",
+      "stdout_tail": "",
+      "warnings": []
+    },
+    {
+      "command": [
+        "C:\\Users\\dave\\ComfyUI-Installs\\ComfyUI\\ComfyUI\\.venv\\Scripts\\python.exe",
+        "C:\\Users\\dave\\Documents\\custom-skills\\skills\\vector-graphic-composer\\scripts\\vgc_export.py",
+        "--interaction-mesh",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\mesh\\mesh\\interaction_mesh.json",
+        "--out",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export"
+      ],
+      "completed_at": null,
+      "duration_seconds": null,
+      "input_refs": {
+        "interaction_mesh": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\mesh\\mesh\\interaction_mesh.json"
+      },
+      "notes": "Stage planned by VGC orchestrator.",
+      "output_refs": {
+        "export_package": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\export_package.json",
+        "run_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\run_manifest.json",
+        "runtime_bundle_zip": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime_bundle.zip",
+        "runtime_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\vgc.svg"
+      },
+      "returncode": null,
+      "stage": "export",
+      "started_at": null,
+      "status": "planned",
+      "stderr_tail": "",
+      "stdout_tail": "",
+      "warnings": []
+    }
+  ],
+  "to_stage": "export",
+  "warnings": []
+}

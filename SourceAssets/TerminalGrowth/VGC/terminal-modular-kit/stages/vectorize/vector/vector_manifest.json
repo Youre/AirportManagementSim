@@ -1,0 +1,61 @@
+{
+  "artifacts": {
+    "raw_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\raw.svg",
+    "source_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\ingest\\source\\terminal-modular-kit-contact-sheet.svg"
+  },
+  "created_at": "2026-08-08T14:58:53+00:00",
+  "elements": [
+    {
+      "area": null,
+      "attributes": {
+        "path_like_count": 128,
+        "root_tag": "svg",
+        "viewBox": "0 0 1920 1080"
+      },
+      "bbox": null,
+      "element_id": "svg-passthrough-root",
+      "element_type": "svg",
+      "group_id": "svg-passthrough",
+      "point_count": null,
+      "score": null,
+      "source_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\ingest\\source\\terminal-modular-kit-contact-sheet.svg"
+    }
+  ],
+  "entry_path": "vector_cleanup",
+  "groups": [
+    {
+      "element_count": 1,
+      "group_id": "svg-passthrough",
+      "label": "SVG passthrough",
+      "notes": "Original SVG copied unchanged; cleanup is deferred to WEB-99.",
+      "source": "copied_source"
+    }
+  ],
+  "input_mode": "vector",
+  "next_phase": "WEB-99",
+  "raw_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\raw.svg",
+  "schema_version": "0.1",
+  "source_summary": {
+    "budget_hit": false,
+    "fidelity_profile": "topology",
+    "height": null,
+    "profile_settings": {},
+    "raw_point_count": 0,
+    "raw_source_contour_count": 0,
+    "retained_contour_count": 0,
+    "retained_contour_ratio": 0.0,
+    "retained_point_count": 0,
+    "retained_point_ratio": 0.0,
+    "source_artifact": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\ingest\\source\\terminal-modular-kit-contact-sheet.svg",
+    "source_contour_count": 0,
+    "source_prompt_candidate_count": 0,
+    "source_region_count": 0,
+    "source_svg_path_like_count": 128,
+    "strategy": "svg_passthrough",
+    "structural_analysis_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\analyze\\structural\\structural_analysis.json",
+    "width": null
+  },
+  "strategy": "svg_passthrough",
+  "structural_analysis_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\analyze\\structural\\structural_analysis.json",
+  "warnings": []
+}

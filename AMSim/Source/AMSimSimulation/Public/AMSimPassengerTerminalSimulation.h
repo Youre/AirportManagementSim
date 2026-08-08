@@ -33,12 +33,16 @@ namespace AMSim
 			const FPhase1State& Phase1State,
 			const FPhase2State& Phase2State);
 		void Reset(uint64 MasterSeed);
+		void PrepareLayoutMigration(bool bPassengerInitialized);
 		bool ValidateSecurityTopology(
 			const FPhase3State& Candidate,
 			bool& bHasAccessibleRoute,
 			FString& Failure) const;
 		bool ValidateReconciliation(
 			const FPhase3State& Candidate,
+			FString& Failure) const;
+		bool ValidateTerminalLayout(
+			const FTerminalLayoutState& Candidate,
 			FString& Failure) const;
 
 	private:
@@ -53,6 +57,12 @@ namespace AMSim
 			FStarterAirfieldSimulation& Phase1);
 		void InitializePassengerAirport(int64 CurrentGameMilliseconds);
 		void AdvanceConstruction(int64 CurrentGameMilliseconds);
+		void AdvanceTerminalConstruction(
+			int64 CurrentGameMilliseconds,
+			FStarterAirfieldSimulation& Phase1);
+		void AdvanceGATerminalVisitors(
+			int64 CurrentGameMilliseconds,
+			const FPhase1State& Phase1State);
 		void AdvancePassengers(int64 CurrentGameMilliseconds);
 		void AdvanceBags(int64 CurrentGameMilliseconds);
 		void AdvanceFlight(
@@ -65,6 +75,17 @@ namespace AMSim
 			int32 BagCount,
 			int64 CurrentGameMilliseconds);
 		void RefreshDerivedValidation();
+		void RefreshTerminalReadiness();
+		void SeedStarterTerminalLayout(bool bCompleted);
+		void ExpandPassengerTerminalLayout(bool bCompleted);
+		int64 QuoteTerminalEdit(const FPhase3Command& Command) const;
+		bool ValidateTerminalEdit(
+			const FPhase3Command& Command,
+			FPhase3Validation& Result) const;
+		void ApplyTerminalEdit(
+			const FPhase3Command& Command,
+			int64 CurrentGameMilliseconds,
+			FStarterAirfieldSimulation& Phase1);
 		void SetTerminalStage(
 			ETerminalConstructionStage Stage,
 			int64 CurrentGameMilliseconds);

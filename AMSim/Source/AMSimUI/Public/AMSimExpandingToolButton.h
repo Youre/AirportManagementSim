@@ -7,6 +7,7 @@
 class UBorder;
 class UButton;
 class UImage;
+class UScaleBox;
 class UTextBlock;
 class UTexture2D;
 
@@ -31,6 +32,9 @@ public:
 	bool IsActionEnabled() const { return bActionEnabled; }
 	ESlateVisibility GetFlyoutVisibilityForTest() const;
 	void SetExpandedForTest(bool bInExpanded);
+	bool PreservesIconAspectRatioForTest() const;
+	static FVector2D GetHostSize() { return FVector2D(320.0f, 56.0f); }
+	static float GetMinimumFlyoutWidth() { return 156.0f; }
 
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
@@ -60,6 +64,8 @@ private:
 	TObjectPtr<UBorder> FlyoutSurface;
 	UPROPERTY(Transient)
 	TObjectPtr<UImage> IconImage;
+	UPROPERTY(Transient)
+	TObjectPtr<UScaleBox> IconScaleBox;
 	UPROPERTY(Transient)
 	TObjectPtr<UTextBlock> LabelText;
 

@@ -368,6 +368,7 @@ void UAMSimRootScreen::OpenMajorPresentation()
 }
 
 void UAMSimRootScreen::RefreshDestinationButtons(
+	const AMSim::FPhase1QuerySnapshot& Phase1Query,
 	const AMSim::FPhase3QuerySnapshot& Phase3Query,
 	const AMSim::FPhase4QuerySnapshot& Phase4Query,
 	const AMSim::FPhase5QuerySnapshot& Phase5Query,
@@ -395,9 +396,9 @@ void UAMSimRootScreen::RefreshDestinationButtons(
 		};
 	ApplyDestination(
 		TerminalNavigationButton,
-		Phase3Query.bUnlocked || Phase3Query.bInitialized,
+		Phase1Query.bInitialized || Phase3Query.bUnlocked || Phase3Query.bInitialized,
 		TEXT("TERMINAL"),
-		TEXT("Unlock passenger-terminal capability to open this destination."));
+		TEXT("Create the airport to open the starter terminal."));
 	ApplyDestination(
 		RegionalNavigationButton,
 		Phase4Query.bUnlocked || Phase4Query.bInitialized,

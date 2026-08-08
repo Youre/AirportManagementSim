@@ -1,0 +1,581 @@
+{
+    "schemaVersion":  1,
+    "generatedAt":  "2026-08-08T12:30:29-04:00",
+    "source":  "SourceAssets/TerminalGrowth/Vector/terminal-modular-kit-contact-sheet.svg",
+    "sourceSha256":  "43c72256674058b1785d1f98a29f90a33b465730c1b3c30d626df4f1763566e0",
+    "generator":  "scripts/assets/Export-TerminalGrowthVectorKit.ps1",
+    "assets":  [
+                   {
+                       "name":  "PublicFloor",
+                       "category":  "Surface",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_PublicFloor.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_PublicFloor.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "72dd02884439f99ee56586143b66c217f83ffd0d12bd7b37266c801d40ec9e5a"
+                   },
+                   {
+                       "name":  "ServiceFloor",
+                       "category":  "Surface",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_ServiceFloor.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_ServiceFloor.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "37a1dbcbd942a00fe06253554f6a017dcabb6f9f147f518d69915d1948bdc3d9"
+                   },
+                   {
+                       "name":  "RoofSurface",
+                       "category":  "Surface",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_RoofSurface.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_RoofSurface.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "fb15368738616e31f9e7f1d96c5f7f787250ce4f60d2b4f71ec2d6ec174c41f3"
+                   },
+                   {
+                       "name":  "ExteriorWall",
+                       "category":  "Structure",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_ExteriorWall.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_ExteriorWall.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "138c517278b5656b94b502f310cb977f6298feb9b77822341321c21e33e7cb9b"
+                   },
+                   {
+                       "name":  "InteriorWall",
+                       "category":  "Structure",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_InteriorWall.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_InteriorWall.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "bbac77e2f8352046a00665310f5f214db5abcd9759103609c41fdcd6ee3c6e74"
+                   },
+                   {
+                       "name":  "GlassWall",
+                       "category":  "Structure",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_GlassWall.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_GlassWall.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "ea4b36a1c51fe6cf251e97bf01367acad7d88bf27ce07d9077df4a27ac1dcb51"
+                   },
+                   {
+                       "name":  "EntranceDoor",
+                       "category":  "Door",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_EntranceDoor.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_EntranceDoor.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "5d5c86aa111da3bf09c74ee933a2b675de490c6f42495cf30be84a19b6dac91b"
+                   },
+                   {
+                       "name":  "StandardDoor",
+                       "category":  "Door",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_StandardDoor.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_StandardDoor.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "c6d15e06326dfbdd8c73b2eedf2413f9c643aaf125a047d84b458b3106585d1d"
+                   },
+                   {
+                       "name":  "ServiceDoor",
+                       "category":  "Door",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_ServiceDoor.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_ServiceDoor.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "8f9f90049dcfda05cb7a842b4de6e6beeb5994440e81caa28260feefc5e7da19"
+                   },
+                   {
+                       "name":  "AirsideGateDoor",
+                       "category":  "Door",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_AirsideGateDoor.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_AirsideGateDoor.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "f74e7bcbb1189b1c83c3fcd94953130a67ad876923e51eea72b9e4b9859e67e5"
+                   },
+                   {
+                       "name":  "RoofEdge",
+                       "category":  "Roof",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_RoofEdge.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_RoofEdge.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "8628ba2d3a90a40a2855c5c5295b15213980c990165140425b7e72b75b3fd0f7"
+                   },
+                   {
+                       "name":  "RoofCorner",
+                       "category":  "Roof",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_RoofCorner.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_RoofCorner.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "b1d01c0601a311366c529976f95ab6b61d873d95c14545a751b1b4a6968cf9d1"
+                   },
+                   {
+                       "name":  "EntranceCanopy",
+                       "category":  "Roof",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_EntranceCanopy.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_EntranceCanopy.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "dbe6dc27684a3a07c4c705c9fa92d7365b047c7f28650eeba8aea9f4606b8f75"
+                   },
+                   {
+                       "name":  "RoofHVAC",
+                       "category":  "Roof",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_RoofHVAC.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_RoofHVAC.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "9d88876cccc2282656da2990f30f44b1be9b7eec59770fe4a1dbe887fb132170"
+                   },
+                   {
+                       "name":  "ConstructionFoundation",
+                       "category":  "Construction",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_ConstructionFoundation.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_ConstructionFoundation.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "1e9371428afcdefa455ce157884f31534911bb49410067958e5e35f1ea07166a"
+                   },
+                   {
+                       "name":  "ConstructionDelivery",
+                       "category":  "Construction",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_ConstructionDelivery.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_ConstructionDelivery.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "06f7c7cc50c35157f1bcd87f55ec52e799e6e44c514ed8adfa87f41a7ddede47"
+                   },
+                   {
+                       "name":  "ConstructionFraming",
+                       "category":  "Construction",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_ConstructionFraming.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_ConstructionFraming.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "6c442ab6641668fa16e713826d2924af65ec2cdd8abd236ade25190cf9be88fe"
+                   },
+                   {
+                       "name":  "ConstructionActive",
+                       "category":  "Construction",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_ConstructionActive.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_ConstructionActive.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "03111ffc315ac327a1d6461e884c0890ca905e4060d06fb379e23b77afc90f75"
+                   },
+                   {
+                       "name":  "ConstructionInspection",
+                       "category":  "Construction",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_ConstructionInspection.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_ConstructionInspection.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "a0c6b740ef1cf0ddfc2dcbcc6ddbb6a14de5304c9c42646c46d885246c0d4376"
+                   },
+                   {
+                       "name":  "ConstructionClosure",
+                       "category":  "Construction",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_ConstructionClosure.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_ConstructionClosure.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "9bb7753ba75597a868bfa3f18024312d7c65d83ee9a48dc97ba35eb7170c3c92"
+                   },
+                   {
+                       "name":  "StaffDesk",
+                       "category":  "Furniture",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_StaffDesk.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_StaffDesk.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "d524ead185409029ec8ea45d492956112b533f6538052689d54c4bd9bbba3c8e"
+                   },
+                   {
+                       "name":  "Storage",
+                       "category":  "Furniture",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_Storage.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_Storage.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "1c25ef0fcd72110452a7f460a22389fa2a86a926bb15a59d90bbd6e58321e829"
+                   },
+                   {
+                       "name":  "Vending",
+                       "category":  "Furniture",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_Vending.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_Vending.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "27add91719e7e5c6ecb1897aba694e59b71b6033038c868f44ac617a48cebfbb"
+                   },
+                   {
+                       "name":  "Water",
+                       "category":  "Furniture",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_Water.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_Water.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "f6ffbbdaf22b8b85301301a5172bc093d887e2427dc2e00fe6344ffa5d9068e7"
+                   },
+                   {
+                       "name":  "WasteRecycling",
+                       "category":  "Furniture",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_WasteRecycling.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_WasteRecycling.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "7e9447fc3d18c0a191db0a10835f4df1f9d75bf7018718c8418619b980ba3b0d"
+                   },
+                   {
+                       "name":  "Noticeboard",
+                       "category":  "Furniture",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_Noticeboard.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_Noticeboard.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "b942ff262bfb40ca32baf7334080d9f02daa02523a77c6d40142f7f4165186b0"
+                   },
+                   {
+                       "name":  "Signage",
+                       "category":  "Furniture",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_Signage.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_Signage.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "eb6d02174ea4d002c20bb57bc9d9cca39f45d04ccb9d98baaf496209c6190276"
+                   },
+                   {
+                       "name":  "Plant",
+                       "category":  "Furniture",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_Plant.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_Plant.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "a721071d84d7ac3241ac195294b568c0160af850c6551b5cb50e51899510ed04"
+                   },
+                   {
+                       "name":  "PlacementValid",
+                       "category":  "Overlay",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_PlacementValid.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_PlacementValid.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "422a3a95ee5662b01fc503737d837a518adcb5a217bae35c9c13bdb016ad45a9"
+                   },
+                   {
+                       "name":  "PlacementBlocked",
+                       "category":  "Overlay",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_PlacementBlocked.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_PlacementBlocked.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "bed0947d09fd7f76d4d4ce3081bf79662e810badd6b1edd80f3b1778e80251c7"
+                   },
+                   {
+                       "name":  "PlacementUnaffordable",
+                       "category":  "Overlay",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_PlacementUnaffordable.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_PlacementUnaffordable.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "3a704849836ff13ccc30133fc666481fe348331e49531d06a5fd988f6263d0d7"
+                   },
+                   {
+                       "name":  "PlacementRouteLoss",
+                       "category":  "Overlay",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_PlacementRouteLoss.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_PlacementRouteLoss.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "f30e4d18c508dcba2870fd3e3fa246c45bbb8ffe0f6426fe32c933a0b9dac950"
+                   },
+                   {
+                       "name":  "PlacementSnap",
+                       "category":  "Overlay",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_PlacementSnap.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_PlacementSnap.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "840b2bb0edae4836935a2e1f309e5bc28094a64f5745906bfc612f05e8522f4c"
+                   },
+                   {
+                       "name":  "PlacementConnection",
+                       "category":  "Overlay",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_PlacementConnection.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_PlacementConnection.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "548b7ccc3c297dc843de18559c387b4b18c707bf54d93adf99610cdea3539a55"
+                   },
+                   {
+                       "name":  "IconStructure",
+                       "category":  "Icon",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_IconStructure.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_IconStructure.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "c889d91c277b05a00c111994e600993000d4d071d9ab194a3cc0c1645cac0368"
+                   },
+                   {
+                       "name":  "IconDoors",
+                       "category":  "Icon",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_IconDoors.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_IconDoors.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "34ce8f740ddc91fb2defefcca19ce58faeae30f65d861c10c7c3c299d4ad9d88"
+                   },
+                   {
+                       "name":  "IconFurniture",
+                       "category":  "Icon",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_IconFurniture.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_IconFurniture.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "f0f6ea49508bc0e5b86992a1d998ad8177dc07cc91a3592215f8f03e29adb5e4"
+                   },
+                   {
+                       "name":  "IconAmenities",
+                       "category":  "Icon",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_IconAmenities.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_IconAmenities.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "f97c66fb0088b0d8488c13482520ae686033461d0b54ad7c0294a2d7e8c7aa88"
+                   },
+                   {
+                       "name":  "IconOperations",
+                       "category":  "Icon",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_IconOperations.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_IconOperations.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "22e57a81514810f5dfc6a0e63e3ee89a22893d8018902c9aba25cedd0f34513c"
+                   },
+                   {
+                       "name":  "IconZones",
+                       "category":  "Icon",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_IconZones.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_IconZones.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "ec7c20b9857613587a1860c698c03a96e4a2a64f8eea94edac635b7aeafda2bf"
+                   },
+                   {
+                       "name":  "IconDemolish",
+                       "category":  "Icon",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_IconDemolish.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_IconDemolish.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "c487b44442d7ad260f1f2fca6fc9bb63f1f430de6d40869b53b94c41a19da6e6"
+                   },
+                   {
+                       "name":  "IconRotate",
+                       "category":  "Icon",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_IconRotate.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_IconRotate.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "78d3af3f510fe97ef05ec106668725e60d0686932b05bd4cc94ba2adea9e4ca4"
+                   },
+                   {
+                       "name":  "IconCopy",
+                       "category":  "Icon",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_IconCopy.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_IconCopy.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "731ae504e4b7a85ce7167d1b9b92ecc1ac6247528b90f9fca432ff5ea5fb8c0c"
+                   },
+                   {
+                       "name":  "IconUndo",
+                       "category":  "Icon",
+                       "source":  "SourceAssets/TerminalGrowth/Runtime/Vector/T_IconUndo.svg",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_IconUndo.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "fd47545c0036765608cbe5c93179351e78283b640553b310858a41e8ca0eeaa3"
+                   }
+               ]
+}

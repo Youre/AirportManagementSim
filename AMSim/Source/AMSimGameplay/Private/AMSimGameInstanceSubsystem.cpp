@@ -135,6 +135,8 @@ void UAMSimGameInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collectio
 	}
 	bPhase4SmokeRequested =
 		FParse::Param(FCommandLine::Get(), TEXT("AMSimPhase4Smoke"));
+	bTerminalGrowthProofRequested =
+		FParse::Param(FCommandLine::Get(), TEXT("AMSimTerminalGrowthProof"));
 	bPhase45ConstructionProofRequested =
 		FParse::Param(FCommandLine::Get(), TEXT("AMSimPhase45ConstructionProof"));
 	bPhase45OperationalEvidenceRequested =
@@ -142,7 +144,7 @@ void UAMSimGameInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collectio
 			FCommandLine::Get(),
 			TEXT("AMSimPhase45OperationalEvidence"));
 	if (FParse::Param(FCommandLine::Get(), TEXT("AMSimPhase1Smoke")) ||
-		bPhase4SmokeRequested)
+		bPhase4SmokeRequested || bTerminalGrowthProofRequested)
 	{
 		double RequestedPerformanceSeconds = Phase1PerformanceTargetSeconds;
 		if (FParse::Value(
@@ -161,7 +163,9 @@ void UAMSimGameInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collectio
 		}
 		const FString ProofDirectory = FPaths::Combine(
 			FPaths::ProjectSavedDir(),
-			bPhase4SmokeRequested ? TEXT("Phase4") : TEXT("Phase1"));
+			bTerminalGrowthProofRequested
+				? TEXT("TerminalGrowth")
+				: (bPhase4SmokeRequested ? TEXT("Phase4") : TEXT("Phase1")));
 		IFileManager::Get().MakeDirectory(*ProofDirectory, true);
 		for (const TCHAR* ProofName : {
 			TEXT("va01-new-airport.png"),
@@ -182,6 +186,7 @@ void UAMSimGameInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collectio
 			TEXT("va06-regional-incident.png"),
 			TEXT("va02-affected-closure.png"),
 			TEXT("phase4-complete.png"),
+			TEXT("starter-ga-terminal-build.png"),
 			TEXT("smoke-result.json")})
 		{
 			IFileManager::Get().Delete(*FPaths::Combine(ProofDirectory, ProofName), false, true);
@@ -333,7 +338,9 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 
 	const FString ProofDirectory = FPaths::Combine(
 		FPaths::ProjectSavedDir(),
-		bPhase4SmokeRequested ? TEXT("Phase4") : TEXT("Phase1"));
+		bTerminalGrowthProofRequested
+			? TEXT("TerminalGrowth")
+			: (bPhase4SmokeRequested ? TEXT("Phase4") : TEXT("Phase1")));
 	auto RequestProof = [this, &ProofDirectory](const TCHAR* FileName)
 	{
 		Phase1PendingScreenshot = FPaths::Combine(ProofDirectory, FileName);
@@ -636,7 +643,11 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 			Create.AirportName = TEXT("Riverbend Field");
 			Create.MapId = AMSim::GetPhase1Fixture().MapId;
 			Submit(MoveTemp(Create));
-			if (bPhase45ConstructionProofRequested)
+			if (bTerminalGrowthProofRequested)
+			{
+				Phase1SmokeStage = 80;
+			}
+			else if (bPhase45ConstructionProofRequested)
 			{
 				Phase1SmokeStage = 40;
 			}
@@ -649,6 +660,21 @@ void UAMSimGameInstanceSubsystem::TickPhase1Smoke(const float DeltaTime)
 				SetSpeed(8);
 				Phase1SmokeStage = 46;
 			}
+		}
+		break;
+	case 80:
+		++Phase1ProposalSettleFrames;
+		if (Phase1ProposalSettleFrames >= 30)
+		{
+			RequestProof(TEXT("starter-ga-terminal-build.png"));
+			Phase1SmokeStage = 81;
+		}
+		break;
+	case 81:
+		if (ProofReady())
+		{
+			bPhase1SmokeActive = false;
+			FGenericPlatformMisc::RequestExit(false);
 		}
 		break;
 	case 40:

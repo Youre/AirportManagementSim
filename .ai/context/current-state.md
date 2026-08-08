@@ -6,6 +6,17 @@ Material profile: documents
 Initialization mode: augment-existing
 
 Active priorities:
+- Use the generated regional-terminal and apron-stand art as the authoritative
+  starter-facility presentation in both build mode and the Paper2D world. Keep
+  the terminal upright with its landside entrance toward the service road,
+  keep gate centerlines aligned with the taxi network, preserve source aspect
+  ratios, and retain the initial management-camera offset that keeps all three
+  facilities above the persistent footer. Do not restore the generic warm-pad
+  gate substitutes or the striped terminal placeholder.
+- Use the corrected airport-naming card as the initial-creation baseline: a
+  centered, bounded lower-map surface with aligned parcel context, a wider
+  airport-name field, and one primary action. Do not restore the former
+  full-width banner or equal-width form columns.
 - Use monotonic starter construction stages as the Phase 1 baseline. Inspection
   no longer regresses to Surface Work on alternating updates; the compact card
   should show one stable inspection state until Ready to Open.
@@ -14,11 +25,12 @@ Active priorities:
   first-visit timeline and deliberate 1x/arrival/4x pacing choices, and
   Overlays exposes real Airfield/Connections/Activity modes. First-visit
   completion now points to the player-facing Start Living Airport action.
-- Run the short owner replay against
-  `D:\AMSimPlayable-20260803-FirstVisit\Windows\AMSim.exe`. A first-launch
-  Windows Firewall prompt was left for the owner; after it is handled, verify
-  the three rail paths, automatic return to 1x at inbound, and Living Airport
-  continuation.
+- Run owner gameplay tests only against the canonical current package at
+  `D:\AMSim-Current\Windows\AMSim.exe`. Refresh that same package after relevant
+  gameplay or presentation changes; do not direct the owner to repository
+  `Binaries`, staged-build internals, or dated historical packages. Verify the
+  three rail paths, automatic return to 1x at inbound, and Living Airport
+  continuation there.
 - Use the verified owner-interaction correction as the current Phase 1 input
   baseline: ordinary hover is silent, taxiway bodies start connected branches,
   the construction truck uses its corrected art axis, and Staff exposes the
@@ -59,6 +71,25 @@ Next verification command:
   protocol against the schema-9 candidate.
 
 Last verification:
+- 2026-08-08 EDT: the starter terminal/gate correction passes the UE 5.8
+  Editor/Game builds, the orthographic-camera regression, all six focused
+  Phase 1.5 presentation tests, equivalent-state 1920x1080 build-mode and live
+  Paper2D captures, a clean 658-package Development cook/stage/archive, and an
+  integrated packaged Phase 1 smoke. The canonical package at
+  `D:\AMSim-Current\Windows\AMSim.exe` was refreshed in place; no new art was
+  needed because the approved regional-terminal and apron-stand assets already
+  existed but were not wired consistently.
+- 2026-08-08 EDT: the compact left rail now preserves each icon's authored
+  aspect ratio and gives translated hover/focus labels a non-clipping host plus
+  a 156-unit minimum card. UE 5.8 Editor/Game builds, focused CompactHud
+  automation, a real 1280x720 hover proof, and the clean canonical Development
+  package pass. `D:\AMSim-Current\Windows\AMSim.exe` was refreshed in place.
+- 2026-08-08 EDT: the airport-naming card alignment correction passes the UE
+  5.8 Editor/Game builds, focused CompactHud automation, and the established
+  1920x1080 rendered Phase 1 smoke. A separate real 1280x720 game capture now
+  guards the window-size breakpoint that the owner exposed. Both captured
+  initial states confirm the bounded lower-map card, wider name field, shared
+  vertical alignment, and unobstructed central map.
 - 2026-08-03 EDT: corrected the authoritative Building/Inspection oscillation.
   Focused construction automation, complete 76-result automation, Editor/Game
   builds, and Development BuildCookRun pass. The refreshed package is under
@@ -306,8 +337,9 @@ Verification note:
   maximum-load observation. Phase 7 retains the four-hour soak, formal
   unassisted test, and genuine pacing journey.
 - Phase 7 implementation is release-candidate ready under PI-10. Schema 8
-  introduced acknowledged contextual-help IDs; the current post-RC schema 9
-  adds taxiway-segment graphs and migrates schemas 1-8.
+  introduced acknowledged contextual-help IDs; schema 9 added taxiway-segment
+  graphs, and the current schema 10 adds the growable terminal spatial domain
+  while migrating schemas 1-9.
   Six first-use cards, the five-tab Release Guide, a local accessibility
   profile, centralized captions-first radio, 15 phrase families, and 15
   release Primary Assets are integrated without adding simulation mechanics.
@@ -388,6 +420,30 @@ Verification note:
   offline runtime smoke, dependency/runtime-load scan, and release attestation
   pass with zero missing cooked sounds. Subjective mix approval remains part
   of the next owner gameplay listen rather than an automated claim.
+- PI-11 delivers the growable-terminal starter vertical slice. New airports
+  receive a built, editable 18x12 GA terminal; initialized passenger fixtures
+  receive a spatial 30x18 grown terminal. One-meter floor cells, wall/door
+  edges, rotatable objects, inferred rooms, construction jobs, closures,
+  transactions, and autonomous visitors persist in schema 10.
+- Terminal editing uses full-world mouse deprojection, immediate Phase 1 ledger
+  spending, no-mutation invalid/unaffordable previews, full queued/in-progress
+  undo refunds, completed demolition with 25% salvage, and ordinary moving
+  construction workers. The generated roof fades into a pooled Paper2D
+  cutaway; the terminal anchor is independent of mutable runway/hut previews.
+- The owner approved both OpenAI visual targets. The retained deterministic
+  kit contains 44 source textures and 44 PaperSprite companions under
+  `/Game/TerminalGrowth`; rejected ComfyUI surface candidates remain outside
+  runtime content. Comparison boards record continuing density, route-overlay,
+  and surrounding-world polish debt without expanding this rollout to upper
+  floors or the passenger construction catalog.
+- Final PI-11 verification has zero failures across 81 discovered AMSim
+  automation entries, passes the Phase 4 rendered fixture and the starter,
+  grown, and component-gallery states at all five UI scales, and passes clean
+  Development/Shipping packaging plus packaged
+  terminal rendering, save/load, and offline checks. The technical release
+  audit has zero runtime string loads, forbidden dependencies, required 3D
+  assets, or line-limit violations; only the separate Phase 7 owner-acceptance
+  field remains pending.
 - `ai-init doctor . --json` runs from `PATH`; its retained warnings are the
   documented baseline managed-template, lexical-review, legacy-ledger, and
   project schema/version warnings.

@@ -12,6 +12,9 @@ class AMSIMUI_API UAMSimContextHelpCard final : public UUserWidget
 {
 	GENERATED_BODY()
 
+public:
+	void SetSuppressed(bool bInSuppressed);
+
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
 	virtual void NativeTick(
@@ -39,4 +42,5 @@ private:
 
 	FName CurrentHelpId;
 	uint64 LastRevision = MAX_uint64;
+	bool bSuppressed = false;
 };

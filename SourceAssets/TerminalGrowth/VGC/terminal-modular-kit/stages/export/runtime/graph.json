@@ -1,0 +1,111 @@
+{
+  "edges": [],
+  "influence_regions": [
+    {
+      "bbox": {
+        "height": 1080.0,
+        "width": 1920.0,
+        "x": 0.0,
+        "y": 0.0
+      },
+      "influence_type": "imported_placeholder",
+      "node_id": "node-0000-clean-svg-passthrough-root",
+      "radius": 240.0,
+      "region_id": "influence-node-0000-clean-svg-passthrough-root",
+      "x": 960.0,
+      "y": 540.0
+    }
+  ],
+  "metrics": {
+    "edge_count": 0,
+    "influence_region_count": 1,
+    "isolated_node_count": 1,
+    "layer_count": 1,
+    "max_degree": 0,
+    "node_count": 1,
+    "parseable_preview_svg": true
+  },
+  "nodes": [
+    {
+      "attributes": {
+        "assignment_source": "deterministic",
+        "cleanup_strategy": "svg_metadata_cleanup",
+        "geometry_source": "placeholder",
+        "path_like_count": 128,
+        "root_tag": "svg",
+        "viewBox": "0 0 1920 1080"
+      },
+      "bbox": {
+        "height": 1080.0,
+        "width": 1920.0,
+        "x": 0.0,
+        "y": 0.0
+      },
+      "element_id": "clean-svg-passthrough-root",
+      "layer_id": "imported-vector",
+      "node_id": "node-0000-clean-svg-passthrough-root",
+      "node_type": "imported_placeholder",
+      "role": "imported_vector",
+      "source_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\ingest\\source\\terminal-modular-kit-contact-sheet.svg",
+      "x": 960.0,
+      "y": 540.0
+    }
+  ],
+  "schema_version": "0.1",
+  "traversal_hints": [
+    {
+      "data": {
+        "layer_count": 1
+      },
+      "edge_refs": [],
+      "hint_id": "layer-order",
+      "hint_type": "layer_order",
+      "layer_refs": [
+        "imported-vector"
+      ],
+      "node_refs": [],
+      "notes": "Recommended deterministic traversal order by semantic layer priority."
+    },
+    {
+      "data": {
+        "selection": "regions, prompt nodes, imported placeholders"
+      },
+      "edge_refs": [],
+      "hint_id": "propagation-seeds",
+      "hint_type": "propagation_start_candidates",
+      "layer_refs": [],
+      "node_refs": [
+        "node-0000-clean-svg-passthrough-root"
+      ],
+      "notes": "Candidate seed nodes for later propagation/runtime systems."
+    },
+    {
+      "data": {
+        "isolated_node_count": 1
+      },
+      "edge_refs": [],
+      "hint_id": "isolated-nodes",
+      "hint_type": "isolated_nodes",
+      "layer_refs": [],
+      "node_refs": [
+        "node-0000-clean-svg-passthrough-root"
+      ],
+      "notes": "Nodes with no generated mesh edges."
+    },
+    {
+      "data": {
+        "edge_count": 0,
+        "max_degree": 0
+      },
+      "edge_refs": [],
+      "hint_id": "adjacency-summary",
+      "hint_type": "adjacency_summary",
+      "layer_refs": [],
+      "node_refs": [],
+      "notes": "Nodes with the highest generated degree."
+    }
+  ],
+  "warnings": [
+    "Imported SVG geometry was validated and copied unchanged; XML rewriting is deferred."
+  ]
+}

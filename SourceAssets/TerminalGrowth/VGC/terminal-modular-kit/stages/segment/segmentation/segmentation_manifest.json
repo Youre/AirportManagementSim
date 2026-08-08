@@ -1,0 +1,58 @@
+{
+  "applied_hints": [],
+  "artifacts": {
+    "cleanup_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\cleanup_manifest.json",
+    "layered_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\layered.svg"
+  },
+  "assignments": [
+    {
+      "assignment_source": "deterministic",
+      "attributes": {
+        "cleanup_strategy": "svg_metadata_cleanup",
+        "path_like_count": 128,
+        "root_tag": "svg",
+        "viewBox": "0 0 1920 1080"
+      },
+      "element_id": "clean-svg-passthrough-root",
+      "element_type": "svg",
+      "layer_id": "imported-vector",
+      "matched_hint_id": null,
+      "source_group_id": "clean-svg-passthrough",
+      "source_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\ingest\\source\\terminal-modular-kit-contact-sheet.svg"
+    }
+  ],
+  "cleanup_manifest_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\cleanup_manifest.json",
+  "cleanup_strategy": "svg_metadata_cleanup",
+  "created_at": "2026-08-08T14:58:53+00:00",
+  "entry_path": "vector_cleanup",
+  "input_mode": "vector",
+  "layered_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\layered.svg",
+  "layers": [
+    {
+      "element_count": 1,
+      "label": "Imported vector",
+      "layer_id": "imported-vector",
+      "notes": "Imported SVG geometry preserved as one conservative layer.",
+      "priority": 50,
+      "role": "imported_vector",
+      "source": "deterministic",
+      "source_groups": [
+        "clean-svg-passthrough"
+      ]
+    }
+  ],
+  "metrics": {
+    "assigned_element_count": 1,
+    "combined_layer_count": 0,
+    "deterministic_layer_count": 1,
+    "hinted_layer_count": 0,
+    "layer_count": 1,
+    "parseable_svg": true,
+    "unassigned_element_count": 0
+  },
+  "next_phase": "WEB-101",
+  "schema_version": "0.1",
+  "warnings": [
+    "Imported SVG geometry was validated and copied unchanged; XML rewriting is deferred."
+  ]
+}

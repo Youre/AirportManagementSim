@@ -1,5 +1,6 @@
 #include "AMSimPhase3Fixture.h"
 #include "AMSimDeterminism.h"
+#include "AMSimPassengerTerminalSimulation.h"
 
 namespace AMSim
 {
@@ -174,6 +175,20 @@ namespace AMSim
 			Passenger.TimeConfidencePercent = 88;
 			State.Parties.Last().Members.Add(Passenger.Id);
 			State.Passengers.Add(MoveTemp(Passenger));
+		}
+		FPassengerTerminalSimulation LayoutSeed(State.MasterSeed);
+		State.TerminalLayout = LayoutSeed.GetState().TerminalLayout;
+		for (FTerminalFloorCellRecord& Cell : State.TerminalLayout.FloorCells)
+		{
+			Cell.Id = {Allocate()};
+		}
+		for (FTerminalEdgeRecord& Edge : State.TerminalLayout.Edges)
+		{
+			Edge.Id = {Allocate()};
+		}
+		for (FTerminalPlacedObjectRecord& Object : State.TerminalLayout.Objects)
+		{
+			Object.Id = {Allocate()};
 		}
 		return State;
 	}

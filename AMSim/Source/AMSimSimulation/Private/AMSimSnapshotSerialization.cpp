@@ -1,4 +1,5 @@
 #include "AMSimSnapshotSerialization.h"
+#include "AMSimTerminalLayoutSerialization.h"
 #include "AMSimPhase5SnapshotSerialization.h"
 #include "AMSimPhase6SnapshotSerialization.h"
 #include "Misc/Crc.h"
@@ -752,7 +753,10 @@ namespace AMSim
 			Archive << Record.Message;
 		}
 
-		void SerializePhase3State(FArchive& Archive, FPhase3State& State)
+		void SerializePhase3State(
+			FArchive& Archive,
+			FPhase3State& State,
+			const uint32 SchemaVersion)
 		{
 			Archive << State.bInitialized;
 			Archive << State.MasterSeed;
@@ -814,6 +818,10 @@ namespace AMSim
 			Archive << State.CompletedBagCount;
 			Archive << State.ReconciliationPassCount;
 			Archive << State.TotalPassengerRevenueCredits;
+			if (SchemaVersion >= 10)
+			{
+				SerializeTerminalLayoutState(Archive, State.TerminalLayout);
+			}
 		}
 
 		void SerializePhase4Contract(
@@ -1143,7 +1151,10 @@ namespace AMSim
 			}
 			if (Snapshot.SchemaVersion >= 4)
 			{
-				SerializePhase3State(Archive, Snapshot.Phase3);
+				SerializePhase3State(
+					Archive,
+					Snapshot.Phase3,
+					Snapshot.SchemaVersion);
 			}
 			if (Snapshot.SchemaVersion >= 5)
 			{
@@ -1305,6 +1316,33 @@ namespace AMSim
 					{Proposal.TaxiStart, Proposal.TaxiEnd}};
 			}
 			Snapshot.SchemaVersion = 9;
+		}
+		if (Snapshot.SchemaVersion == 9)
+		{
+			FPassengerTerminalSimulation LayoutMigration(
+				Snapshot.MasterSeed == 0 ? 1 : Snapshot.MasterSeed);
+			LayoutMigration.PrepareLayoutMigration(
+				Snapshot.Phase3.bInitialized);
+			Snapshot.Phase3.TerminalLayout =
+				LayoutMigration.GetState().TerminalLayout;
+			uint64 NextLayoutId = Snapshot.Phase3.NextDomainId;
+			for (FTerminalFloorCellRecord& Cell :
+				Snapshot.Phase3.TerminalLayout.FloorCells)
+			{
+				Cell.Id = {NextLayoutId++};
+			}
+			for (FTerminalEdgeRecord& Edge :
+				Snapshot.Phase3.TerminalLayout.Edges)
+			{
+				Edge.Id = {NextLayoutId++};
+			}
+			for (FTerminalPlacedObjectRecord& Object :
+				Snapshot.Phase3.TerminalLayout.Objects)
+			{
+				Object.Id = {NextLayoutId++};
+			}
+			Snapshot.Phase3.NextDomainId = NextLayoutId;
+			Snapshot.SchemaVersion = 10;
 		}
 		return Snapshot.SchemaVersion == SnapshotSchemaVersion;
 	}

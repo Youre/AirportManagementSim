@@ -33,6 +33,95 @@ namespace AMSim
 				[Id](const RecordType& Record) { return Record.Id == Id; });
 		}
 
+		bool HasTerminalRoomBoundary(
+			const FTerminalLayoutState& Layout,
+			const FTerminalCellCoord From,
+			const FTerminalCellCoord To)
+		{
+			FTerminalCellCoord EdgeFrom;
+			FTerminalCellCoord EdgeTo;
+			if (To.X != From.X)
+			{
+				const int32 BoundaryX = FMath::Max(From.X, To.X);
+				EdgeFrom = {BoundaryX, From.Y};
+				EdgeTo = {BoundaryX, From.Y + 1};
+			}
+			else
+			{
+				const int32 BoundaryY = FMath::Max(From.Y, To.Y);
+				EdgeFrom = {From.X, BoundaryY};
+				EdgeTo = {From.X + 1, BoundaryY};
+			}
+			return Layout.Edges.ContainsByPredicate(
+				[EdgeFrom, EdgeTo](const FTerminalEdgeRecord& Edge)
+				{
+					return (Edge.From == EdgeFrom && Edge.To == EdgeTo) ||
+						(Edge.From == EdgeTo && Edge.To == EdgeFrom);
+				});
+		}
+
+		TArray<FTerminalSpatialRoomRecord> InferTerminalRooms(
+			const FTerminalLayoutState& Layout)
+		{
+			TArray<FTerminalSpatialRoomRecord> Rooms;
+			TSet<FTerminalCellCoord> Visited;
+			for (const FTerminalFloorCellRecord& Seed : Layout.FloorCells)
+			{
+				if (Visited.Contains(Seed.Cell))
+				{
+					continue;
+				}
+				FTerminalSpatialRoomRecord Room;
+				Room.Function = Seed.Kind;
+				Room.bOperational = true;
+				TArray<FTerminalCellCoord> Frontier{Seed.Cell};
+				Visited.Add(Seed.Cell);
+				for (int32 Index = 0; Index < Frontier.Num(); ++Index)
+				{
+					const FTerminalCellCoord Current = Frontier[Index];
+					Room.Cells.Add(Current);
+					const FTerminalFloorCellRecord* CurrentCell =
+						Layout.FloorCells.FindByPredicate(
+							[Current](const FTerminalFloorCellRecord& Cell)
+							{
+								return Cell.Cell == Current;
+							});
+					Room.bOperational = Room.bOperational && CurrentCell &&
+						CurrentCell->bBuilt && !CurrentCell->bLocallyClosed;
+					const FTerminalCellCoord Neighbors[] = {
+						{Current.X + 1, Current.Y}, {Current.X - 1, Current.Y},
+						{Current.X, Current.Y + 1}, {Current.X, Current.Y - 1}};
+					for (const FTerminalCellCoord Neighbor : Neighbors)
+					{
+						if (Visited.Contains(Neighbor) ||
+							HasTerminalRoomBoundary(Layout, Current, Neighbor))
+						{
+							continue;
+						}
+						const FTerminalFloorCellRecord* NeighborCell =
+							Layout.FloorCells.FindByPredicate(
+								[Neighbor, &Room](const FTerminalFloorCellRecord& Cell)
+								{
+									return Cell.Cell == Neighbor &&
+										Cell.Kind == Room.Function;
+								});
+						if (NeighborCell)
+						{
+							Visited.Add(Neighbor);
+							Frontier.Add(Neighbor);
+						}
+					}
+				}
+				const FTerminalCellCoord Anchor = Room.Cells[0];
+				Room.StableId =
+					(static_cast<uint64>(Room.Function) + 1ull) << 56 |
+					(static_cast<uint64>(Anchor.X + 128) & 0xffffull) << 16 |
+					(static_cast<uint64>(Anchor.Y + 128) & 0xffffull);
+				Rooms.Add(MoveTemp(Room));
+			}
+			return Rooms;
+		}
+
 		FString FeaturedRouteText(const bool bAccessible)
 		{
 			return bAccessible
@@ -99,6 +188,50 @@ namespace AMSim
 			HashBytes(Hash, &Bag.JourneyState, sizeof(Bag.JourneyState));
 			HashBytes(Hash, &Bag.bScreened, sizeof(bool));
 			HashBytes(Hash, &Bag.bReconciled, sizeof(bool));
+		}
+		for (const FTerminalFloorCellRecord& Cell : State.TerminalLayout.FloorCells)
+		{
+			HashBytes(Hash, &Cell.Id.Value, sizeof(uint64));
+			HashBytes(Hash, &Cell.Cell.X, sizeof(int32));
+			HashBytes(Hash, &Cell.Cell.Y, sizeof(int32));
+			HashBytes(Hash, &Cell.Kind, sizeof(Cell.Kind));
+			HashBytes(Hash, &Cell.bBuilt, sizeof(bool));
+			HashBytes(Hash, &Cell.bLocallyClosed, sizeof(bool));
+		}
+		for (const FTerminalEdgeRecord& Edge : State.TerminalLayout.Edges)
+		{
+			HashBytes(Hash, &Edge.Id.Value, sizeof(uint64));
+			HashBytes(Hash, &Edge.From.X, sizeof(int32));
+			HashBytes(Hash, &Edge.From.Y, sizeof(int32));
+			HashBytes(Hash, &Edge.To.X, sizeof(int32));
+			HashBytes(Hash, &Edge.To.Y, sizeof(int32));
+			HashBytes(Hash, &Edge.Kind, sizeof(Edge.Kind));
+			HashBytes(Hash, &Edge.bBuilt, sizeof(bool));
+		}
+		for (const FTerminalPlacedObjectRecord& Object : State.TerminalLayout.Objects)
+		{
+			HashBytes(Hash, &Object.Id.Value, sizeof(uint64));
+			HashString(Hash, Object.DefinitionId.ToString());
+			HashBytes(Hash, &Object.Anchor.X, sizeof(int32));
+			HashBytes(Hash, &Object.Anchor.Y, sizeof(int32));
+			HashBytes(Hash, &Object.QuarterTurns, sizeof(int32));
+			HashBytes(Hash, &Object.bOperational, sizeof(bool));
+		}
+		for (const FTerminalConstructionJobRecord& Job : State.TerminalLayout.ConstructionJobs)
+		{
+			HashBytes(Hash, &Job.Id.Value, sizeof(uint64));
+			HashBytes(Hash, &Job.ElementId.Value, sizeof(uint64));
+			HashBytes(Hash, &Job.Stage, sizeof(Job.Stage));
+			HashBytes(Hash, &Job.ProgressPercent, sizeof(int32));
+		}
+		for (const FTerminalVisitorRecord& Visitor : State.TerminalLayout.Visitors)
+		{
+			HashBytes(Hash, &Visitor.Id.Value, sizeof(uint64));
+			HashBytes(Hash, &Visitor.FlightId.Value, sizeof(uint64));
+			HashBytes(Hash, &Visitor.Activity, sizeof(Visitor.Activity));
+			HashBytes(Hash, &Visitor.Cell.X, sizeof(int32));
+			HashBytes(Hash, &Visitor.Cell.Y, sizeof(int32));
+			HashBytes(Hash, &Visitor.bActive, sizeof(bool));
 		}
 		HashBytes(Hash, &State.Flight.Id.Value, sizeof(uint64));
 		HashBytes(Hash, &State.Flight.State, sizeof(State.Flight.State));
@@ -253,6 +386,48 @@ namespace AMSim
 			if (!RegisterId(Bag.Id.Value) ||
 				!ContainsId(InState.Passengers, Bag.PassengerId) ||
 				Bag.FlightId != InState.Flight.Id)
+			{
+				return false;
+			}
+		}
+		FString LayoutFailure;
+		if (!ValidateTerminalLayout(InState.TerminalLayout, LayoutFailure))
+		{
+			return false;
+		}
+		for (const FTerminalFloorCellRecord& Cell : InState.TerminalLayout.FloorCells)
+		{
+			if (!RegisterId(Cell.Id.Value)) return false;
+		}
+		for (const FTerminalEdgeRecord& Edge : InState.TerminalLayout.Edges)
+		{
+			if (!RegisterId(Edge.Id.Value)) return false;
+		}
+		for (const FTerminalPlacedObjectRecord& Object : InState.TerminalLayout.Objects)
+		{
+			if (!RegisterId(Object.Id.Value)) return false;
+		}
+		TSet<uint64> LayoutTransactionIds;
+		for (const FTerminalEditTransactionRecord& Transaction :
+			InState.TerminalLayout.EditTransactions)
+		{
+			if (!RegisterId(Transaction.Id.Value)) return false;
+			LayoutTransactionIds.Add(Transaction.Id.Value);
+		}
+		for (const FTerminalConstructionJobRecord& Job :
+			InState.TerminalLayout.ConstructionJobs)
+		{
+			if (!RegisterId(Job.Id.Value) ||
+				!LayoutTransactionIds.Contains(Job.TransactionId.Value))
+			{
+				return false;
+			}
+		}
+		for (const FTerminalVisitorRecord& Visitor :
+			InState.TerminalLayout.Visitors)
+		{
+			if (!RegisterId(Visitor.Id.Value) || !Visitor.FlightId.IsValid() ||
+				Visitor.ActivityChangedAtGameMilliseconds < 0)
 			{
 				return false;
 			}
@@ -497,6 +672,17 @@ namespace AMSim
 				? TEXT("Keep domestic security open.")
 				: TEXT("Follow passengers, bags, and Gate A1.");
 		}
+		Query.TerminalLayout.Revision = State.TerminalLayout.Revision;
+		Query.TerminalLayout.FloorCells = State.TerminalLayout.FloorCells;
+		Query.TerminalLayout.Edges = State.TerminalLayout.Edges;
+		Query.TerminalLayout.Objects = State.TerminalLayout.Objects;
+		Query.TerminalLayout.ConstructionJobs =
+			State.TerminalLayout.ConstructionJobs;
+		Query.TerminalLayout.Visitors = State.TerminalLayout.Visitors;
+		Query.TerminalLayout.Rooms = InferTerminalRooms(State.TerminalLayout);
+		Query.TerminalLayout.bReady = State.TerminalLayout.bReady;
+		Query.TerminalLayout.ValidAirsideGateCount =
+			State.TerminalLayout.ValidAirsideGateCount;
 		Query.StateChecksum = CalculateChecksum();
 		return Query;
 	}

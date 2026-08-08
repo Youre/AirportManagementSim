@@ -6,6 +6,7 @@
 #include "Components/Image.h"
 #include "Components/Overlay.h"
 #include "Components/OverlaySlot.h"
+#include "Components/ScaleBox.h"
 #include "Components/SizeBox.h"
 #include "Components/TextBlock.h"
 #include "Engine/Texture2D.h"
@@ -27,6 +28,7 @@ TSharedRef<SWidget> UAMSimExpandingToolButton::RebuildWidget()
 	UOverlay* Root = WidgetTree->ConstructWidget<UOverlay>(
 		UOverlay::StaticClass(),
 		TEXT("ExpandingToolButtonRoot"));
+	Root->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	WidgetTree->RootWidget = Root;
 
 	FlyoutSurface = WidgetTree->ConstructWidget<UBorder>(
@@ -53,10 +55,15 @@ TSharedRef<SWidget> UAMSimExpandingToolButton::RebuildWidget()
 		bExpanded
 			? ESlateVisibility::HitTestInvisible
 			: ESlateVisibility::Collapsed);
-	UOverlaySlot* FlyoutSlot = Root->AddChildToOverlay(FlyoutSurface);
+	USizeBox* FlyoutSize = WidgetTree->ConstructWidget<USizeBox>(
+		USizeBox::StaticClass(),
+		TEXT("FlyoutMinimumWidth"));
+	FlyoutSize->SetMinDesiredWidth(GetMinimumFlyoutWidth());
+	FlyoutSize->SetContent(FlyoutSurface);
+	UOverlaySlot* FlyoutSlot = Root->AddChildToOverlay(FlyoutSize);
 	FlyoutSlot->SetHorizontalAlignment(HAlign_Left);
 	FlyoutSlot->SetVerticalAlignment(VAlign_Center);
-	FlyoutSurface->SetRenderTranslation(FVector2D(98.0f, 0.0f));
+	FlyoutSize->SetRenderTranslation(FVector2D(98.0f, 0.0f));
 
 	USizeBox* ButtonSize = WidgetTree->ConstructWidget<USizeBox>(
 		USizeBox::StaticClass(),
@@ -85,7 +92,13 @@ TSharedRef<SWidget> UAMSimExpandingToolButton::RebuildWidget()
 	IconImage = WidgetTree->ConstructWidget<UImage>(
 		UImage::StaticClass(),
 		TEXT("Icon"));
-	IconSize->SetContent(IconImage);
+	IconScaleBox = WidgetTree->ConstructWidget<UScaleBox>(
+		UScaleBox::StaticClass(),
+		TEXT("IconAspectFit"));
+	IconScaleBox->SetStretch(EStretch::ScaleToFit);
+	IconScaleBox->SetStretchDirection(EStretchDirection::DownOnly);
+	IconScaleBox->SetContent(IconImage);
+	IconSize->SetContent(IconScaleBox);
 	ActionButton->SetContent(IconSize);
 	ButtonSize->SetContent(ActionButton);
 	UOverlaySlot* ButtonSlot = Root->AddChildToOverlay(ButtonSize);
@@ -156,6 +169,12 @@ ESlateVisibility UAMSimExpandingToolButton::GetFlyoutVisibilityForTest() const
 	return FlyoutSurface
 		? FlyoutSurface->GetVisibility()
 		: ESlateVisibility::Collapsed;
+}
+
+bool UAMSimExpandingToolButton::PreservesIconAspectRatioForTest() const
+{
+	return IconScaleBox &&
+		IconScaleBox->GetStretch() == EStretch::ScaleToFit;
 }
 
 void UAMSimExpandingToolButton::SetActionEnabled(const bool bInEnabled)

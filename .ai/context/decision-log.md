@@ -56,4 +56,11 @@
   All future Riverbend buttons inherit hover/press audio from the shared theme,
   while semantic cues are emitted only from authoritative results or state
   transitions and never replace visible/captioned meaning.
+- 2026-08-08: PI-11 replaces the static starter terminal with a growable,
+  ground-floor, one-meter-grid terminal inside the airport world. The first
+  rollout uses a furnished GA seed, hybrid immediate-spend editing, fully
+  refundable unfinished work, local construction closures, ordinary workers,
+  a generated roof/cutaway transition, schema-10 persistence, and a spatial
+  bridge for the existing Phase 3 fixture. Upper floors and player-placeable
+  passenger-processing modules remain explicit later work.
 - 2026-07-26: Phase 1.5 establishes the reusable presentation baseline with a cooker-visible production Widget Blueprint, revision-gated native presenter, real Paper2D world, one approved fictional-livery Cessna source, and compact 175–200% drawers. Illustrated environment detail and richer timetable/service animation remain later bounded polish; final Phase 1.5 closure still requires owner acceptance of the four comparison boards.

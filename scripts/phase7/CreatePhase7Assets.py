@@ -183,7 +183,7 @@ definitions = [
         {
             "EngineVersion": "5.8.0",
             "Platform": "Win64",
-            "SaveSchema": "9",
+            "SaveSchema": "10",
             "MapCount": "1",
             "HumanGateStatus": "PendingOwnerTest",
             "ConceptReferences": "VA-01,VA-02,VA-03,VA-04,VA-05,VA-06,VA-07",

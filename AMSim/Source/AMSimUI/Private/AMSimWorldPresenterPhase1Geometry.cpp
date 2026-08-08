@@ -121,24 +121,25 @@ void AAMSimWorldPresenter::ApplyPhase1Geometry(
 	if (Stand)
 	{
 		Stand->SetRelativeLocation(Phase1StandCenter);
-		Stand->SetRelativeScale3D(FVector(2.7, 1.0, 2.1));
-		Stand->SetRelativeRotation(FRotator(0.0f, 0.0f, SpritePlaneRoll));
+		Stand->SetRelativeScale3D(FVector(7.5, 1.0, 7.5));
+		Stand->SetRelativeRotation(FRotator(0.0f, 90.0f, SpritePlaneRoll));
 	}
 	if (GateB)
 	{
 		GateB->SetRelativeLocation(AMSim::MapPhase1PointToWorld(
 			AMSim::GetStarterGatePoints()[1],
 			31.0));
-		GateB->SetRelativeScale3D(FVector(2.7, 1.0, 2.1));
-		GateB->SetRelativeRotation(FRotator(0.0f, 0.0f, SpritePlaneRoll));
+		GateB->SetRelativeScale3D(FVector(7.5, 1.0, 7.5));
+		GateB->SetRelativeRotation(FRotator(0.0f, 90.0f, SpritePlaneRoll));
 	}
 	if (OperationsHut)
 	{
 		OperationsHut->SetRelativeLocation(AMSim::MapPhase1PointToWorld(
 			AMSim::GetStarterTerminalCenter(),
 			40.0));
-		OperationsHut->SetRelativeScale3D(FVector(5.5, 1.0, 4.0));
-		OperationsHut->SetRelativeRotation(FRotator(0.0f, 0.0f, SpritePlaneRoll));
+		OperationsHut->SetRelativeScale3D(FVector(11.0, 1.0, 11.0));
+		OperationsHut->SetRelativeRotation(
+			FRotator(0.0f, 90.0f, SpritePlaneRoll));
 	}
 
 	const AMSim::FPhase1Point RunwayMidpoint = {
@@ -306,6 +307,30 @@ void AAMSimWorldPresenter::SetFacilitiesVisible(
 	Stand->SetSpriteColor(FLinearColor::White);
 	GateB->SetSpriteColor(FLinearColor::White);
 	OperationsHut->SetSpriteColor(FLinearColor::White);
+}
+
+FVector AAMSimWorldPresenter::GetStarterTerminalScaleForTest() const
+{
+	return OperationsHut
+		? OperationsHut->GetRelativeScale3D()
+		: FVector::ZeroVector;
+}
+
+FVector AAMSimWorldPresenter::GetStarterGateScaleForTest() const
+{
+	return Stand ? Stand->GetRelativeScale3D() : FVector::ZeroVector;
+}
+
+float AAMSimWorldPresenter::GetStarterTerminalYawForTest() const
+{
+	return OperationsHut
+		? OperationsHut->GetRelativeRotation().Yaw
+		: 0.0f;
+}
+
+float AAMSimWorldPresenter::GetStarterGateYawForTest() const
+{
+	return Stand ? Stand->GetRelativeRotation().Yaw : 0.0f;
 }
 
 void AAMSimWorldPresenter::SetConstructionEditorOverlayVisible(

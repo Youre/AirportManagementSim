@@ -172,6 +172,7 @@ private:
 	void SetConstructionModeChrome(bool bOpen);
 	FString GetSelectedSaveSlotId() const;
 	void RefreshDestinationButtons(
+		const AMSim::FPhase1QuerySnapshot& Phase1Query,
 		const AMSim::FPhase3QuerySnapshot& Phase3Query,
 		const AMSim::FPhase4QuerySnapshot& Phase4Query,
 		const AMSim::FPhase5QuerySnapshot& Phase5Query,
@@ -394,6 +395,7 @@ private:
 	int32 LastAudioRecoveryGrantCount = 0;
 	bool bOpenReleaseGuideWhenReady = false;
 	bool bWorldPanning = false;
+	bool bTerminalGrowthProofOpened = false;
 	bool bRightMousePanning = false;
 	bool bCompactLayoutActive = false;
 	bool bReturnToOneAtInbound = false;

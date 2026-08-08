@@ -1,0 +1,31 @@
+{
+  "artifacts": {
+    "copied_source": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\ingest\\source\\terminal-modular-kit-contact-sheet.svg"
+  },
+  "created_at": "2026-08-08T14:58:52+00:00",
+  "entry_path": "vector_cleanup",
+  "generated_source": null,
+  "input_mode": "vector",
+  "intent": "preserve and validate the editable semantic vector source for the growable terminal modular runtime asset contact sheet",
+  "schema_version": "0.1",
+  "source": {
+    "exists": true,
+    "format": null,
+    "height": null,
+    "media_type": "image/svg+xml",
+    "mode": null,
+    "path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\Vector\\terminal-modular-kit-contact-sheet.svg",
+    "resolved_path": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\Vector\\terminal-modular-kit-contact-sheet.svg",
+    "sha256": "45fc001dba0702f15c79973b4fc15358a1a4c3aeae19a961d747be824d101201",
+    "size_bytes": 19220,
+    "source_type": "vector",
+    "svg_metadata": {
+      "height": "1080",
+      "tag": "{http://www.w3.org/2000/svg}svg",
+      "viewBox": "0 0 1920 1080",
+      "width": "1920"
+    },
+    "width": null
+  },
+  "warnings": []
+}

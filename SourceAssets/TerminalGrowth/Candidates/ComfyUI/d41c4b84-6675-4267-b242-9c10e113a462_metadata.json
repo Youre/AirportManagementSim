@@ -1,0 +1,18 @@
+{
+  "prompt_id": "d41c4b84-6675-4267-b242-9c10e113a462",
+  "server": "http://192.168.5.12:8188",
+  "mode": "t2im",
+  "workflow_preset": "flux",
+  "workflow_path": "C:\\Users\\dave\\Documents\\custom-skills\\skills\\comfyui-imagegen\\assets\\workflows\\flux_2_klein_t2im.json",
+  "prompt": "A seamless square top-down airport terminal roof surface. Pale cool-gray standing-seam metal and membrane roof modules with restrained panel joints, subtle weathering, clean maintained regional-airport character, polished 2D management-game stylized realism. Perfectly orthographic, flat even neutral lighting, uniform scale, no vents or equipment, no edges or parapets, no shadows, no text, no symbols, no focal point, edges tile seamlessly.",
+  "seed": 2913409798165035281,
+  "negative": null,
+  "width": 1024,
+  "height": 1024,
+  "megapixels": null,
+  "input_image": null,
+  "output_files": [
+    "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\Candidates\\ComfyUI\\a-seamless-square-top-down-airport-terminal-roof-surface-pal_d41c4b84-6675-4267-b242-9c10e113a462_1.png"
+  ],
+  "timestamp": "2026-08-08T10:49:24-0400"
+}

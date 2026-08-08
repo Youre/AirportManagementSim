@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AMSimPhase2Types.h"
+#include "AMSimTerminalLayoutTypes.h"
 
 namespace AMSim
 {
@@ -29,7 +29,14 @@ namespace AMSim
 		SchedulePassengerService,
 		ToggleSecurityLane,
 		RequestPassengerAssistance,
-		ResolveBaggageException
+		ResolveBaggageException,
+		PlaceTerminalFloor,
+		PlaceTerminalWall,
+		PlaceTerminalDoor,
+		PlaceTerminalObject,
+		RotateTerminalObject,
+		DemolishTerminalElement,
+		UndoTerminalEdit
 	};
 
 	enum class EPhase3CommandResult : uint8
@@ -43,7 +50,11 @@ namespace AMSim
 		RejectedDisconnected,
 		RejectedSecurityBypass,
 		RejectedNoAccessibleRoute,
-		RejectedNotReady
+		RejectedNotReady,
+		RejectedOccupied,
+		RejectedInvalidTopology,
+		RejectedRouteLoss,
+		RejectedNothingToUndo
 	};
 
 	enum class ETerminalConstructionStage : uint8
@@ -152,7 +163,10 @@ namespace AMSim
 		PassengerAssistanceAssigned,
 		ReconciliationPassed,
 		PassengerFlightCompleted,
-		EconomyApplied
+		EconomyApplied,
+		TerminalEditCommitted,
+		TerminalEditUndone,
+		TerminalConstructionStageChanged
 	};
 
 	struct FPhase3Command
@@ -161,6 +175,13 @@ namespace AMSim
 		EPhase3CommandType Type = EPhase3CommandType::InitializePassengerAirport;
 		FPassengerId PassengerId;
 		FBagId BagId;
+		FTerminalElementId TerminalElementId;
+		FTerminalCellCoord StartCell;
+		FTerminalCellCoord EndCell;
+		ETerminalFloorKind FloorKind = ETerminalFloorKind::Public;
+		ETerminalEdgeKind EdgeKind = ETerminalEdgeKind::InteriorWall;
+		ETerminalObjectKind ObjectKind = ETerminalObjectKind::SeatGroup2;
+		int32 QuarterTurns = 0;
 	};
 
 	struct FPhase3Validation
@@ -346,6 +367,7 @@ namespace AMSim
 		TArray<FPhase3StaffTeamRecord> Teams;
 		FPassengerTenantRecord Tenant;
 		FPassengerFlightRecord Flight;
+		FTerminalLayoutState TerminalLayout;
 		TArray<FPhase3Event> Events;
 		int32 CompletedPassengerCount = 0;
 		int32 CompletedBagCount = 0;
@@ -394,6 +416,7 @@ namespace AMSim
 		bool bFeaturedAccessible = false;
 		FString BaggageSummary;
 		FString LandsideSummary;
+		FTerminalLayoutQuerySnapshot TerminalLayout;
 		uint64 StateChecksum = 0;
 	};
 

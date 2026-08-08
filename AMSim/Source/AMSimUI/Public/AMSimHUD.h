@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameFramework/HUD.h"
+#include "TimerManager.h"
 #include "AMSimHUD.generated.h"
 
 class UAMSimRootScreen;
@@ -20,6 +21,7 @@ protected:
 
 private:
 	void CreateRootScreen(bool bOpenReleaseGuide);
+	void TickDevelopmentGalleryProof();
 
 	UPROPERTY()
 	TSubclassOf<UAMSimRootScreen> RootScreenClass;
@@ -32,4 +34,7 @@ private:
 
 	UPROPERTY(Transient)
 	TObjectPtr<UUserWidget> DevelopmentGallery;
+
+	FTimerHandle DevelopmentGalleryProofTimer;
+	int32 DevelopmentGalleryProofStage = 0;
 };

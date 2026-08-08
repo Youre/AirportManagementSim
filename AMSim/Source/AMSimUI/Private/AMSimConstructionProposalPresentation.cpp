@@ -515,9 +515,11 @@ void UAMSimConstructionProposalView::RefreshProposalPresentation()
 	}
 
 	const TArray<AMSim::FPhase1Point>& Gates = AMSim::GetStarterGatePoints();
-	SetBoxGeometry(TerminalGeometrySlot, AMSim::GetStarterTerminalCenter(), 0.060f, 0.034f);
-	SetBoxGeometry(GateAGeometrySlot, Gates[0], 0.027f, 0.026f);
-	SetBoxGeometry(GateBGeometrySlot, Gates[1], 0.027f, 0.026f);
+	// Preserve the authored top-down proportions. The old wide, shallow boxes
+	// made the upright terminal read as rotated and reduced the gate art to bars.
+	SetBoxGeometry(TerminalGeometrySlot, AMSim::GetStarterTerminalCenter(), 0.050f, 0.074f);
+	SetBoxGeometry(GateAGeometrySlot, Gates[0], 0.026f, 0.046f);
+	SetBoxGeometry(GateBGeometrySlot, Gates[1], 0.026f, 0.046f);
 	for (UWidget* FixedWidget : {
 		TerminalGeometryWidget.Get(), GateAGeometryWidget.Get(), GateBGeometryWidget.Get()})
 	{

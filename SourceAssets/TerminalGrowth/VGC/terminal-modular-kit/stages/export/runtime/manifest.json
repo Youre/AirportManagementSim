@@ -1,0 +1,60 @@
+{
+  "assets": [
+    {
+      "asset_id": "vgc-svg",
+      "media_type": "image/svg+xml",
+      "path": "vgc.svg",
+      "role": "layered_vector_asset",
+      "sha256": "fa3eb47dd0dac05a2cd66814d0f597ed61e2f709b033129093007362a0c40a08",
+      "size_bytes": 19608
+    },
+    {
+      "asset_id": "graph-json",
+      "media_type": "application/json",
+      "path": "graph.json",
+      "role": "interaction_graph",
+      "sha256": "91924a7344d165fd6c70850335ef96591fdf393a0f023b3646dc4a08481e1e00",
+      "size_bytes": 3064
+    },
+    {
+      "asset_id": "runtime-metadata",
+      "media_type": "application/json",
+      "path": "runtime_metadata.json",
+      "role": "runtime_metadata",
+      "sha256": "1820cf5108c170cdbe75c2bcb3163c6cfea44cc38b22f408857942e4e7b4fff2",
+      "size_bytes": 2310
+    },
+    {
+      "asset_id": "readme",
+      "media_type": "text/markdown",
+      "path": "README.md",
+      "role": "documentation",
+      "sha256": "1c6f663aa5bd2e40ecc907061986604b2ee109260137b29d78a6b11b09335477",
+      "size_bytes": 511
+    }
+  ],
+  "bundle_contract": "vgc.runtime.v1",
+  "created_at": "2026-08-08T14:58:54+00:00",
+  "entry_path": "vector_cleanup",
+  "graph_summary": {
+    "edge_count": 0,
+    "influence_region_count": 1,
+    "layer_count": 1,
+    "max_degree": 0,
+    "node_count": 1,
+    "traversal_hint_count": 4
+  },
+  "input_mode": "vector",
+  "next_phase": "WEB-103",
+  "provenance": {
+    "interaction_mesh": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\mesh\\mesh\\interaction_mesh.json",
+    "layered_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\layered.svg",
+    "mesh_preview_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\mesh\\mesh\\mesh_preview.svg",
+    "segmentation_manifest": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\segmentation_manifest.json"
+  },
+  "schema_version": "0.1",
+  "warnings": [
+    "Imported SVG geometry was validated and copied unchanged; XML rewriting is deferred.",
+    "Imported SVG geometry was validated and copied unchanged; XML rewriting is deferred."
+  ]
+}

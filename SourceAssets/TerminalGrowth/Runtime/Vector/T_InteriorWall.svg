@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256"><defs>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#164f68"/>
+      <stop offset="1" stop-color="#0c3448"/>
+    </linearGradient>
+    <pattern id="public-floor" width="32" height="32" patternUnits="userSpaceOnUse">
+      <rect width="32" height="32" fill="#d8d0bf"/>
+      <path d="M32 0H0V32" fill="none" stroke="#b7ad9c" stroke-width="1"/>
+      <circle cx="8" cy="7" r="1" fill="#eee8db"/><circle cx="24" cy="18" r="1" fill="#c7bdaa"/>
+    </pattern>
+    <pattern id="service-floor" width="32" height="32" patternUnits="userSpaceOnUse">
+      <rect width="32" height="32" fill="#71899a"/>
+      <path d="M32 0H0V32" fill="none" stroke="#536d7e" stroke-width="1"/>
+      <circle cx="9" cy="12" r="0.8" fill="#91a5b2"/><circle cx="25" cy="25" r="0.8" fill="#5f7787"/>
+    </pattern>
+    <pattern id="roof-surface" width="48" height="48" patternUnits="userSpaceOnUse">
+      <rect width="48" height="48" fill="#a7b2b6"/>
+      <path d="M0 8H48M0 24H48M0 40H48" stroke="#829095" stroke-width="2"/>
+      <path d="M0 10H48M0 26H48M0 42H48" stroke="#c2cbce" stroke-width="1"/>
+    </pattern>
+    <pattern id="closure-hatch" width="18" height="18" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="9" height="18" fill="#e3613e"/><rect x="9" width="9" height="18" fill="#7b342c"/>
+    </pattern>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#031722" flood-opacity="0.7"/>
+    </filter>
+    <style>
+      .title{font:700 31px 'Segoe UI',sans-serif;fill:#edf4f1}.subtitle{font:500 15px 'Segoe UI',sans-serif;fill:#8addeb}
+      .section{font:700 18px 'Segoe UI',sans-serif;fill:#ffd15a;letter-spacing:1px}.label{font:700 13px 'Segoe UI',sans-serif;fill:#edf4f1}
+      .card{fill:url(#panel);stroke:#49c9df;stroke-width:2}.asset{filter:url(#shadow)}.thin{stroke:#edf4f1;stroke-width:5;fill:none;stroke-linecap:round;stroke-linejoin:round}.thin .label{stroke:none;fill:#edf4f1}
+    </style>
+
+    <symbol id="wall-exterior" viewBox="0 0 160 100">
+      <rect x="8" y="32" width="144" height="36" rx="4" fill="#38444b"/>
+      <rect x="10" y="34" width="140" height="10" rx="3" fill="#e4ded2"/>
+      <path d="M16 50H144" stroke="#8b969a" stroke-width="3"/>
+      <rect x="8" y="66" width="144" height="8" rx="3" fill="#1c2b33"/>
+    </symbol>
+    <symbol id="wall-interior" viewBox="0 0 160 100">
+      <rect x="10" y="38" width="140" height="28" rx="4" fill="#d9d2c6"/>
+      <rect x="10" y="38" width="140" height="8" rx="4" fill="#f5f0e7"/>
+      <path d="M48 40V64M112 40V64" stroke="#a8a196" stroke-width="2"/>
+    </symbol>
+    <symbol id="wall-glass" viewBox="0 0 160 100">
+      <rect x="10" y="28" width="140" height="45" rx="4" fill="#8ed5e4" fill-opacity="0.5" stroke="#d8f4f7" stroke-width="4"/>
+      <path d="M45 30V71M80 30V71M115 30V71" stroke="#486e7c" stroke-width="4"/>
+      <path d="M18 35L50 66M70 35L102 66" stroke="#e8fbff" stroke-width="3" opacity="0.65"/>
+    </symbol>
+    <symbol id="door-entrance" viewBox="0 0 160 100">
+      <rect x="13" y="18" width="134" height="64" rx="8" fill="#d8d1c6"/>
+      <rect x="25" y="25" width="52" height="50" fill="#75b7ca" stroke="#e8fbff" stroke-width="3"/>
+      <rect x="83" y="25" width="52" height="50" fill="#75b7ca" stroke="#e8fbff" stroke-width="3"/>
+      <path d="M72 50H48M88 50H112" stroke="#233b48" stroke-width="4"/>
+    </symbol>
+    <symbol id="door-standard" viewBox="0 0 160 100">
+      <rect x="48" y="16" width="64" height="70" rx="5" fill="#d5d0c7" stroke="#26353d" stroke-width="5"/>
+      <rect x="58" y="25" width="27" height="42" rx="3" fill="#6fa8b9"/><circle cx="99" cy="56" r="4" fill="#ffd15a"/>
+    </symbol>
+    <symbol id="door-service" viewBox="0 0 160 100">
+      <rect x="45" y="14" width="70" height="74" rx="4" fill="#45545c" stroke="#1e2e36" stroke-width="5"/>
+      <rect x="56" y="25" width="31" height="23" rx="3" fill="#7fa5b2"/>
+      <path d="M45 76H115" stroke="#ffd15a" stroke-width="8" stroke-dasharray="12 7"/>
+    </symbol>
+    <symbol id="door-gate" viewBox="0 0 160 100">
+      <rect x="14" y="19" width="132" height="65" rx="9" fill="#d9d2c7"/>
+      <rect x="24" y="28" width="112" height="45" rx="5" fill="#79b8c9" stroke="#e6f7fa" stroke-width="4"/>
+      <path d="M80 30V72" stroke="#294653" stroke-width="5"/>
+      <path d="M38 80H122" stroke="#49c9df" stroke-width="6" stroke-dasharray="12 6"/>
+    </symbol>
+    <symbol id="roof-edge" viewBox="0 0 160 100"><rect x="8" y="30" width="144" height="42" fill="url(#roof-surface)"/><path d="M8 30H152" stroke="#e8eff0" stroke-width="7"/><path d="M8 72H152" stroke="#677980" stroke-width="7"/></symbol>
+    <symbol id="roof-corner" viewBox="0 0 160 100"><path d="M18 82V22H140" fill="none" stroke="#e8eff0" stroke-width="24" stroke-linejoin="round"/><path d="M29 72V34H140" fill="none" stroke="#8b9a9f" stroke-width="16" stroke-linejoin="round"/></symbol>
+    <symbol id="roof-canopy" viewBox="0 0 160 100"><path d="M20 70L35 30H125L140 70Z" fill="#9ac7d3" stroke="#e7f4f6" stroke-width="5"/><path d="M50 32L45 68M80 32V68M110 32L115 68" stroke="#50717b" stroke-width="4"/></symbol>
+    <symbol id="roof-hvac" viewBox="0 0 160 100"><rect x="28" y="22" width="104" height="60" rx="8" fill="#6e7d82" stroke="#dce4e6" stroke-width="5"/><circle cx="58" cy="52" r="20" fill="#34474f" stroke="#a8b4b8" stroke-width="4"/><circle cx="103" cy="52" r="14" fill="#34474f" stroke="#a8b4b8" stroke-width="4"/><path d="M58 34V70M40 52H76M48 42L68 62M68 42L48 62" stroke="#8f9da2" stroke-width="3"/></symbol>
+    <symbol id="construction-foundation" viewBox="0 0 160 100"><rect x="18" y="15" width="124" height="70" rx="6" fill="#9b7956"/><path d="M25 25L135 75M25 45L105 82M55 18L138 55" stroke="#c9a16f" stroke-width="7"/><circle cx="45" cy="55" r="5" fill="#6b513d"/><circle cx="118" cy="38" r="6" fill="#6b513d"/></symbol>
+    <symbol id="construction-delivery" viewBox="0 0 160 100"><rect x="20" y="60" width="120" height="13" fill="#774c2d"/><rect x="30" y="35" width="45" height="27" fill="#b27a3d" stroke="#e1ad69" stroke-width="3"/><rect x="82" y="28" width="48" height="34" fill="#6f8792" stroke="#b9c9ce" stroke-width="3"/><path d="M20 78H140" stroke="#ffd15a" stroke-width="7" stroke-dasharray="14 7"/></symbol>
+    <symbol id="construction-framing" viewBox="0 0 160 100"><path d="M20 80V20M55 80V20M105 80V20M140 80V20M20 25H140M20 55H140M20 80H140" stroke="#d3a05a" stroke-width="8" fill="none"/><path d="M20 80L55 20M105 80L140 20" stroke="#8d6035" stroke-width="5"/></symbol>
+    <symbol id="construction-active" viewBox="0 0 160 100"><rect x="15" y="15" width="130" height="70" fill="url(#closure-hatch)" opacity="0.7"/><circle cx="56" cy="48" r="22" fill="#ffd15a"/><path d="M36 50H76M56 28V68" stroke="#263b45" stroke-width="8"/><path d="M98 68L118 28L138 68Z" fill="#f18b38" stroke="#edf4f1" stroke-width="3"/></symbol>
+    <symbol id="construction-inspection" viewBox="0 0 160 100"><path d="M80 13L137 34V61C137 76 113 86 80 91C47 86 23 76 23 61V34Z" fill="#237c98" stroke="#9ee9f4" stroke-width="5"/><path d="M53 54L72 72L111 34" class="thin"/></symbol>
+    <symbol id="construction-closure" viewBox="0 0 160 100"><rect x="15" y="18" width="130" height="64" rx="7" fill="url(#closure-hatch)" stroke="#edf4f1" stroke-width="4"/><path d="M32 15V85M128 15V85" stroke="#edf4f1" stroke-width="8"/></symbol>
+    <symbol id="overlay-valid" viewBox="0 0 160 100"><rect x="20" y="15" width="120" height="70" rx="10" fill="#49c9df" fill-opacity="0.25" stroke="#49e1ef" stroke-width="7"/><path d="M48 52L68 70L112 30" stroke="#b7f379" stroke-width="10" fill="none"/></symbol>
+    <symbol id="overlay-blocked" viewBox="0 0 160 100"><rect x="20" y="15" width="120" height="70" rx="10" fill="#e3613e" fill-opacity="0.25" stroke="#ff795b" stroke-width="7"/><path d="M52 30L108 70M108 30L52 70" stroke="#edf4f1" stroke-width="10"/></symbol>
+    <symbol id="overlay-unaffordable" viewBox="0 0 160 100"><circle cx="80" cy="50" r="38" fill="#d99d2b" stroke="#ffe18b" stroke-width="6"/><text x="80" y="64" text-anchor="middle" font-family="Segoe UI" font-weight="700" font-size="42" fill="#17394b">$</text><path d="M30 78L130 22" stroke="#e3613e" stroke-width="9"/></symbol>
+    <symbol id="overlay-route" viewBox="0 0 160 100"><path d="M20 70C55 70 53 27 85 27H130" stroke="#e3613e" stroke-width="9" stroke-dasharray="13 8" fill="none"/><path d="M116 15L139 27L116 39" fill="none" stroke="#e3613e" stroke-width="8"/></symbol>
+    <symbol id="overlay-snap" viewBox="0 0 160 100"><circle cx="80" cy="50" r="33" fill="none" stroke="#49c9df" stroke-width="6"/><circle cx="80" cy="50" r="10" fill="#ffd15a"/><path d="M80 7V27M80 73V93M37 50H57M103 50H123" stroke="#edf4f1" stroke-width="6"/></symbol>
+    <symbol id="overlay-connection" viewBox="0 0 160 100"><circle cx="45" cy="50" r="22" fill="#237c98" stroke="#9ee9f4" stroke-width="5"/><circle cx="115" cy="50" r="22" fill="#237c98" stroke="#9ee9f4" stroke-width="5"/><path d="M68 50H92" stroke="#ffd15a" stroke-width="9"/><path d="M80 38L94 50L80 62" fill="none" stroke="#ffd15a" stroke-width="7"/></symbol>
+    <symbol id="icon-structure-symbol" viewBox="0 0 100 100"><path d="M15 82V18H82V82M15 50H82M44 18V82" class="thin"/></symbol>
+    <symbol id="icon-doors-symbol" viewBox="0 0 100 100"><rect x="25" y="15" width="52" height="70" class="thin"/><path d="M38 27H65V83M58 53H65" class="thin"/></symbol>
+    <symbol id="icon-furniture-symbol" viewBox="0 0 100 100"><path d="M15 45H84V78H15ZM23 22H76V45M30 78V88M69 78V88" class="thin"/></symbol>
+    <symbol id="icon-amenities-symbol" viewBox="0 0 100 100"><path d="M23 57H76L68 85H31ZM50 57V22M50 34C31 34 28 16 28 16C44 14 50 23 50 34ZM50 44C69 44 72 24 72 24C56 23 50 33 50 44Z" class="thin"/></symbol>
+    <symbol id="icon-operations-symbol" viewBox="0 0 100 100"><path d="M15 38H85V82H15ZM32 38V24H68V38M34 60H66" class="thin"/></symbol>
+    <symbol id="icon-zones-symbol" viewBox="0 0 100 100"><path d="M17 21H76L88 45L68 82H25L8 52Z" class="thin"/><path d="M30 35H66V70H30Z" class="thin" stroke-dasharray="7 5"/></symbol>
+    <symbol id="icon-demolish-symbol" viewBox="0 0 100 100"><path d="M18 29H82M31 29V84H70V29M39 18H63M41 43V72M59 43V72" class="thin"/></symbol>
+    <symbol id="icon-rotate-symbol" viewBox="0 0 100 100"><path d="M82 45A34 34 0 1 0 72 76M82 45V16M82 45H53" class="thin"/></symbol>
+    <symbol id="icon-copy-symbol" viewBox="0 0 100 100"><rect x="15" y="30" width="55" height="55" class="thin"/><rect x="30" y="15" width="55" height="55" class="thin"/></symbol>
+    <symbol id="icon-undo-symbol" viewBox="0 0 100 100"><path d="M82 31H43C20 31 16 65 37 77C52 85 70 77 76 64M43 31L60 15M43 31L60 47" class="thin"/></symbol>
+  </defs><use href="#wall-interior" x="16" y="48" width="224" height="140"/></svg>

@@ -1259,3 +1259,99 @@ entries:
       with zero failures. The refreshed 227756544-byte game binary has SHA-256
       51E5597CBB195E6C7E2C16CF00D828ADB1B26344BE7BE71BD312D1A7CF79B8D8.
       C retained 224.7 GiB free and D retained 943.7 GiB; no shared cache was cleared.
+  - timestamp: '2026-08-08T12:49:51.4328632+00:00'
+    commit: 6af95dcb29b1c56fbfcdec18fb83f9bee34fe7ad
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Airport naming-card alignment and window breakpoint: UE 5.8
+      Editor/Game builds; focused CompactHud automation; real 1280x720 game capture;
+      integrated 1920x1080 rendered Phase 1 smoke; visual, line-limit, and diff checks'
+    result: passed
+    notes: The initial naming surface is centered at 64 percent of the map width
+      and 15 percent of its height instead of spanning 88 by 23 percent. Parcel
+      context, the wider name field, and Create Airport share a vertical axis.
+      Viewports below 1760x990 and 175-200 percent UI scale select the bounded
+      compact composition instead of allowing intrinsic child widths to overflow.
+      The focused test, real 1280x720 capture, and refreshed 1920x1080 rendered
+      smoke pass. No schema, asset, cook, simulation, or gameplay dependency
+      changed; clean-package exemption applies.
+  - timestamp: '2026-08-08T13:13:20.6218255+00:00'
+    commit: 6af95dcb29b1c56fbfcdec18fb83f9bee34fe7ad
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Canonical owner build: clean Development BuildCookRun to
+      D:/AMSim-Current; launcher and inner-binary existence, timestamp, size,
+      and SHA-256 inventory'
+    result: passed-with-manual-follow-up
+    notes: BuildCookRun succeeded with 658 cooked packages and archived a
+      568.77 MiB package. The only owner-facing launcher is now
+      D:/AMSim-Current/Windows/AMSim.exe (SHA-256
+      8E61AE1487664610F75BCC9A2439DCBD48541F8CEEAEF88A913BF9EE5A2F0CD5).
+      Agent guidance now prohibits directing the owner to repository binaries,
+      staged internals, or dated evidence packages. Interactive launch remains
+      for the owner because a new executable path can produce a Windows Firewall
+      prompt that automation must not dismiss.
+  - timestamp: '2026-08-08T13:30:10.0585023+00:00'
+    commit: 6af95dcb29b1c56fbfcdec18fb83f9bee34fe7ad
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Compact rail icon/flyout geometry: UE 5.8 Editor/Game builds;
+      focused CompactHud automation; 1280x720 hover render; clean Development
+      cook/stage/package; canonical archive refresh and binary hash comparison'
+    result: passed
+    notes: Every rail icon now uses aspect-preserving ScaleToFit inside its
+      42-unit box. The transparent widget host spans 320 units without
+      intercepting the map, and flyout cards have a 156-unit minimum width.
+      The captured BUILD label fits with padding at 1280x720. The initial archive
+      was correctly stopped when the owner had the canonical game open; after
+      closure, archive retry succeeded. The packaged inner executable exactly
+      matches the verified source binary at SHA-256
+      F5678357142300F83A08488AD1262DF499558FAF477041D5B94E66785551E1BF.
+      The sole owner launcher remains D:/AMSim-Current/Windows/AMSim.exe.
+  - timestamp: '2026-08-08T10:01:19.9937535-04:00'
+    commit: 6af95dcb29b1c56fbfcdec18fb83f9bee34fe7ad
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Starter terminal and gate presentation: UE 5.8 Editor/Game
+      builds; OrthographicCamera and six Phase1_5.Presentation automation
+      tests; 1920x1080 proposal/live Paper2D captures; clean Development
+      BuildCookRun to D:/AMSim-Current; packaged integrated Phase 1 smoke'
+    result: passed
+    notes: The existing project-authored RegionalTerminal and ApronStand assets
+      are now authoritative in build mode and the world instead of striped or
+      warm-pad substitutes. Aspect-preserving build artwork is isolated below
+      stable interaction outlines, Paper2D receives the required 90-degree
+      plane correction, world scales are readable, and the initial management
+      camera keeps the terminal above the footer. All seven focused tests pass;
+      rendered and packaged smokes pass with screenshots. The clean cook wrote
+      658 packages. The refreshed inner game binary is 227760640 bytes with
+      SHA-256 D956FD01DC0F8F2FE42FE3E652C31A819FC4D4C5E0D5191AEC13F802014ACD43;
+      the sole owner launcher remains D:/AMSim-Current/Windows/AMSim.exe. C had
+      180.8 GiB free and D had 729.3 GiB free after packaging; no shared cache
+      was cleared and no new generated asset was introduced.
+  - timestamp: '2026-08-08T13:35:00-04:00'
+    commit: 6af95dcb29b1c56fbfcdec18fb83f9bee34fe7ad
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'PI-11 growable terminal: target approval; modular asset validation;
+      schema 10 and migration automation; full AMSim automation; five-scale
+      visual matrix; Phase 4 rendered fixture; clean Development/Shipping
+      BuildCookRun; packaged terminal proof; runtime and release audits'
+    result: passed
+    notes: Both OpenAI targets were owner-approved. The retained 44-piece
+      deterministic kit scored 96.167 with zero contact-sheet validation
+      failures; rejected ComfyUI candidates were not imported. Full automation
+      reported 81 discovered entries with zero failed/not-run/in-process tests.
+      The starter, grown, and component-gallery states passed the 100-200
+      percent scale matrix; compact drawers retained the terminal world. The
+      grown Phase 4 journey passed. Clean
+      Development and Shipping packages contain 746 packages and all 88
+      TerminalGrowth texture/sprite packages. Packaged terminal proof rendered
+      the full spatial terminal after separating its stable anchor from mutable
+      operations-hut proposal geometry; SHA-256
+      ff771f62737444f6c5055c1b77063783acdee878eaa99cafdcd7944552e4c697.
+      Packaged journey, save/load, and offline socket checks passed. Technical
+      audit fields report zero runtime string loads, forbidden dependencies,
+      required 3D assets, or line-limit violations. The aggregate Phase 7
+      audit remains pending solely because final owner acceptance is deferred.
+      No shared cache was cleared.

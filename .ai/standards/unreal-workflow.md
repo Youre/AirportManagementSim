@@ -37,6 +37,23 @@ Before considering an MCP-authored runtime asset integrated:
 
 PIE proves editor/runtime integration but does not replace the packaged Shipping journey. Package presence proves cooking but does not prove interactive behavior.
 
+## Canonical owner-test executable
+
+- The single current owner-testing launcher is
+  `D:\AMSim-Current\Windows\AMSim.exe`.
+- Refresh that same clean Development package after relevant gameplay or
+  presentation changes. Keep the path stable so the owner never has to choose
+  between build artifacts.
+- Never direct the owner to `AMSim/Binaries`, `Saved/StagedBuilds`, an inner
+  packaged executable, Unreal Editor, or a dated verification package unless a
+  specific diagnostic explicitly requires it.
+- Dated packages are historical evidence only. The canonical package is the
+  usability-testing surface; Shipping packages remain release-verification
+  surfaces.
+- Before handing off a refresh, verify the top-level launcher exists, record
+  its timestamp/hash, and state whether packaged interaction was exercised or
+  remains for owner validation.
+
 ## Runtime UI audio
 
 - Retain generated or externally produced source masters outside `Content` and

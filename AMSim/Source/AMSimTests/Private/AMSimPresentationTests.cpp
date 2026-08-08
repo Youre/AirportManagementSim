@@ -17,6 +17,7 @@
 #include "AMSimProgressionViewState.h"
 #include "AMSimRegionalOperationsView.h"
 #include "AMSimRootScreen.h"
+#include "AMSimSimulation.h"
 #include "AMSimTerminalView.h"
 #include "AMSimTimetableGeometry.h"
 #include "AMSimTurnaroundView.h"
@@ -25,6 +26,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/Button.h"
 #include "Misc/AutomationTest.h"
+#include "Tests/AutomationEditorCommon.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
 
@@ -107,6 +109,10 @@ bool FAMSimOrthographicCameraTest::RunTest(const FString& Parameters)
 	const FUIInputConfig InputConfig = UAMSimRootScreen::MakeGameplayInputConfig();
 	TestEqual(TEXT("Camera projection is orthographic"), Pawn->GetCamera()->ProjectionMode, ECameraProjectionMode::Orthographic);
 	TestEqual(TEXT("Camera frames the Phase 1.5 parcel"), Pawn->GetCamera()->OrthoWidth, 105000.0f);
+	TestEqual(
+		TEXT("Initial management framing keeps the starter terminal above the footer"),
+		AAMSimCameraPawn::GetInitialManagementCameraOffset(),
+		FVector(-12000.0f, 0.0f, 0.0f));
 	const FVector MousePan = AAMSimCameraPawn::CalculateScreenPanDelta(
 		FVector2D(120.0f, -60.0f),
 		108000.0f);
@@ -150,6 +156,44 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 bool FAMSimCompactHudPresentationTest::RunTest(const FString& Parameters)
 {
 	const UAMSimRootScreen* RootScreen = GetDefault<UAMSimRootScreen>();
+	const AMSim::FPhase1AirportCreationLayout NormalCreation =
+		AMSim::FPhase1HudPresentation::MakeAirportCreationLayout(false);
+	const AMSim::FPhase1AirportCreationLayout CompactCreation =
+		AMSim::FPhase1HudPresentation::MakeAirportCreationLayout(true);
+	TestFalse(
+		TEXT("1920x1080 at normal scale retains the horizontal creation card"),
+		AMSim::FPhase1HudPresentation::ShouldUseCompactLayout(
+			1.0f,
+			FIntPoint(1920, 1080)));
+	TestTrue(
+		TEXT("1280x720 switches to the non-overflowing compact creation card"),
+		AMSim::FPhase1HudPresentation::ShouldUseCompactLayout(
+			1.0f,
+			FIntPoint(1280, 720)));
+	TestTrue(
+		TEXT("High UI scale switches to the compact creation card"),
+		AMSim::FPhase1HudPresentation::ShouldUseCompactLayout(
+			1.75f,
+			FIntPoint(1920, 1080)));
+	TestTrue(
+		TEXT("Airport creation card is a bounded normal-scale surface"),
+		NormalCreation.MaxX - NormalCreation.MinX <= 0.65f &&
+		NormalCreation.MaxY - NormalCreation.MinY <= 0.16f &&
+		FMath::IsNearlyEqual(
+			NormalCreation.MinX,
+			1.0f - NormalCreation.MaxX,
+			0.001f));
+	TestTrue(
+		TEXT("Airport name receives more width than parcel context"),
+		NormalCreation.NameWeight > NormalCreation.ParcelWeight);
+	TestTrue(
+		TEXT("Compact creation card remains bounded and centered"),
+		FMath::IsNearlyEqual(
+			CompactCreation.MinX,
+			1.0f - CompactCreation.MaxX,
+			0.001f) &&
+		CompactCreation.MaxX - CompactCreation.MinX <= 0.61f &&
+		CompactCreation.MaxY - CompactCreation.MinY <= 0.32f);
 	TestEqual(
 		TEXT("Compact navigation loads every cooker-visible icon reference"),
 		RootScreen->GetLoadedNavigationIconCount(),
@@ -159,6 +203,13 @@ bool FAMSimCompactHudPresentationTest::RunTest(const FString& Parameters)
 	Tool->Configure(nullptr, TEXT("BUILD"), AMSim::UITheme::EButton::Primary);
 	Tool->TakeWidget();
 	TestNotNull(TEXT("Compact tool exposes a stable action button"), Tool->GetActionButton());
+	TestTrue(
+		TEXT("Compact tool preserves source icon aspect ratio"),
+		Tool->PreservesIconAspectRatioForTest());
+	TestTrue(
+		TEXT("Compact tool host includes the translated label flyout"),
+		UAMSimExpandingToolButton::GetHostSize().X >=
+			98.0f + UAMSimExpandingToolButton::GetMinimumFlyoutWidth());
 	TestEqual(TEXT("Compact tool retains its accessible label"), Tool->GetActionLabel(), TEXT("BUILD"));
 	TestEqual(
 		TEXT("Compact tool uses its label as a tooltip"),
@@ -789,6 +840,28 @@ bool FAMSimPhase15WorldPresenterTest::RunTest(const FString& Parameters)
 	AAMSimWorldPresenter* Presenter = GetMutableDefault<AAMSimWorldPresenter>();
 	TestFalse(TEXT("World presenter has no per-frame tick"), Presenter->PrimaryActorTick.bCanEverTick);
 	TestTrue(TEXT("All serialized presentation assets resolve"), Presenter->HasRequiredPresentationAssets());
+	TestTrue(
+		TEXT("Starter terminal and gates use their generated facility artwork"),
+		Presenter->HasDistinctStarterFacilityAssets());
+	const FVector StarterTerminalScale = Presenter->GetStarterTerminalScaleForTest();
+	const FVector StarterGateScale = Presenter->GetStarterGateScaleForTest();
+	TestTrue(
+		TEXT("Starter terminal preserves its authored aspect ratio at readable map scale"),
+		FMath::IsNearlyEqual(StarterTerminalScale.X, StarterTerminalScale.Z) &&
+			StarterTerminalScale.X >= 11.0f);
+	TestTrue(
+		TEXT("Starter gate art preserves its authored square proportions"),
+		FMath::IsNearlyEqual(StarterGateScale.X, StarterGateScale.Z) &&
+			StarterGateScale.X >= 7.5f);
+	TestTrue(
+		TEXT("Starter terminal corrects the Paper2D plane quarter-turn"),
+		FMath::IsNearlyEqual(Presenter->GetStarterTerminalYawForTest(), 90.0f));
+	TestTrue(
+		TEXT("Starter gate centerlines correct the Paper2D plane quarter-turn"),
+		FMath::IsNearlyEqual(Presenter->GetStarterGateYawForTest(), 90.0f));
+	TestTrue(
+		TEXT("Construction overlay resolves the matching terminal and gate textures"),
+		GetDefault<UAMSimConstructionProposalView>()->HasRequiredFacilityArtwork());
 	TestEqual(
 		TEXT("Accessible path owns four dashes across five route legs"),
 		Presenter->GetTerminalAccessibleDashProxyCount(),
@@ -1033,6 +1106,79 @@ bool FAMSimPresentationProxyPoolTest::RunTest(const FString& Parameters)
 	TestEqual(TEXT("Released slot is reused"), Reused.Index, First.Index);
 	TestTrue(TEXT("Generation changes across reuse"), Reused.Generation > First.Generation);
 	TestEqual(TEXT("One proxy remains active"), Pool.GetActiveCount(), 1);
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+	FAMSimTerminalGrowthWorldPresentationTest,
+	"AMSim.TerminalGrowth.Presentation.RevisionGatingAndProxyReuse",
+	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FAMSimTerminalGrowthWorldPresentationTest::RunTest(const FString& Parameters)
+{
+	using namespace AMSim;
+	FSimulation Simulation(1810);
+	FPhase1Command Create;
+	Create.Id = {1};
+	Create.Type = EPhase1CommandType::CreateAirport;
+	Create.MapId = GetPhase1Fixture().MapId;
+	Create.AirportName = TEXT("Presentation Terminal");
+	if (!TestEqual(TEXT("Presentation fixture airport is accepted"),
+		Simulation.QueuePhase1Command(Create), EPhase1CommandResult::Accepted))
+	{
+		return false;
+	}
+	Simulation.Step();
+
+	UWorld* World = FAutomationEditorCommonUtils::CreateNewMap();
+	AAMSimWorldPresenter* Presenter = World
+		? World->SpawnActor<AAMSimWorldPresenter>()
+		: nullptr;
+	if (!TestNotNull(TEXT("Presentation fixture owns a real editor world"), Presenter))
+	{
+		return false;
+	}
+	FPhase1QuerySnapshot Phase1Query = Simulation.CreatePhase1QuerySnapshot();
+	Phase1Query.Revision = 81001;
+	Presenter->ApplySnapshot(Phase1Query, Simulation.GetPhase1State());
+	Presenter->SetTerminalCutawayMode(true);
+
+	FPhase3QuerySnapshot TerminalQuery = Simulation.CreatePhase3QuerySnapshot();
+	TerminalQuery.Revision = 81002;
+	TerminalQuery.TerminalLayout.Revision = 81003;
+	Presenter->ApplyPhase3Snapshot(TerminalQuery, Simulation.GetPhase3State());
+	const int32 ExpectedFloorCount = TerminalQuery.TerminalLayout.FloorCells.Num();
+	TestEqual(TEXT("Cutaway owns one visible proxy per spatial floor cell"),
+		Presenter->GetActiveTerminalFloorProxyCount(), ExpectedFloorCount);
+	const int32 AllocatedFloorCount = Presenter->GetAllocatedTerminalFloorProxyCount();
+
+	FPhase3QuerySnapshot SameRevisionEmpty = TerminalQuery;
+	SameRevisionEmpty.TerminalLayout.FloorCells.Reset();
+	Presenter->ApplyPhase3Snapshot(SameRevisionEmpty, FPhase3State());
+	TestEqual(TEXT("Identical revision does not refresh presentation"),
+		Presenter->GetActiveTerminalFloorProxyCount(), ExpectedFloorCount);
+
+	FPhase3QuerySnapshot Cleared;
+	Cleared.Revision = 81004;
+	Cleared.TerminalLayout.Revision = 81005;
+	Presenter->ApplyPhase3Snapshot(Cleared, FPhase3State());
+	TestEqual(TEXT("Empty layout hides every floor proxy"),
+		Presenter->GetActiveTerminalFloorProxyCount(), 0);
+
+	TerminalQuery.Revision = 81006;
+	TerminalQuery.TerminalLayout.Revision = 81007;
+	Presenter->ApplyPhase3Snapshot(TerminalQuery, Simulation.GetPhase3State());
+	TestEqual(TEXT("Previously allocated floor proxies are reused"),
+		Presenter->GetAllocatedTerminalFloorProxyCount(), AllocatedFloorCount);
+	TestEqual(TEXT("Reused proxies restore the complete cutaway"),
+		Presenter->GetActiveTerminalFloorProxyCount(), ExpectedFloorCount);
+	Presenter->SetTerminalPlacementPreview({18, 0}, {19, 1}, 1);
+	TestEqual(TEXT("Placement gesture renders its complete four-cell footprint"),
+		Presenter->GetActiveTerminalPlacementPreviewCount(), 4);
+	Presenter->ClearTerminalPlacementPreview();
+	TestEqual(TEXT("Completed gesture clears every placement preview"),
+		Presenter->GetActiveTerminalPlacementPreviewCount(), 0);
+	Presenter->SetTerminalCutawayMode(false);
 	return true;
 }
 

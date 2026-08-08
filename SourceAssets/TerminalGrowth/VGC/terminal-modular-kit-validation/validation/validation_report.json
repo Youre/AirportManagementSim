@@ -1,0 +1,833 @@
+{
+  "checks": [
+    {
+      "artifact_ref": null,
+      "category": "workflow_integrity",
+      "check_id": "workflow-no-failed-stages",
+      "message": "Workflow contains no failed stages.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": null,
+      "category": "pipeline_semantics",
+      "check_id": "entry-path-compatible",
+      "message": "Entry path vector_cleanup is compatible with source kind vector.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": null,
+      "category": "pipeline_semantics",
+      "check_id": "orchestration-next-phase",
+      "message": "Orchestration manifest points to WEB-104.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\workflow\\workflow_plan.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-exists-3",
+      "message": "Referenced artifact exists: C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\workflow\\workflow_plan.json",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\workflow\\workflow_plan.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-hash-4",
+      "message": "Artifact hash matches recorded SHA-256 for workflow_plan.json.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\workflow\\workflow_plan.json",
+      "category": "workflow_integrity",
+      "check_id": "json-model-5",
+      "message": "JSON artifact validates as OrchestrationPackage.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\workflow\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-exists-6",
+      "message": "Referenced artifact exists: C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\workflow\\run_manifest.json",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\workflow\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-hash-7",
+      "message": "Artifact hash matches recorded SHA-256 for run_manifest.json.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\workflow\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "json-model-8",
+      "message": "JSON artifact validates as RunManifest.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\ingest\\input_package.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-exists-9",
+      "message": "Referenced artifact exists: C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\ingest\\input_package.json",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\ingest\\input_package.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-hash-10",
+      "message": "Artifact hash matches recorded SHA-256 for input_package.json.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\ingest\\input_package.json",
+      "category": "workflow_integrity",
+      "check_id": "json-model-11",
+      "message": "JSON artifact validates as InputPackage.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\ingest\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-exists-12",
+      "message": "Referenced artifact exists: C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\ingest\\run_manifest.json",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\ingest\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-hash-13",
+      "message": "Artifact hash matches recorded SHA-256 for run_manifest.json.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\ingest\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "json-model-14",
+      "message": "JSON artifact validates as RunManifest.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\analyze\\structural\\structural_analysis.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-exists-15",
+      "message": "Referenced artifact exists: C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\analyze\\structural\\structural_analysis.json",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\analyze\\structural\\structural_analysis.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-hash-16",
+      "message": "Artifact hash matches recorded SHA-256 for structural_analysis.json.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\analyze\\structural\\structural_analysis.json",
+      "category": "workflow_integrity",
+      "check_id": "json-model-17",
+      "message": "JSON artifact validates as StructuralAnalysisPackage.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\analyze\\structural\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-exists-18",
+      "message": "Referenced artifact exists: C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\analyze\\structural\\run_manifest.json",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\analyze\\structural\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-hash-19",
+      "message": "Artifact hash matches recorded SHA-256 for run_manifest.json.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\analyze\\structural\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "json-model-20",
+      "message": "JSON artifact validates as RunManifest.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\vector_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-exists-21",
+      "message": "Referenced artifact exists: C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\vector_manifest.json",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\vector_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-hash-22",
+      "message": "Artifact hash matches recorded SHA-256 for vector_manifest.json.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\vector_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "json-model-23",
+      "message": "JSON artifact validates as VectorizationPackage.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\raw.svg",
+      "category": "workflow_integrity",
+      "check_id": "artifact-exists-24",
+      "message": "Referenced artifact exists: C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\raw.svg",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\raw.svg",
+      "category": "workflow_integrity",
+      "check_id": "artifact-hash-25",
+      "message": "Artifact hash matches recorded SHA-256 for raw.svg.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\raw.svg",
+      "category": "topology_quality",
+      "check_id": "svg-parse-26",
+      "message": "SVG is XML-parseable: raw.svg.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-exists-27",
+      "message": "Referenced artifact exists: C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\run_manifest.json",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-hash-28",
+      "message": "Artifact hash matches recorded SHA-256 for run_manifest.json.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "json-model-29",
+      "message": "JSON artifact validates as RunManifest.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\cleanup_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-exists-30",
+      "message": "Referenced artifact exists: C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\cleanup_manifest.json",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\cleanup_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-hash-31",
+      "message": "Artifact hash matches recorded SHA-256 for cleanup_manifest.json.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\cleanup_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "json-model-32",
+      "message": "JSON artifact validates as CleanupPackage.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\cleaned.svg",
+      "category": "workflow_integrity",
+      "check_id": "artifact-exists-33",
+      "message": "Referenced artifact exists: C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\cleaned.svg",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\cleaned.svg",
+      "category": "workflow_integrity",
+      "check_id": "artifact-hash-34",
+      "message": "Artifact hash matches recorded SHA-256 for cleaned.svg.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\cleaned.svg",
+      "category": "topology_quality",
+      "check_id": "svg-parse-35",
+      "message": "SVG is XML-parseable: cleaned.svg.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-exists-36",
+      "message": "Referenced artifact exists: C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\run_manifest.json",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-hash-37",
+      "message": "Artifact hash matches recorded SHA-256 for run_manifest.json.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "json-model-38",
+      "message": "JSON artifact validates as RunManifest.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\segmentation_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-exists-39",
+      "message": "Referenced artifact exists: C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\segmentation_manifest.json",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\segmentation_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-hash-40",
+      "message": "Artifact hash matches recorded SHA-256 for segmentation_manifest.json.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\segmentation_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "json-model-41",
+      "message": "JSON artifact validates as SegmentationPackage.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\layered.svg",
+      "category": "workflow_integrity",
+      "check_id": "artifact-exists-42",
+      "message": "Referenced artifact exists: C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\layered.svg",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\layered.svg",
+      "category": "workflow_integrity",
+      "check_id": "artifact-hash-43",
+      "message": "Artifact hash matches recorded SHA-256 for layered.svg.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\layered.svg",
+      "category": "topology_quality",
+      "check_id": "svg-parse-44",
+      "message": "SVG is XML-parseable: layered.svg.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-exists-45",
+      "message": "Referenced artifact exists: C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\run_manifest.json",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-hash-46",
+      "message": "Artifact hash matches recorded SHA-256 for run_manifest.json.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "json-model-47",
+      "message": "JSON artifact validates as RunManifest.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\mesh\\mesh\\interaction_mesh.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-exists-48",
+      "message": "Referenced artifact exists: C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\mesh\\mesh\\interaction_mesh.json",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\mesh\\mesh\\interaction_mesh.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-hash-49",
+      "message": "Artifact hash matches recorded SHA-256 for interaction_mesh.json.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\mesh\\mesh\\interaction_mesh.json",
+      "category": "workflow_integrity",
+      "check_id": "json-model-50",
+      "message": "JSON artifact validates as InteractionMeshPackage.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\mesh\\mesh\\mesh_preview.svg",
+      "category": "workflow_integrity",
+      "check_id": "artifact-exists-51",
+      "message": "Referenced artifact exists: C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\mesh\\mesh\\mesh_preview.svg",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\mesh\\mesh\\mesh_preview.svg",
+      "category": "workflow_integrity",
+      "check_id": "artifact-hash-52",
+      "message": "Artifact hash matches recorded SHA-256 for mesh_preview.svg.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\mesh\\mesh\\mesh_preview.svg",
+      "category": "topology_quality",
+      "check_id": "svg-parse-53",
+      "message": "SVG is XML-parseable: mesh_preview.svg.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\mesh\\mesh\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-exists-54",
+      "message": "Referenced artifact exists: C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\mesh\\mesh\\run_manifest.json",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\mesh\\mesh\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-hash-55",
+      "message": "Artifact hash matches recorded SHA-256 for run_manifest.json.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\mesh\\mesh\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "json-model-56",
+      "message": "JSON artifact validates as RunManifest.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\export_package.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-exists-57",
+      "message": "Referenced artifact exists: C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\export_package.json",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\export_package.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-hash-58",
+      "message": "Artifact hash matches recorded SHA-256 for export_package.json.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\export_package.json",
+      "category": "workflow_integrity",
+      "check_id": "json-model-59",
+      "message": "JSON artifact validates as RuntimeExportPackage.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\vgc.svg",
+      "category": "workflow_integrity",
+      "check_id": "artifact-exists-60",
+      "message": "Referenced artifact exists: C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\vgc.svg",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\vgc.svg",
+      "category": "workflow_integrity",
+      "check_id": "artifact-hash-61",
+      "message": "Artifact hash matches recorded SHA-256 for vgc.svg.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\vgc.svg",
+      "category": "topology_quality",
+      "check_id": "svg-parse-62",
+      "message": "SVG is XML-parseable: vgc.svg.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime_bundle.zip",
+      "category": "workflow_integrity",
+      "check_id": "artifact-exists-63",
+      "message": "Referenced artifact exists: C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime_bundle.zip",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime_bundle.zip",
+      "category": "workflow_integrity",
+      "check_id": "artifact-hash-64",
+      "message": "Artifact hash matches recorded SHA-256 for runtime_bundle.zip.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime_bundle.zip",
+      "category": "runtime_usability",
+      "check_id": "runtime-zip-65",
+      "message": "Runtime bundle zip contains expected files and no corrupt members.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-exists-66",
+      "message": "Referenced artifact exists: C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\run_manifest.json",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "artifact-hash-67",
+      "message": "Artifact hash matches recorded SHA-256 for run_manifest.json.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\run_manifest.json",
+      "category": "workflow_integrity",
+      "check_id": "json-model-68",
+      "message": "JSON artifact validates as RunManifest.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime",
+      "category": "runtime_usability",
+      "check_id": "runtime-dir-present",
+      "message": "Runtime directory exists.",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\vgc.svg",
+      "category": "runtime_usability",
+      "check_id": "runtime-manifest-asset-70",
+      "message": "Runtime manifest hash matches: vgc.svg",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\graph.json",
+      "category": "runtime_usability",
+      "check_id": "runtime-manifest-asset-71",
+      "message": "Runtime manifest hash matches: graph.json",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\runtime_metadata.json",
+      "category": "runtime_usability",
+      "check_id": "runtime-manifest-asset-72",
+      "message": "Runtime manifest hash matches: runtime_metadata.json",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\README.md",
+      "category": "runtime_usability",
+      "check_id": "runtime-manifest-asset-73",
+      "message": "Runtime manifest hash matches: README.md",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\vgc.svg",
+      "category": "runtime_usability",
+      "check_id": "runtime-asset-vgc-svg",
+      "message": "Runtime asset hash matches: vgc.svg",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\graph.json",
+      "category": "runtime_usability",
+      "check_id": "runtime-asset-graph-json",
+      "message": "Runtime asset hash matches: graph.json",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\runtime_metadata.json",
+      "category": "runtime_usability",
+      "check_id": "runtime-asset-runtime-metadata",
+      "message": "Runtime asset hash matches: runtime_metadata.json",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    },
+    {
+      "artifact_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\README.md",
+      "category": "runtime_usability",
+      "check_id": "runtime-asset-readme",
+      "message": "Runtime asset hash matches: README.md",
+      "recommendation": "",
+      "severity": "info",
+      "status": "pass"
+    }
+  ],
+  "created_at": "2026-08-08T14:59:09+00:00",
+  "entry_path": "vector_cleanup",
+  "input_mode": "vector",
+  "metrics": {
+    "failed_checks": 0,
+    "parseable_runtime_bundle": true,
+    "passed_checks": 78,
+    "quality_score": 96.167,
+    "strict": true,
+    "total_checks": 78,
+    "warning_checks": 0
+  },
+  "next_phase": "WEB-94",
+  "orchestration_manifest_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\workflow\\orchestration_manifest.json",
+  "quality_scores": [
+    {
+      "category": "artifact_health",
+      "max_score": 100.0,
+      "notes": "0 failed checks and 0 warning checks across workflow artifacts.",
+      "score": 100.0,
+      "status": "pass"
+    },
+    {
+      "category": "topology_quality",
+      "max_score": 100.0,
+      "notes": "1 cleanup warnings.",
+      "score": 97.0,
+      "status": "pass"
+    },
+    {
+      "category": "visual_fidelity",
+      "max_score": 100.0,
+      "notes": "Visual source coverage is not applicable to non-image contour vectorization.",
+      "score": 100.0,
+      "status": "pass"
+    },
+    {
+      "category": "semantic_readability",
+      "max_score": 100.0,
+      "notes": "Semantic layer coverage is within expected ranges.",
+      "score": 100.0,
+      "status": "pass"
+    },
+    {
+      "category": "interaction_mesh_usability",
+      "max_score": 100.0,
+      "notes": "More than half of mesh nodes are isolated.",
+      "score": 80.0,
+      "status": "pass"
+    },
+    {
+      "category": "runtime_usability",
+      "max_score": 100.0,
+      "notes": "Runtime bundle checks are within expected ranges.",
+      "score": 100.0,
+      "status": "pass"
+    }
+  ],
+  "refinement_actions": [
+    {
+      "action_id": "action-01",
+      "action_type": "no_action",
+      "command": [],
+      "priority": 100,
+      "reason": "No deterministic refinement action is required before human review.",
+      "stage": null
+    }
+  ],
+  "review_checkpoints": [
+    {
+      "artifact_refs": [
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\vector_manifest.json",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\raw.svg",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\run_manifest.json",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\cleanup_manifest.json",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\cleaned.svg",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\run_manifest.json"
+      ],
+      "checkpoint_id": "visual-fidelity-review",
+      "notes": "Compare the cleaned SVG against the source image and confirm retained contour/point counts are sufficient for the requested fidelity profile.",
+      "status": "ready",
+      "title": "Visual Fidelity Review"
+    },
+    {
+      "artifact_refs": [
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\export_package.json",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\vgc.svg",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime_bundle.zip",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\export\\runtime\\run_manifest.json"
+      ],
+      "checkpoint_id": "runtime-bundle-review",
+      "notes": "Confirm exported SVG/JSON bundle is complete and suitable for downstream application ingestion.",
+      "status": "ready",
+      "title": "Runtime Bundle Review"
+    },
+    {
+      "artifact_refs": [
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\segmentation_manifest.json",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\layered.svg",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\segment\\segmentation\\run_manifest.json"
+      ],
+      "checkpoint_id": "semantic-readability-review",
+      "notes": "Review layer labels, assignment coverage, and whether explicit layer hints are needed.",
+      "status": "ready",
+      "title": "Semantic Readability Review"
+    },
+    {
+      "artifact_refs": [
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\mesh\\mesh\\interaction_mesh.json",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\mesh\\mesh\\mesh_preview.svg",
+        "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\mesh\\mesh\\run_manifest.json"
+      ],
+      "checkpoint_id": "interaction-mesh-review",
+      "notes": "Review node/edge topology and isolated nodes before runtime-specific integration.",
+      "status": "ready",
+      "title": "Interaction Mesh Review"
+    }
+  ],
+  "schema_version": "0.1",
+  "status": "pass",
+  "warnings": [
+    "Imported SVG geometry was validated and copied unchanged; XML rewriting is deferred.",
+    "Imported SVG geometry was validated and copied unchanged; XML rewriting is deferred.",
+    "Imported SVG geometry was validated and copied unchanged; XML rewriting is deferred.",
+    "Imported SVG geometry was validated and copied unchanged; XML rewriting is deferred.",
+    "Imported SVG geometry was validated and copied unchanged; XML rewriting is deferred."
+  ]
+}

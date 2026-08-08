@@ -60,6 +60,7 @@ private:
 
 	bool bPhase1SmokeActive = false;
 	bool bPhase4SmokeRequested = false;
+	bool bTerminalGrowthProofRequested = false;
 	bool bPhase45ConstructionProofRequested = false;
 	bool bPhase45OperationalEvidenceRequested = false;
 	bool bPhase1SmokeJourneyPassed = true;

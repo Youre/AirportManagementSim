@@ -1,0 +1,77 @@
+{
+  "artifacts": {
+    "cleaned_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\cleaned.svg",
+    "raw_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\raw.svg"
+  },
+  "cleaned_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\cleaned.svg",
+  "cleanup_strategy": "svg_metadata_cleanup",
+  "created_at": "2026-08-08T14:58:53+00:00",
+  "elements": [
+    {
+      "attributes": {
+        "cleanup_strategy": "svg_metadata_cleanup",
+        "path_like_count": 128,
+        "root_tag": "svg",
+        "viewBox": "0 0 1920 1080"
+      },
+      "bbox": null,
+      "cleaned_point_count": 0,
+      "element_id": "clean-svg-passthrough-root",
+      "element_type": "svg",
+      "group_id": "clean-svg-passthrough",
+      "raw_point_count": 0,
+      "source_element_id": "svg-passthrough-root",
+      "source_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\ingest\\source\\terminal-modular-kit-contact-sheet.svg"
+    }
+  ],
+  "entry_path": "vector_cleanup",
+  "groups": [
+    {
+      "element_count": 1,
+      "group_id": "clean-svg-passthrough",
+      "label": "SVG passthrough",
+      "notes": "Imported SVG metadata cleanup; geometry copied unchanged.",
+      "source": "copied_source"
+    }
+  ],
+  "input_mode": "vector",
+  "next_phase": "WEB-100",
+  "operations": [
+    {
+      "input_count": 1,
+      "notes": "Imported SVG parsed successfully.",
+      "operation_id": "validate-imported-svg",
+      "operation_type": "validate_svg",
+      "output_count": 1,
+      "target_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\raw.svg"
+    },
+    {
+      "input_count": 1,
+      "notes": "Copied imported SVG unchanged for safe downstream handling.",
+      "operation_id": "copy-imported-svg",
+      "operation_type": "metadata_cleanup_copy",
+      "output_count": 1,
+      "target_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\cleanup\\cleanup\\cleaned.svg"
+    }
+  ],
+  "raw_svg": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\raw.svg",
+  "schema_version": "0.1",
+  "source_strategy": "svg_passthrough",
+  "validation": {
+    "cleaned_element_count": 1,
+    "cleaned_point_count": 0,
+    "element_retention_ratio": 1.0,
+    "fidelity_profile": "topology",
+    "parseable_svg": true,
+    "point_retention_ratio": 1.0,
+    "raw_element_count": 1,
+    "raw_point_count": 0,
+    "removed_element_count": 0,
+    "removed_point_count": 0,
+    "strategy_safe_for_semantic_segmentation": true
+  },
+  "vector_manifest_ref": "C:\\Users\\dave\\Documents\\AirportManagementSim\\SourceAssets\\TerminalGrowth\\VGC\\terminal-modular-kit\\stages\\vectorize\\vector\\vector_manifest.json",
+  "warnings": [
+    "Imported SVG geometry was validated and copied unchanged; XML rewriting is deferred."
+  ]
+}

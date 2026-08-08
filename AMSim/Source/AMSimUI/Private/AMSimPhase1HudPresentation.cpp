@@ -25,6 +25,25 @@ namespace
 
 namespace AMSim
 {
+	bool FPhase1HudPresentation::ShouldUseCompactLayout(
+		const float InterfaceScale,
+		const FIntPoint ViewportSize)
+	{
+		return InterfaceScale >= 1.75f ||
+			ViewportSize.X < 1760 ||
+			ViewportSize.Y < 990;
+	}
+
+	FPhase1AirportCreationLayout FPhase1HudPresentation::MakeAirportCreationLayout(
+		const bool bCompact)
+	{
+		if (bCompact)
+		{
+			return { 0.20f, 0.58f, 0.80f, 0.89f, 12.0f, 10.0f, 1.0f, 1.0f };
+		}
+		return { 0.18f, 0.77f, 0.82f, 0.92f, 16.0f, 12.0f, 0.85f, 1.35f };
+	}
+
 	FPhase1ConstructionActivityCard FPhase1HudPresentation::
 		MakeConstructionActivityCard(
 			const EConstructionStage Stage,

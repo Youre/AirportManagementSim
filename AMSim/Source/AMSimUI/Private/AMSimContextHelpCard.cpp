@@ -155,6 +155,17 @@ void UAMSimContextHelpCard::NativeTick(
 	RefreshFromSimulation();
 }
 
+void UAMSimContextHelpCard::SetSuppressed(const bool bInSuppressed)
+{
+	if (bSuppressed == bInSuppressed)
+	{
+		return;
+	}
+	bSuppressed = bInSuppressed;
+	LastRevision = MAX_uint64;
+	RefreshFromSimulation();
+}
+
 void UAMSimContextHelpCard::RefreshFromSimulation()
 {
 	UAMSimAirportSimulationSubsystem* Subsystem =
@@ -164,6 +175,11 @@ void UAMSimContextHelpCard::RefreshFromSimulation()
 			: nullptr;
 	if (!Subsystem || !CardSurface)
 	{
+		return;
+	}
+	if (bSuppressed)
+	{
+		CardSurface->SetVisibility(ESlateVisibility::Collapsed);
 		return;
 	}
 	const AMSim::FPhase1QuerySnapshot Query =

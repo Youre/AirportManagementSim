@@ -17,7 +17,8 @@ public class AMSimTests : ModuleRules
 			"Engine",
 			"Json",
 			"UMG",
-			"SlateCore"
+			"SlateCore",
+			"UnrealEd"
 		});
 	}
 }

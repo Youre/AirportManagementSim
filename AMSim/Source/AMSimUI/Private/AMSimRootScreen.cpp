@@ -1652,6 +1652,8 @@ void UAMSimRootScreen::RefreshFromSimulation()
 	const AMSim::FPhase2QuerySnapshot Phase2Query = Subsystem->GetPhase2Query();
 	const AMSim::FPhase2State& Phase2State = Subsystem->GetSimulation().GetPhase2State();
 	const AMSim::FPhase3QuerySnapshot Phase3Query = Subsystem->GetPhase3Query();
+	const AMSim::FPhase3State& Phase3State =
+		Subsystem->GetSimulation().GetPhase3State();
 	const AMSim::FPhase4QuerySnapshot Phase4Query =
 		Subsystem->GetPhase4Query();
 	const AMSim::FPhase5QuerySnapshot Phase5Query =
@@ -1872,6 +1874,9 @@ void UAMSimRootScreen::RefreshFromSimulation()
 			It->ApplySnapshot(Query, State);
 			It->ApplyPhase2Snapshot(Phase2Query, Phase2State);
 		}
+		// The spatial starter terminal is part of every created airport, not
+		// something that begins existing only after the Terminal screen opens.
+		It->ApplyPhase3Snapshot(Phase3Query, Phase3State);
 		break;
 	}
 

@@ -1,6 +1,8 @@
 #include "AMSimWorldPresenter.h"
 
 #include "Algo/Count.h"
+#include "AMSimPhase1Fixture.h"
+#include "AMSimPhase1WorldGeometry.h"
 #include "PaperSprite.h"
 #include "PaperSpriteComponent.h"
 #include "UObject/ConstructorHelpers.h"
@@ -9,6 +11,7 @@ namespace
 {
 	constexpr float TerminalGridUnrealUnits = 100.0f;
 	constexpr float TerminalCellSpriteScale = 0.125f;
+	constexpr float TerminalOverviewScale = 3.0f;
 	constexpr float SpritePlaneRoll = -90.0f;
 
 	UPaperSprite* FindTerminalSprite(const TCHAR* ObjectPath)
@@ -24,13 +27,15 @@ namespace
 		const int32 MinimumY,
 		const int32 MaximumX,
 		const int32 MaximumY,
-		const float Height)
+		const float Height,
+		const float PresentationScale = 1.0f)
 	{
-		const float Width = (MaximumX - MinimumX + 1) * TerminalGridUnrealUnits;
-		const float Depth = (MaximumY - MinimumY + 1) * TerminalGridUnrealUnits;
+		const float GridUnits = TerminalGridUnrealUnits * PresentationScale;
+		const float Width = (MaximumX - MinimumX + 1) * GridUnits;
+		const float Depth = (MaximumY - MinimumY + 1) * GridUnits;
 		return FVector(
-			Center.X + (Cell.Y - MinimumY + 0.5f) * TerminalGridUnrealUnits - Depth * 0.5f,
-			Center.Y + (Cell.X - MinimumX + 0.5f) * TerminalGridUnrealUnits - Width * 0.5f,
+			Center.X + (Cell.Y - MinimumY + 0.5f) * GridUnits - Depth * 0.5f,
+			Center.Y + (Cell.X - MinimumX + 0.5f) * GridUnits - Width * 0.5f,
 			Height);
 	}
 
@@ -155,9 +160,12 @@ void AAMSimWorldPresenter::HideTerminalLayoutPool(
 
 FVector AAMSimWorldPresenter::GetTerminalWorldCenter() const
 {
-	// The terminal is a stable airport-world anchor. It must not follow the
-	// operations hut, whose preview position changes with runway proposals.
-	return FVector(-27000.0f, 36000.0f, 40.0f);
+	// The starter terminal is fixed map context, so use the same authoritative
+	// coordinate mapping as its gates and service road. Do not derive this from
+	// the player's mutable runway proposal.
+	return AMSim::MapPhase1PointToWorld(
+		AMSim::GetStarterTerminalCenter(),
+		40.0);
 }
 
 void AAMSimWorldPresenter::SetTerminalCutawayMode(const bool bEnabled)
@@ -181,6 +189,21 @@ int32 AAMSimWorldPresenter::GetActiveTerminalFloorProxyCount() const
 		{
 			return Component && Component->IsVisible();
 		});
+}
+
+int32 AAMSimWorldPresenter::GetActiveTerminalRoofProxyCount() const
+{
+	return Algo::CountIf(
+		TerminalLayoutRoofProxies,
+		[](const UPaperSpriteComponent* Component)
+		{
+			return Component && Component->IsVisible();
+		});
+}
+
+bool AAMSimWorldPresenter::IsLegacyStarterTerminalVisibleForTest() const
+{
+	return OperationsHut && OperationsHut->IsVisible();
 }
 
 int32 AAMSimWorldPresenter::GetActiveTerminalConstructionProxyCount() const
@@ -323,8 +346,14 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 		{
 			UPaperSpriteComponent* Roof = AcquireTerminalLayoutProxy(
 				TerminalLayoutRoofProxies, RoofIndex++, TEXT("TerminalLayoutRoof"), 47);
-			ConfigureSprite(Roof, TerminalRoofSurfaceSprite, Location + FVector(0, 0, 5),
-				FVector(TerminalCellSpriteScale, 1.0f, TerminalCellSpriteScale));
+			const FVector RoofLocation = CellWorldPosition(
+				Cell.Cell, Center, MinimumX, MinimumY, MaximumX, MaximumY,
+				47.0f, TerminalOverviewScale);
+			ConfigureSprite(Roof, TerminalRoofSurfaceSprite, RoofLocation,
+				FVector(
+					TerminalCellSpriteScale * TerminalOverviewScale,
+					1.0f,
+					TerminalCellSpriteScale * TerminalOverviewScale));
 			Roof->SetSpriteColor(FLinearColor::White);
 			Roof->SetVisibility(!bTerminalCutawayMode);
 		}
@@ -362,8 +391,12 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 				TEXT("TerminalRoofEdge"), 49);
 			ConfigureSprite(Edge, TerminalRoofDetailSprites[0],
 				CellWorldPosition(Cell.Cell, Center,
-					MinimumX, MinimumY, MaximumX, MaximumY, 49.0f),
-				FVector(TerminalCellSpriteScale, 1.0f, TerminalCellSpriteScale));
+					MinimumX, MinimumY, MaximumX, MaximumY, 49.0f,
+					TerminalOverviewScale),
+				FVector(
+					TerminalCellSpriteScale * TerminalOverviewScale,
+					1.0f,
+					TerminalCellSpriteScale * TerminalOverviewScale));
 			Edge->SetRelativeRotation(FRotator(
 				0.0f, Direction < 2 ? 90.0f : 0.0f, SpritePlaneRoll));
 			Edge->SetVisibility(!bTerminalCutawayMode);
@@ -375,8 +408,12 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 				TEXT("TerminalRoofCorner"), 50);
 			ConfigureSprite(Corner, TerminalRoofDetailSprites[1],
 				CellWorldPosition(Cell.Cell, Center,
-					MinimumX, MinimumY, MaximumX, MaximumY, 50.0f),
-				FVector(TerminalCellSpriteScale, 1.0f, TerminalCellSpriteScale));
+					MinimumX, MinimumY, MaximumX, MaximumY, 50.0f,
+					TerminalOverviewScale),
+				FVector(
+					TerminalCellSpriteScale * TerminalOverviewScale,
+					1.0f,
+					TerminalCellSpriteScale * TerminalOverviewScale));
 			Corner->SetVisibility(!bTerminalCutawayMode);
 		}
 		if (((Cell.Cell.X * 31 + Cell.Cell.Y * 17) & 63) == 0)
@@ -386,8 +423,12 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 				TEXT("TerminalRoofHVAC"), 51);
 			ConfigureSprite(HVAC, TerminalRoofDetailSprites[3],
 				CellWorldPosition(Cell.Cell, Center,
-					MinimumX, MinimumY, MaximumX, MaximumY, 51.0f),
-				FVector(TerminalCellSpriteScale, 1.0f, TerminalCellSpriteScale));
+					MinimumX, MinimumY, MaximumX, MaximumY, 51.0f,
+					TerminalOverviewScale),
+				FVector(
+					TerminalCellSpriteScale * TerminalOverviewScale,
+					1.0f,
+					TerminalCellSpriteScale * TerminalOverviewScale));
 			HVAC->SetVisibility(!bTerminalCutawayMode);
 		}
 	}
@@ -402,9 +443,12 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 			TEXT("TerminalRoofCanopy"), 52);
 		ConfigureSprite(Canopy, TerminalRoofDetailSprites[2],
 			CellWorldPosition(Entrance->From, Center,
-				MinimumX, MinimumY, MaximumX, MaximumY, 52.0f),
-			FVector(TerminalCellSpriteScale * 1.5f, 1.0f,
-				TerminalCellSpriteScale * 1.5f));
+				MinimumX, MinimumY, MaximumX, MaximumY, 52.0f,
+				TerminalOverviewScale),
+			FVector(
+				TerminalCellSpriteScale * 1.5f * TerminalOverviewScale,
+				1.0f,
+				TerminalCellSpriteScale * 1.5f * TerminalOverviewScale));
 		Canopy->SetVisibility(!bTerminalCutawayMode);
 	}
 	HideTerminalLayoutPool(TerminalLayoutRoofDetailProxies, RoofDetailIndex);

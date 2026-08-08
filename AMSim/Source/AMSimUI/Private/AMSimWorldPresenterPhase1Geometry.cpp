@@ -291,7 +291,10 @@ void AAMSimWorldPresenter::SetFacilitiesVisible(
 
 	Stand->SetVisibility(bShowContext);
 	GateB->SetVisibility(bShowContext);
-	OperationsHut->SetVisibility(bShowContext);
+	const bool bHasSpatialTerminal =
+		bPhase1AirportInitialized &&
+		!CachedTerminalLayoutSnapshot.FloorCells.IsEmpty();
+	OperationsHut->SetVisibility(bShowContext && !bHasSpatialTerminal);
 
 	const FLinearColor ProposalTint(0.24f, 0.68f, 0.74f, 0.52f);
 	const FLinearColor NetworkTint = bOperational

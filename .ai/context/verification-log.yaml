@@ -1355,3 +1355,26 @@ entries:
       required 3D assets, or line-limit violations. The aggregate Phase 7
       audit remains pending solely because final owner acceptance is deferred.
       No shared cache was cleared.
+  - timestamp: '2026-08-08T14:29:47.4930861-04:00'
+    commit: ca4b0e4259f095eab2186998e7553b5335ef48cb
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Starter-terminal initial-path correction: UE 5.8 Editor/Game
+      builds; focused TerminalGrowth presentation automation; clean 746-package
+      Development BuildCookRun; packaged integrated Phase 1 smoke and terminal
+      cutaway proof; canonical package refresh with save preservation'
+    result: passed
+    notes: The always-running root presentation now supplies the schema-10
+      terminal snapshot before the Terminal screen opens. Generated roof proxies
+      replace the legacy regional-terminal sprite, remain authoritative across
+      construction visibility transitions, use the same fixed map anchor as the
+      starter terminal and service road, and use a three-times overview scale
+      while retaining the one-meter editable cutaway grid. The focused test
+      passed with zero errors. The packaged integrated journey passed at 493.776
+      average FPS and 2.569 ms p99 with save/load continuity, and the packaged
+      cutaway rendered the complete furnished interior. The canonical inner
+      binary SHA-256 is
+      805AFCC467CE182A529A8BFB4EEEDAB7025E379B1E2C69A6F12E2538B2780377;
+      its IoStore TOC matches the verified package. Existing canonical saves
+      were excluded from the refresh. C retained 173.3 GiB free; no shared
+      Unreal cache was cleared.

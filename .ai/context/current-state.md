@@ -6,13 +6,12 @@ Material profile: documents
 Initialization mode: augment-existing
 
 Active priorities:
-- Use the generated regional-terminal and apron-stand art as the authoritative
-  starter-facility presentation in both build mode and the Paper2D world. Keep
-  the terminal upright with its landside entrance toward the service road,
-  keep gate centerlines aligned with the taxi network, preserve source aspect
-  ratios, and retain the initial management-camera offset that keeps all three
-  facilities above the persistent footer. Do not restore the generic warm-pad
-  gate substitutes or the striped terminal placeholder.
+- Use the schema-10 spatial terminal as the authoritative starter-terminal
+  presentation from airport creation onward. The normal overview shows its
+  generated, map-readable roof at the fixed service-road/gate anchor; opening
+  Terminal reveals the furnished editable interior. Never restore the legacy
+  regional-terminal sprite after build-mode or visibility transitions. The
+  apron-stand art remains authoritative for the two starter gates.
 - Use the corrected airport-naming card as the initial-creation baseline: a
   centered, bounded lower-map surface with aligned parcel context, a wider
   airport-name field, and one primary action. Do not restore the former
@@ -71,6 +70,15 @@ Next verification command:
   protocol against the schema-9 candidate.
 
 Last verification:
+- 2026-08-08 EDT: the normal new-airport presentation now sends the Phase 3
+  terminal-layout snapshot to the world before the Terminal screen is opened.
+  Focused automation proves one generated roof proxy per built floor cell,
+  authoritative starter-facility anchoring, and legacy-sprite suppression
+  across build-mode transitions. The packaged integrated Phase 1 journey and
+  terminal cutaway proof pass; visual inspection confirms the readable roof
+  at the service-road endpoint and the furnished interior after opening
+  Terminal. The canonical `D:\AMSim-Current\Windows\AMSim.exe` package was
+  refreshed with matching binary/container hashes while preserving saves.
 - 2026-08-08 EDT: the starter terminal/gate correction passes the UE 5.8
   Editor/Game builds, the orthographic-camera regression, all six focused
   Phase 1.5 presentation tests, equivalent-state 1920x1080 build-mode and live
@@ -429,7 +437,9 @@ Verification note:
   spending, no-mutation invalid/unaffordable previews, full queued/in-progress
   undo refunds, completed demolition with 25% salvage, and ordinary moving
   construction workers. The generated roof fades into a pooled Paper2D
-  cutaway; the terminal anchor is independent of mutable runway/hut previews.
+  cutaway. The root presentation now supplies the spatial snapshot before the
+  Terminal screen is opened; the map-readable roof uses the authoritative
+  starter-terminal/service-road anchor and the legacy sprite stays suppressed.
 - The owner approved both OpenAI visual targets. The retained deterministic
   kit contains 44 source textures and 44 PaperSprite companions under
   `/Game/TerminalGrowth`; rejected ComfyUI surface candidates remain outside

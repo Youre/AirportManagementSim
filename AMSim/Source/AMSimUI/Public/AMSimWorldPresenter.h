@@ -46,6 +46,7 @@ public:
 	bool IsTerminalCutawayMode() const { return bTerminalCutawayMode; }
 	FVector GetTerminalWorldCenter() const;
 	int32 GetActiveTerminalFloorProxyCount() const;
+	int32 GetActiveTerminalRoofProxyCount() const;
 	int32 GetActiveTerminalConstructionProxyCount() const;
 	int32 GetActiveTerminalPlacementPreviewCount() const;
 	void SetTerminalPlacementPreview(
@@ -57,6 +58,7 @@ public:
 	{
 		return TerminalLayoutFloorProxies.Num();
 	}
+	bool IsLegacyStarterTerminalVisibleForTest() const;
 	void SetMatureOverviewMode(bool bEnabled);
 	void SetMatureSelectionFacility(bool bFacilitySelected);
 	void SetConstructionEditorOverlayVisible(bool bVisible);

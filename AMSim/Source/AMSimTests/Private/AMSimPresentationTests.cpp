@@ -1141,13 +1141,27 @@ bool FAMSimTerminalGrowthWorldPresentationTest::RunTest(const FString& Parameter
 	FPhase1QuerySnapshot Phase1Query = Simulation.CreatePhase1QuerySnapshot();
 	Phase1Query.Revision = 81001;
 	Presenter->ApplySnapshot(Phase1Query, Simulation.GetPhase1State());
-	Presenter->SetTerminalCutawayMode(true);
 
 	FPhase3QuerySnapshot TerminalQuery = Simulation.CreatePhase3QuerySnapshot();
 	TerminalQuery.Revision = 81002;
 	TerminalQuery.TerminalLayout.Revision = 81003;
 	Presenter->ApplyPhase3Snapshot(TerminalQuery, Simulation.GetPhase3State());
 	const int32 ExpectedFloorCount = TerminalQuery.TerminalLayout.FloorCells.Num();
+	TestTrue(TEXT("Spatial terminal shares the authoritative starter-facility anchor"),
+		Presenter->GetTerminalWorldCenter().Equals(
+			MapPhase1PointToWorld(GetStarterTerminalCenter(), 40.0)));
+	TestEqual(TEXT("Airport overview owns one generated roof cell per built floor cell"),
+		Presenter->GetActiveTerminalRoofProxyCount(), ExpectedFloorCount);
+	TestFalse(TEXT("Spatial terminal suppresses the legacy starter-terminal sprite"),
+		Presenter->IsLegacyStarterTerminalVisibleForTest());
+	Presenter->SetConstructionEditorOverlayVisible(true);
+	Presenter->SetConstructionEditorOverlayVisible(false);
+	TestEqual(TEXT("Build-mode transitions preserve the generated terminal roof"),
+		Presenter->GetActiveTerminalRoofProxyCount(), ExpectedFloorCount);
+	TestFalse(TEXT("Build-mode transitions cannot restore the legacy terminal"),
+		Presenter->IsLegacyStarterTerminalVisibleForTest());
+
+	Presenter->SetTerminalCutawayMode(true);
 	TestEqual(TEXT("Cutaway owns one visible proxy per spatial floor cell"),
 		Presenter->GetActiveTerminalFloorProxyCount(), ExpectedFloorCount);
 	const int32 AllocatedFloorCount = Presenter->GetAllocatedTerminalFloorProxyCount();

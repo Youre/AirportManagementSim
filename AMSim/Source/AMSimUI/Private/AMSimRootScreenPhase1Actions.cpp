@@ -258,6 +258,10 @@ void UAMSimRootScreen::SetConstructionModeChrome(const bool bOpen)
 	{
 		Phase1OperationsHubView->ClosePanel();
 	}
+	if (bOpen && OperationsDrawer)
+	{
+		OperationsDrawer->SetVisibility(ESlateVisibility::Collapsed);
+	}
 	if (UWorld* World = GetWorld())
 	{
 		for (TActorIterator<AAMSimWorldPresenter> It(World); It; ++It)

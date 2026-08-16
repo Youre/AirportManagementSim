@@ -213,3 +213,42 @@ differences rather than missing Phase 1 behavior.
   later art pass for the stand/service label cluster.
 
 final result: passed
+
+# Visual Baseline HUD Shell Design QA
+
+**Status:** Blocked for full VA-01 parity; bounded shell pass accepted
+**Reviewed:** 2026-08-16
+
+## Source and implementation
+
+- Source: `docs/planning/30-content-and-assets/concept-art/01-airport-overview-hud.png`
+- Equivalent packaged state: `VisualBaseline`, mature exterior airport,
+  1920 x 1080 at 100% UI scale
+- Before comparison:
+  `docs/planning/50-production/visual-baseline-remediation/comparisons/va01-before.png`
+- After comparison:
+  `docs/planning/50-production/visual-baseline-remediation/comparisons/va01-after.png`
+
+## Senior visual check
+
+| Area | Result | Observation |
+| --- | --- | --- |
+| World/UI balance | Pass | The airport again owns the majority of the screen; permanent diagnostics no longer consume the right side. |
+| Header | Pass | Airport identity, weather/time, economy, pause, and speed form one compact operational line. |
+| Activity navigation | Pass with residual | Alerts, Flights, and Projects use the concept's compact right-rail pattern, but still lack badges and category-specific panels. |
+| Selection context | Blocked | A selected aircraft has a world highlight but no bottom identity, readiness, service, and action inspector. |
+| World composition | Blocked | The mature airport is readable but remains a compact central island with substantially less site-wide density than VA-01. |
+| State truth and input | Pass | Values are derived from the loaded fixture; cursor, captions, utilities, and navigation remain functional. |
+
+## Severity result
+
+- P0: 0
+- P1: 2 — missing selected-aircraft inspector and sparse world composition
+- P2: 1 — generic, badge-free activity detail
+- P3: 1 — system tooltip can briefly duplicate a hover flyout label
+
+The persistent HUD shell is materially closer to VA-01 and is safe to reuse.
+The next bounded visual iteration must implement the root selection inspector;
+the full screen cannot yet be described as concept-aligned.
+
+final result: blocked

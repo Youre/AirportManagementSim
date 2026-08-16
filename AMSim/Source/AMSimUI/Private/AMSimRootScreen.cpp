@@ -1,5 +1,4 @@
 #include "AMSimRootScreen.h"
-
 #include "AMSimAircraftPresentation.h"
 #include "AMSimAirportSimulationSubsystem.h"
 #include "AMSimCameraPawn.h"
@@ -108,13 +107,14 @@ namespace AMSimRootScreenPrivate
 		const TCHAR* Name,
 		const FString& Label,
 		UTexture2D* Icon,
-		const AMSim::UITheme::EButton Kind = AMSim::UITheme::EButton::Tool)
+		const AMSim::UITheme::EButton Kind = AMSim::UITheme::EButton::Tool,
+		const bool bFlyoutLeft = false)
 	{
 		UAMSimExpandingToolButton* Button =
 			Tree->ConstructWidget<UAMSimExpandingToolButton>(
 				UAMSimExpandingToolButton::StaticClass(),
 				FName(Name));
-		Button->Configure(Icon, Label, Kind);
+		Button->Configure(Icon, Label, Kind, bFlyoutLeft);
 		return Button;
 	}
 
@@ -126,6 +126,19 @@ namespace AMSimRootScreenPrivate
 		UCanvasPanelSlot* Slot = Canvas->AddChildToCanvas(Button);
 		Slot->SetAnchors(FAnchors(0.0f, 0.0f));
 		Slot->SetPosition(FVector2D(10.0f, 10.0f + Row * 64.0f));
+		Slot->SetSize(UAMSimExpandingToolButton::GetHostSize());
+		Slot->SetZOrder(2);
+	}
+
+	void PlaceRightNavigationButton(
+		UCanvasPanel* Canvas,
+		UAMSimExpandingToolButton* Button,
+		const int32 Row)
+	{
+		UCanvasPanelSlot* Slot = Canvas->AddChildToCanvas(Button);
+		Slot->SetAnchors(FAnchors(1.0f, 0.0f));
+		Slot->SetAlignment(FVector2D(1.0f, 0.0f));
+		Slot->SetPosition(FVector2D(-10.0f, 10.0f + Row * 64.0f));
 		Slot->SetSize(UAMSimExpandingToolButton::GetHostSize());
 		Slot->SetZOrder(2);
 	}
@@ -359,16 +372,15 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 			InterfaceScale,
 			ViewportSize);
 	bCompactLayoutActive = bCompactLayout;
-	const int32 AirportHeaderSize = bCompactLayout ? 18 : 24;
-	const int32 ClockHeaderSize = bCompactLayout ? 14 : 16;
-	const int32 FundsHeaderSize = bCompactLayout ? 16 : 19;
-
+	const int32 AirportHeaderSize = bCompactLayout ? 18 : 22;
+	const int32 ClockHeaderSize = bCompactLayout ? 13 : 14;
+	const int32 FundsHeaderSize = bCompactLayout ? 15 : 17;
 	UBorder* Header = MakePanel(WidgetTree, TEXT("Header"));
 	AMSim::UITheme::StyleSurface(
 		Header,
 		AMSim::UITheme::ESurface::Chrome,
-		bCompactLayout ? FMargin(12.0f, 7.0f) : FMargin(20.0f, 12.0f),
-		18.0f,
+		bCompactLayout ? FMargin(12.0f, 7.0f) : FMargin(16.0f, 8.0f),
+		14.0f,
 		1.5f);
 	UHorizontalBox* HeaderRow = WidgetTree->ConstructWidget<UHorizontalBox>(
 		UHorizontalBox::StaticClass(),
@@ -377,14 +389,14 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	UTextBlock* BrandText = MakeText(
 		WidgetTree,
 		TEXT("Brand"),
-		bCompactLayout ? TEXT("AMS") : TEXT("AIRPORT\nMGMT SIM"),
-		bCompactLayout ? 15 : 17,
-		White,
+		bCompactLayout ? TEXT("AMS") : TEXT("AIRPORT MGMT"),
+		bCompactLayout ? 13 : 12,
+		Cyan,
 		true,
 		true);
 	UHorizontalBoxSlot* BrandSlot = HeaderRow->AddChildToHorizontalBox(BrandText);
 	BrandSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
-	BrandSlot->SetPadding(FMargin(0.0f, 0.0f, bCompactLayout ? 12.0f : 24.0f, 0.0f));
+	BrandSlot->SetPadding(FMargin(0.0f, 0.0f, bCompactLayout ? 12.0f : 18.0f, 0.0f));
 	BrandSlot->SetVerticalAlignment(VAlign_Center);
 	AirportNameText = MakeText(
 		WidgetTree,
@@ -404,6 +416,7 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		ClockHeaderSize,
 		White,
 		true);
+	ClockText->SetAutoWrapText(bCompactLayout);
 	ClockText->SetJustification(ETextJustify::Center);
 	UBorder* ClockPill = MakeSurface(
 		WidgetTree,
@@ -425,6 +438,7 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		Amber,
 		true,
 		true);
+	FundsText->SetAutoWrapText(bCompactLayout);
 	FundsText->SetJustification(ETextJustify::Right);
 	UBorder* FundsPill = MakeSurface(
 		WidgetTree,
@@ -436,10 +450,59 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	FundsPill->SetContent(FundsText);
 	UHorizontalBoxSlot* FundsSlot = HeaderRow->AddChildToHorizontalBox(FundsPill);
 	FundsSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
+	FundsSlot->SetPadding(FMargin(0.0f, 0.0f, bCompactLayout ? 0.0f : 8.0f, 0.0f));
 	FundsSlot->SetVerticalAlignment(VAlign_Center);
+	UHorizontalBox* SimulationControls = WidgetTree->ConstructWidget<UHorizontalBox>(
+		UHorizontalBox::StaticClass(),
+		TEXT("SimulationControls"));
+	PauseButton = MakeButton(
+		WidgetTree,
+		TEXT("Pause"),
+		TEXT("PLAY 1x"),
+		AMSim::UITheme::EButton::Tool,
+		12);
+	PauseButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::PauseSimulation);
+	SimulationControls->AddChildToHorizontalBox(PauseButton)->SetPadding(FMargin(3.0f));
+	for (const TPair<const TCHAR*, const TCHAR*>& Speed : {
+		TPair<const TCHAR*, const TCHAR*>(TEXT("SpeedOne"), TEXT("1x")),
+		TPair<const TCHAR*, const TCHAR*>(TEXT("SpeedTwo"), TEXT("2x")),
+		TPair<const TCHAR*, const TCHAR*>(TEXT("SpeedFour"), TEXT("4x")),
+		TPair<const TCHAR*, const TCHAR*>(TEXT("SpeedEight"), TEXT("8x"))})
+	{
+		const FString SpeedLabel(Speed.Value);
+		UButton* SpeedButton = MakeButton(
+			WidgetTree,
+			Speed.Key,
+			SpeedLabel,
+			AMSim::UITheme::EButton::Quiet,
+			12);
+		if (SpeedLabel == TEXT("1x"))
+		{
+			SpeedButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::SetSpeedOne);
+		}
+		else if (SpeedLabel == TEXT("2x"))
+		{
+			SpeedButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::SetSpeedTwo);
+		}
+		else if (SpeedLabel == TEXT("4x"))
+		{
+			SpeedButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::SetSpeedFour);
+		}
+		else
+		{
+			SpeedButton->OnClicked.AddDynamic(this, &UAMSimRootScreen::SetSpeedEight);
+		}
+		SimulationControls->AddChildToHorizontalBox(SpeedButton)->SetPadding(FMargin(3.0f));
+	}
+	if (!bCompactLayout)
+	{
+		UHorizontalBoxSlot* SimulationSlot =
+			HeaderRow->AddChildToHorizontalBox(SimulationControls);
+		SimulationSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
+		SimulationSlot->SetVerticalAlignment(VAlign_Center);
+	}
 	UVerticalBoxSlot* HeaderSlot = Page->AddChildToVerticalBox(Header);
 	HeaderSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
-
 	const float RailWrapWidth = 350.0f / FMath::Max(InterfaceScale, 1.0f);
 	UOverlay* MainLayer = WidgetTree->ConstructWidget<UOverlay>(
 		UOverlay::StaticClass(),
@@ -564,6 +627,42 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		BuildButton->SetExpandedForTest(true);
 	}
 #endif
+	UCanvasPanel* ActivityNavigationLayer = WidgetTree->ConstructWidget<UCanvasPanel>(
+		UCanvasPanel::StaticClass(),
+		TEXT("ActivityNavigationLayer"));
+	BuildModeRightChrome = ActivityNavigationLayer;
+	UOverlaySlot* ActivityNavigationSlot =
+		MainLayer->AddChildToOverlay(ActivityNavigationLayer);
+	ActivityNavigationSlot->SetHorizontalAlignment(HAlign_Fill);
+	ActivityNavigationSlot->SetVerticalAlignment(VAlign_Fill);
+	UBorder* ActivityRail = MakePanel(WidgetTree, TEXT("ActivityRail"));
+	AMSim::UITheme::StyleSurface(
+		ActivityRail,
+		AMSim::UITheme::ESurface::Panel,
+		FMargin(6.0f),
+		18.0f,
+		1.5f);
+	PlaceCanvas(
+		ActivityNavigationLayer,
+		ActivityRail,
+		FAnchors(1.0f, 0.0f, 1.0f, 1.0f),
+		FMargin(-112.0f, 0.0f, 112.0f, 0.0f));
+	int32 ActivityIndex = 0;
+	for (const TPair<const TCHAR*, UTexture2D*>& Activity : {
+		TPair<const TCHAR*, UTexture2D*>(TEXT("ALERTS"), NavigationIcons.IsValidIndex(4) ? NavigationIcons[4] : nullptr),
+		TPair<const TCHAR*, UTexture2D*>(TEXT("FLIGHTS"), NavigationIcons.IsValidIndex(1) ? NavigationIcons[1] : nullptr),
+		TPair<const TCHAR*, UTexture2D*>(TEXT("PROJECTS"), NavigationIcons.IsValidIndex(5) ? NavigationIcons[5] : nullptr)})
+	{
+		UAMSimExpandingToolButton* ActivityButton = MakeNavigationButton(
+			WidgetTree,
+			*FString::Printf(TEXT("Activity%s"), Activity.Key),
+			Activity.Key,
+			Activity.Value,
+			AMSim::UITheme::EButton::Tool,
+			true);
+		ActivityButton->OnActivated.BindUObject(this, &UAMSimRootScreen::ToggleOperationsDrawer);
+		PlaceRightNavigationButton(ActivityNavigationLayer, ActivityButton, ActivityIndex++);
+	}
 	UBorder* MapPanel = MakePanel(WidgetTree, TEXT("MapPanel"));
 	MapPanel->SetPadding(FMargin(10.0f));
 	MapPanel->SetBrushColor(FLinearColor::Transparent);
@@ -585,45 +684,6 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		FLinearColor(0.72f, 0.82f, 0.68f, 1.0f));
 	PlaceCanvas(Map, ParcelLabel, FAnchors(0.03f, 0.03f, 0.55f, 0.10f));
 	ParcelLabel->SetVisibility(ESlateVisibility::Hidden);
-	RunwayVisual = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("Runway"));
-	RunwayVisual->SetBrushColor(FLinearColor(0.31f, 0.43f, 0.25f, 0.75f));
-	RunwayVisual->SetVisibility(ESlateVisibility::Hidden);
-	PlaceCanvas(Map, RunwayVisual, FAnchors(0.08f, 0.35f, 0.92f, 0.49f));
-	TaxiVisual = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("Taxiway"));
-	TaxiVisual->SetBrushColor(FLinearColor(0.31f, 0.43f, 0.25f, 0.75f));
-	TaxiVisual->SetVisibility(ESlateVisibility::Hidden);
-	PlaceCanvas(Map, TaxiVisual, FAnchors(0.58f, 0.48f, 0.65f, 0.64f));
-	StandVisual = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("Stand"));
-	StandVisual->SetBrushColor(FLinearColor(0.24f, 0.37f, 0.24f, 0.75f));
-	StandVisual->SetVisibility(ESlateVisibility::Hidden);
-	PlaceCanvas(Map, StandVisual, FAnchors(0.54f, 0.63f, 0.75f, 0.77f));
-	HutVisual = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("OperationsHut"));
-	HutVisual->SetBrushColor(FLinearColor(0.34f, 0.25f, 0.17f, 0.75f));
-	HutVisual->SetVisibility(ESlateVisibility::Hidden);
-	PlaceCanvas(Map, HutVisual, FAnchors(0.76f, 0.67f, 0.84f, 0.77f));
-
-	AircraftMarker = WidgetTree->ConstructWidget<UCanvasPanel>(
-		UCanvasPanel::StaticClass(),
-		TEXT("AircraftMarker"));
-	PlaceCanvas(Map, AircraftMarker, FAnchors(0.03f, 0.20f), FMargin(0.0f, 0.0f, 54.0f, 54.0f));
-	AircraftMarker->SetRenderTransformPivot(FVector2D(0.5f, 0.5f));
-	AircraftMarker->SetVisibility(ESlateVisibility::Hidden);
-	UBorder* Wings = WidgetTree->ConstructWidget<UBorder>(UBorder::StaticClass(), TEXT("AircraftWings"));
-	Wings->SetBrushColor(Cyan);
-	PlaceCanvas(AircraftMarker, Wings, FAnchors(0.05f, 0.36f, 0.95f, 0.56f));
-	UBorder* Fuselage = WidgetTree->ConstructWidget<UBorder>(
-		UBorder::StaticClass(),
-		TEXT("AircraftFuselage"));
-	Fuselage->SetBrushColor(Cyan);
-	PlaceCanvas(AircraftMarker, Fuselage, FAnchors(0.43f, 0.03f, 0.57f, 0.95f));
-	UBorder* Tailplane = WidgetTree->ConstructWidget<UBorder>(
-		UBorder::StaticClass(),
-		TEXT("AircraftTailplane"));
-	Tailplane->SetBrushColor(Cyan);
-	PlaceCanvas(AircraftMarker, Tailplane, FAnchors(0.25f, 0.76f, 0.75f, 0.89f));
-	AircraftLabel = MakeText(WidgetTree, TEXT("AircraftLabel"), TEXT("RB-021"), 13, White);
-	AircraftLabel->SetVisibility(ESlateVisibility::Hidden);
-	PlaceCanvas(Map, AircraftLabel, FAnchors(0.03f, 0.27f, 0.17f, 0.32f));
 	const AMSim::FPhase1AirportCreationLayout CreationLayout =
 		AMSim::FPhase1HudPresentation::MakeAirportCreationLayout(bCompactLayout);
 	CreateAirportTray = MakeSurface(
@@ -832,7 +892,6 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	MapSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
 
 	UBorder* RightPanel = MakePanel(WidgetTree, TEXT("RightPanel"));
-	OperationsDrawer = RightPanel;
 	UVerticalBox* Right = WidgetTree->ConstructWidget<UVerticalBox>(
 		UVerticalBox::StaticClass(),
 		TEXT("RightColumn"));
@@ -842,7 +901,7 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	AMSim::UITheme::StyleSurface(
 		RightPanel,
 		AMSim::UITheme::ESurface::Panel,
-		FMargin(12.0f),
+		FMargin(12.0f, 12.0f, 124.0f, 12.0f),
 		18.0f,
 		1.5f);
 	RightPanel->SetContent(RightScroll);
@@ -1294,16 +1353,13 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	USizeBox* RightRailWidth = WidgetTree->ConstructWidget<USizeBox>(
 		USizeBox::StaticClass(),
 		TEXT("RightRailWidth"));
-	BuildModeRightChrome = RightRailWidth;
-	RightRailWidth->SetWidthOverride(320.0f / FMath::Max(InterfaceScale, 1.0f));
+	OperationsDrawer = RightRailWidth;
+	RightRailWidth->SetWidthOverride(430.0f / FMath::Max(InterfaceScale, 1.0f));
 	RightRailWidth->SetContent(RightPanel);
 	UHorizontalBoxSlot* RightSlot = Main->AddChildToHorizontalBox(RightRailWidth);
 	RightSlot->SetSize(FSlateChildSize(ESlateSizeRule::Automatic));
 	RightSlot->SetPadding(FMargin(12.0f, 0.0f, 0.0f, 0.0f));
-	if (bCompactLayout)
-	{
-		RightPanel->SetVisibility(ESlateVisibility::Collapsed);
-	}
+	RightRailWidth->SetVisibility(ESlateVisibility::Collapsed);
 
 	UBorder* Footer = MakePanel(WidgetTree, TEXT("Footer"));
 	BuildModeFooterChrome = Footer;
@@ -1358,49 +1414,10 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	{
 		AddVertical(FooterColumn, Controls, 2.0f);
 	}
-	PauseButton = MakeButton(
-		WidgetTree,
-		TEXT("Pause"),
-		TEXT("PLAY 1x"),
-		AMSim::UITheme::EButton::Tool,
-		12);
-	PauseButton->OnClicked.AddDynamic(
-		this,
-		&UAMSimRootScreen::PauseSimulation);
-	Controls->AddChildToHorizontalBox(
-		PauseButton)->SetPadding(FMargin(3.0f));
-	UButton* SpeedOne = MakeButton(
-		WidgetTree,
-		TEXT("SpeedOne"),
-		TEXT("1x"),
-		AMSim::UITheme::EButton::Quiet,
-		12);
-	SpeedOne->OnClicked.AddDynamic(this, &UAMSimRootScreen::SetSpeedOne);
-	Controls->AddChildToHorizontalBox(SpeedOne)->SetPadding(FMargin(3.0f));
-	UButton* SpeedTwo = MakeButton(
-		WidgetTree,
-		TEXT("SpeedTwo"),
-		TEXT("2x"),
-		AMSim::UITheme::EButton::Quiet,
-		12);
-	SpeedTwo->OnClicked.AddDynamic(this, &UAMSimRootScreen::SetSpeedTwo);
-	Controls->AddChildToHorizontalBox(SpeedTwo)->SetPadding(FMargin(3.0f));
-	UButton* SpeedFour = MakeButton(
-		WidgetTree,
-		TEXT("SpeedFour"),
-		TEXT("4x"),
-		AMSim::UITheme::EButton::Quiet,
-		12);
-	SpeedFour->OnClicked.AddDynamic(this, &UAMSimRootScreen::SetSpeedFour);
-	Controls->AddChildToHorizontalBox(SpeedFour)->SetPadding(FMargin(3.0f));
-	UButton* SpeedEight = MakeButton(
-		WidgetTree,
-		TEXT("SpeedEight"),
-		TEXT("8x"),
-		AMSim::UITheme::EButton::Quiet,
-		12);
-	SpeedEight->OnClicked.AddDynamic(this, &UAMSimRootScreen::SetSpeedEight);
-	Controls->AddChildToHorizontalBox(SpeedEight)->SetPadding(FMargin(3.0f));
+	if (bCompactLayout)
+	{
+		Controls->AddChildToHorizontalBox(SimulationControls)->SetPadding(FMargin(3.0f));
+	}
 	UButton* Save = MakeButton(
 		WidgetTree,
 		TEXT("Save"),
@@ -1417,17 +1434,6 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		12);
 	Load->OnClicked.AddDynamic(this, &UAMSimRootScreen::LoadGame);
 	Controls->AddChildToHorizontalBox(Load)->SetPadding(FMargin(3.0f));
-	UButton* AirportNavigation = MakeButton(
-		WidgetTree,
-		TEXT("AirportNavigation"),
-		TEXT("AIRPORT"),
-		AMSim::UITheme::EButton::Primary,
-		11);
-	AirportNavigation->SetIsEnabled(false);
-	AirportNavigation->SetToolTipText(
-		FText::FromString(TEXT("Current destination")));
-	Controls->AddChildToHorizontalBox(
-		AirportNavigation)->SetPadding(FMargin(12.0f, 3.0f, 3.0f, 3.0f));
 	TerminalNavigationButton = MakeButton(
 		WidgetTree,
 		TEXT("TerminalNavigation"),
@@ -1632,7 +1638,10 @@ void UAMSimRootScreen::ToggleOperationsDrawer()
 	}
 	const bool bOpen = OperationsDrawer->GetVisibility() == ESlateVisibility::Collapsed;
 	OperationsDrawer->SetVisibility(bOpen ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
-	ObjectiveDrawer->SetVisibility(ESlateVisibility::Collapsed);
+	ObjectiveDrawer->SetVisibility(
+		bCompactLayoutActive && bOpen
+			? ESlateVisibility::Collapsed
+			: ESlateVisibility::SelfHitTestInvisible);
 }
 
 void UAMSimRootScreen::RefreshFromSimulation()

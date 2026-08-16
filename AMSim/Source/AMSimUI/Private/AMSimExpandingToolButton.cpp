@@ -14,11 +14,13 @@
 void UAMSimExpandingToolButton::Configure(
 	UTexture2D* InIcon,
 	const FString& InLabel,
-	const AMSim::UITheme::EButton InKind)
+	const AMSim::UITheme::EButton InKind,
+	const bool bInFlyoutLeft)
 {
 	IconTexture = InIcon;
 	ActionLabel = InLabel;
 	ButtonKind = InKind;
+	bFlyoutLeft = bInFlyoutLeft;
 	ApplyConfiguredContent();
 }
 
@@ -61,9 +63,9 @@ TSharedRef<SWidget> UAMSimExpandingToolButton::RebuildWidget()
 	FlyoutSize->SetMinDesiredWidth(GetMinimumFlyoutWidth());
 	FlyoutSize->SetContent(FlyoutSurface);
 	UOverlaySlot* FlyoutSlot = Root->AddChildToOverlay(FlyoutSize);
-	FlyoutSlot->SetHorizontalAlignment(HAlign_Left);
+	FlyoutSlot->SetHorizontalAlignment(bFlyoutLeft ? HAlign_Right : HAlign_Left);
 	FlyoutSlot->SetVerticalAlignment(VAlign_Center);
-	FlyoutSize->SetRenderTranslation(FVector2D(98.0f, 0.0f));
+	FlyoutSize->SetRenderTranslation(FVector2D(bFlyoutLeft ? -98.0f : 98.0f, 0.0f));
 
 	USizeBox* ButtonSize = WidgetTree->ConstructWidget<USizeBox>(
 		USizeBox::StaticClass(),
@@ -102,7 +104,7 @@ TSharedRef<SWidget> UAMSimExpandingToolButton::RebuildWidget()
 	ActionButton->SetContent(IconSize);
 	ButtonSize->SetContent(ActionButton);
 	UOverlaySlot* ButtonSlot = Root->AddChildToOverlay(ButtonSize);
-	ButtonSlot->SetHorizontalAlignment(HAlign_Left);
+	ButtonSlot->SetHorizontalAlignment(bFlyoutLeft ? HAlign_Right : HAlign_Left);
 	ButtonSlot->SetVerticalAlignment(VAlign_Center);
 
 	ApplyConfiguredContent();

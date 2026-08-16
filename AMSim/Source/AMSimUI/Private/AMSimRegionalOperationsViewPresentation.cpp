@@ -139,5 +139,10 @@ void UAMSimRegionalOperationsView::ReturnToAirport()
 {
 	bAdvancedOperationsOpen = false;
 	bMajorOperationsOpen = false;
+	for (TActorIterator<AAMSimWorldPresenter> It(GetWorld()); It; ++It)
+	{
+		It->SetMatureOverviewMode(true);
+		break;
+	}
 	OnReturnRequested.ExecuteIfBound();
 }

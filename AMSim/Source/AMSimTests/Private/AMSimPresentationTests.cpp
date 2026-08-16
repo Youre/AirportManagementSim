@@ -238,6 +238,16 @@ bool FAMSimCompactHudPresentationTest::RunTest(const FString& Parameters)
 		TEXT("Disabled tools can still explain themselves on hover"),
 		Tool->GetFlyoutVisibilityForTest(),
 		ESlateVisibility::HitTestInvisible);
+	UAMSimExpandingToolButton* RightTool = NewObject<UAMSimExpandingToolButton>();
+	RightTool->Configure(
+		nullptr,
+		TEXT("ALERTS"),
+		AMSim::UITheme::EButton::Tool,
+		true);
+	RightTool->TakeWidget();
+	TestTrue(
+		TEXT("Right activity tools expand toward the world instead of off-screen"),
+		RightTool->IsFlyoutLeftForTest());
 
 	const AMSim::FStarterPlanProposal Proposal = AMSim::CreateDefaultStarterPlan();
 	const AMSim::FPhase1ConstructionActivityCard Building =

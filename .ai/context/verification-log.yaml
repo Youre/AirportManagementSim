@@ -1413,3 +1413,22 @@ entries:
       violations. All 24 canonical saved files were restored byte-for-byte.
       Owner visual acceptance remains pending; no shared Unreal cache was
       cleared.
+  - timestamp: '2026-08-16T12:34:01.4194852-04:00'
+    commit: c87b784f9d00def4f79cf9bde9591ee8e9bcfc4c
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'VisualBaseline installer and VA-01 HUD-shell remediation: full
+      UE automation; canonical packaged load/return replay; before/after visual
+      comparison; source release audit; cache measurement'
+    result: passed-with-manual-follow-up
+    notes: The canonical package now contains a repeatable mature schema-10
+      VisualBaseline save; a no-refresh rerun is idempotent. Packaged replay
+      loads the slot and returns directly to the mature exterior airport. The
+      one-line header, header-adjacent time controls, compact inward-expanding
+      activity rail, hidden locked destinations, and Paper2D-only world shell
+      materially increase world area. Complete automation reports 80 success
+      plus one retained warning and zero failures. The source release audit
+      reports zero runtime string loads, forbidden dependencies, required 3D
+      assets, or line-limit violations. Full VA-01 acceptance remains blocked
+      by the missing bottom selection inspector, sparse world composition, and
+      generic activity drawer. No Unreal cache was cleared.

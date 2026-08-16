@@ -20,7 +20,8 @@ public:
 	void Configure(
 		UTexture2D* InIcon,
 		const FString& InLabel,
-		AMSim::UITheme::EButton InKind = AMSim::UITheme::EButton::Tool);
+		AMSim::UITheme::EButton InKind = AMSim::UITheme::EButton::Tool,
+		bool bInFlyoutLeft = false);
 
 	FSimpleDelegate OnActivated;
 
@@ -33,6 +34,7 @@ public:
 	ESlateVisibility GetFlyoutVisibilityForTest() const;
 	void SetExpandedForTest(bool bInExpanded);
 	bool PreservesIconAspectRatioForTest() const;
+	bool IsFlyoutLeftForTest() const { return bFlyoutLeft; }
 	static FVector2D GetHostSize() { return FVector2D(320.0f, 56.0f); }
 	static float GetMinimumFlyoutWidth() { return 156.0f; }
 
@@ -73,4 +75,5 @@ private:
 	AMSim::UITheme::EButton ButtonKind = AMSim::UITheme::EButton::Tool;
 	bool bExpanded = false;
 	bool bActionEnabled = true;
+	bool bFlyoutLeft = false;
 };

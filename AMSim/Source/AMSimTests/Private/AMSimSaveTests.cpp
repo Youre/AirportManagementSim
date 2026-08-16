@@ -84,6 +84,26 @@ bool FAMSimSaveCoalescingAndCorruptionTest::RunTest(const FString& Parameters)
 	FString Error;
 	TestFalse(TEXT("Free-text save labels are bounded"), AMSim::FSaveStore::ValidateMetadata(Oversized, Error));
 
+	AMSim::FSaveMetadata Historical;
+	Historical.SlotId = TEXT("HistoricalSlot");
+	Historical.PlayerLabel = TEXT("Supported migration fixture");
+	Historical.AirportName = TEXT("Riverbend Field");
+	Historical.MapId = TEXT("Map.TemperateStarter");
+	Historical.CreatedUnixSeconds = 1;
+	Historical.LastPlayedUnixSeconds = 1;
+	Historical.GameTimeMilliseconds = 1;
+	Historical.SaveSchema = AMSim::SnapshotSchemaVersion - 1;
+	Historical.SimulationRulesVersion = 1;
+	Historical.ContentManifestHash = TEXT("phase1-internal-v1");
+	Historical.LastResult = TEXT("Ready to migrate");
+	TestTrue(
+		TEXT("Supported historical metadata remains discoverable for migration"),
+		AMSim::FSaveStore::ValidateMetadata(Historical, Error));
+	Historical.SaveSchema = AMSim::SnapshotSchemaVersion + 1;
+	TestFalse(
+		TEXT("Future metadata remains undiscoverable"),
+		AMSim::FSaveStore::ValidateMetadata(Historical, Error));
+
 	IFileManager::Get().DeleteDirectory(*Slot, false, true);
 	return true;
 }

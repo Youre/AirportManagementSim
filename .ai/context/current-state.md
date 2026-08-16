@@ -6,6 +6,17 @@ Material profile: documents
 Initialization mode: augment-existing
 
 Active priorities:
+- Use the packaged `VisualBaseline` slot as the canonical repeatable visual and
+  interaction review state. Install or verify it with
+  `scripts/ui/Install-VisualBaselineSave.ps1`; use `-Refresh` only after a
+  material fixture or presentation change. Load it from the canonical package
+  and return from Regional directly to the mature exterior airport.
+- Continue VA-01 remediation one bounded visual system at a time. The compact
+  one-line header, header-adjacent time controls, map-dominant shell, inward-
+  expanding right activity rail, hidden locked destinations, and Paper2D-only
+  world path are now the baseline. The next system is the root selected-
+  aircraft inspector, followed by denser airport-world composition and concise
+  category-specific activity drawers with badges.
 - Preserve the recovered VA-02 build-planning language in the authoritative
   Paper2D world: subdued parcel grid and boundary, translucent cyan/coral plan
   fills, diagonal proposal patterns, compact endpoints, and distinct snap,
@@ -84,6 +95,19 @@ Next verification command:
   gate footprint. Then resume the next owner-selected Phase 7 journey.
 
 Last verification:
+- 2026-08-16 EDT: the canonical Development package now contains a reusable
+  `VisualBaseline` schema-10 save derived from the deterministic Phase 4
+  journey. The packaged state loads and returns directly to the complete
+  exterior airport. The first VA-01 shell correction condenses the header,
+  groups time controls with status, replaces the permanent 320-unit diagnostic
+  panel with an inward-expanding activity rail, hides locked destinations, and
+  removes unused UMG world placeholders. The before/after comparison confirms
+  materially more world area while honestly retaining the bottom selection
+  inspector, world-density, and activity-detail gaps. All 81 automation entries
+  pass (80 success plus one retained warning), the source release audit passes,
+  and the canonical inner executable SHA-256 is
+  03B27A68B92E19A24C3F4AC63805099C705336D554DA2318FBCD3BF63DE068EA.
+  Cache usage remains healthy and no Unreal cache was cleared.
 - 2026-08-16 EDT: the unified Paper2D build world now restores the missing
   VA-02 planning overlay and connection language. Proposal surfaces use
   source-size-correct translucent fills, outlines, and diagonal patterns;

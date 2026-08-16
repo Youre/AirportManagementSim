@@ -408,7 +408,7 @@ void UAMSimRootScreen::RefreshPhase2Presentation(
 		SetPhase2Text(
 			ClockText,
 			FString::Printf(
-				TEXT("OPERATING DAY %d · %s · %s"),
+				TEXT("DAY %d · %s · %s"),
 				Query.OperatingDay + 1,
 				*AMSim::WeatherCategoryDisplayName(Query.WeatherCategory).ToUpper(),
 				Phase1State.bPaused

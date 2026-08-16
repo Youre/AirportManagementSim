@@ -295,7 +295,8 @@ namespace AMSim
 		}
 		if (Metadata.CreatedUnixSeconds < 0 || Metadata.LastPlayedUnixSeconds < 0 ||
 			Metadata.GameTimeMilliseconds < 0 ||
-			Metadata.SaveSchema != SnapshotSchemaVersion ||
+			Metadata.SaveSchema == 0 ||
+			Metadata.SaveSchema > SnapshotSchemaVersion ||
 			Metadata.SimulationRulesVersion == 0)
 		{
 			Error = TEXT("Save metadata contains an unsupported version or time.");

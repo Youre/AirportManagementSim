@@ -229,8 +229,6 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<UTextBlock> InteractionText;
 	UPROPERTY(Transient)
-	TObjectPtr<UTextBlock> AircraftLabel;
-	UPROPERTY(Transient)
 	TObjectPtr<UTextBlock> Phase2StatusText;
 	UPROPERTY(Transient)
 	TObjectPtr<UTextBlock> Phase2OperationsText;
@@ -270,23 +268,13 @@ private:
 	TObjectPtr<UWidget> BuildModeFooterChrome;
 
 	UPROPERTY(Transient)
-	TObjectPtr<UBorder> RunwayVisual;
-	UPROPERTY(Transient)
-	TObjectPtr<UBorder> TaxiVisual;
-	UPROPERTY(Transient)
-	TObjectPtr<UBorder> StandVisual;
-	UPROPERTY(Transient)
-	TObjectPtr<UBorder> HutVisual;
-	UPROPERTY(Transient)
-	TObjectPtr<UCanvasPanel> AircraftMarker;
-	UPROPERTY(Transient)
 	TObjectPtr<UBorder> ContextPanel;
 	UPROPERTY(Transient)
 	TObjectPtr<UBorder> CreateAirportTray;
 	UPROPERTY(Transient)
 	TObjectPtr<UWidget> ObjectiveDrawer;
 	UPROPERTY(Transient)
-	TObjectPtr<UBorder> OperationsDrawer;
+	TObjectPtr<UWidget> OperationsDrawer;
 	UPROPERTY(Transient)
 	TObjectPtr<UBorder> Phase1ActivityCard;
 	UPROPERTY(Transient)

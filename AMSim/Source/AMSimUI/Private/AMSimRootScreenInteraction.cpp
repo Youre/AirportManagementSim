@@ -382,7 +382,10 @@ void UAMSimRootScreen::RefreshDestinationButtons(
 			{
 				return;
 			}
-			Button->SetVisibility(ESlateVisibility::Visible);
+			Button->SetVisibility(
+				bUnlocked
+					? ESlateVisibility::Visible
+					: ESlateVisibility::Collapsed);
 			Button->SetIsEnabled(bUnlocked);
 			SetButtonLabel(
 				Button,

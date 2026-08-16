@@ -56,6 +56,7 @@ void UAMSimRootScreen::CloseTerminalPresentation()
 		TerminalView->ClosePresentation();
 	}
 	RefreshFromSimulation();
+	SetKeyboardFocus();
 }
 
 bool UAMSimRootScreen::SubmitPhase2Command(

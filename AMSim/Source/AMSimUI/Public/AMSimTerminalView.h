@@ -27,6 +27,14 @@ enum class EAMSimTerminalEditorTool : uint8
 	Rotate
 };
 
+enum class EAMSimTerminalPresentationDestination : uint8
+{
+	Terminal,
+	Regional,
+	Advanced,
+	Major
+};
+
 UCLASS()
 class AMSIMUI_API UAMSimTerminalView final : public UUserWidget
 {
@@ -44,6 +52,10 @@ public:
 	void ShowBuildMode();
 	bool IsPresentationOpen() const { return bPresentationOpen; }
 	bool HasBeenOpened() const { return bHasBeenOpened; }
+	EAMSimTerminalPresentationDestination GetPresentationDestinationForTest() const
+	{
+		return PresentationDestination;
+	}
 	FSimpleDelegate OnReturnRequested;
 	bool HasRequiredPassengerIdentityArt() const
 	{
@@ -62,6 +74,9 @@ protected:
 	virtual FReply NativeOnMouseMove(
 		const FGeometry& InGeometry,
 		const FPointerEvent& InMouseEvent) override;
+	virtual FReply NativeOnKeyDown(
+		const FGeometry& InGeometry,
+		const FKeyEvent& InKeyEvent) override;
 
 private:
 	UFUNCTION()
@@ -123,6 +138,8 @@ private:
 	void UpdateWorldPresentation(
 		const AMSim::FPhase3QuerySnapshot& Query,
 		const AMSim::FPhase3State& State);
+	void SetTerminalCutawayEnabled(bool bEnabled);
+	void RestoreTerminalShellVisibility();
 	AMSim::FTerminalCellCoord PointerToTerminalCell(
 		const FGeometry& Geometry,
 		const FVector2D& ScreenPosition) const;
@@ -226,9 +243,12 @@ private:
 	bool bPresentationOpen = false;
 	bool bHasBeenOpened = false;
 	bool bBuildMode = false;
+	bool bStarterGAShellActive = false;
 	bool bCompactLayout = false;
 	bool bTerminalGestureActive = false;
 	bool bRightMousePanning = false;
+	EAMSimTerminalPresentationDestination PresentationDestination =
+		EAMSimTerminalPresentationDestination::Terminal;
 	AMSim::FTerminalCellCoord TerminalGestureStart;
 	EAMSimTerminalEditorTool ActiveEditorTool = EAMSimTerminalEditorTool::Floor;
 	AMSim::ETerminalFloorKind ActiveFloorKind = AMSim::ETerminalFloorKind::Public;

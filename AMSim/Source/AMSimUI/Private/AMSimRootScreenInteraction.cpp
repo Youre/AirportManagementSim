@@ -110,6 +110,19 @@ FReply UAMSimRootScreen::NativeOnMouseMove(
 	return FReply::Handled();
 }
 
+FReply UAMSimRootScreen::NativeOnKeyDown(
+	const FGeometry& InGeometry,
+	const FKeyEvent& InKeyEvent)
+{
+	if (InKeyEvent.GetKey() == EKeys::Escape &&
+		TerminalView && TerminalView->IsPresentationOpen())
+	{
+		CloseTerminalPresentation();
+		return FReply::Handled();
+	}
+	return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
+}
+
 void UAMSimRootScreen::PauseSimulation()
 {
 	bReturnToOneAtInbound = false;
@@ -267,6 +280,12 @@ bool UAMSimRootScreen::LoadSlotById(const FString& SlotId)
 		bLoaded ? EAMSimUISound::LoadSuccess : EAMSimUISound::LoadFailure);
 	if (bLoaded)
 	{
+		// Save data restores simulation state. It must not preserve or infer a
+		// full-screen UI destination, so return to the stable airport overview.
+		if (TerminalView)
+		{
+			TerminalView->ClosePresentation();
+		}
 		RefreshSaveSlots();
 		const int32 LoadedIndex = SaveSlotIds.IndexOfByKey(SlotId);
 		if (LoadedIndex != INDEX_NONE)

@@ -43,6 +43,7 @@ class AMSIMUI_API UAMSimRootScreen : public UCommonActivatableWidget
 public:
 	UAMSimRootScreen(const FObjectInitializer& ObjectInitializer);
 	static FUIInputConfig MakeGameplayInputConfig();
+	static ESlateVisibility GetActivityNavigationLayerVisibility();
 	void ShowReleaseGuide();
 	int32 GetLoadedNavigationIconCount() const;
 
@@ -60,6 +61,9 @@ protected:
 	virtual FReply NativeOnMouseMove(
 		const FGeometry& InGeometry,
 		const FPointerEvent& InMouseEvent) override;
+	virtual FReply NativeOnKeyDown(
+		const FGeometry& InGeometry,
+		const FKeyEvent& InKeyEvent) override;
 
 private:
 	UFUNCTION()

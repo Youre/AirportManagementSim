@@ -13,6 +13,7 @@ void UAMSimAirportSimulationSubsystem::Initialize(FSubsystemCollectionBase& Coll
 	NextPhase4CommandId = 1;
 	NextPhase5CommandId = 1;
 	NextPhase6CommandId = 1;
+	QueryRevisionEpoch = 0;
 	AccumulatedGameMilliseconds = 0.0;
 	LastSimulationWorkMilliseconds = 0.0;
 	LastSimulationMilliseconds = 0;
@@ -28,6 +29,7 @@ void UAMSimAirportSimulationSubsystem::Deinitialize()
 	NextPhase4CommandId = 1;
 	NextPhase5CommandId = 1;
 	NextPhase6CommandId = 1;
+	QueryRevisionEpoch = 0;
 	AccumulatedGameMilliseconds = 0.0;
 	LastSimulationWorkMilliseconds = 0.0;
 	LastSimulationMilliseconds = 0;
@@ -123,7 +125,12 @@ AMSim::EPhase1CommandResult UAMSimAirportSimulationSubsystem::SubmitPhase1Comman
 AMSim::FPhase1QuerySnapshot UAMSimAirportSimulationSubsystem::GetPhase1Query() const
 {
 	check(Simulation);
-	return Simulation->CreatePhase1QuerySnapshot();
+	AMSim::FPhase1QuerySnapshot Query =
+		Simulation->CreatePhase1QuerySnapshot();
+	Query.Revision = ComposePresentationRevision(
+		Query.Revision,
+		QueryRevisionEpoch);
+	return Query;
 }
 
 AMSim::EPhase2CommandResult UAMSimAirportSimulationSubsystem::SubmitPhase2Command(
@@ -179,12 +186,25 @@ AMSim::EPhase3CommandResult UAMSimAirportSimulationSubsystem::SubmitPhase3Comman
 AMSim::FPhase2QuerySnapshot UAMSimAirportSimulationSubsystem::GetPhase2Query() const
 {
 	check(Simulation);
-	return Simulation->CreatePhase2QuerySnapshot();
+	AMSim::FPhase2QuerySnapshot Query =
+		Simulation->CreatePhase2QuerySnapshot();
+	Query.Revision = ComposePresentationRevision(
+		Query.Revision,
+		QueryRevisionEpoch);
+	return Query;
 }
 
 AMSim::FPhase3QuerySnapshot UAMSimAirportSimulationSubsystem::GetPhase3Query() const
 {
-	return GetSimulation().CreatePhase3QuerySnapshot();
+	AMSim::FPhase3QuerySnapshot Query =
+		GetSimulation().CreatePhase3QuerySnapshot();
+	Query.Revision = ComposePresentationRevision(
+		Query.Revision,
+		QueryRevisionEpoch);
+	Query.TerminalLayout.Revision = ComposePresentationRevision(
+		Query.TerminalLayout.Revision,
+		QueryRevisionEpoch);
+	return Query;
 }
 
 AMSim::EPhase4CommandResult UAMSimAirportSimulationSubsystem::SubmitPhase4Command(
@@ -217,7 +237,12 @@ AMSim::EPhase4CommandResult UAMSimAirportSimulationSubsystem::SubmitPhase4Comman
 
 AMSim::FPhase4QuerySnapshot UAMSimAirportSimulationSubsystem::GetPhase4Query() const
 {
-	return GetSimulation().CreatePhase4QuerySnapshot();
+	AMSim::FPhase4QuerySnapshot Query =
+		GetSimulation().CreatePhase4QuerySnapshot();
+	Query.Revision = ComposePresentationRevision(
+		Query.Revision,
+		QueryRevisionEpoch);
+	return Query;
 }
 
 AMSim::EPhase5CommandResult UAMSimAirportSimulationSubsystem::SubmitPhase5Command(
@@ -250,7 +275,12 @@ AMSim::EPhase5CommandResult UAMSimAirportSimulationSubsystem::SubmitPhase5Comman
 
 AMSim::FPhase5QuerySnapshot UAMSimAirportSimulationSubsystem::GetPhase5Query() const
 {
-	return GetSimulation().CreatePhase5QuerySnapshot();
+	AMSim::FPhase5QuerySnapshot Query =
+		GetSimulation().CreatePhase5QuerySnapshot();
+	Query.Revision = ComposePresentationRevision(
+		Query.Revision,
+		QueryRevisionEpoch);
+	return Query;
 }
 
 AMSim::EPhase6CommandResult UAMSimAirportSimulationSubsystem::SubmitPhase6Command(
@@ -283,7 +313,23 @@ AMSim::EPhase6CommandResult UAMSimAirportSimulationSubsystem::SubmitPhase6Comman
 
 AMSim::FPhase6QuerySnapshot UAMSimAirportSimulationSubsystem::GetPhase6Query() const
 {
-	return GetSimulation().CreatePhase6QuerySnapshot();
+	AMSim::FPhase6QuerySnapshot Query =
+		GetSimulation().CreatePhase6QuerySnapshot();
+	Query.Revision = ComposePresentationRevision(
+		Query.Revision,
+		QueryRevisionEpoch);
+	return Query;
+}
+
+uint64 UAMSimAirportSimulationSubsystem::ComposePresentationRevision(
+	const uint64 SimulationRevision,
+	const uint64 RestoreEpoch)
+{
+	// Query revisions are presentation invalidation tokens, not persisted
+	// simulation identity. Give every successful restore a distinct namespace
+	// so loading a save with the same raw domain revision cannot leave stale UI.
+	return SimulationRevision +
+		(RestoreEpoch * 0x9E3779B97F4A7C15ull);
 }
 
 AMSim::FSnapshot UAMSimAirportSimulationSubsystem::CreateSnapshot() const
@@ -335,6 +381,11 @@ bool UAMSimAirportSimulationSubsystem::RestoreSnapshot(const AMSim::FSnapshot& S
 	NextPhase6CommandId = FMath::Max(
 		NextPhase6CommandId,
 		MaximumPhase6CommandId + 1);
+	++QueryRevisionEpoch;
+	if (QueryRevisionEpoch == 0)
+	{
+		++QueryRevisionEpoch;
+	}
 	return true;
 }
 

@@ -50,6 +50,10 @@ public:
 	FVector GetTerminalWorldCenter() const;
 	int32 GetActiveTerminalFloorProxyCount() const;
 	int32 GetActiveTerminalRoofProxyCount() const;
+	FVector GetTerminalFloorProxyScaleForTest() const;
+	FVector GetTerminalRoofProxyScaleForTest() const;
+	FVector GetTerminalFloorProxyLocationForTest() const;
+	FVector GetTerminalRoofProxyLocationForTest() const;
 	int32 GetActiveTerminalConstructionProxyCount() const;
 	int32 GetActiveTerminalPlacementPreviewCount() const;
 	void SetTerminalPlacementPreview(
@@ -62,6 +66,7 @@ public:
 		return TerminalLayoutFloorProxies.Num();
 	}
 	bool IsLegacyStarterTerminalVisibleForTest() const;
+	bool IsLegacyMatureTerminalVisibleForTest() const;
 	void SetMatureOverviewMode(bool bEnabled);
 	void SetMatureSelectionFacility(bool bFacilitySelected);
 	void SetConstructionEditorOverlayVisible(bool bVisible);

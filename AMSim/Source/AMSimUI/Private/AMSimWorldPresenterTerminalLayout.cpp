@@ -11,7 +11,9 @@ namespace
 {
 	constexpr float TerminalGridUnrealUnits = 100.0f;
 	constexpr float TerminalCellSpriteScale = 0.125f;
-	constexpr float TerminalOverviewScale = 3.0f;
+	// Roof and cutaway are visibility states of the same spatial building. A
+	// different overview scale made the terminal jump when the roof faded.
+	constexpr float TerminalOverviewScale = 1.0f;
 	constexpr float SpritePlaneRoll = -90.0f;
 
 	UPaperSprite* FindTerminalSprite(const TCHAR* ObjectPath)
@@ -179,6 +181,43 @@ void AAMSimWorldPresenter::SetTerminalCutawayMode(const bool bEnabled)
 		CachedTerminalLayoutSnapshot,
 		CachedTerminalPhase3State,
 		true);
+	if (bEnabled)
+	{
+		SetMatureInfrastructureVisible(false);
+		for (UPaperSpriteComponent* Component : MatureSite)
+		{
+			Component->SetVisibility(false);
+		}
+		for (UPaperSpriteComponent* Component : MatureLandscapeClusters)
+		{
+			Component->SetVisibility(false);
+		}
+		for (UPaperSpriteComponent* Component : MatureAircraft)
+		{
+			Component->SetVisibility(false);
+		}
+		for (UPaperSpriteComponent* Component : MatureGroundVehicles)
+		{
+			Component->SetVisibility(false);
+		}
+		for (UPaperSpriteComponent* Component : MaturePeople)
+		{
+			Component->SetVisibility(false);
+		}
+		for (UPaperSpriteComponent* Component : MatureBags)
+		{
+			Component->SetVisibility(false);
+		}
+		if (MatureSelection)
+		{
+			MatureSelection->SetVisibility(false);
+		}
+	}
+	else
+	{
+		SetMatureOverviewMode(bMatureOverviewMode);
+	}
+	RefreshIncidentPresentationVisibility();
 }
 
 int32 AAMSimWorldPresenter::GetActiveTerminalFloorProxyCount() const
@@ -201,9 +240,42 @@ int32 AAMSimWorldPresenter::GetActiveTerminalRoofProxyCount() const
 		});
 }
 
+FVector AAMSimWorldPresenter::GetTerminalFloorProxyScaleForTest() const
+{
+	return TerminalLayoutFloorProxies.IsEmpty()
+		? FVector::ZeroVector
+		: TerminalLayoutFloorProxies[0]->GetRelativeScale3D();
+}
+
+FVector AAMSimWorldPresenter::GetTerminalRoofProxyScaleForTest() const
+{
+	return TerminalLayoutRoofProxies.IsEmpty()
+		? FVector::ZeroVector
+		: TerminalLayoutRoofProxies[0]->GetRelativeScale3D();
+}
+
+FVector AAMSimWorldPresenter::GetTerminalFloorProxyLocationForTest() const
+{
+	return TerminalLayoutFloorProxies.IsEmpty()
+		? FVector::ZeroVector
+		: TerminalLayoutFloorProxies[0]->GetRelativeLocation();
+}
+
+FVector AAMSimWorldPresenter::GetTerminalRoofProxyLocationForTest() const
+{
+	return TerminalLayoutRoofProxies.IsEmpty()
+		? FVector::ZeroVector
+		: TerminalLayoutRoofProxies[0]->GetRelativeLocation();
+}
+
 bool AAMSimWorldPresenter::IsLegacyStarterTerminalVisibleForTest() const
 {
 	return OperationsHut && OperationsHut->IsVisible();
+}
+
+bool AAMSimWorldPresenter::IsLegacyMatureTerminalVisibleForTest() const
+{
+	return MatureSite.IsValidIndex(4) && MatureSite[4]->IsVisible();
 }
 
 int32 AAMSimWorldPresenter::GetActiveTerminalConstructionProxyCount() const

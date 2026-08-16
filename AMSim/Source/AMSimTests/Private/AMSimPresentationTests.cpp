@@ -1,5 +1,7 @@
 #include "AMSimCameraPawn.h"
+#include "AMSimAirportSimulationSubsystem.h"
 #include "AMSimConstructionProposalView.h"
+#include "AMSimContextHelpCard.h"
 #include "AMSimExpandingToolButton.h"
 #include "AMSimPhase1WorldGeometry.h"
 #include "AMSimGameMode.h"
@@ -157,6 +159,22 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(
 bool FAMSimCompactHudPresentationTest::RunTest(const FString& Parameters)
 {
 	const UAMSimRootScreen* RootScreen = GetDefault<UAMSimRootScreen>();
+	TestEqual(
+		TEXT("Full-map activity navigation passes input through to airport creation"),
+		UAMSimRootScreen::GetActivityNavigationLayerVisibility(),
+		ESlateVisibility::SelfHitTestInvisible);
+	TestEqual(
+		TEXT("Context-help host passes input outside its visible card"),
+		GetDefault<UAMSimContextHelpCard>()->GetVisibility(),
+		ESlateVisibility::SelfHitTestInvisible);
+	TestEqual(
+		TEXT("An unloaded query keeps its simulation revision"),
+		UAMSimAirportSimulationSubsystem::ComposePresentationRevision(42, 0),
+		42ull);
+	TestNotEqual(
+		TEXT("A restore invalidates equal raw query revisions"),
+		UAMSimAirportSimulationSubsystem::ComposePresentationRevision(42, 1),
+		UAMSimAirportSimulationSubsystem::ComposePresentationRevision(42, 2));
 	const AMSim::FPhase1AirportCreationLayout NormalCreation =
 		AMSim::FPhase1HudPresentation::MakeAirportCreationLayout(false);
 	const AMSim::FPhase1AirportCreationLayout CompactCreation =
@@ -864,8 +882,8 @@ bool FAMSimPhase15WorldPresenterTest::RunTest(const FString& Parameters)
 			StarterGateScale.Y >= 10000.0f &&
 			FMath::IsNearlyZero(StarterGateScale.Z));
 	TestTrue(
-		TEXT("Starter terminal corrects the Paper2D plane quarter-turn"),
-		FMath::IsNearlyEqual(Presenter->GetStarterTerminalYawForTest(), 90.0f));
+		TEXT("Starter terminal retains its authored strict top-down orientation"),
+		FMath::IsNearlyZero(Presenter->GetStarterTerminalYawForTest()));
 	TestTrue(
 		TEXT("Procedural gate geometry does not depend on sprite-plane rotation"),
 		FMath::IsNearlyZero(Presenter->GetStarterGateYawForTest()));
@@ -1159,8 +1177,14 @@ bool FAMSimTerminalGrowthWorldPresentationTest::RunTest(const FString& Parameter
 			MapPhase1PointToWorld(GetStarterTerminalCenter(), 40.0)));
 	TestEqual(TEXT("Airport overview owns one generated roof cell per built floor cell"),
 		Presenter->GetActiveTerminalRoofProxyCount(), ExpectedFloorCount);
+	const FVector OverviewRoofScale =
+		Presenter->GetTerminalRoofProxyScaleForTest();
+	const FVector OverviewRoofLocation =
+		Presenter->GetTerminalRoofProxyLocationForTest();
 	TestFalse(TEXT("Spatial terminal suppresses the legacy starter-terminal sprite"),
 		Presenter->IsLegacyStarterTerminalVisibleForTest());
+	TestFalse(TEXT("Spatial terminal suppresses the legacy mature-terminal sprite"),
+		Presenter->IsLegacyMatureTerminalVisibleForTest());
 	TestTrue(TEXT("Starter gates remain in the authoritative world before construction"),
 		Presenter->IsStarterContextVisibleForTest());
 	FPhase1ConstructionPreviewState BuildPreview;
@@ -1228,6 +1252,16 @@ bool FAMSimTerminalGrowthWorldPresentationTest::RunTest(const FString& Parameter
 	Presenter->SetTerminalCutawayMode(true);
 	TestEqual(TEXT("Cutaway owns one visible proxy per spatial floor cell"),
 		Presenter->GetActiveTerminalFloorProxyCount(), ExpectedFloorCount);
+	const FVector CutawayFloorScale =
+		Presenter->GetTerminalFloorProxyScaleForTest();
+	const FVector CutawayFloorLocation =
+		Presenter->GetTerminalFloorProxyLocationForTest();
+	TestTrue(TEXT("Roof and cutaway use the same terminal footprint scale"),
+		FMath::IsNearlyEqual(OverviewRoofScale.X, CutawayFloorScale.X) &&
+		FMath::IsNearlyEqual(OverviewRoofScale.Z, CutawayFloorScale.Z));
+	TestTrue(TEXT("Roof and cutaway use the same terminal world anchor"),
+		FMath::IsNearlyEqual(OverviewRoofLocation.X, CutawayFloorLocation.X) &&
+		FMath::IsNearlyEqual(OverviewRoofLocation.Y, CutawayFloorLocation.Y));
 	const int32 AllocatedFloorCount = Presenter->GetAllocatedTerminalFloorProxyCount();
 
 	FPhase3QuerySnapshot SameRevisionEmpty = TerminalQuery;

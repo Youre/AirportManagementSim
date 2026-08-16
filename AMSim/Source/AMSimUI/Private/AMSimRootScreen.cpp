@@ -285,6 +285,7 @@ using namespace AMSimRootScreenPrivate;
 UAMSimRootScreen::UAMSimRootScreen(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	SetIsFocusable(true);
 	static ConstructorHelpers::FClassFinder<UUserWidget> PrimaryButtonWidget(
 		TEXT("/Game/UI/WBP_PrimaryActionButton"));
 	if (PrimaryButtonWidget.Succeeded())
@@ -314,20 +315,6 @@ UAMSimRootScreen::UAMSimRootScreen(const FObjectInitializer& ObjectInitializer)
 		ProjectIcon.Object,
 		ProjectIcon.Object,
 		ServiceIcon.Object};
-}
-
-FUIInputConfig UAMSimRootScreen::MakeGameplayInputConfig()
-{
-	return FUIInputConfig(
-		ECommonInputMode::All,
-		EMouseCaptureMode::CaptureDuringMouseDown,
-		EMouseLockMode::DoNotLock,
-		false);
-}
-
-TOptional<FUIInputConfig> UAMSimRootScreen::GetDesiredInputConfig() const
-{
-	return MakeGameplayInputConfig();
 }
 
 TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
@@ -630,6 +617,11 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 	UCanvasPanel* ActivityNavigationLayer = WidgetTree->ConstructWidget<UCanvasPanel>(
 		UCanvasPanel::StaticClass(),
 		TEXT("ActivityNavigationLayer"));
+	// This canvas spans the map only to anchor the inward-expanding activity
+	// controls. Its empty area must pass pointer input through to the world and
+	// airport-creation card below it.
+	ActivityNavigationLayer->SetVisibility(
+		GetActivityNavigationLayerVisibility());
 	BuildModeRightChrome = ActivityNavigationLayer;
 	UOverlaySlot* ActivityNavigationSlot =
 		MainLayer->AddChildToOverlay(ActivityNavigationLayer);
@@ -776,7 +768,7 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		CreateSlot->SetVerticalAlignment(VAlign_Center);
 	}
 	PlaceCanvas(
-		Map,
+		NavigationLayer,
 		CreateAirportTray,
 		FAnchors(
 			CreationLayout.MinX,
@@ -1527,6 +1519,10 @@ TSharedRef<SWidget> UAMSimRootScreen::RebuildWidget()
 		WidgetTree->ConstructWidget<UAMSimContextHelpCard>(
 			UAMSimContextHelpCard::StaticClass(),
 			TEXT("ContextHelpCard"));
+	// The help host covers the viewport so its card can be positioned in
+	// context. Only the visible card and its button may consume pointer input;
+	// the empty host must not block airport naming or world interactions.
+	ContextHelpCard->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	UOverlaySlot* ContextHelpSlot =
 		Root->AddChildToOverlay(ContextHelpCard);
 	ContextHelpSlot->SetHorizontalAlignment(HAlign_Fill);
@@ -1709,11 +1705,6 @@ void UAMSimRootScreen::RefreshFromSimulation()
 			TerminalView->ShowPresentation();
 			TerminalView->ShowBuildMode();
 			bTerminalGrowthProofOpened = true;
-		}
-		if (Phase3Query.bInitialized &&
-			!TerminalView->HasBeenOpened())
-		{
-			TerminalView->ShowPresentation();
 		}
 		TerminalView->RefreshFromSimulation();
 		if (bShowPhase2ClosureProof)

@@ -79,7 +79,8 @@ void AAMSimWorldPresenter::SetMatureOverviewMode(const bool bEnabled)
 		bIncidentPresentationMode ||
 		bPhase4IncidentWorldVisible;
 	const bool bShowInterior =
-		bPhase3WorldVisible && !bMatureOverviewMode;
+		bPhase3WorldVisible && !bMatureOverviewMode &&
+		!bTerminalCutawayMode;
 	for (UPaperSpriteComponent* Component : Phase3Floor)
 	{
 		Component->SetVisibility(bShowInterior);
@@ -119,31 +120,38 @@ void AAMSimWorldPresenter::SetMatureOverviewMode(const bool bEnabled)
 	for (int32 Index = 0; Index < MatureSite.Num(); ++Index)
 	{
 		MatureSite[Index]->SetVisibility(
-			Index >= 4 && bPhase3WorldVisible && bMatureOverviewMode);
+			Index >= 4 &&
+			Index != 4 &&
+			bPhase3WorldVisible && bMatureOverviewMode &&
+			!bTerminalCutawayMode);
 	}
 	SetMatureInfrastructureVisible(
-		bPhase3WorldVisible && bMatureOverviewMode);
+		bPhase3WorldVisible && bMatureOverviewMode && !bTerminalCutawayMode);
 	for (UPaperSpriteComponent* Component : MatureLandscapeClusters)
 	{
 		Component->SetVisibility(
-			bPhase3WorldVisible && bMatureOverviewMode);
+			bPhase3WorldVisible && bMatureOverviewMode &&
+			!bTerminalCutawayMode);
 	}
 	for (int32 Index = 0; Index < MatureAircraft.Num(); ++Index)
 	{
 		MatureAircraft[Index]->SetVisibility(
 			bPhase3WorldVisible &&
 			bMatureOverviewMode &&
+			!bTerminalCutawayMode &&
 			(Index < MatureAircraftAvailableCount || Index == 0));
 	}
 	MatureSelection->SetVisibility(
 		bPhase3WorldVisible &&
 		bMatureOverviewMode &&
+		!bTerminalCutawayMode &&
 		!bPhase4IncidentWorldVisible);
 	for (int32 Index = 0; Index < MatureGroundVehicles.Num(); ++Index)
 	{
 		MatureGroundVehicles[Index]->SetVisibility(
 			bPhase3WorldVisible &&
 			bMatureOverviewMode &&
+			!bTerminalCutawayMode &&
 			Index < MatureGroundVehicleAvailableCount);
 	}
 	for (int32 Index = 0; Index < MaturePeople.Num(); ++Index)
@@ -151,6 +159,7 @@ void AAMSimWorldPresenter::SetMatureOverviewMode(const bool bEnabled)
 		MaturePeople[Index]->SetVisibility(
 			bPhase3WorldVisible &&
 			bMatureOverviewMode &&
+			!bTerminalCutawayMode &&
 			Index < MaturePeopleAvailableCount);
 	}
 	for (int32 Index = 0; Index < MatureBags.Num(); ++Index)
@@ -158,6 +167,7 @@ void AAMSimWorldPresenter::SetMatureOverviewMode(const bool bEnabled)
 		MatureBags[Index]->SetVisibility(
 			bPhase3WorldVisible &&
 			bMatureOverviewMode &&
+			!bTerminalCutawayMode &&
 			Index < MatureBagAvailableCount);
 	}
 	Phase4IncidentRunway->SetVisibility(
@@ -174,7 +184,8 @@ void AAMSimWorldPresenter::SetPhase3WorldVisible(const bool bVisible)
 	{
 		bMatureOverviewMode = true;
 	}
-	const bool bShowInterior = bVisible && !bMatureOverviewMode;
+	const bool bShowInterior =
+		bVisible && !bMatureOverviewMode && !bTerminalCutawayMode;
 	for (UPaperSpriteComponent* Component : Phase3Floor)
 	{
 		Component->SetVisibility(bShowInterior);
@@ -216,29 +227,37 @@ void AAMSimWorldPresenter::SetPhase3WorldVisible(const bool bVisible)
 	for (int32 Index = 0; Index < MatureSite.Num(); ++Index)
 	{
 		MatureSite[Index]->SetVisibility(
-			Index >= 4 && bVisible && bMatureOverviewMode);
+			Index >= 4 &&
+			Index != 4 &&
+			bVisible && bMatureOverviewMode &&
+			!bTerminalCutawayMode);
 	}
-	SetMatureInfrastructureVisible(bVisible && bMatureOverviewMode);
+	SetMatureInfrastructureVisible(
+		bVisible && bMatureOverviewMode && !bTerminalCutawayMode);
 	for (UPaperSpriteComponent* Component : MatureLandscapeClusters)
 	{
-		Component->SetVisibility(bVisible && bMatureOverviewMode);
+		Component->SetVisibility(
+			bVisible && bMatureOverviewMode && !bTerminalCutawayMode);
 	}
 	for (int32 Index = 0; Index < MatureAircraft.Num(); ++Index)
 	{
 		MatureAircraft[Index]->SetVisibility(
 			bVisible &&
 			bMatureOverviewMode &&
+			!bTerminalCutawayMode &&
 			(Index < MatureAircraftAvailableCount || Index == 0));
 	}
 	MatureSelection->SetVisibility(
 		bVisible &&
 		bMatureOverviewMode &&
+		!bTerminalCutawayMode &&
 		!bPhase4IncidentWorldVisible);
 	for (int32 Index = 0; Index < MatureGroundVehicles.Num(); ++Index)
 	{
 		MatureGroundVehicles[Index]->SetVisibility(
 			bVisible &&
 			bMatureOverviewMode &&
+			!bTerminalCutawayMode &&
 			Index < MatureGroundVehicleAvailableCount);
 	}
 	for (int32 Index = 0; Index < MaturePeople.Num(); ++Index)
@@ -246,6 +265,7 @@ void AAMSimWorldPresenter::SetPhase3WorldVisible(const bool bVisible)
 		MaturePeople[Index]->SetVisibility(
 			bVisible &&
 			bMatureOverviewMode &&
+			!bTerminalCutawayMode &&
 			Index < MaturePeopleAvailableCount);
 	}
 	for (int32 Index = 0; Index < MatureBags.Num(); ++Index)
@@ -253,6 +273,7 @@ void AAMSimWorldPresenter::SetPhase3WorldVisible(const bool bVisible)
 		MatureBags[Index]->SetVisibility(
 			bVisible &&
 			bMatureOverviewMode &&
+			!bTerminalCutawayMode &&
 			Index < MatureBagAvailableCount);
 	}
 	if (bVisible)
@@ -272,6 +293,7 @@ void AAMSimWorldPresenter::RefreshIncidentPresentationVisibility()
 	const bool bShowIncident =
 		bPhase3WorldVisible &&
 		bMatureOverviewMode &&
+		!bTerminalCutawayMode &&
 		bPhase4IncidentWorldVisible;
 	if (bMatureOverviewMode)
 	{
@@ -310,6 +332,7 @@ void AAMSimWorldPresenter::RefreshIncidentPresentationVisibility()
 		MatureAircraft[Index]->SetVisibility(
 			bPhase3WorldVisible &&
 			bMatureOverviewMode &&
+			!bTerminalCutawayMode &&
 			(Index < MatureAircraftAvailableCount || Index == 0) &&
 			!(bShowIncident && Index == 2));
 	}
@@ -336,6 +359,7 @@ void AAMSimWorldPresenter::RefreshIncidentPresentationVisibility()
 	MatureSelection->SetVisibility(
 		bPhase3WorldVisible &&
 		bMatureOverviewMode &&
+		!bTerminalCutawayMode &&
 		!bShowIncident);
 	for (int32 Index = 0; Index < Phase4ResponseVehicles.Num(); ++Index)
 	{

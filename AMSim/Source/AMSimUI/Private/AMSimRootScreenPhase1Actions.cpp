@@ -281,7 +281,7 @@ void UAMSimRootScreen::SetConstructionModeChrome(const bool bOpen)
 		BuildModeRightChrome->SetVisibility(
 			bOpen || bCompactLayoutActive
 				? ESlateVisibility::Collapsed
-				: ESlateVisibility::Visible);
+				: GetActivityNavigationLayerVisibility());
 	}
 	if (BuildModeFooterChrome)
 	{

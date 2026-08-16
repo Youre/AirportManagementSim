@@ -6,6 +6,29 @@ Material profile: documents
 Initialization mode: augment-existing
 
 Active priorities:
+- Use the recovered root UI shell as the interaction baseline. Decorative
+  activity and context canvases are self-hit-test-invisible, so only their
+  actual controls consume pointer input. A successful load always returns to
+  the airport overview; Terminal, Regional, Advanced, and Major are explicit
+  destinations and never open one another automatically. Every destination
+  retains a visible Back action and Escape restores the overview and its
+  management camera.
+- Compose presentation revisions with a non-serialized restore epoch. This
+  invalidates UI and Paper2D caches after every successful save restore even
+  when the loaded domain revisions equal the current revisions. Do not remove
+  this epoch or compare raw restored revisions directly in presentation code.
+- Keep the schema-10 terminal as the only authoritative terminal view. Its
+  overview roof and cutaway share one footprint, anchor, and scale; cutaway
+  hides mature-site substitutes and screen-fixed legacy labels. Mixed-
+  perspective facility artwork is fixed north-up and must not be rotated;
+  replace it with strict-nadir procedural geometry or reviewed directional
+  variants rather than compensating with transforms.
+- Continue VA-03 visual remediation after the usability recovery. The spatial
+  terminal is now coherent and operable, but it remains materially less dense
+  and expressive than the concept: people, furniture, route overlays,
+  curbside context, gate/apron activity, and finer surface hierarchy remain
+  visual debt. Preserve the working navigation/input shell while improving
+  those bounded systems.
 - Use the shared procedural infrastructure renderer for runways, taxiways,
   service roads, aprons, gate pads, construction progress, and placement
   previews. Geometry, markings, borders, panel seams, and safety envelopes are

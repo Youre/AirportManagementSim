@@ -638,7 +638,7 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 			AMSim::WorldPresentationLayers::Structure.Height),
 		FVector(11.0, 1.0, 11.0));
 	OperationsHut->SetRelativeRotation(
-		FRotator(0.0f, 90.0f, SpritePlaneRoll));
+		FRotator(0.0f, 0.0f, SpritePlaneRoll));
 	ConfigureSprite(Windsock, WindsockSprite, FVector(14000.0, -45000.0, 45.0), FVector(3.0, 1.0, 3.0));
 	Aircraft->SetRelativeScale3D(FVector(10.0, 1.0, 10.0));
 	ConfigureSprite(Selection, SelectionSprite, FVector(-32000.0, 23000.0, 70.0), FVector(2.2, 1.0, 2.2));

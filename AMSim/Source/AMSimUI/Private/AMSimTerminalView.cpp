@@ -188,6 +188,7 @@ UAMSimTerminalView::UAMSimTerminalView(
 	const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	SetIsFocusable(true);
 	static ConstructorHelpers::FObjectFinder<UTexture2D> PassengerFamily(
 		TEXT("/Game/Phase45/Presentation/Textures/Operations/T_PassengerFamily.T_PassengerFamily"));
 	PassengerFamilyTexture = PassengerFamily.Object;
@@ -1070,6 +1071,18 @@ FReply UAMSimTerminalView::NativeOnMouseMove(
 	return Super::NativeOnMouseMove(InGeometry, InMouseEvent);
 }
 
+FReply UAMSimTerminalView::NativeOnKeyDown(
+	const FGeometry& InGeometry,
+	const FKeyEvent& InKeyEvent)
+{
+	if (bPresentationOpen && InKeyEvent.GetKey() == EKeys::Escape)
+	{
+		ReturnToAirport();
+		return FReply::Handled();
+	}
+	return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
+}
+
 AMSim::FTerminalCellCoord UAMSimTerminalView::PointerToTerminalCell(
 	const FGeometry& Geometry,
 	const FVector2D& ScreenPosition) const
@@ -1568,49 +1581,71 @@ void UAMSimTerminalView::LoadGame()
 
 void UAMSimTerminalView::OpenAdvancedOperations()
 {
-	if (RegionalOperationsView)
-	{
-		RegionalOperationsView->ShowAdvancedOperations();
-		RegionalOperationsView->SetVisibility(
-			ESlateVisibility::SelfHitTestInvisible);
-	}
+	ShowAdvancedOperations();
 }
 
 void UAMSimTerminalView::OpenMajorOperations()
 {
-	if (RegionalOperationsView)
-	{
-		RegionalOperationsView->ShowMajorOperations();
-		RegionalOperationsView->SetVisibility(
-			ESlateVisibility::SelfHitTestInvisible);
-	}
+	ShowMajorOperations();
 }
 
 void UAMSimTerminalView::ShowRegionalOperations()
 {
-	ShowPresentation();
+	bHasBeenOpened = true;
+	bPresentationOpen = true;
+	PresentationDestination = EAMSimTerminalPresentationDestination::Regional;
+	SetTerminalCutawayEnabled(false);
 	if (RegionalOperationsView)
 	{
 		RegionalOperationsView->ShowRegionalOperations();
 	}
+	RefreshFromSimulation();
+	SetKeyboardFocus();
 }
 
 void UAMSimTerminalView::ShowAdvancedOperations()
 {
-	ShowPresentation();
-	OpenAdvancedOperations();
+	bHasBeenOpened = true;
+	bPresentationOpen = true;
+	PresentationDestination = EAMSimTerminalPresentationDestination::Advanced;
+	SetTerminalCutawayEnabled(false);
+	if (RegionalOperationsView)
+	{
+		RegionalOperationsView->ShowAdvancedOperations();
+	}
+	RefreshFromSimulation();
+	SetKeyboardFocus();
 }
 
 void UAMSimTerminalView::ShowMajorOperations()
 {
-	ShowPresentation();
-	OpenMajorOperations();
+	bHasBeenOpened = true;
+	bPresentationOpen = true;
+	PresentationDestination = EAMSimTerminalPresentationDestination::Major;
+	SetTerminalCutawayEnabled(false);
+	if (RegionalOperationsView)
+	{
+		RegionalOperationsView->ShowMajorOperations();
+	}
+	RefreshFromSimulation();
+	SetKeyboardFocus();
 }
 
 void UAMSimTerminalView::ShowPresentation()
 {
 	bHasBeenOpened = true;
 	bPresentationOpen = true;
+	PresentationDestination = EAMSimTerminalPresentationDestination::Terminal;
+	// Refresh the loaded layout before hiding the exterior world. A save can
+	// legitimately carry the same raw Phase 3 revision as the prior state.
+	// Entering cutaway with the previous cached layout produced a blank map.
+	RefreshFromSimulation();
+	SetTerminalCutawayEnabled(true);
+	SetKeyboardFocus();
+}
+
+void UAMSimTerminalView::SetTerminalCutawayEnabled(const bool bEnabled)
+{
 	FVector TerminalCenter = FVector(-27000.0f, 36000.0f, 40.0f);
 	float TerminalOrthoWidth = 2000.0f;
 	if (const UAMSimAirportSimulationSubsystem* Subsystem =
@@ -1631,27 +1666,23 @@ void UAMSimTerminalView::ShowPresentation()
 	}
 	for (TActorIterator<AAMSimWorldPresenter> It(GetWorld()); It; ++It)
 	{
-		It->SetTerminalCutawayMode(true);
+		It->SetTerminalCutawayMode(bEnabled);
 		TerminalCenter = It->GetTerminalWorldCenter();
 	}
 	for (TActorIterator<AAMSimCameraPawn> It(GetWorld()); It; ++It)
 	{
-		It->SetTerminalCutawayMode(true, TerminalCenter, TerminalOrthoWidth);
+		It->SetTerminalCutawayMode(
+			bEnabled,
+			bEnabled ? TerminalCenter : FVector::ZeroVector,
+			TerminalOrthoWidth);
 	}
-	RefreshFromSimulation();
 }
 
 void UAMSimTerminalView::ClosePresentation()
 {
 	bPresentationOpen = false;
-	for (TActorIterator<AAMSimWorldPresenter> It(GetWorld()); It; ++It)
-	{
-		It->SetTerminalCutawayMode(false);
-	}
-	for (TActorIterator<AAMSimCameraPawn> It(GetWorld()); It; ++It)
-	{
-		It->SetTerminalCutawayMode(false, FVector::ZeroVector);
-	}
+	PresentationDestination = EAMSimTerminalPresentationDestination::Terminal;
+	SetTerminalCutawayEnabled(false);
 	SetVisibility(ESlateVisibility::Collapsed);
 }
 
@@ -1692,8 +1723,6 @@ void UAMSimTerminalView::RefreshFromSimulation()
 		Subsystem->GetSimulation().GetPhase3State();
 	const AMSim::FPhase1State& Phase1 =
 		Subsystem->GetSimulation().GetPhase1State();
-	const AMSim::FPhase4QuerySnapshot Phase4Query =
-		Subsystem->GetPhase4Query();
 	const AMSim::FPhase5QuerySnapshot Phase5Query =
 		Subsystem->GetPhase5Query();
 	const AMSim::FPhase6QuerySnapshot Phase6Query =
@@ -1716,16 +1745,8 @@ void UAMSimTerminalView::RefreshFromSimulation()
 	{
 		RegionalOperationsView->RefreshFromSimulation();
 	}
-	if (RegionalOperationsView &&
-		(RegionalOperationsView->IsAdvancedOperationsOpen() ||
-			RegionalOperationsView->IsMajorOperationsOpen()))
-	{
-		SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		RegionalOperationsView->SetVisibility(
-			ESlateVisibility::SelfHitTestInvisible);
-		return;
-	}
-	if (Phase4Query.bUnlocked || Phase4Query.bInitialized)
+	if (PresentationDestination !=
+		EAMSimTerminalPresentationDestination::Terminal)
 	{
 		SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		if (TerminalCanvas)
@@ -1749,20 +1770,100 @@ void UAMSimTerminalView::RefreshFromSimulation()
 		return;
 	}
 	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	if (RegionalOperationsView)
-	{
-		RegionalOperationsView->SetVisibility(
-			ESlateVisibility::Collapsed);
-	}
+	RestoreTerminalShellVisibility();
 	UpdateWorldPresentation(Query, State);
+	const bool bStarterGATerminal =
+		!Query.bInitialized && State.TerminalLayout.bReady;
+	const bool bWasStarterGATerminal = bStarterGAShellActive;
+	bStarterGAShellActive = bStarterGATerminal;
+	if (bStarterGATerminal)
+	{
+		if (BrandText)
+		{
+			BrandText->SetText(FText::FromString(
+				bCompactLayout ? TEXT("RIVERBEND  ·  STARTER GA TERMINAL") :
+					TEXT("RIVERBEND AIRPORT\nSTARTER GA TERMINAL")));
+		}
+		if (StatusText)
+		{
+			StatusText->SetText(FText::FromString(
+				TEXT("STARTER TERMINAL  ·  READY")));
+		}
+		if (ConstructionText)
+		{
+			ConstructionText->SetText(FText::FromString(FString::Printf(
+				TEXT("FURNISHED  ·  %d AIRSIDE GATES  ·  EDITABLE"),
+				State.TerminalLayout.ValidAirsideGateCount)));
+		}
+		if (!bBuildMode)
+		{
+			if (TerminalOperationsToolsPanel)
+			{
+				TerminalOperationsToolsPanel->SetVisibility(
+					ESlateVisibility::Collapsed);
+			}
+			if (TerminalOperationsInspector)
+			{
+				TerminalOperationsInspector->SetVisibility(
+					ESlateVisibility::Collapsed);
+			}
+			if (InteractionText)
+			{
+				InteractionText->SetText(FText::FromString(
+					TEXT("GA visitors use this terminal automatically. Select BUILD to remodel it.")));
+			}
+			const TCHAR* StarterLegend[] = {
+				TEXT("GREEN  GA VISITOR ROUTE"), TEXT("CYAN  AIRSIDE ACCESS"),
+				TEXT("AMBER  LOCAL CLOSURE"), TEXT("DASHED  ACCESSIBLE ROUTE")};
+			for (int32 Index = 0;
+				Index < TerminalLegendTexts.Num() &&
+				Index < UE_ARRAY_COUNT(StarterLegend);
+				++Index)
+			{
+				TerminalLegendTexts[Index]->SetText(
+					FText::FromString(StarterLegend[Index]));
+			}
+		}
+	}
+	else
+	{
+		if (BrandText)
+		{
+			BrandText->SetText(FText::FromString(
+				bCompactLayout ? TEXT("RIVERBEND  ·  DOMESTIC TERMINAL") :
+					TEXT("RIVERBEND AIRPORT\nDOMESTIC TERMINAL")));
+		}
+		if (!bBuildMode)
+		{
+			const TCHAR* PassengerLegend[] = {
+				TEXT("GREEN  PASSENGER FLOW"), TEXT("CYAN  SECURE AREA"),
+				TEXT("AMBER  CONGESTION"), TEXT("DASHED  ACCESSIBLE ROUTE")};
+			for (int32 Index = 0;
+				Index < TerminalLegendTexts.Num() &&
+				Index < UE_ARRAY_COUNT(PassengerLegend);
+				++Index)
+			{
+				TerminalLegendTexts[Index]->SetText(
+					FText::FromString(PassengerLegend[Index]));
+			}
+			if (bWasStarterGATerminal && InteractionText)
+			{
+				InteractionText->SetText(
+					FText::FromString(TEXT("Passenger terminal controls ready.")));
+			}
+		}
+	}
 	if (ViewState.Revision == Query.Revision)
 	{
 		return;
 	}
 	ViewState = AMSim::MakePhase3ViewState(Query, State);
-	StatusText->SetText(FText::FromString(ViewState.Status));
-	ConstructionText->SetText(FText::FromString(ViewState.Construction));
-	if (bBuildMode && State.TerminalLayout.bReady)
+	if (!bStarterGATerminal)
+	{
+		StatusText->SetText(FText::FromString(ViewState.Status));
+		ConstructionText->SetText(FText::FromString(ViewState.Construction));
+	}
+	if (bBuildMode && bStarterGATerminal)
 	{
 		if (BrandText)
 		{
@@ -1821,11 +1922,12 @@ void UAMSimTerminalView::RefreshFromSimulation()
 			: ESlateVisibility::Visible);
 	TerminalLabels->SetVisibility(
 		bBuildMode
-			? ESlateVisibility::Collapsed
-			: ViewState.bShowTerminal
-				? ESlateVisibility::SelfHitTestInvisible
-				: ESlateVisibility::Collapsed);
-	TerminalLabels->SetRenderOpacity(1.0f);
+			? ESlateVisibility::SelfHitTestInvisible
+			: ESlateVisibility::Collapsed);
+	// The legacy labels are screen-fixed and visibly drift when the camera pans
+	// or zooms. Retain this canvas only as transparent build-gesture geometry
+	// until labels are derived from terminal cells in world space.
+	TerminalLabels->SetRenderOpacity(0.0f);
 	InitializeButton->SetIsEnabled(ViewState.bCanInitialize);
 	InitializeButton->SetVisibility(
 		ViewState.bCanInitialize
@@ -1855,6 +1957,26 @@ void UAMSimTerminalView::RefreshFromSimulation()
 	AssistanceButton->SetIsEnabled(ViewState.bCanRequestAssistance);
 	BaggageButton->SetIsEnabled(ViewState.bCanResolveBaggage);
 	ForceLayoutPrepass();
+}
+
+void UAMSimTerminalView::RestoreTerminalShellVisibility()
+{
+	if (!TerminalCanvas)
+	{
+		return;
+	}
+	for (int32 Index = 0; Index < TerminalCanvas->GetChildrenCount(); ++Index)
+	{
+		UWidget* Child = TerminalCanvas->GetChildAt(Index);
+		if (Child == RegionalOperationsView)
+		{
+			Child->SetVisibility(ESlateVisibility::Collapsed);
+		}
+		else if (Child != TerminalLabels && Child != PlanningCard)
+		{
+			Child->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		}
+	}
 }
 
 void UAMSimTerminalView::UpdateWorldPresentation(

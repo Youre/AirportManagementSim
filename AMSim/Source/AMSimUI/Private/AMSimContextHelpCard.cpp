@@ -50,6 +50,13 @@ namespace
 	}
 }
 
+UAMSimContextHelpCard::UAMSimContextHelpCard(
+	const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+}
+
 TSharedRef<SWidget> UAMSimContextHelpCard::RebuildWidget()
 {
 	using namespace AMSim::UITheme;

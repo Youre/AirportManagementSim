@@ -1451,3 +1451,30 @@ entries:
       C627F796E93CDC35C64B6AF7688449ACB7771881E0E978C573108720364C2214. C
       retains 128.43 GiB free; no cache was cleared. Owner subjective
       build-mode acceptance remains the next gameplay review.
+  - timestamp: '2026-08-16T15:24:00-04:00'
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'UI shell and terminal recovery: focused/full UE automation;
+      Development and Shipping BuildCookRun; packaged new-airport, load,
+      Terminal, Regional, Back, and Escape replay; VA-03 comparison; release
+      audit; cache measurement'
+    result: passed-with-manual-follow-up
+    notes: Decorative full-screen rail/context canvases no longer intercept
+      pointer input. New-airport onboarding and Create Airport respond in the
+      package. Loading VisualBaseline returns to the root overview instead of
+      auto-routing into a phase screen; Terminal and Regional are explicit,
+      Back and Escape both restore the overview. A non-serialized presentation
+      epoch invalidates cached snapshots after save restore. The schema-10
+      terminal now uses one top-down spatial presentation and one footprint
+      scale; legacy mature-terminal substitutes and screen-fixed labels remain
+      hidden in cutaway. Full automation reports 81 clean successes plus the
+      retained warning-only Phase 0 recovery probe, with zero failed,
+      not-run, or in-process tests. Release scans report zero runtime string
+      loads, forbidden runtime dependencies, required 3D candidates, or line
+      violations. Clean final package launch smoke passed; the canonical inner
+      binary is 228076032 bytes with SHA-256
+      C1A1886CC92567DF7052228621D1C6BC54BFDD2B58F1183A88A5033AD9294AD7.
+      VA-03 comparison confirms substantial remaining content-density,
+      curbside/gate-context, people/furniture, and route-overlay polish debt;
+      functional recovery is not claimed as final art parity. C retained
+      126.84 GiB and D retained 689.36 GiB free; no cache was cleared.

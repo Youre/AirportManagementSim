@@ -32,6 +32,9 @@ public:
 	AMSim::FPhase6QuerySnapshot GetPhase6Query() const;
 	AMSim::FSnapshot CreateSnapshot() const;
 	bool RestoreSnapshot(const AMSim::FSnapshot& Snapshot);
+	static uint64 ComposePresentationRevision(
+		uint64 SimulationRevision,
+		uint64 RestoreEpoch);
 	int64 GetRecommendedStarterArrivalTime() const;
 	int64 GetLastSimulationMilliseconds() const { return LastSimulationMilliseconds; }
 	int32 GetBacklogSteps() const { return BacklogSteps; }
@@ -45,6 +48,7 @@ private:
 	uint64 NextPhase4CommandId = 1;
 	uint64 NextPhase5CommandId = 1;
 	uint64 NextPhase6CommandId = 1;
+	uint64 QueryRevisionEpoch = 0;
 	double AccumulatedGameMilliseconds = 0.0;
 	double LastSimulationWorkMilliseconds = 0.0;
 	int64 LastSimulationMilliseconds = 0;

@@ -13,6 +13,7 @@ class AMSIMUI_API UAMSimContextHelpCard final : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	UAMSimContextHelpCard(const FObjectInitializer& ObjectInitializer);
 	void SetSuppressed(bool bInSuppressed);
 
 protected:

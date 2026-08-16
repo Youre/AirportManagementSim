@@ -18,6 +18,25 @@ int32 UAMSimRootScreen::GetLoadedNavigationIconCount() const
 	return Count;
 }
 
+ESlateVisibility UAMSimRootScreen::GetActivityNavigationLayerVisibility()
+{
+	return ESlateVisibility::SelfHitTestInvisible;
+}
+
+FUIInputConfig UAMSimRootScreen::MakeGameplayInputConfig()
+{
+	return FUIInputConfig(
+		ECommonInputMode::All,
+		EMouseCaptureMode::CaptureDuringMouseDown,
+		EMouseLockMode::DoNotLock,
+		false);
+}
+
+TOptional<FUIInputConfig> UAMSimRootScreen::GetDesiredInputConfig() const
+{
+	return MakeGameplayInputConfig();
+}
+
 void UAMSimRootScreen::RefreshPhase1ContextPanel(
 	const AMSim::FPhase1QuerySnapshot& Query,
 	const AMSim::FPhase1State& State)

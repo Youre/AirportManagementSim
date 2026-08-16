@@ -165,7 +165,7 @@ void AAMSimWorldPresenter::ApplyPhase1Geometry(
 			AMSim::WorldPresentationLayers::Structure.Height));
 		OperationsHut->SetRelativeScale3D(FVector(11.0, 1.0, 11.0));
 		OperationsHut->SetRelativeRotation(
-			FRotator(0.0f, 90.0f, SpritePlaneRoll));
+			FRotator(0.0f, 0.0f, SpritePlaneRoll));
 	}
 
 	const AMSim::FPhase1Point RunwayMidpoint = {

@@ -71,4 +71,3 @@ Status: Approved for implementation
 - A packaged replay covers new-airport creation, VisualBaseline load, Terminal
   open/Back/Escape, Regional open/Back, and root navigation responsiveness.
 - The terminal capture is compared with VA-03 at the same viewport and state.
-

@@ -1170,6 +1170,30 @@ bool FAMSimTerminalGrowthWorldPresentationTest::RunTest(const FString& Parameter
 	FPhase3QuerySnapshot TerminalQuery = Simulation.CreatePhase3QuerySnapshot();
 	TerminalQuery.Revision = 81002;
 	TerminalQuery.TerminalLayout.Revision = 81003;
+	AAMSimWorldPresenter* RestoreOnlyPresenter = World
+		? World->SpawnActor<AAMSimWorldPresenter>()
+		: nullptr;
+	if (!TestNotNull(
+		TEXT("A restored terminal owns a presenter without starter render history"),
+		RestoreOnlyPresenter))
+	{
+		return false;
+	}
+	RestoreOnlyPresenter->ApplyPhase3Snapshot(
+		TerminalQuery,
+		Simulation.GetPhase3State());
+	TestEqual(TEXT("Direct save restore renders the complete terminal roof"),
+		RestoreOnlyPresenter->GetActiveTerminalRoofProxyCount(),
+		TerminalQuery.TerminalLayout.FloorCells.Num());
+	RestoreOnlyPresenter->SetTerminalCutawayMode(true);
+	TestEqual(TEXT("Direct save restore opens a non-empty terminal cutaway"),
+		RestoreOnlyPresenter->GetActiveTerminalFloorProxyCount(),
+		TerminalQuery.TerminalLayout.FloorCells.Num());
+	TestTrue(TEXT("Direct save restore uses the upright object-art basis"),
+		FMath::IsNearlyEqual(
+			RestoreOnlyPresenter->GetTerminalObjectProxyYawForTest(0),
+			90.0f));
+	RestoreOnlyPresenter->SetTerminalCutawayMode(false);
 	Presenter->ApplyPhase3Snapshot(TerminalQuery, Simulation.GetPhase3State());
 	const int32 ExpectedFloorCount = TerminalQuery.TerminalLayout.FloorCells.Num();
 	TestTrue(TEXT("Spatial terminal shares the authoritative starter-facility anchor"),
@@ -1262,6 +1286,10 @@ bool FAMSimTerminalGrowthWorldPresentationTest::RunTest(const FString& Parameter
 	TestTrue(TEXT("Roof and cutaway use the same terminal world anchor"),
 		FMath::IsNearlyEqual(OverviewRoofLocation.X, CutawayFloorLocation.X) &&
 		FMath::IsNearlyEqual(OverviewRoofLocation.Y, CutawayFloorLocation.Y));
+	TestTrue(TEXT("Zero-turn terminal art receives the upright clockwise basis"),
+		FMath::IsNearlyEqual(
+			Presenter->GetTerminalObjectProxyYawForTest(0),
+			90.0f));
 	const int32 AllocatedFloorCount = Presenter->GetAllocatedTerminalFloorProxyCount();
 
 	FPhase3QuerySnapshot SameRevisionEmpty = TerminalQuery;
@@ -1284,6 +1312,20 @@ bool FAMSimTerminalGrowthWorldPresentationTest::RunTest(const FString& Parameter
 		Presenter->GetAllocatedTerminalFloorProxyCount(), AllocatedFloorCount);
 	TestEqual(TEXT("Reused proxies restore the complete cutaway"),
 		Presenter->GetActiveTerminalFloorProxyCount(), ExpectedFloorCount);
+	FPhase3QuerySnapshot RotatedObjectQuery = TerminalQuery;
+	RotatedObjectQuery.Revision = 81008;
+	RotatedObjectQuery.TerminalLayout.Revision = 81009;
+	if (!RotatedObjectQuery.TerminalLayout.Objects.IsEmpty())
+	{
+		RotatedObjectQuery.TerminalLayout.Objects[0].QuarterTurns = 1;
+	}
+	Presenter->ApplyPhase3Snapshot(
+		RotatedObjectQuery,
+		Simulation.GetPhase3State());
+	TestTrue(TEXT("Player quarter turns remain relative to the upright art basis"),
+		FMath::IsNearlyEqual(
+			FMath::Abs(Presenter->GetTerminalObjectProxyYawForTest(0)),
+			180.0f));
 	Presenter->SetTerminalPlacementPreview({18, 0}, {19, 1}, 1);
 	TestEqual(TEXT("Placement gesture renders its complete four-cell footprint"),
 		Presenter->GetActiveTerminalPlacementPreviewCount(), 4);

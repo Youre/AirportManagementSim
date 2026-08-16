@@ -23,6 +23,11 @@ Active priorities:
   perspective facility artwork is fixed north-up and must not be rotated;
   replace it with strict-nadir procedural geometry or reviewed directional
   variants rather than compensating with transforms.
+- Apply the terminal object's shared clockwise 90-degree art-basis correction
+  only in the Paper2D presenter. Saved and player-authored `QuarterTurns`,
+  footprints, routes, walls, doors, and source sprites remain authoritative.
+  A non-empty schema-10 terminal snapshot must render after direct restore
+  without depending on a preceding Phase 1 world-presentation pass.
 - Continue VA-03 visual remediation after the usability recovery. The spatial
   terminal is now coherent and operable, but it remains materially less dense
   and expressive than the concept: people, furniture, route overlays,

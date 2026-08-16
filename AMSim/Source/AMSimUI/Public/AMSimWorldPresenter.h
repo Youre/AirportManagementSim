@@ -67,6 +67,7 @@ public:
 	}
 	bool IsLegacyStarterTerminalVisibleForTest() const;
 	bool IsLegacyMatureTerminalVisibleForTest() const;
+	float GetTerminalObjectProxyYawForTest(int32 ObjectIndex) const;
 	void SetMatureOverviewMode(bool bEnabled);
 	void SetMatureSelectionFacility(bool bFacilitySelected);
 	void SetConstructionEditorOverlayVisible(bool bVisible);

@@ -15,6 +15,13 @@ namespace
 	// different overview scale made the terminal jump when the roof faded.
 	constexpr float TerminalOverviewScale = 1.0f;
 	constexpr float SpritePlaneRoll = -90.0f;
+	// Terminal furniture source art is authored upright in screen space, with
+	// its front facing the bottom of the texture. The terminal grid swaps its
+	// logical axes into world X/Y, so a zero-turn object otherwise appears one
+	// quarter-turn counter-clockwise in the top-down camera. Keep this as a
+	// presentation-basis correction; saved/player-authored quarter turns remain
+	// authoritative and unchanged.
+	constexpr float TerminalObjectArtYawCorrectionDegrees = 90.0f;
 
 	UPaperSprite* FindTerminalSprite(const TCHAR* ObjectPath)
 	{
@@ -278,6 +285,15 @@ bool AAMSimWorldPresenter::IsLegacyMatureTerminalVisibleForTest() const
 	return MatureSite.IsValidIndex(4) && MatureSite[4]->IsVisible();
 }
 
+float AAMSimWorldPresenter::GetTerminalObjectProxyYawForTest(
+	const int32 ObjectIndex) const
+{
+	return TerminalLayoutObjectProxies.IsValidIndex(ObjectIndex) &&
+		TerminalLayoutObjectProxies[ObjectIndex]
+		? TerminalLayoutObjectProxies[ObjectIndex]->GetRelativeRotation().Yaw
+		: 0.0f;
+}
+
 int32 AAMSimWorldPresenter::GetActiveTerminalConstructionProxyCount() const
 {
 	return Algo::CountIf(
@@ -356,7 +372,11 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 		return;
 	}
 	LastAppliedTerminalLayoutRevision = Query.Revision;
-	const bool bShowTerminal = bPhase1AirportInitialized && !Query.FloorCells.IsEmpty();
+	// A restored schema-10 terminal is authoritative on its own. Do not depend
+	// on a preceding Phase 1 presentation pass: mature saves intentionally skip
+	// some starter-world rendering, and loading one directly from the new-
+	// airport screen would otherwise leave the cutaway empty.
+	const bool bShowTerminal = !Query.FloorCells.IsEmpty();
 	if (!bShowTerminal)
 	{
 		HideTerminalLayoutPool(TerminalLayoutFloorProxies, 0);
@@ -571,7 +591,10 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 				1.0f,
 				TerminalCellSpriteScale * 1.35f * FMath::Max(Object.FootprintWidth, 1)));
 		Proxy->SetRelativeRotation(FRotator(
-			0.0f, Object.QuarterTurns * 90.0f, SpritePlaneRoll));
+			0.0f,
+			TerminalObjectArtYawCorrectionDegrees +
+				Object.QuarterTurns * 90.0f,
+			SpritePlaneRoll));
 		Proxy->SetSpriteColor(Object.bLocallyClosed
 			? FLinearColor(1.0f, 0.45f, 0.26f, 0.70f)
 			: Object.bOperational ? FLinearColor::White : FLinearColor(0.55f, 0.72f, 0.72f, 0.62f));

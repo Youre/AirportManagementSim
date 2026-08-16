@@ -211,6 +211,35 @@ Template-first rule:
 - Accepted placeholder content: `Select a tool`, `No placement issue`, and
   `Connect the highlighted endpoints`.
 
+## Procedural airport infrastructure
+
+- Purpose: render scalable airport movement and service surfaces from
+  authoritative geometry instead of stretching complete raster illustrations.
+- Applicable world elements: runways, taxiways, service roads, gate/apron
+  footprints, construction beds, proposal fills, boundaries, markings,
+  junctions, and crossing treatments.
+- Geometry: flat runtime-generated polygons on the airport XY plane. Segment
+  width is measured in world centimeters; joins and caps are generated from the
+  network; collision remains disabled because simulation geometry is
+  authoritative.
+- Surface language: warm charcoal runways, slate taxiways, muted asphalt roads,
+  and warm concrete aprons. Edge bands, centerlines, thresholds, runway dashes,
+  lead-in lines, stop bars, safety envelopes, and selection patterns are
+  separate generated geometry rather than baked into the base surface.
+- Texture rule: an optional seamless world-aligned microtexture may add material
+  character, but it cannot define shape, scale, markings, connection state, or
+  construction progress. Aircraft, vehicles, buildings, people, landscaping,
+  and small props remain authored sprites.
+- State rule: proposal, construction, completed, selected, blocked, and overlay
+  states reuse identical geometry with different material/vertex-color
+  treatments. Do not maintain a second preview-only map transform or renderer.
+- Layering: terrain, construction bed, road, runway, taxiway, markings, gate,
+  structure, and interaction-marker ordering follows
+  `AMSimWorldPresentationLayers.h`; road geometry must remain below gate/apron
+  geometry.
+- Component: `UAMSimProceduralSurfaceComponent`, owned by
+  `AAMSimWorldPresenter` and fed by immutable query/proposal geometry.
+
 ## Phase 3 terminal flow surface
 
 - Purpose: present one complete domestic terminal journey without replacing

@@ -16,6 +16,7 @@ public class AMSimUI : ModuleRules
 			"Engine",
 			"EnhancedInput",
 			"Paper2D",
+			"ProceduralMeshComponent",
 			"SlateCore",
 			"TextToSpeech",
 			"UMG"

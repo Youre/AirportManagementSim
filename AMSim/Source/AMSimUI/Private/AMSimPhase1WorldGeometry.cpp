@@ -21,6 +21,11 @@ namespace AMSim
 			Height);
 	}
 
+	double MapPhase1DistanceToWorld(const double Centimeters)
+	{
+		return Centimeters * WorldUnitsPerCentimeter;
+	}
+
 	FPhase1Point MapPhase1WorldToPoint(const FVector& WorldPosition)
 	{
 		return {

@@ -1,6 +1,62 @@
 #include "AMSimWorldPresenter.h"
 
+#include "AMSimProceduralSurfaceComponent.h"
 #include "PaperSpriteComponent.h"
+
+void AAMSimWorldPresenter::SetMatureInfrastructureVisible(const bool bVisible)
+{
+	for (UAMSimProceduralSurfaceComponent* Component : {
+		MatureRunway.Get(),
+		MatureTaxiway.Get(),
+		MatureApron.Get(),
+		MatureAccessRoad.Get()})
+	{
+		if (Component)
+		{
+			Component->SetVisibility(bVisible);
+		}
+	}
+	for (UAMSimProceduralSurfaceComponent* Component : MatureGatePads)
+	{
+		Component->SetVisibility(bVisible);
+	}
+	for (UAMSimProceduralSurfaceComponent* Component : MatureTaxiConnectors)
+	{
+		Component->SetVisibility(bVisible);
+	}
+	for (UAMSimProceduralSurfaceComponent* Component : MatureLandsideLinks)
+	{
+		Component->SetVisibility(bVisible);
+	}
+}
+
+void AAMSimWorldPresenter::SetMatureInfrastructureTint(
+	const FLinearColor& Tint)
+{
+	for (UAMSimProceduralSurfaceComponent* Component : {
+		MatureRunway.Get(),
+		MatureTaxiway.Get(),
+		MatureApron.Get(),
+		MatureAccessRoad.Get()})
+	{
+		if (Component)
+		{
+			Component->SetSurfaceTint(Tint);
+		}
+	}
+	for (UAMSimProceduralSurfaceComponent* Component : MatureGatePads)
+	{
+		Component->SetSurfaceTint(Tint);
+	}
+	for (UAMSimProceduralSurfaceComponent* Component : MatureTaxiConnectors)
+	{
+		Component->SetSurfaceTint(Tint);
+	}
+	for (UAMSimProceduralSurfaceComponent* Component : MatureLandsideLinks)
+	{
+		Component->SetSurfaceTint(Tint);
+	}
+}
 
 void AAMSimWorldPresenter::SetMatureSelectionFacility(
 	const bool bFacilitySelected)
@@ -60,21 +116,13 @@ void AAMSimWorldPresenter::SetMatureOverviewMode(const bool bEnabled)
 	}
 	Phase3Aircraft->SetVisibility(
 		bShowInterior && bPhase3AircraftAvailable);
-	for (UPaperSpriteComponent* Component : MatureSite)
+	for (int32 Index = 0; Index < MatureSite.Num(); ++Index)
 	{
-		Component->SetVisibility(
-			bPhase3WorldVisible && bMatureOverviewMode);
+		MatureSite[Index]->SetVisibility(
+			Index >= 4 && bPhase3WorldVisible && bMatureOverviewMode);
 	}
-	for (UPaperSpriteComponent* Component : MatureTaxiConnectors)
-	{
-		Component->SetVisibility(
-			bPhase3WorldVisible && bMatureOverviewMode);
-	}
-	for (UPaperSpriteComponent* Component : MatureLandsideLinks)
-	{
-		Component->SetVisibility(
-			bPhase3WorldVisible && bMatureOverviewMode);
-	}
+	SetMatureInfrastructureVisible(
+		bPhase3WorldVisible && bMatureOverviewMode);
 	for (UPaperSpriteComponent* Component : MatureLandscapeClusters)
 	{
 		Component->SetVisibility(
@@ -165,18 +213,12 @@ void AAMSimWorldPresenter::SetPhase3WorldVisible(const bool bVisible)
 	{
 		Component->SetVisibility(bShowInterior);
 	}
-	for (UPaperSpriteComponent* Component : MatureSite)
+	for (int32 Index = 0; Index < MatureSite.Num(); ++Index)
 	{
-		Component->SetVisibility(bVisible && bMatureOverviewMode);
+		MatureSite[Index]->SetVisibility(
+			Index >= 4 && bVisible && bMatureOverviewMode);
 	}
-	for (UPaperSpriteComponent* Component : MatureTaxiConnectors)
-	{
-		Component->SetVisibility(bVisible && bMatureOverviewMode);
-	}
-	for (UPaperSpriteComponent* Component : MatureLandsideLinks)
-	{
-		Component->SetVisibility(bVisible && bMatureOverviewMode);
-	}
+	SetMatureInfrastructureVisible(bVisible && bMatureOverviewMode);
 	for (UPaperSpriteComponent* Component : MatureLandscapeClusters)
 	{
 		Component->SetVisibility(bVisible && bMatureOverviewMode);
@@ -251,18 +293,11 @@ void AAMSimWorldPresenter::RefreshIncidentPresentationVisibility()
 		bShowIncident
 			? FLinearColor(0.40f, 0.57f, 0.66f, 1.0f)
 			: FLinearColor::White;
-	for (UPaperSpriteComponent* Component : MatureSite)
+	for (int32 Index = 4; Index < MatureSite.Num(); ++Index)
 	{
-		Component->SetSpriteColor(SiteTint);
+		MatureSite[Index]->SetSpriteColor(SiteTint);
 	}
-	for (UPaperSpriteComponent* Component : MatureTaxiConnectors)
-	{
-		Component->SetSpriteColor(SiteTint);
-	}
-	for (UPaperSpriteComponent* Component : MatureLandsideLinks)
-	{
-		Component->SetSpriteColor(SiteTint);
-	}
+	SetMatureInfrastructureTint(SiteTint);
 	for (UPaperSpriteComponent* Component : MatureLandscapeClusters)
 	{
 		Component->SetSpriteColor(

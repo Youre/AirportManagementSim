@@ -1,5 +1,6 @@
 #include "AMSimWorldPresenter.h"
 
+#include "AMSimProceduralSurfaceComponent.h"
 #include "PaperSpriteComponent.h"
 
 void AAMSimWorldPresenter::SetPhase1OverlayMode(const int32 Mode)
@@ -10,7 +11,7 @@ void AAMSimWorldPresenter::SetPhase1OverlayMode(const int32 Mode)
 
 FLinearColor AAMSimWorldPresenter::GetPhase1RunwayTintForTest() const
 {
-	return Runway ? Runway->GetSpriteColor() : FLinearColor::Transparent;
+	return Runway ? Runway->GetSurfaceTintForTest() : FLinearColor::Transparent;
 }
 
 void AAMSimWorldPresenter::RefreshPhase1OverlayPresentation()
@@ -44,15 +45,15 @@ void AAMSimWorldPresenter::RefreshPhase1OverlayPresentation()
 				? FLinearColor(0.19f, 0.28f, 0.20f, 1.0f)
 				: FLinearColor(0.25f, 0.34f, 0.22f, 1.0f));
 	}
-	if (Runway) Runway->SetSpriteColor(SurfaceTint);
-	if (Taxiway) Taxiway->SetSpriteColor(SurfaceTint);
-	for (UPaperSpriteComponent* Segment : Phase1TaxiwaySegments)
+	if (Runway) Runway->SetSurfaceTint(SurfaceTint);
+	if (Taxiway) Taxiway->SetSurfaceTint(SurfaceTint);
+	for (UAMSimProceduralSurfaceComponent* Segment : Phase1TaxiwaySegments)
 	{
-		if (Segment) Segment->SetSpriteColor(SurfaceTint);
+		if (Segment) Segment->SetSurfaceTint(SurfaceTint);
 	}
-	if (Stand) Stand->SetSpriteColor(GateTint);
-	if (GateB) GateB->SetSpriteColor(GateTint);
-	if (Access) Access->SetSpriteColor(RoadTint);
+	if (Stand) Stand->SetSurfaceTint(GateTint);
+	if (GateB) GateB->SetSurfaceTint(GateTint);
+	if (Access) Access->SetSurfaceTint(RoadTint);
 	if (OperationsHut)
 	{
 		OperationsHut->SetSpriteColor(

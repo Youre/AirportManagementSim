@@ -1,6 +1,7 @@
 #include "AMSimWorldPresenter.h"
 
 #include "Algo/Count.h"
+#include "AMSimProceduralSurfaceComponent.h"
 #include "PaperSprite.h"
 #include "PaperSpriteComponent.h"
 
@@ -37,22 +38,11 @@ void AAMSimWorldPresenter::FinalizePhase1OperationsPresentation(
 			ConstructionScales[Index]);
 		Phase1ConstructionProxies[Index]->SetVisibility(false);
 	}
-	ConfigureSprite(
-		Phase1RunwayEarthwork,
-		AccessSprite,
-		FVector::ZeroVector,
-		FVector::OneVector);
 	Phase1RunwayEarthwork->SetVisibility(false);
-	for (UPaperSpriteComponent* Component : Phase1TaxiwayEarthworks)
+	for (UAMSimProceduralSurfaceComponent* Component : Phase1TaxiwayEarthworks)
 	{
-		ConfigureSprite(Component, AccessSprite, FVector::ZeroVector, FVector::OneVector);
 		Component->SetVisibility(false);
 	}
-	ConfigureSprite(
-		Phase1RoadEarthwork,
-		AccessSprite,
-		FVector::ZeroVector,
-		FVector::OneVector);
 	Phase1RoadEarthwork->SetVisibility(false);
 	for (UPaperSpriteComponent* Crew : Phase1ConstructionCrew)
 	{

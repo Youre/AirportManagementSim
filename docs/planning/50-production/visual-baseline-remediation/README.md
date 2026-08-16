@@ -58,6 +58,15 @@ Evidence:
 - [audit](./audit/audit.md)
 - [after review](./comparisons/va01-after.md)
 
+## Procedural infrastructure baseline
+
+The next world pass replaces scale-stretched runway, taxiway, road, apron, and
+gate geometry with shared flat procedural surfaces. Preview, construction, and
+completed states now reuse one dimensional builder and the existing world-layer
+contract. The retained packaged comparison, corrections, and continuing
+VA-01/VA-02 debt are recorded in the
+[procedural infrastructure review](./procedural-infrastructure-review.md).
+
 ## Remaining VA-01 debt
 
 This is not full visual parity. The next bounded system is the root

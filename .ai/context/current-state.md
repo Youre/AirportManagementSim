@@ -6,6 +6,13 @@ Material profile: documents
 Initialization mode: augment-existing
 
 Active priorities:
+- Use the shared procedural infrastructure renderer for runways, taxiways,
+  service roads, aprons, gate pads, construction progress, and placement
+  previews. Geometry, markings, borders, panel seams, and safety envelopes are
+  dimension-driven and use the same world-space layer contract in build and
+  normal play. Connection-node sprites remain deliberate interaction cues;
+  do not restore scale-stretched movement-surface sprites as authoritative
+  geometry.
 - Use the packaged `VisualBaseline` slot as the canonical repeatable visual and
   interaction review state. Install or verify it with
   `scripts/ui/Install-VisualBaselineSave.ps1`; use `-Refresh` only after a
@@ -95,6 +102,21 @@ Next verification command:
   gate footprint. Then resume the next owner-selected Phase 7 journey.
 
 Last verification:
+- 2026-08-16 EDT: airport movement surfaces now use a cooker-visible,
+  vertex-colored procedural mesh renderer instead of sprite-scale geometry.
+  Phase 1 previews, construction progress, completed runways/taxiways/roads,
+  gates, and the mature `VisualBaseline` airport share the same dimensional
+  builders and explicit presentation layers. A VA-01 correction added darker
+  surface hierarchy, scalable shoulders, apron borders/panel seams, gate
+  guidance, and safety envelopes while preserving connection markers. The
+  packaged equivalent-state capture confirms continuous networks and props
+  above road/gate surfaces. All 82 automation tests pass; clean Development
+  and Shipping packages pass; the packaged smoke and Shipping launch check
+  pass; and release scans report zero runtime string loads, forbidden
+  editor/MCP/test dependencies, required 3D assets, or line-limit violations.
+  The canonical inner Development executable SHA-256 is
+  C627F796E93CDC35C64B6AF7688449ACB7771881E0E978C573108720364C2214.
+  C retains 128.43 GiB free and no Unreal cache was cleared.
 - 2026-08-16 EDT: the canonical Development package now contains a reusable
   `VisualBaseline` schema-10 save derived from the deterministic Phase 4
   journey. The packaged state loads and returns directly to the complete

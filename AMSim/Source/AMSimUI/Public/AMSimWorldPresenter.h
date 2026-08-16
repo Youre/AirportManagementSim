@@ -12,6 +12,7 @@
 
 class UPaperSprite;
 class UPaperSpriteComponent;
+class UAMSimProceduralSurfaceComponent;
 class UMaterialInterface;
 class UTextRenderComponent;
 class USceneComponent;
@@ -83,11 +84,7 @@ public:
 	FVector GetStarterGateScaleForTest() const;
 	float GetStarterTerminalYawForTest() const;
 	float GetStarterGateYawForTest() const;
-	bool HasDistinctPhase1MovementSurfaceAssets() const
-	{
-		return RunwaySprite && TaxiSprite && AccessSprite &&
-			RunwaySprite != TaxiSprite && TaxiSprite != AccessSprite;
-	}
+	bool HasDistinctPhase1MovementSurfaceAssets() const;
 	static int32 GetHeadingIndex(AMSim::EFlightState FlightState);
 	static int32 GetPhase2HeadingIndex(AMSim::EPhase2FlightState FlightState);
 	int32 GetActivePhase2AircraftProxyCount() const;
@@ -147,6 +144,9 @@ private:
 		const TCHAR* Name,
 		int32 SortPriority,
 		const FLinearColor& Color = FLinearColor::White);
+	UAMSimProceduralSurfaceComponent* CreateProceduralSurfaceComponent(
+		const TCHAR* Name,
+		int32 SortPriority);
 	void ConfigureSprite(
 		UPaperSpriteComponent* Component,
 		UPaperSprite* Sprite,
@@ -180,6 +180,8 @@ private:
 		const AMSim::FPhase1State& State);
 	void RefreshPhase1OverlayPresentation();
 	void SetPhase3WorldVisible(bool bVisible);
+	void SetMatureInfrastructureVisible(bool bVisible);
+	void SetMatureInfrastructureTint(const FLinearColor& Tint);
 	void RefreshPhase3OverlayVisibility();
 	void RefreshIncidentPresentationVisibility();
 	void FinalizeTerminalPresentation(
@@ -196,6 +198,7 @@ private:
 	void FinalizePhase5Presentation(
 		UPaperSprite* FeederFreighterSprite,
 		UPaperSprite* RegionalFreighterSprite);
+	void InitializeMatureInfrastructurePresentation();
 	void InitializePhase6Presentation();
 	void InitializeTerminalLayoutPresentation();
 	void RefreshTerminalLayoutPresentation(
@@ -216,17 +219,17 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UPaperSpriteComponent> Terrain;
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UPaperSpriteComponent> Runway;
+	TObjectPtr<UAMSimProceduralSurfaceComponent> Runway;
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UPaperSpriteComponent> Taxiway;
+	TObjectPtr<UAMSimProceduralSurfaceComponent> Taxiway;
 	UPROPERTY(VisibleAnywhere)
-	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1TaxiwaySegments;
+	TArray<TObjectPtr<UAMSimProceduralSurfaceComponent>> Phase1TaxiwaySegments;
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UPaperSpriteComponent> Stand;
+	TObjectPtr<UAMSimProceduralSurfaceComponent> Stand;
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UPaperSpriteComponent> GateB;
+	TObjectPtr<UAMSimProceduralSurfaceComponent> GateB;
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UPaperSpriteComponent> Access;
+	TObjectPtr<UAMSimProceduralSurfaceComponent> Access;
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UPaperSpriteComponent> OperationsHut;
 	UPROPERTY(VisibleAnywhere)
@@ -256,27 +259,27 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1ConstructionProxies;
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UPaperSpriteComponent> Phase1RunwayEarthwork;
+	TObjectPtr<UAMSimProceduralSurfaceComponent> Phase1RunwayEarthwork;
 	UPROPERTY(VisibleAnywhere)
-	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1TaxiwayEarthworks;
+	TArray<TObjectPtr<UAMSimProceduralSurfaceComponent>> Phase1TaxiwayEarthworks;
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UPaperSpriteComponent> Phase1RoadEarthwork;
+	TObjectPtr<UAMSimProceduralSurfaceComponent> Phase1RoadEarthwork;
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1ConstructionCrew;
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1ConstructionBoundaryMarkers;
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UPaperSpriteComponent> Phase1ConstructionPreviewRunway;
+	TObjectPtr<UAMSimProceduralSurfaceComponent> Phase1ConstructionPreviewRunway;
 	UPROPERTY(VisibleAnywhere)
-	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1ConstructionPreviewTaxiways;
+	TArray<TObjectPtr<UAMSimProceduralSurfaceComponent>> Phase1ConstructionPreviewTaxiways;
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UPaperSpriteComponent> Phase1ConstructionPreviewRoad;
+	TObjectPtr<UAMSimProceduralSurfaceComponent> Phase1ConstructionPreviewRoad;
 	UPROPERTY(VisibleAnywhere)
-	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1ConstructionPreviewOutlines;
+	TArray<TObjectPtr<UAMSimProceduralSurfaceComponent>> Phase1ConstructionPreviewOutlines;
 	UPROPERTY(VisibleAnywhere)
-	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1ConstructionPreviewPattern;
+	TArray<TObjectPtr<UAMSimProceduralSurfaceComponent>> Phase1ConstructionPreviewPattern;
 	UPROPERTY(VisibleAnywhere)
-	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1ConstructionPlanningGrid;
+	TArray<TObjectPtr<UAMSimProceduralSurfaceComponent>> Phase1ConstructionPlanningGrid;
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1ConstructionPreviewMarkers;
 	UPROPERTY(VisibleAnywhere)
@@ -348,9 +351,19 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> MatureSite;
 	UPROPERTY(VisibleAnywhere)
-	TArray<TObjectPtr<UPaperSpriteComponent>> MatureTaxiConnectors;
+	TObjectPtr<UAMSimProceduralSurfaceComponent> MatureRunway;
 	UPROPERTY(VisibleAnywhere)
-	TArray<TObjectPtr<UPaperSpriteComponent>> MatureLandsideLinks;
+	TObjectPtr<UAMSimProceduralSurfaceComponent> MatureTaxiway;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UAMSimProceduralSurfaceComponent> MatureApron;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UAMSimProceduralSurfaceComponent> MatureAccessRoad;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UAMSimProceduralSurfaceComponent>> MatureGatePads;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UAMSimProceduralSurfaceComponent>> MatureTaxiConnectors;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UAMSimProceduralSurfaceComponent>> MatureLandsideLinks;
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> MatureLandscapeClusters;
 	UPROPERTY(VisibleAnywhere)

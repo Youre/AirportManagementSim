@@ -2,6 +2,8 @@
 
 #include "AMSimPhase1Fixture.h"
 #include "AMSimPhase1WorldGeometry.h"
+#include "AMSimProceduralSurfaceComponent.h"
+#include "AMSimProceduralSurfaceGeometry.h"
 #include "AMSimWorldPresentationLayers.h"
 #include "Components/TextRenderComponent.h"
 #include "PaperSpriteComponent.h"
@@ -9,19 +11,6 @@
 namespace
 {
 	constexpr float SpritePlaneRoll = -90.0f;
-	void ApplySegment(
-		UPaperSpriteComponent* Component,
-		const AMSim::FPhase1WorldSegmentGeometry& Geometry)
-	{
-		if (!Component)
-		{
-			return;
-		}
-		Component->SetRelativeLocation(Geometry.Center);
-		Component->SetRelativeScale3D(Geometry.Scale);
-		Component->SetRelativeRotation(
-			FRotator(0.0f, Geometry.YawDegrees, SpritePlaneRoll));
-	}
 
 	FVector MapOffset(
 		const AMSim::FPhase1Point& Point,
@@ -38,20 +27,34 @@ namespace
 void AAMSimWorldPresenter::ApplyPhase1Geometry(
 	const AMSim::FStarterPlanProposal& Proposal)
 {
+	const FVector RunwayStartWorld = AMSim::MapPhase1PointToWorld(
+		Proposal.RunwayStart);
+	const FVector RunwayEndWorld = AMSim::MapPhase1PointToWorld(
+		Proposal.RunwayEnd);
 	const AMSim::FPhase1WorldSegmentGeometry RunwayGeometry =
 		AMSim::MakePhase1WorldSegmentGeometry(
 			Proposal.RunwayStart,
 			Proposal.RunwayEnd,
 			Proposal.RunwayWidthCentimeters,
 			AMSim::WorldPresentationLayers::Runway.Height);
-	ApplySegment(Runway, RunwayGeometry);
-	ApplySegment(
-		Phase1RunwayEarthwork,
-		AMSim::MakePhase1WorldSegmentGeometry(
-			Proposal.RunwayStart,
-			Proposal.RunwayEnd,
-			Proposal.RunwayWidthCentimeters,
-			AMSim::WorldPresentationLayers::ConstructionBed.Height));
+	Runway->SetPresentationLayer(
+		AMSim::WorldPresentationLayers::Runway.Height,
+		AMSim::WorldPresentationLayers::Runway.SortPriority);
+	Runway->BuildRunway(
+		RunwayStartWorld,
+		RunwayEndWorld,
+		AMSim::MapPhase1DistanceToWorld(
+			Proposal.RunwayWidthCentimeters),
+		AMSim::MakeOperationalRunwayPalette());
+	Phase1RunwayEarthwork->SetPresentationLayer(
+		AMSim::WorldPresentationLayers::ConstructionBed.Height,
+		AMSim::WorldPresentationLayers::ConstructionBed.SortPriority);
+	Phase1RunwayEarthwork->BuildPlainSegment(
+		RunwayStartWorld,
+		RunwayEndWorld,
+		AMSim::MapPhase1DistanceToWorld(
+			Proposal.RunwayWidthCentimeters * 1.12),
+		FLinearColor(0.52f, 0.36f, 0.20f, 0.94f));
 	const TArray<AMSim::FTaxiwaySegment> TaxiSegments =
 		AMSim::GetTaxiwaySegments(Proposal);
 	ActivePhase1TaxiwaySegmentCount = FMath::Min(
@@ -62,23 +65,29 @@ void AAMSimWorldPresenter::ApplyPhase1Geometry(
 		const bool bHasSegment = TaxiSegments.IsValidIndex(Index);
 		if (bHasSegment)
 		{
-			const AMSim::FPhase1WorldSegmentGeometry SegmentGeometry =
-				AMSim::MakePhase1WorldSegmentGeometry(
-					TaxiSegments[Index].Start,
-					TaxiSegments[Index].End,
-					1200,
-					AMSim::WorldPresentationLayers::Taxiway.Height +
-						Index * 0.05);
-			ApplySegment(Phase1TaxiwaySegments[Index], SegmentGeometry);
+			const FVector Start = AMSim::MapPhase1PointToWorld(
+				TaxiSegments[Index].Start);
+			const FVector End = AMSim::MapPhase1PointToWorld(
+				TaxiSegments[Index].End);
+			Phase1TaxiwaySegments[Index]->SetPresentationLayer(
+				AMSim::WorldPresentationLayers::Taxiway.Height + Index * 0.05,
+				AMSim::WorldPresentationLayers::Taxiway.SortPriority + Index);
+			Phase1TaxiwaySegments[Index]->BuildTaxiway(
+				Start,
+				End,
+				AMSim::MapPhase1DistanceToWorld(1200.0),
+				AMSim::MakeOperationalTaxiwayPalette());
 			if (Phase1TaxiwayEarthworks.IsValidIndex(Index))
 			{
-				ApplySegment(
-					Phase1TaxiwayEarthworks[Index],
-					AMSim::MakePhase1WorldSegmentGeometry(
-						TaxiSegments[Index].Start,
-						TaxiSegments[Index].End,
-						1200,
-						AMSim::WorldPresentationLayers::ConstructionBed.Height));
+				Phase1TaxiwayEarthworks[Index]->SetPresentationLayer(
+					AMSim::WorldPresentationLayers::ConstructionBed.Height,
+					AMSim::WorldPresentationLayers::ConstructionBed.SortPriority);
+				Phase1TaxiwayEarthworks[Index]->BuildPlainSegment(
+					Start,
+					End,
+					AMSim::MapPhase1DistanceToWorld(1500.0),
+					FLinearColor(0.58f, 0.40f, 0.22f, 0.94f),
+					true);
 			}
 		}
 		Phase1TaxiwaySegments[Index]->SetVisibility(bHasSegment);
@@ -86,20 +95,27 @@ void AAMSimWorldPresenter::ApplyPhase1Geometry(
 	bPhase1RoadPresent = Proposal.AccessStart != Proposal.AccessEnd;
 	if (bPhase1RoadPresent)
 	{
-		ApplySegment(
-			Access,
-			AMSim::MakePhase1WorldSegmentGeometry(
-				Proposal.AccessStart,
-				Proposal.AccessEnd,
-				1000,
-				AMSim::WorldPresentationLayers::ServiceRoad.Height));
-		ApplySegment(
-			Phase1RoadEarthwork,
-			AMSim::MakePhase1WorldSegmentGeometry(
-				Proposal.AccessStart,
-				Proposal.AccessEnd,
-				1000,
-				AMSim::WorldPresentationLayers::ConstructionBed.Height));
+		const FVector RoadStart = AMSim::MapPhase1PointToWorld(
+			Proposal.AccessStart);
+		const FVector RoadEnd = AMSim::MapPhase1PointToWorld(
+			Proposal.AccessEnd);
+		Access->SetPresentationLayer(
+			AMSim::WorldPresentationLayers::ServiceRoad.Height,
+			AMSim::WorldPresentationLayers::ServiceRoad.SortPriority);
+		Access->BuildRoad(
+			RoadStart,
+			RoadEnd,
+			AMSim::MapPhase1DistanceToWorld(1000.0),
+			AMSim::MakeOperationalRoadPalette());
+		Phase1RoadEarthwork->SetPresentationLayer(
+			AMSim::WorldPresentationLayers::ConstructionBed.Height,
+			AMSim::WorldPresentationLayers::ConstructionBed.SortPriority);
+		Phase1RoadEarthwork->BuildPlainSegment(
+			RoadStart,
+			RoadEnd,
+			AMSim::MapPhase1DistanceToWorld(1300.0),
+			FLinearColor(0.48f, 0.34f, 0.21f, 0.92f),
+			true);
 	}
 
 	Phase1RunwayCenter = RunwayGeometry.Center;
@@ -118,20 +134,30 @@ void AAMSimWorldPresenter::ApplyPhase1Geometry(
 			AMSim::CreateDefaultStarterPlan().StandCenter,
 			AMSim::WorldPresentationLayers::GateA.Height);
 
-	if (Stand)
-	{
-		Stand->SetRelativeLocation(Phase1StandCenter);
-		Stand->SetRelativeScale3D(FVector(7.5, 1.0, 7.5));
-		Stand->SetRelativeRotation(FRotator(0.0f, 90.0f, SpritePlaneRoll));
-	}
-	if (GateB)
-	{
-		GateB->SetRelativeLocation(AMSim::MapPhase1PointToWorld(
-			AMSim::GetStarterGatePoints()[1],
-			AMSim::WorldPresentationLayers::GateB.Height));
-		GateB->SetRelativeScale3D(FVector(7.5, 1.0, 7.5));
-		GateB->SetRelativeRotation(FRotator(0.0f, 90.0f, SpritePlaneRoll));
-	}
+	const FVector TerminalCenter = AMSim::MapPhase1PointToWorld(
+		AMSim::GetStarterTerminalCenter());
+	const FVector GateForward =
+		(Phase1StandCenter - TerminalCenter).GetSafeNormal2D();
+	Stand->SetPresentationLayer(
+		AMSim::WorldPresentationLayers::GateA.Height,
+		AMSim::WorldPresentationLayers::GateA.SortPriority);
+	Stand->BuildGateApron(
+		Phase1StandCenter,
+		GateForward,
+		AMSim::MapPhase1DistanceToWorld(12500.0),
+		AMSim::MapPhase1DistanceToWorld(9000.0),
+		AMSim::MakeOperationalGatePalette());
+	const FVector GateBCenter = AMSim::MapPhase1PointToWorld(
+		AMSim::GetStarterGatePoints()[1]);
+	GateB->SetPresentationLayer(
+		AMSim::WorldPresentationLayers::GateB.Height,
+		AMSim::WorldPresentationLayers::GateB.SortPriority);
+	GateB->BuildGateApron(
+		GateBCenter,
+		(GateBCenter - TerminalCenter).GetSafeNormal2D(),
+		AMSim::MapPhase1DistanceToWorld(12500.0),
+		AMSim::MapPhase1DistanceToWorld(9000.0),
+		AMSim::MakeOperationalGatePalette());
 	if (OperationsHut)
 	{
 		OperationsHut->SetRelativeLocation(AMSim::MapPhase1PointToWorld(
@@ -227,20 +253,20 @@ void AAMSimWorldPresenter::ApplyPhase1Geometry(
 	{
 		Place(Phase1ConstructionProxies[Index], ConstructionLocations[Index]);
 	}
-	const FVector RunwayStartWorld = AMSim::MapPhase1PointToWorld(
+	const FVector NumberedRunwayStartWorld = AMSim::MapPhase1PointToWorld(
 		Proposal.RunwayStart,
 		53.0);
-	const FVector RunwayEndWorld = AMSim::MapPhase1PointToWorld(
+	const FVector NumberedRunwayEndWorld = AMSim::MapPhase1PointToWorld(
 		Proposal.RunwayEnd,
 		53.0);
 	const FVector RunwayDirection =
-		(RunwayEndWorld - RunwayStartWorld).GetSafeNormal2D();
+		(NumberedRunwayEndWorld - NumberedRunwayStartWorld).GetSafeNormal2D();
 	const FVector RunwayNormal(-RunwayDirection.Y, RunwayDirection.X, 0.0);
 	const FVector BoundaryLocations[] = {
-		RunwayStartWorld + RunwayNormal * 2200.0,
-		RunwayStartWorld - RunwayNormal * 2200.0,
-		RunwayEndWorld + RunwayNormal * 2200.0,
-		RunwayEndWorld - RunwayNormal * 2200.0};
+		NumberedRunwayStartWorld + RunwayNormal * 2200.0,
+		NumberedRunwayStartWorld - RunwayNormal * 2200.0,
+		NumberedRunwayEndWorld + RunwayNormal * 2200.0,
+		NumberedRunwayEndWorld - RunwayNormal * 2200.0};
 	for (int32 Index = 0;
 		Index < Phase1ConstructionBoundaryMarkers.Num() &&
 			Index < UE_ARRAY_COUNT(BoundaryLocations);
@@ -297,15 +323,15 @@ void AAMSimWorldPresenter::SetFacilitiesVisible(
 	const FLinearColor NetworkTint = bOperational
 		? FLinearColor::White
 		: ProposalTint;
-	Runway->SetSpriteColor(NetworkTint);
-	for (UPaperSpriteComponent* Component : Phase1TaxiwaySegments)
+	Runway->SetSurfaceTint(NetworkTint);
+	for (UAMSimProceduralSurfaceComponent* Component : Phase1TaxiwaySegments)
 	{
-		Component->SetSpriteColor(NetworkTint);
+		Component->SetSurfaceTint(NetworkTint);
 	}
-	Access->SetSpriteColor(NetworkTint);
+	Access->SetSurfaceTint(NetworkTint);
 	Windsock->SetSpriteColor(NetworkTint);
-	Stand->SetSpriteColor(FLinearColor::White);
-	GateB->SetSpriteColor(FLinearColor::White);
+	Stand->SetSurfaceTint(FLinearColor::White);
+	GateB->SetSurfaceTint(FLinearColor::White);
 	OperationsHut->SetSpriteColor(FLinearColor::White);
 }
 
@@ -318,7 +344,7 @@ FVector AAMSimWorldPresenter::GetStarterTerminalScaleForTest() const
 
 FVector AAMSimWorldPresenter::GetStarterGateScaleForTest() const
 {
-	return Stand ? Stand->GetRelativeScale3D() : FVector::ZeroVector;
+	return Stand ? Stand->GetSurfaceSizeForTest() : FVector::ZeroVector;
 }
 
 float AAMSimWorldPresenter::GetStarterTerminalYawForTest() const
@@ -330,7 +356,7 @@ float AAMSimWorldPresenter::GetStarterTerminalYawForTest() const
 
 float AAMSimWorldPresenter::GetStarterGateYawForTest() const
 {
-	return Stand ? Stand->GetRelativeRotation().Yaw : 0.0f;
+	return 0.0f;
 }
 
 void AAMSimWorldPresenter::SetConstructionEditorOverlayVisible(

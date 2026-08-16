@@ -3,6 +3,9 @@
 #include "AMSimPhase1ConstructionPresentation.h"
 #include "AMSimPhase1Fixture.h"
 #include "AMSimPhase1WorldGeometry.h"
+#include "AMSimProceduralSurfaceComponent.h"
+#include "AMSimProceduralSurfaceGeometry.h"
+#include "AMSimWorldPresentationLayers.h"
 #include "Components/TextRenderComponent.h"
 #include "PaperSpriteComponent.h"
 
@@ -10,6 +13,12 @@ namespace
 {
 	constexpr float SpritePlaneRoll = -90.0f;
 	constexpr int32 ConstructionBedSortPriority = 5;
+	enum class EPartialSurface : uint8
+	{
+		Runway,
+		Taxiway,
+		Road
+	};
 
 	double SegmentLength(
 		const AMSim::FPhase1Point& Start,
@@ -37,13 +46,15 @@ namespace
 	}
 
 	void ApplyPartialSegment(
-		UPaperSpriteComponent* Component,
+		UAMSimProceduralSurfaceComponent* Component,
 		const AMSim::FPhase1Point& Start,
 		const AMSim::FPhase1Point& End,
 		const int64 WidthCentimeters,
 		const double Height,
 		const float Progress,
-		const bool bAllowed)
+		const bool bAllowed,
+		const EPartialSurface Surface,
+		const bool bShowMarkings)
 	{
 		if (!Component)
 		{
@@ -56,16 +67,44 @@ namespace
 			return;
 		}
 
-		const AMSim::FPhase1WorldSegmentGeometry Geometry =
-			AMSim::MakePhase1WorldSegmentGeometry(
-				Start,
-				PointAt(Start, End, Progress),
-				WidthCentimeters,
-				Height);
-		Component->SetRelativeLocation(Geometry.Center);
-		Component->SetRelativeScale3D(Geometry.Scale);
-		Component->SetRelativeRotation(
-			FRotator(0.0f, Geometry.YawDegrees, SpritePlaneRoll));
+		const FVector WorldStart = AMSim::MapPhase1PointToWorld(Start);
+		const FVector WorldEnd = AMSim::MapPhase1PointToWorld(
+			PointAt(Start, End, Progress));
+		Component->SetPresentationLayer(
+			Height,
+			Surface == EPartialSurface::Runway
+				? AMSim::WorldPresentationLayers::Runway.SortPriority
+				: Surface == EPartialSurface::Taxiway
+					? AMSim::WorldPresentationLayers::Taxiway.SortPriority
+					: AMSim::WorldPresentationLayers::ServiceRoad.SortPriority);
+		const double Width = AMSim::MapPhase1DistanceToWorld(WidthCentimeters);
+		switch (Surface)
+		{
+		case EPartialSurface::Runway:
+			Component->BuildRunway(
+				WorldStart,
+				WorldEnd,
+				Width,
+				AMSim::MakeOperationalRunwayPalette(),
+				bShowMarkings);
+			break;
+		case EPartialSurface::Taxiway:
+			Component->BuildTaxiway(
+				WorldStart,
+				WorldEnd,
+				Width,
+				AMSim::MakeOperationalTaxiwayPalette(),
+				bShowMarkings);
+			break;
+		case EPartialSurface::Road:
+			Component->BuildRoad(
+				WorldStart,
+				WorldEnd,
+				Width,
+				AMSim::MakeOperationalRoadPalette(),
+				bShowMarkings);
+			break;
+		}
 	}
 
 	FVector WithHeight(FVector Location, const double Height)
@@ -97,21 +136,18 @@ void AAMSimWorldPresenter::InitializePhase1ConstructionPresentation()
 			*FString::Printf(TEXT("Phase1ConstructionProxy%d"), Index),
 			54 + Index));
 	}
-	Phase1RunwayEarthwork = CreateSpriteComponent(
+	Phase1RunwayEarthwork = CreateProceduralSurfaceComponent(
 		TEXT("Phase1RunwayEarthwork"),
-		ConstructionBedSortPriority,
-		FLinearColor(0.64f, 0.45f, 0.25f, 0.92f));
+		ConstructionBedSortPriority);
 	for (int32 Index = 0; Index < 8; ++Index)
 	{
-		Phase1TaxiwayEarthworks.Add(CreateSpriteComponent(
+		Phase1TaxiwayEarthworks.Add(CreateProceduralSurfaceComponent(
 			*FString::Printf(TEXT("Phase1TaxiwayEarthwork%d"), Index),
-			ConstructionBedSortPriority,
-			FLinearColor(0.69f, 0.49f, 0.27f, 0.94f)));
+			ConstructionBedSortPriority));
 	}
-	Phase1RoadEarthwork = CreateSpriteComponent(
+	Phase1RoadEarthwork = CreateProceduralSurfaceComponent(
 		TEXT("Phase1RoadEarthwork"),
-		ConstructionBedSortPriority,
-		FLinearColor(0.58f, 0.40f, 0.24f, 0.92f));
+		ConstructionBedSortPriority);
 	for (int32 Index = 0; Index < 3; ++Index)
 	{
 		Phase1ConstructionCrew.Add(CreateSpriteComponent(
@@ -167,9 +203,11 @@ void AAMSimWorldPresenter::RefreshPhase1ConstructionPresentation(
 		SegmentProgress.IsValidIndex(ProgressIndex)
 			? SegmentProgress[ProgressIndex]
 			: 0.0f,
-		bWorldAllowed);
+		bWorldAllowed,
+		EPartialSurface::Runway,
+		Visual.bFinishedMarkingsVisible);
 	++ProgressIndex;
-	Runway->SetSpriteColor(FLinearColor::White);
+	Runway->SetSurfaceTint(FLinearColor::White);
 
 	for (int32 Index = 0; Index < Phase1TaxiwaySegments.Num(); ++Index)
 	{
@@ -186,14 +224,16 @@ void AAMSimWorldPresenter::RefreshPhase1ConstructionPresentation(
 				1200,
 				20.0 + Index,
 				Progress,
-				bWorldAllowed);
+				bWorldAllowed,
+				EPartialSurface::Taxiway,
+				Visual.bFinishedMarkingsVisible);
 			++ProgressIndex;
 		}
 		else
 		{
 			Phase1TaxiwaySegments[Index]->SetVisibility(false);
 		}
-		Phase1TaxiwaySegments[Index]->SetSpriteColor(FLinearColor::White);
+		Phase1TaxiwaySegments[Index]->SetSurfaceTint(FLinearColor::White);
 	}
 
 	const float RoadProgress =
@@ -207,8 +247,10 @@ void AAMSimWorldPresenter::RefreshPhase1ConstructionPresentation(
 		1000,
 		20.0,
 		RoadProgress,
-		bWorldAllowed && bRoadPresent);
-	Access->SetSpriteColor(FLinearColor::White);
+		bWorldAllowed && bRoadPresent,
+		EPartialSurface::Road,
+		Visual.bFinishedMarkingsVisible);
+	Access->SetSurfaceTint(FLinearColor::White);
 
 	const bool bShowEarthwork =
 		bWorldAllowed && Visual.bEarthworkVisible;
@@ -389,7 +431,7 @@ int32 AAMSimWorldPresenter::GetActivePhase1EarthworkProxyCount() const
 	int32 Count = Phase1RunwayEarthwork && Phase1RunwayEarthwork->IsVisible()
 		? 1
 		: 0;
-	for (const UPaperSpriteComponent* Component : Phase1TaxiwayEarthworks)
+	for (const UAMSimProceduralSurfaceComponent* Component : Phase1TaxiwayEarthworks)
 	{
 		Count += Component && Component->IsVisible() ? 1 : 0;
 	}
@@ -400,8 +442,8 @@ int32 AAMSimWorldPresenter::GetActivePhase1EarthworkProxyCount() const
 bool AAMSimWorldPresenter::ArePhase1ConstructionBedsBelowSurfaces() const
 {
 	const auto IsBelow = [](
-		const UPaperSpriteComponent* Bed,
-		const UPaperSpriteComponent* Surface)
+		const UAMSimProceduralSurfaceComponent* Bed,
+		const UAMSimProceduralSurfaceComponent* Surface)
 	{
 		return Bed && Surface &&
 			Bed->GetRelativeLocation().Z < Surface->GetRelativeLocation().Z &&

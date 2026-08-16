@@ -3,6 +3,7 @@
 #include "Algo/AllOf.h"
 #include "Algo/Count.h"
 #include "AMSimPhase1Fixture.h"
+#include "AMSimProceduralSurfaceComponent.h"
 #include "AMSimWorldPresentationLayers.h"
 #include "Components/SceneComponent.h"
 #include "Components/TextRenderComponent.h"
@@ -106,26 +107,26 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 	Terrain = CreateSpriteComponent(
 		TEXT("Terrain"),
 		AMSim::WorldPresentationLayers::Terrain.SortPriority);
-	Runway = CreateSpriteComponent(
+	Runway = CreateProceduralSurfaceComponent(
 		TEXT("Runway"),
 		AMSim::WorldPresentationLayers::Runway.SortPriority);
-	Taxiway = CreateSpriteComponent(
+	Taxiway = CreateProceduralSurfaceComponent(
 		TEXT("Taxiway"),
 		AMSim::WorldPresentationLayers::Taxiway.SortPriority);
 	Phase1TaxiwaySegments.Add(Taxiway);
 	for (int32 Index = 1; Index < 8; ++Index)
 	{
-		Phase1TaxiwaySegments.Add(CreateSpriteComponent(
+		Phase1TaxiwaySegments.Add(CreateProceduralSurfaceComponent(
 			*FString::Printf(TEXT("Phase1TaxiwaySegment%d"), Index),
 			AMSim::WorldPresentationLayers::Taxiway.SortPriority));
 	}
-	Stand = CreateSpriteComponent(
+	Stand = CreateProceduralSurfaceComponent(
 		TEXT("Stand"),
 		AMSim::WorldPresentationLayers::GateA.SortPriority);
-	GateB = CreateSpriteComponent(
+	GateB = CreateProceduralSurfaceComponent(
 		TEXT("GateB"),
 		AMSim::WorldPresentationLayers::GateB.SortPriority);
-	Access = CreateSpriteComponent(
+	Access = CreateProceduralSurfaceComponent(
 		TEXT("Access"),
 		AMSim::WorldPresentationLayers::ServiceRoad.SortPriority);
 	OperationsHut = CreateSpriteComponent(
@@ -304,6 +305,24 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 			43 + Index % 4));
 	}
 	InitializeTerminalLayoutPresentation();
+	MatureRunway = CreateProceduralSurfaceComponent(
+		TEXT("MatureRunway"),
+		AMSim::WorldPresentationLayers::Runway.SortPriority);
+	MatureTaxiway = CreateProceduralSurfaceComponent(
+		TEXT("MatureTaxiway"),
+		AMSim::WorldPresentationLayers::Taxiway.SortPriority);
+	MatureApron = CreateProceduralSurfaceComponent(
+		TEXT("MatureApron"),
+		AMSim::WorldPresentationLayers::GateA.SortPriority);
+	MatureAccessRoad = CreateProceduralSurfaceComponent(
+		TEXT("MatureAccessRoad"),
+		AMSim::WorldPresentationLayers::ServiceRoad.SortPriority);
+	for (int32 Index = 0; Index < 3; ++Index)
+	{
+		MatureGatePads.Add(CreateProceduralSurfaceComponent(
+			*FString::Printf(TEXT("MatureGatePad%d"), Index),
+			AMSim::WorldPresentationLayers::GateA.SortPriority + Index));
+	}
 	for (int32 Index = 0;
 		Index < static_cast<int32>(ESiteSprite::Count);
 		++Index)
@@ -314,13 +333,13 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 	}
 	for (int32 Index = 0; Index < 6; ++Index)
 	{
-		MatureTaxiConnectors.Add(CreateSpriteComponent(
+		MatureTaxiConnectors.Add(CreateProceduralSurfaceComponent(
 			*FString::Printf(TEXT("MatureTaxiConnector%d"), Index),
 			12 + Index));
 	}
 	for (int32 Index = 0; Index < 7; ++Index)
 	{
-		MatureLandsideLinks.Add(CreateSpriteComponent(
+		MatureLandsideLinks.Add(CreateProceduralSurfaceComponent(
 			*FString::Printf(TEXT("MatureLandsideLink%d"), Index),
 			11 + Index));
 	}
@@ -613,48 +632,11 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 		FVector(100.0, 1.0, 100.0));
 	Terrain->SetSpriteColor(FLinearColor(0.25f, 0.34f, 0.22f, 1.0f));
 	ConfigureSprite(
-		Runway,
-		RunwaySprite,
-		FVector(-5000.0, 0.0, AMSim::WorldPresentationLayers::Runway.Height),
-		FVector(2.5, 1.0, 45.0));
-	ConfigureSprite(
-		Taxiway,
-		TaxiSprite,
-		FVector(-20000.0, 18000.0, AMSim::WorldPresentationLayers::Taxiway.Height),
-		FVector(10.0, 1.0, 1.25));
-	for (int32 Index = 1; Index < Phase1TaxiwaySegments.Num(); ++Index)
-	{
-		ConfigureSprite(
-			Phase1TaxiwaySegments[Index],
-			TaxiSprite,
-			FVector::ZeroVector,
-			FVector(10.0, 1.0, 1.25));
-		Phase1TaxiwaySegments[Index]->SetVisibility(false);
-	}
-	ConfigureSprite(
-		Stand,
-		SiteSprite(ESiteSprite::ApronStand),
-		FVector(-32000.0, 23000.0, AMSim::WorldPresentationLayers::GateA.Height),
-		FVector(7.5, 1.0, 7.5));
-	ConfigureSprite(
-		GateB,
-		SiteSprite(ESiteSprite::ApronStand),
-		FVector(-22000.0, 23000.0, AMSim::WorldPresentationLayers::GateB.Height),
-		FVector(7.5, 1.0, 7.5));
-	ConfigureSprite(
-		Access,
-		AccessSprite,
-		FVector(-35000.0, 36000.0,
-			AMSim::WorldPresentationLayers::ServiceRoad.Height),
-		FVector(7.0, 1.0, 1.25));
-	ConfigureSprite(
 		OperationsHut,
 		SiteSprite(ESiteSprite::RegionalTerminal),
 		FVector(-27000.0, 36000.0,
 			AMSim::WorldPresentationLayers::Structure.Height),
 		FVector(11.0, 1.0, 11.0));
-	Stand->SetRelativeRotation(FRotator(0.0f, 90.0f, SpritePlaneRoll));
-	GateB->SetRelativeRotation(FRotator(0.0f, 90.0f, SpritePlaneRoll));
 	OperationsHut->SetRelativeRotation(
 		FRotator(0.0f, 90.0f, SpritePlaneRoll));
 	ConfigureSprite(Windsock, WindsockSprite, FVector(14000.0, -45000.0, 45.0), FVector(3.0, 1.0, 3.0));
@@ -939,19 +921,7 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 		MatureSite[Index]->SetSpriteColor(FLinearColor::White);
 		MatureSite[Index]->SetVisibility(false);
 	}
-	for (const int32 RotatedIndex : {
-		static_cast<int32>(ESiteSprite::RunwayAsphalt),
-		static_cast<int32>(ESiteSprite::TaxiwayAsphalt),
-		static_cast<int32>(ESiteSprite::AccessRoad)})
-	{
-		const FQuat FlatOrientation =
-			FRotator(0.0f, 0.0f, SpritePlaneRoll).Quaternion();
-		const FQuat LocalInPlaneRotation(
-			FVector::YAxisVector,
-			FMath::DegreesToRadians(90.0f));
-		MatureSite[RotatedIndex]->SetRelativeRotation(
-			(FlatOrientation * LocalInPlaneRotation).Rotator());
-	}
+	InitializeMatureInfrastructurePresentation();
 	FinalizeIncidentPresentation(
 		SiteSprite(ESiteSprite::RunwayAsphalt),
 		SiteSprite(ESiteSprite::TaxiwayAsphalt),
@@ -960,49 +930,6 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 		Phase5FreighterSprites[0],
 		Phase5FreighterSprites[1]);
 	InitializePhase6Presentation();
-	const FVector AirsideLinkLocations[] = {
-		FVector(14500.0, -26000.0, 12.0),
-		FVector(14500.0, 26000.0, 13.0),
-		FVector(14500.0, 0.0, 14.0),
-		FVector(7000.0, -21000.0, 15.0),
-		FVector(7000.0, 21000.0, 16.0),
-		FVector(0.0, 0.0, 17.0)};
-	const FVector AirsideLinkScales[] = {
-		FVector(26.0, 1.0, 8.0),
-		FVector(26.0, 1.0, 8.0),
-		FVector(22.0, 1.0, 8.0),
-		FVector(18.0, 1.0, 7.0),
-		FVector(18.0, 1.0, 7.0),
-		FVector(18.0, 1.0, 6.0)};
-	for (int32 Index = 0; Index < MatureTaxiConnectors.Num(); ++Index)
-	{
-		ConfigureSprite(
-			MatureTaxiConnectors[Index],
-			SiteSprite(ESiteSprite::TaxiwayAsphalt),
-			AirsideLinkLocations[Index],
-			AirsideLinkScales[Index]);
-		MatureTaxiConnectors[Index]->SetVisibility(false);
-	}
-	const FVector LandsideLinkLocations[] = {
-		FVector(-15500.0, -18000.0, 12.0),
-		FVector(-15500.0, 18000.0, 13.0),
-		FVector(-28500.0, -31000.0, 14.0),
-		FVector(-28500.0, -12000.0, 15.0),
-		FVector(-28500.0, 8000.0, 16.0),
-		FVector(-28500.0, 27000.0, 17.0),
-		FVector(-17500.0, 6000.0, 18.0)};
-	for (int32 Index = 0; Index < MatureLandsideLinks.Num(); ++Index)
-	{
-		ConfigureSprite(
-			MatureLandsideLinks[Index],
-			SiteSprite(ESiteSprite::AccessRoad),
-			LandsideLinkLocations[Index],
-			FVector(
-				Index < 2 ? 22.0 : 18.0,
-				1.0,
-				Index < 2 ? 5.5 : 5.0));
-		MatureLandsideLinks[Index]->SetVisibility(false);
-	}
 	const FVector LandscapeLocations[] = {
 		FVector(39000.0, -26000.0, 36.0),
 		FVector(39000.0, -8000.0, 36.0),
@@ -1275,6 +1202,7 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 	ExpansionClosureOverlay->SetVisibility(false);
 	IncidentOverlay->SetVisibility(false);
 
+	ApplyPhase1Geometry(AMSim::CreateDefaultStarterPlan());
 	SetFacilitiesVisible(false, false);
 	Aircraft->SetVisibility(false);
 	Selection->SetVisibility(false);
@@ -1296,6 +1224,18 @@ UPaperSpriteComponent* AAMSimWorldPresenter::CreateSpriteComponent(
 	Component->SetTranslucentSortPriority(SortPriority);
 	Component->SetSpriteColor(Color);
 	Component->SetRelativeRotation(FRotator(0.0f, 0.0f, SpritePlaneRoll));
+	return Component;
+}
+
+UAMSimProceduralSurfaceComponent*
+AAMSimWorldPresenter::CreateProceduralSurfaceComponent(
+	const TCHAR* Name,
+	const int32 SortPriority)
+{
+	UAMSimProceduralSurfaceComponent* Component =
+		CreateDefaultSubobject<UAMSimProceduralSurfaceComponent>(Name);
+	Component->SetupAttachment(Root);
+	Component->SetPresentationLayer(0.0, SortPriority);
 	return Component;
 }
 
@@ -1353,15 +1293,25 @@ bool AAMSimWorldPresenter::HasRequiredPresentationAssets() const
 
 bool AAMSimWorldPresenter::HasDistinctStarterFacilityAssets() const
 {
-	const UPaperSprite* GateSprite = Stand ? Stand->GetSprite() : nullptr;
-	const UPaperSprite* SecondGateSprite = GateB ? GateB->GetSprite() : nullptr;
 	const UPaperSprite* TerminalFacilitySprite =
 		OperationsHut ? OperationsHut->GetSprite() : nullptr;
-	return GateSprite && SecondGateSprite && TerminalFacilitySprite &&
-		GateSprite == SecondGateSprite &&
-		GateSprite != StandSprite &&
-		TerminalFacilitySprite != GateSprite &&
+	return Stand && GateB &&
+		Stand->GetSurfaceVertexCountForTest() > 0 &&
+		GateB->GetSurfaceVertexCountForTest() > 0 &&
+		TerminalFacilitySprite &&
 		TerminalFacilitySprite != HutSprite;
+}
+
+bool AAMSimWorldPresenter::HasDistinctPhase1MovementSurfaceAssets() const
+{
+	return Runway && Taxiway && Access &&
+		Runway->GetSurfaceVertexCountForTest() >
+			Taxiway->GetSurfaceVertexCountForTest() &&
+		Taxiway->GetSurfaceVertexCountForTest() !=
+			Access->GetSurfaceVertexCountForTest() &&
+		Runway->HasCookerVisibleMaterialForTest() &&
+		Taxiway->HasCookerVisibleMaterialForTest() &&
+		Access->HasCookerVisibleMaterialForTest();
 }
 
 void AAMSimWorldPresenter::ApplySnapshot(
@@ -1806,27 +1756,17 @@ void AAMSimWorldPresenter::ApplyPhase4Snapshot(
 	}
 	Phase4IncidentRunway->SetVisibility(
 		bIncidentActive && !bMatureOverviewMode);
-	for (UPaperSpriteComponent* Component : MatureSite)
+	for (int32 Index = 4; Index < MatureSite.Num(); ++Index)
 	{
-		Component->SetSpriteColor(
+		MatureSite[Index]->SetSpriteColor(
 			bIncidentActive
 				? FLinearColor(0.72f, 0.82f, 0.86f, 1.0f)
 				: FLinearColor::White);
 	}
-	for (UPaperSpriteComponent* Component : MatureTaxiConnectors)
-	{
-		Component->SetSpriteColor(
-			bIncidentActive
-				? FLinearColor(0.68f, 0.78f, 0.83f, 1.0f)
-				: FLinearColor::White);
-	}
-	for (UPaperSpriteComponent* Component : MatureLandsideLinks)
-	{
-		Component->SetSpriteColor(
-			bIncidentActive
-				? FLinearColor(0.62f, 0.72f, 0.78f, 1.0f)
-				: FLinearColor::White);
-	}
+	SetMatureInfrastructureTint(
+		bIncidentActive
+			? FLinearColor(0.68f, 0.78f, 0.83f, 1.0f)
+			: FLinearColor::White);
 	for (UPaperSpriteComponent* Component : MatureLandscapeClusters)
 	{
 		Component->SetSpriteColor(
@@ -1985,10 +1925,30 @@ int32 AAMSimWorldPresenter::GetActivePhase4ResponseProxyCount() const
 
 int32 AAMSimWorldPresenter::GetActiveMatureSiteProxyCount() const
 {
-	return Algo::CountIf(
+	int32 Count = Algo::CountIf(
 		MatureSite,
 		[](const UPaperSpriteComponent* Component)
 			{
 				return Component && Component->IsVisible();
 			});
+	const auto CountProcedural = [](const auto& Components)
+	{
+		return Algo::CountIf(
+			Components,
+			[](const UAMSimProceduralSurfaceComponent* Component)
+			{
+				return Component && Component->IsVisible();
+			});
+	};
+	for (const UAMSimProceduralSurfaceComponent* Component : {
+		MatureRunway.Get(),
+		MatureTaxiway.Get(),
+		MatureApron.Get(),
+		MatureAccessRoad.Get()})
+	{
+		Count += Component && Component->IsVisible() ? 1 : 0;
+	}
+	return Count + CountProcedural(MatureGatePads) +
+		CountProcedural(MatureTaxiConnectors) +
+		CountProcedural(MatureLandsideLinks);
 }

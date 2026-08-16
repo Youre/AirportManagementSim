@@ -859,15 +859,16 @@ bool FAMSimPhase15WorldPresenterTest::RunTest(const FString& Parameters)
 		FMath::IsNearlyEqual(StarterTerminalScale.X, StarterTerminalScale.Z) &&
 			StarterTerminalScale.X >= 11.0f);
 	TestTrue(
-		TEXT("Starter gate art preserves its authored square proportions"),
-		FMath::IsNearlyEqual(StarterGateScale.X, StarterGateScale.Z) &&
-			StarterGateScale.X >= 7.5f);
+		TEXT("Starter gate owns a readable procedural apron footprint"),
+		StarterGateScale.X >= 10000.0f &&
+			StarterGateScale.Y >= 10000.0f &&
+			FMath::IsNearlyZero(StarterGateScale.Z));
 	TestTrue(
 		TEXT("Starter terminal corrects the Paper2D plane quarter-turn"),
 		FMath::IsNearlyEqual(Presenter->GetStarterTerminalYawForTest(), 90.0f));
 	TestTrue(
-		TEXT("Starter gate centerlines correct the Paper2D plane quarter-turn"),
-		FMath::IsNearlyEqual(Presenter->GetStarterGateYawForTest(), 90.0f));
+		TEXT("Procedural gate geometry does not depend on sprite-plane rotation"),
+		FMath::IsNearlyZero(Presenter->GetStarterGateYawForTest()));
 	TestEqual(
 		TEXT("Accessible path owns four dashes across five route legs"),
 		Presenter->GetTerminalAccessibleDashProxyCount(),
@@ -888,7 +889,7 @@ bool FAMSimPhase15WorldPresenterTest::RunTest(const FString& Parameters)
 		TEXT("Mature overview owns a selected-entity world proxy"),
 		Presenter->HasMatureSelectionProxy());
 	TestTrue(
-		TEXT("Runway, taxiway, and service-road surfaces resolve independently"),
+		TEXT("Runway, taxiway, and service-road procedural meshes resolve independently"),
 		Presenter->HasDistinctPhase1MovementSurfaceAssets());
 	TestEqual(
 		TEXT("Primary runway number faces the reciprocal approach"),

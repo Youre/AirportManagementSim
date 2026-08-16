@@ -2,6 +2,8 @@
 
 #include "AMSimPhase1Fixture.h"
 #include "AMSimPhase1WorldGeometry.h"
+#include "AMSimProceduralSurfaceComponent.h"
+#include "AMSimProceduralSurfaceGeometry.h"
 #include "AMSimWorldPresentationLayers.h"
 #include "Materials/MaterialInterface.h"
 #include "PaperSprite.h"
@@ -10,7 +12,6 @@
 
 namespace
 {
-	constexpr float SpritePlaneRoll = -90.0f;
 	constexpr int32 MaximumTaxiwaySegments = 8;
 	constexpr int32 MaximumMarkers = 32;
 	constexpr int32 MaximumOutlines = 40;
@@ -21,41 +22,40 @@ namespace
 	constexpr int64 ParcelExtentCentimeters = 100000;
 	constexpr int64 OutlineWidthCentimeters = 180;
 	constexpr int64 PatternDashSpacingCentimeters = 4000;
-	constexpr float GeometryReferenceSpriteWorldSize = 1600.0f;
-
+	enum class EPreviewSurface : uint8
+	{
+		Runway,
+		Taxiway,
+		Road
+	};
 	void ApplySegment(
-		UPaperSpriteComponent* Component,
-		const AMSim::FPhase1WorldSegmentGeometry& Geometry,
+		UAMSimProceduralSurfaceComponent* Component,
+		const AMSim::FPhase1Point& Start,
+		const AMSim::FPhase1Point& End,
+		const int64 WidthCentimeters,
+		const double Height,
 		const FLinearColor& Tint)
 	{
 		if (!Component)
 		{
 			return;
 		}
-		Component->SetRelativeLocation(Geometry.Center);
-		FVector SpriteAdjustedScale = Geometry.Scale;
-		if (const UPaperSprite* Sprite = Component->GetSprite())
-		{
-			const FVector SpriteWorldSize =
-				Sprite->GetRenderBounds().BoxExtent * 2.0;
-			if (SpriteWorldSize.X > KINDA_SMALL_NUMBER &&
-				SpriteWorldSize.Z > KINDA_SMALL_NUMBER)
-			{
-				SpriteAdjustedScale.X *=
-					GeometryReferenceSpriteWorldSize / SpriteWorldSize.X;
-				SpriteAdjustedScale.Z *=
-					GeometryReferenceSpriteWorldSize / SpriteWorldSize.Z;
-			}
-		}
-		Component->SetRelativeScale3D(SpriteAdjustedScale);
-		Component->SetRelativeRotation(
-			FRotator(0.0f, Geometry.YawDegrees, SpritePlaneRoll));
-		Component->SetSpriteColor(Tint);
+		Component->SetPresentationLayer(
+			Height,
+			Component->TranslucencySortPriority);
+		Component->BuildPlainSegment(
+			AMSim::MapPhase1PointToWorld(Start),
+			AMSim::MapPhase1PointToWorld(End),
+			AMSim::MapPhase1DistanceToWorld(WidthCentimeters),
+			Tint,
+			false);
+		Component->SetSurfaceTint(FLinearColor::White);
 		Component->SetVisibility(true);
 	}
 
+	template <typename ComponentType>
 	void HideComponents(
-		const TArray<TObjectPtr<UPaperSpriteComponent>>& Components,
+		const TArray<TObjectPtr<ComponentType>>& Components,
 		const int32 FirstUnused = 0)
 	{
 		for (int32 Index = FirstUnused; Index < Components.Num(); ++Index)
@@ -67,11 +67,12 @@ namespace
 		}
 	}
 
+	template <typename ComponentType>
 	int32 CountVisible(
-		const TArray<TObjectPtr<UPaperSpriteComponent>>& Components)
+		const TArray<TObjectPtr<ComponentType>>& Components)
 	{
 		int32 Result = 0;
-		for (const UPaperSpriteComponent* Component : Components)
+		for (const ComponentType* Component : Components)
 		{
 			Result += Component && Component->IsVisible() ? 1 : 0;
 		}
@@ -128,7 +129,7 @@ namespace
 	}
 
 	void AddOutline(
-		const TArray<TObjectPtr<UPaperSpriteComponent>>& Components,
+		const TArray<TObjectPtr<UAMSimProceduralSurfaceComponent>>& Components,
 		int32& NextIndex,
 		const AMSim::FPhase1Point& Start,
 		const AMSim::FPhase1Point& End,
@@ -158,17 +159,16 @@ namespace
 		{
 			ApplySegment(
 				Components[NextIndex++],
-				AMSim::MakePhase1WorldSegmentGeometry(
-					Edge.Key,
-					Edge.Value,
-					OutlineWidthCentimeters,
-					AMSim::WorldPresentationLayers::ProposalPattern.Height),
+				Edge.Key,
+				Edge.Value,
+				OutlineWidthCentimeters,
+				AMSim::WorldPresentationLayers::ProposalPattern.Height,
 				Tint);
 		}
 	}
 
 	void AddPatternDashes(
-		const TArray<TObjectPtr<UPaperSpriteComponent>>& Components,
+		const TArray<TObjectPtr<UAMSimProceduralSurfaceComponent>>& Components,
 		int32& NextIndex,
 		const AMSim::FPhase1Point& Start,
 		const AMSim::FPhase1Point& End,
@@ -204,16 +204,16 @@ namespace
 				PointAt(Start, End, CenterAlpha);
 			ApplySegment(
 				Components[NextIndex++],
-				AMSim::MakePhase1WorldSegmentGeometry(
-					OffsetPoint(Center, -HalfAcross - HalfAlong),
-					OffsetPoint(Center, HalfAcross + HalfAlong),
-					DashWidth,
-					AMSim::WorldPresentationLayers::ProposalPattern.Height + 0.1),
+				OffsetPoint(Center, -HalfAcross - HalfAlong),
+				OffsetPoint(Center, HalfAcross + HalfAlong),
+				DashWidth,
+				AMSim::WorldPresentationLayers::ProposalPattern.Height + 0.1,
 				Tint);
 		}
 	}
 
-	bool IsBelowStarterFacilities(const UPaperSpriteComponent* Component)
+	bool IsBelowStarterFacilities(
+		const UAMSimProceduralSurfaceComponent* Component)
 	{
 		return !Component || !Component->IsVisible() ||
 			(Component->TranslucencySortPriority <
@@ -234,27 +234,27 @@ namespace
 
 void AAMSimWorldPresenter::InitializePhase1ConstructionPreviewPresentation()
 {
-	Phase1ConstructionPreviewRunway = CreateSpriteComponent(
+	Phase1ConstructionPreviewRunway = CreateProceduralSurfaceComponent(
 		TEXT("Phase1ConstructionPreviewRunway"),
 		AMSim::WorldPresentationLayers::Runway.SortPriority);
 	for (int32 Index = 0; Index < MaximumTaxiwaySegments; ++Index)
 	{
-		Phase1ConstructionPreviewTaxiways.Add(CreateSpriteComponent(
+		Phase1ConstructionPreviewTaxiways.Add(CreateProceduralSurfaceComponent(
 			*FString::Printf(TEXT("Phase1ConstructionPreviewTaxiway%d"), Index),
 			AMSim::WorldPresentationLayers::Taxiway.SortPriority));
 	}
-	Phase1ConstructionPreviewRoad = CreateSpriteComponent(
+	Phase1ConstructionPreviewRoad = CreateProceduralSurfaceComponent(
 		TEXT("Phase1ConstructionPreviewRoad"),
 		AMSim::WorldPresentationLayers::ServiceRoad.SortPriority);
 	for (int32 Index = 0; Index < MaximumOutlines; ++Index)
 	{
-		Phase1ConstructionPreviewOutlines.Add(CreateSpriteComponent(
+		Phase1ConstructionPreviewOutlines.Add(CreateProceduralSurfaceComponent(
 			*FString::Printf(TEXT("Phase1ConstructionPreviewOutline%d"), Index),
 			AMSim::WorldPresentationLayers::ProposalPattern.SortPriority));
 	}
 	for (int32 Index = 0; Index < MaximumPatternDashes; ++Index)
 	{
-		Phase1ConstructionPreviewPattern.Add(CreateSpriteComponent(
+		Phase1ConstructionPreviewPattern.Add(CreateProceduralSurfaceComponent(
 			*FString::Printf(TEXT("Phase1ConstructionPreviewPattern%d"), Index),
 			AMSim::WorldPresentationLayers::ProposalPattern.SortPriority));
 	}
@@ -262,7 +262,7 @@ void AAMSimWorldPresenter::InitializePhase1ConstructionPreviewPresentation()
 		Index < MajorGridLineCount + ParcelBoundaryLineCount;
 		++Index)
 	{
-		Phase1ConstructionPlanningGrid.Add(CreateSpriteComponent(
+		Phase1ConstructionPlanningGrid.Add(CreateProceduralSurfaceComponent(
 			*FString::Printf(TEXT("Phase1ConstructionPlanningGrid%d"), Index),
 			Index < MajorGridLineCount
 				? AMSim::WorldPresentationLayers::PlanningGrid.SortPriority
@@ -297,32 +297,6 @@ void AAMSimWorldPresenter::LoadPhase1ConstructionPreviewAssets()
 
 void AAMSimWorldPresenter::FinalizePhase1ConstructionPreviewPresentation()
 {
-	ConfigureSprite(
-		Phase1ConstructionPreviewRunway,
-		WhiteSprite,
-		FVector::ZeroVector,
-		FVector::OneVector);
-	for (UPaperSpriteComponent* Component : Phase1ConstructionPreviewTaxiways)
-	{
-		ConfigureSprite(Component, WhiteSprite, FVector::ZeroVector, FVector::OneVector);
-	}
-	ConfigureSprite(
-		Phase1ConstructionPreviewRoad,
-		WhiteSprite,
-		FVector::ZeroVector,
-		FVector::OneVector);
-	for (UPaperSpriteComponent* Component : Phase1ConstructionPreviewOutlines)
-	{
-		ConfigureSprite(Component, WhiteSprite, FVector::ZeroVector, FVector::OneVector);
-	}
-	for (UPaperSpriteComponent* Component : Phase1ConstructionPreviewPattern)
-	{
-		ConfigureSprite(Component, WhiteSprite, FVector::ZeroVector, FVector::OneVector);
-	}
-	for (UPaperSpriteComponent* Component : Phase1ConstructionPlanningGrid)
-	{
-		ConfigureSprite(Component, WhiteSprite, FVector::ZeroVector, FVector::OneVector);
-	}
 	for (UPaperSpriteComponent* Component : Phase1ConstructionPreviewMarkers)
 	{
 		ConfigureSprite(
@@ -330,24 +304,6 @@ void AAMSimWorldPresenter::FinalizePhase1ConstructionPreviewPresentation()
 			SelectionSprite,
 			FVector::ZeroVector,
 			FVector::OneVector);
-	}
-	for (UPaperSpriteComponent* Component : Phase1ConstructionPreviewOutlines)
-	{
-		Component->SetMaterial(0, ConstructionPreviewMaterial);
-	}
-	for (UPaperSpriteComponent* Component : Phase1ConstructionPreviewPattern)
-	{
-		Component->SetMaterial(0, ConstructionPreviewMaterial);
-	}
-	for (UPaperSpriteComponent* Component : Phase1ConstructionPlanningGrid)
-	{
-		Component->SetMaterial(0, ConstructionPreviewMaterial);
-	}
-	Phase1ConstructionPreviewRunway->SetMaterial(0, ConstructionPreviewMaterial);
-	Phase1ConstructionPreviewRoad->SetMaterial(0, ConstructionPreviewMaterial);
-	for (UPaperSpriteComponent* Component : Phase1ConstructionPreviewTaxiways)
-	{
-		Component->SetMaterial(0, ConstructionPreviewMaterial);
 	}
 	ClearPhase1ConstructionPreview();
 }
@@ -365,19 +321,17 @@ void AAMSimWorldPresenter::SetPhase1ConstructionPreview(
 	{
 		ApplySegment(
 			Phase1ConstructionPlanningGrid[GridIndex++],
-			AMSim::MakePhase1WorldSegmentGeometry(
-				{Coordinate, 0},
-				{Coordinate, ParcelExtentCentimeters},
-				180,
-				AMSim::WorldPresentationLayers::PlanningGrid.Height),
+			{Coordinate, 0},
+			{Coordinate, ParcelExtentCentimeters},
+			180,
+			AMSim::WorldPresentationLayers::PlanningGrid.Height,
 			GridTint);
 		ApplySegment(
 			Phase1ConstructionPlanningGrid[GridIndex++],
-			AMSim::MakePhase1WorldSegmentGeometry(
-				{0, Coordinate},
-				{ParcelExtentCentimeters, Coordinate},
-				180,
-				AMSim::WorldPresentationLayers::PlanningGrid.Height),
+			{0, Coordinate},
+			{ParcelExtentCentimeters, Coordinate},
+			180,
+			AMSim::WorldPresentationLayers::PlanningGrid.Height,
 			GridTint);
 	}
 	const FLinearColor BoundaryTint(0.30f, 0.87f, 0.94f, 0.28f);
@@ -395,43 +349,69 @@ void AAMSimWorldPresenter::SetPhase1ConstructionPreview(
 	{
 		ApplySegment(
 			Phase1ConstructionPlanningGrid[GridIndex++],
-			AMSim::MakePhase1WorldSegmentGeometry(
-				BoundaryStarts[EdgeIndex],
-				BoundaryEnds[EdgeIndex],
-				220,
-				AMSim::WorldPresentationLayers::ParcelBoundary.Height),
+			BoundaryStarts[EdgeIndex],
+			BoundaryEnds[EdgeIndex],
+			220,
+			AMSim::WorldPresentationLayers::ParcelBoundary.Height,
 			BoundaryTint);
 	}
 
 	int32 OutlineIndex = 0;
 	int32 PatternIndex = 0;
 	const auto ApplyPreviewSurface = [this, &OutlineIndex, &PatternIndex](
-		UPaperSpriteComponent* Component,
+		UAMSimProceduralSurfaceComponent* Component,
 		const AMSim::FPhase1Point& Start,
 		const AMSim::FPhase1Point& End,
 		const int64 WidthCentimeters,
 		const double Height,
-		const AMSim::EPhase1ConstructionSurfaceStyle Style)
+		const AMSim::EPhase1ConstructionSurfaceStyle Style,
+		const EPreviewSurface Surface)
 	{
-		ApplySegment(
-			Component,
-			AMSim::MakePhase1WorldSegmentGeometry(
-				Start, End, WidthCentimeters, Height),
-			SurfaceTint(Style));
+		const FLinearColor Fill = SurfaceTint(Style);
+		const FLinearColor Pattern = PatternTint(Style);
+		const AMSim::FProceduralSurfacePalette Palette{
+			Fill, Pattern, Pattern, Pattern};
+		Component->SetPresentationLayer(
+			Height,
+			Surface == EPreviewSurface::Runway
+				? AMSim::WorldPresentationLayers::Runway.SortPriority
+				: Surface == EPreviewSurface::Taxiway
+					? AMSim::WorldPresentationLayers::Taxiway.SortPriority
+					: AMSim::WorldPresentationLayers::ServiceRoad.SortPriority);
+		const FVector WorldStart = AMSim::MapPhase1PointToWorld(Start);
+		const FVector WorldEnd = AMSim::MapPhase1PointToWorld(End);
+		const double Width = AMSim::MapPhase1DistanceToWorld(WidthCentimeters);
+		switch (Surface)
+		{
+		case EPreviewSurface::Runway:
+			Component->BuildRunway(
+				WorldStart, WorldEnd, Width, Palette, false);
+			break;
+		case EPreviewSurface::Taxiway:
+			Component->BuildTaxiway(
+				WorldStart, WorldEnd, Width, Palette, false);
+			break;
+		case EPreviewSurface::Road:
+			Component->BuildRoad(
+				WorldStart, WorldEnd, Width, Palette, false);
+			break;
+		}
+		Component->SetSurfaceTint(FLinearColor::White);
+		Component->SetVisibility(true);
 		AddOutline(
 			Phase1ConstructionPreviewOutlines,
 			OutlineIndex,
 			Start,
 			End,
 			WidthCentimeters,
-			PatternTint(Style));
+			Pattern);
 		AddPatternDashes(
 			Phase1ConstructionPreviewPattern,
 			PatternIndex,
 			Start,
 			End,
 			WidthCentimeters,
-			PatternTint(Style));
+			Pattern);
 	};
 
 	if (Preview.bRunwayVisible)
@@ -442,7 +422,8 @@ void AAMSimWorldPresenter::SetPhase1ConstructionPreview(
 			Preview.Proposal.RunwayEnd,
 			Preview.Proposal.RunwayWidthCentimeters,
 			AMSim::WorldPresentationLayers::Runway.Height,
-			Preview.RunwayStyle);
+			Preview.RunwayStyle,
+			EPreviewSurface::Runway);
 	}
 
 	const TArray<AMSim::FTaxiwaySegment> TaxiSegments =
@@ -466,7 +447,8 @@ void AAMSimWorldPresenter::SetPhase1ConstructionPreview(
 			TaxiSegments[Index].End,
 			1200,
 			AMSim::WorldPresentationLayers::Taxiway.Height + Index * 0.05,
-			Style);
+			Style,
+			EPreviewSurface::Taxiway);
 	}
 
 	if (Preview.bRoadVisible)
@@ -477,7 +459,8 @@ void AAMSimWorldPresenter::SetPhase1ConstructionPreview(
 			Preview.Proposal.AccessEnd,
 			1000,
 			AMSim::WorldPresentationLayers::ServiceRoad.Height,
-			Preview.RoadStyle);
+			Preview.RoadStyle,
+			EPreviewSurface::Road);
 	}
 	HideComponents(Phase1ConstructionPreviewOutlines, OutlineIndex);
 	HideComponents(Phase1ConstructionPreviewPattern, PatternIndex);
@@ -585,12 +568,12 @@ bool AAMSimWorldPresenter::ArePhase1ConstructionPreviewSurfacesBelowStarterFacil
 	{
 		return false;
 	}
-	for (const TArray<TObjectPtr<UPaperSpriteComponent>>* Components : {
+	for (const TArray<TObjectPtr<UAMSimProceduralSurfaceComponent>>* Components : {
 		&Phase1ConstructionPreviewTaxiways,
 		&Phase1ConstructionPreviewOutlines,
 		&Phase1ConstructionPreviewPattern})
 	{
-		for (const UPaperSpriteComponent* Component : *Components)
+		for (const UAMSimProceduralSurfaceComponent* Component : *Components)
 		{
 			if (!IsBelowStarterFacilities(Component))
 			{
@@ -616,7 +599,7 @@ bool AAMSimWorldPresenter::ArePhase1ConstructionPreviewMarkersAboveStarterFacili
 FVector AAMSimWorldPresenter::GetPhase1ConstructionPreviewRunwayCenterForTest() const
 {
 	return Phase1ConstructionPreviewRunway
-		? Phase1ConstructionPreviewRunway->GetRelativeLocation()
+		? Phase1ConstructionPreviewRunway->GetSurfaceCenterForTest()
 		: FVector::ZeroVector;
 }
 

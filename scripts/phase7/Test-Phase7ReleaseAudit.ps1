@@ -273,7 +273,7 @@ if ($packageAudit.requested) {
 $passed =
     $release.engine -eq '5.8.0' -and
     $release.platform -eq 'Win64' -and
-    $release.saveSchema -eq 9 -and
+    $release.saveSchema -eq 10 -and
     $release.mapIds.Count -eq 1 -and
     $release.specializationPaths.Count -eq 6 -and
     $release.runtimeBoundaries.offlineRequired -and

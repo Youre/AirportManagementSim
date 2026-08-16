@@ -21,6 +21,17 @@ namespace AMSim
 			Height);
 	}
 
+	FPhase1Point MapPhase1WorldToPoint(const FVector& WorldPosition)
+	{
+		return {
+			FMath::RoundToInt64(
+				ParcelCenterCentimeters +
+				static_cast<double>(WorldPosition.Y) / WorldUnitsPerCentimeter),
+			FMath::RoundToInt64(
+				ParcelCenterCentimeters -
+				static_cast<double>(WorldPosition.X) / WorldUnitsPerCentimeter)};
+	}
+
 	FPhase1WorldSegmentGeometry MakePhase1WorldSegmentGeometry(
 		const FPhase1Point& Start,
 		const FPhase1Point& End,

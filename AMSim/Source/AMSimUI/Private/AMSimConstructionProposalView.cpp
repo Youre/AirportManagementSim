@@ -1,8 +1,11 @@
 #include "AMSimConstructionProposalView.h"
 #include "AMSimAirportSimulationSubsystem.h"
 #include "AMSimPhase1Fixture.h"
+#include "AMSimPhase1WorldGeometry.h"
 #include "AMSimUITheme.h"
 #include "AMSimUISoundSubsystem.h"
+#include "AMSimWorldPresenter.h"
+#include "Blueprint/SlateBlueprintLibrary.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/Border.h"
 #include "Components/Button.h"
@@ -10,37 +13,19 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
-#include "Components/Image.h"
-#include "Components/ScaleBox.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
 #include "InputCoreTypes.h"
-#include "Engine/Texture2D.h"
+#include "EngineUtils.h"
+#include "GameFramework/PlayerController.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
-#include "UObject/ConstructorHelpers.h"
 namespace AMSimConstructionProposalPrivate
 {
-	constexpr float ParcelLeft = 0.205f;
-	constexpr float ParcelTop = 0.135f;
-	constexpr float ParcelRight = 0.785f;
-	constexpr float ParcelBottom = 0.825f;
-	constexpr double ParcelCentimeters = 100000.0;
+	constexpr float BuildChromeLeft = 0.205f;
+	constexpr float BuildChromeRight = 0.785f;
 	constexpr int64 HandleHitCentimeters = 3500;
-
-	enum EHandleIndex : int32
-	{
-		RunwayStartHandle = 0,
-		RunwayEndHandle = 1,
-		TaxiHandleStart = 2,
-		TaxiHandleCount = UAMSimConstructionProposalView::MaximumTaxiwaySegments * 2,
-		GateAHandle = TaxiHandleStart + TaxiHandleCount,
-		GateBHandle,
-		RoadStartHandle,
-		RoadEndHandle,
-		HandleCount
-	};
 	UTextBlock* Text(
 		UWidgetTree* Tree,
 		const TCHAR* Name,
@@ -138,115 +123,6 @@ namespace AMSimConstructionProposalPrivate
 		Result->SetContent(LabelText);
 		return Result;
 	}
-	UCanvasPanel* PreviewRegion(
-		UWidgetTree* Tree,
-		const TCHAR* Name,
-		const FLinearColor& Fill,
-		const FLinearColor& Stroke,
-		const TCHAR* Label,
-		const int32 StripeCount,
-		TObjectPtr<UBorder>& OutSurface,
-		UTextBlock*& OutLabel)
-	{
-		UCanvasPanel* Region = Tree->ConstructWidget<UCanvasPanel>(
-			UCanvasPanel::StaticClass(),
-			FName(Name));
-		Region->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		OutSurface = ColorSurface(
-			Tree,
-			*(FString(Name) + TEXT("Base")),
-			Fill,
-			Stroke,
-			2.0f,
-			8.0f);
-		Place(Region, OutSurface, FAnchors(0.0f, 0.0f, 1.0f, 1.0f));
-		for (int32 Index = 0; Index < StripeCount; ++Index)
-		{
-			const float Left = 0.04f + Index * (0.90f / FMath::Max(StripeCount, 1));
-			Place(
-				Region,
-				ColorSurface(
-					Tree,
-					*FString::Printf(TEXT("%sStripe%d"), Name, Index),
-					FLinearColor(1.0f, 1.0f, 1.0f, 0.14f),
-					FLinearColor::Transparent,
-					0.0f,
-					0.0f),
-				FAnchors(Left, 0.08f, Left + 0.026f, 0.92f),
-				FMargin(),
-				1);
-		}
-		OutLabel = Text(
-			Tree,
-			*(FString(Name) + TEXT("Label")),
-			Label,
-			10,
-			AMSim::UITheme::White(),
-			true);
-		OutLabel->SetJustification(ETextJustify::Center);
-		Place(
-			Region,
-			OutLabel,
-			FAnchors(0.0f, 0.0f, 1.0f, 1.0f),
-			FMargin(),
-			2);
-		return Region;
-	}
-	UCanvasPanel* ArtworkPreviewRegion(
-		UWidgetTree* Tree,
-		const TCHAR* Name,
-		UTexture2D* Texture,
-		TObjectPtr<UBorder>& OutSurface)
-	{
-		UCanvasPanel* Region = Tree->ConstructWidget<UCanvasPanel>(
-			UCanvasPanel::StaticClass(),
-			FName(Name));
-		Region->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-
-		UScaleBox* ArtworkScale = Tree->ConstructWidget<UScaleBox>(
-			UScaleBox::StaticClass(),
-			*(FString(Name) + TEXT("ArtworkScale")));
-		ArtworkScale->SetStretch(EStretch::ScaleToFit);
-		ArtworkScale->SetStretchDirection(EStretchDirection::Both);
-		UImage* Artwork = Tree->ConstructWidget<UImage>(
-			UImage::StaticClass(),
-			*(FString(Name) + TEXT("Artwork")));
-		Artwork->SetBrushFromTexture(Texture, true);
-		ArtworkScale->SetContent(Artwork);
-		Place(
-			Region,
-			ArtworkScale,
-			FAnchors(0.0f, 0.0f, 1.0f, 1.0f),
-			FMargin(),
-			0);
-
-		OutSurface = ColorSurface(
-			Tree,
-			*(FString(Name) + TEXT("Interaction")),
-			FLinearColor(0.08f, 0.45f, 0.62f, 0.05f),
-			AMSim::UITheme::Cyan(),
-			1.6f,
-			8.0f);
-		Place(
-			Region,
-			OutSurface,
-			FAnchors(0.0f, 0.0f, 1.0f, 1.0f),
-			FMargin(),
-			1);
-		return Region;
-	}
-	float MapX(const int64 X)
-	{
-		return ParcelLeft +
-			static_cast<float>(static_cast<double>(X) / ParcelCentimeters) *
-			(ParcelRight - ParcelLeft);
-	}
-	float MapY(const int64 Y)
-	{
-		return ParcelTop +
-			static_cast<float>(static_cast<double>(Y) / ParcelCentimeters) *
-			(ParcelBottom - ParcelTop);
-	}
 	int64 DistanceSquared(
 		const AMSim::FPhase1Point Left,
 		const AMSim::FPhase1Point Right)
@@ -272,97 +148,6 @@ namespace AMSimConstructionProposalPrivate
 			Left.OperationsHutCenter == Right.OperationsHutCenter;
 	}
 
-	void SetSegmentGeometry(
-		UCanvasPanelSlot* Slot,
-		UWidget* Widget,
-		const AMSim::FPhase1Point Start,
-		const AMSim::FPhase1Point End,
-		const float HalfThickness)
-	{
-		if (!Slot || !Widget)
-		{
-			return;
-		}
-		const float StartX = MapX(Start.X);
-		const float StartY = MapY(Start.Y);
-		const float EndX = MapX(End.X);
-		const float EndY = MapY(End.Y);
-		const float DeltaX = EndX - StartX;
-		const float DeltaY = EndY - StartY;
-		constexpr float CanvasHeightToWidth = 1080.0f / 1920.0f;
-		const float ScreenDeltaY = DeltaY * CanvasHeightToWidth;
-		const float Length = FMath::Max(
-			FMath::Sqrt(DeltaX * DeltaX + ScreenDeltaY * ScreenDeltaY),
-			0.006f);
-		const float CenterX = (StartX + EndX) * 0.5f;
-		const float CenterY = (StartY + EndY) * 0.5f;
-		Slot->SetAnchors(FAnchors(
-			CenterX - Length * 0.5f,
-			CenterY - HalfThickness,
-			CenterX + Length * 0.5f,
-			CenterY + HalfThickness));
-		Slot->SetOffsets(FMargin());
-		Widget->SetRenderTransformPivot(FVector2D(0.5f, 0.5f));
-		Widget->SetRenderTransformAngle(
-			FMath::RadiansToDegrees(FMath::Atan2(ScreenDeltaY, DeltaX)));
-	}
-
-	void SetBoxGeometry(
-		UCanvasPanelSlot* Slot,
-		const AMSim::FPhase1Point Center,
-		const float HalfWidth,
-		const float HalfHeight)
-	{
-		if (!Slot)
-		{
-			return;
-		}
-		Slot->SetAnchors(FAnchors(
-			MapX(Center.X) - HalfWidth,
-			MapY(Center.Y) - HalfHeight,
-			MapX(Center.X) + HalfWidth,
-			MapY(Center.Y) + HalfHeight));
-		Slot->SetOffsets(FMargin());
-	}
-
-	void SetPointGeometry(
-		UCanvasPanelSlot* Slot,
-		const AMSim::FPhase1Point Point,
-		const FVector2D Size = FVector2D(28.0f, 28.0f),
-		const FVector2D PixelOffset = FVector2D::ZeroVector)
-	{
-		if (!Slot)
-		{
-			return;
-		}
-		Slot->SetAnchors(FAnchors(
-			FMath::Clamp(MapX(Point.X), ParcelLeft, ParcelRight),
-			FMath::Clamp(MapY(Point.Y), ParcelTop, ParcelBottom)));
-		Slot->SetAlignment(FVector2D(0.5f, 0.5f));
-		Slot->SetOffsets(FMargin(PixelOffset.X, PixelOffset.Y, Size.X, Size.Y));
-	}
-
-	void StyleProposalSurface(
-		UBorder* SurfaceWidget,
-		const bool bSelected,
-		const FLinearColor& Identity)
-	{
-		if (!SurfaceWidget)
-		{
-			return;
-		}
-		const FLinearColor Fill(
-			Identity.R,
-			Identity.G,
-			Identity.B,
-			bSelected ? 0.58f : 0.34f);
-		SurfaceWidget->SetBrush(AMSim::UITheme::RoundedBrush(
-			Fill,
-			8.0f,
-			bSelected ? AMSim::UITheme::White() : AMSim::UITheme::Cyan(),
-			bSelected ? 3.0f : 1.6f));
-	}
-
 	const TCHAR* ToolName(const UAMSimConstructionProposalView::EPlacementTool Tool)
 	{
 		switch (Tool)
@@ -376,24 +161,6 @@ namespace AMSimConstructionProposalPrivate
 		}
 		return TEXT("BUILD TOOL");
 	}
-}
-
-UAMSimConstructionProposalView::UAMSimConstructionProposalView(
-	const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
-{
-	static ConstructorHelpers::FObjectFinder<UTexture2D> Terminal(
-		TEXT("/Game/Phase45/Presentation/Textures/Site/T_RegionalTerminal.T_RegionalTerminal"));
-	static ConstructorHelpers::FObjectFinder<UTexture2D> Gate(
-		TEXT("/Game/Phase45/Presentation/Textures/Site/T_ApronStand.T_ApronStand"));
-	StarterTerminalTexture = Terminal.Object;
-	StarterGateTexture = Gate.Object;
-}
-
-bool UAMSimConstructionProposalView::HasRequiredFacilityArtwork() const
-{
-	return StarterTerminalTexture != nullptr && StarterGateTexture != nullptr &&
-		StarterTerminalTexture != StarterGateTexture;
 }
 
 FString UAMSimConstructionProposalView::DescribeRunwayGeometry(
@@ -427,15 +194,6 @@ TSharedRef<SWidget> UAMSimConstructionProposalView::RebuildWidget()
 	CurrentProposal = bConflictProof
 		? MakePresentationProposal(true)
 		: MakeEmptyProposal();
-	TaxiGeometryWidgets.Empty();
-	TaxiGeometrySurfaces.Empty();
-	TaxiGeometrySlots.Empty();
-	HandleSurfaces.Empty();
-	HandleTexts.Empty();
-	HandleSlots.Empty();
-	DiagnosticSlots.Empty();
-	DiagnosticSurfaces.Empty();
-	DiagnosticTexts.Empty();
 	PlacementMask = bConflictProof ? AllPlacementParts : 0;
 	CurrentValidation = bConflictProof
 		? AMSim::ValidateStarterPlan(CurrentProposal)
@@ -455,7 +213,7 @@ TSharedRef<SWidget> UAMSimConstructionProposalView::RebuildWidget()
 			FLinearColor::Transparent,
 			0.0f,
 			0.0f),
-		FAnchors(0.0f, 0.0f, ParcelLeft, 1.0f));
+		FAnchors(0.0f, 0.0f, BuildChromeLeft, 1.0f));
 	Place(
 		Root,
 		ColorSurface(
@@ -465,72 +223,7 @@ TSharedRef<SWidget> UAMSimConstructionProposalView::RebuildWidget()
 			FLinearColor::Transparent,
 			0.0f,
 			0.0f),
-		FAnchors(ParcelRight, 0.0f, 1.0f, 1.0f));
-
-	UBorder* ParcelTint = ColorSurface(
-		WidgetTree,
-		TEXT("OwnedParcelSurface"),
-		FLinearColor(0.03f, 0.24f, 0.22f, 0.16f),
-		AMSim::UITheme::Cyan(),
-		3.0f,
-		10.0f);
-	Place(
-		Root,
-		ParcelTint,
-		FAnchors(ParcelLeft, ParcelTop, ParcelRight, ParcelBottom),
-		FMargin(),
-		1);
-	for (int32 Index = 1; Index < 10; ++Index)
-	{
-		const float Alpha = static_cast<float>(Index) / 10.0f;
-		const float X = FMath::Lerp(ParcelLeft, ParcelRight, Alpha);
-		const float Y = FMath::Lerp(ParcelTop, ParcelBottom, Alpha);
-		const FLinearColor MajorGrid = Index == 5
-			? FLinearColor(0.32f, 0.83f, 0.91f, 0.34f)
-			: FLinearColor(0.72f, 0.90f, 0.90f, 0.19f);
-		Place(
-			Root,
-			ColorSurface(
-				WidgetTree,
-				*FString::Printf(TEXT("ParcelGridV%d"), Index),
-				MajorGrid,
-				FLinearColor::Transparent,
-				0.0f,
-				0.0f),
-			FAnchors(X - 0.0006f, ParcelTop, X + 0.0006f, ParcelBottom),
-			FMargin(),
-			2);
-		Place(
-			Root,
-			ColorSurface(
-				WidgetTree,
-				*FString::Printf(TEXT("ParcelGridH%d"), Index),
-				MajorGrid,
-				FLinearColor::Transparent,
-				0.0f,
-				0.0f),
-			FAnchors(ParcelLeft, Y - 0.0008f, ParcelRight, Y + 0.0008f),
-			FMargin(),
-			2);
-	}
-	UBorder* ParcelLabel = Surface(
-		WidgetTree,
-		TEXT("OwnedParcelLabel"),
-		AMSim::UITheme::ESurface::Chip,
-		FMargin(10.0f, 5.0f));
-	ParcelLabel->SetContent(Text(
-		WidgetTree,
-		TEXT("OwnedParcelLabelText"),
-		TEXT("OWNED PARCEL  ·  1,000 x 1,000 M  ·  10 M SNAP"),
-		10,
-		AMSim::UITheme::Cyan(),
-		true));
-	Place(
-		Root,
-		ParcelLabel,
-		FAnchors(ParcelLeft + 0.006f, ParcelTop + 0.008f, 0.445f, ParcelTop + 0.047f),
-		FMargin(),
-		8);
+		FAnchors(BuildChromeRight, 0.0f, 1.0f, 1.0f));
 
 	UBorder* Header = Surface(
 		WidgetTree,
@@ -552,7 +245,7 @@ TSharedRef<SWidget> UAMSimConstructionProposalView::RebuildWidget()
 	HeaderStateText = Text(
 		WidgetTree,
 		TEXT("BuildModeState"),
-		TEXT("10 M GRID  ·  RUNWAY"),
+		TEXT("10 M SNAP  ·  RUNWAY"),
 		11,
 		AMSim::UITheme::Cyan(),
 		true);
@@ -729,221 +422,6 @@ TSharedRef<SWidget> UAMSimConstructionProposalView::RebuildWidget()
 	Instruction->SetContent(PlacementText);
 	Place(Root, Instruction, FAnchors(0.27f, 0.088f, 0.72f, 0.132f), FMargin(), 11);
 
-	UTextBlock* RunwayLabel = nullptr;
-	UCanvasPanel* RunwayPreview = PreviewRegion(
-		WidgetTree,
-		TEXT("RunwayPreview"),
-		FLinearColor(0.08f, 0.45f, 0.62f, 0.46f),
-		AMSim::UITheme::Cyan(),
-		TEXT("RUNWAY 09/27  ·  600 M"),
-		12,
-		RunwayGeometrySurface,
-		RunwayLabel);
-	RunwayGeometryLabel = RunwayLabel;
-	if (UCanvasPanelSlot* LabelSlot = Cast<UCanvasPanelSlot>(RunwayGeometryLabel->Slot))
-	{
-		LabelSlot->SetAnchors(FAnchors(0.52f, 0.0f, 0.90f, 1.0f));
-		LabelSlot->SetOffsets(FMargin());
-	}
-	RunwayGeometryWidget = RunwayPreview;
-	RunwayGeometrySlot = Place(Root, RunwayPreview, FAnchors(0.25f, 0.38f, 0.65f, 0.46f), FMargin(), 5);
-
-	for (int32 Index = 0; Index < MaximumTaxiwaySegments; ++Index)
-	{
-		UTextBlock* TaxiLabel = nullptr;
-		TObjectPtr<UBorder> TaxiSurface;
-		UCanvasPanel* TaxiPreview = PreviewRegion(
-			WidgetTree,
-			*FString::Printf(TEXT("TaxiwayPreview%d"), Index),
-			FLinearColor(0.08f, 0.45f, 0.62f, 0.42f),
-			AMSim::UITheme::Cyan(),
-			TEXT(""),
-			4,
-			TaxiSurface,
-			TaxiLabel);
-		TaxiGeometryWidgets.Add(TaxiPreview);
-		TaxiGeometrySurfaces.Add(TaxiSurface);
-		TaxiGeometrySlots.Add(Place(
-			Root,
-			TaxiPreview,
-			FAnchors(0.44f, 0.40f, 0.46f, 0.60f),
-			FMargin(),
-			6));
-	}
-
-	UCanvasPanel* TerminalPreview = ArtworkPreviewRegion(
-		WidgetTree,
-		TEXT("StarterTerminalPreview"),
-		StarterTerminalTexture,
-		TerminalGeometrySurface);
-	TerminalGeometryWidget = TerminalPreview;
-	TerminalGeometrySlot = Place(
-		Root,
-		TerminalPreview,
-		FAnchors(0.44f, 0.69f, 0.55f, 0.78f),
-		FMargin(),
-		7);
-
-	UCanvasPanel* GateAPreview = ArtworkPreviewRegion(
-		WidgetTree,
-		TEXT("StarterGateAPreview"),
-		StarterGateTexture,
-		GateAGeometrySurface);
-	GateAGeometryWidget = GateAPreview;
-	GateAGeometrySlot = Place(
-		Root,
-		GateAPreview,
-		FAnchors(0.43f, 0.63f, 0.48f, 0.69f),
-		FMargin(),
-		7);
-
-	UCanvasPanel* GateBPreview = ArtworkPreviewRegion(
-		WidgetTree,
-		TEXT("StarterGateBPreview"),
-		StarterGateTexture,
-		GateBGeometrySurface);
-	GateBGeometryWidget = GateBPreview;
-	GateBGeometrySlot = Place(
-		Root,
-		GateBPreview,
-		FAnchors(0.49f, 0.63f, 0.54f, 0.69f),
-		FMargin(),
-		7);
-
-	UTextBlock* AccessLabel = nullptr;
-	UCanvasPanel* AccessPreview = PreviewRegion(
-		WidgetTree,
-		TEXT("AccessPreview"),
-		FLinearColor(0.12f, 0.35f, 0.44f, 0.50f),
-		AMSim::UITheme::Cyan(),
-		TEXT(""),
-		8,
-		AccessGeometrySurface,
-		AccessLabel);
-	AccessGeometryWidget = AccessPreview;
-	AccessGeometrySlot = Place(Root, AccessPreview, FAnchors(0.44f, 0.60f, 0.46f, 0.82f), FMargin(), 6);
-
-	HoverGhostSurface = ColorSurface(
-		WidgetTree,
-		TEXT("PlacementCenterline"),
-		FLinearColor(0.09f, 0.61f, 0.74f, 0.38f),
-		AMSim::UITheme::Cyan(),
-		2.0f,
-		3.0f);
-	HoverGhostWidget = HoverGhostSurface;
-	HoverGhostSlot = Place(
-		Root,
-		HoverGhostSurface,
-		FAnchors(0.4f, 0.4f, 0.5f, 0.405f),
-		FMargin(),
-		8);
-	HoverGhostSurface->SetVisibility(ESlateVisibility::Collapsed);
-
-	PointerEndpointSurface = ColorSurface(
-		WidgetTree,
-		TEXT("PlacementPointerEndpoint"),
-		AMSim::UITheme::Navy900(),
-		AMSim::UITheme::Cyan(),
-		3.0f,
-		28.0f);
-	PointerEndpointText = Text(
-		WidgetTree,
-		TEXT("PlacementPointerEndpointLabel"),
-		TEXT(""),
-		9,
-		AMSim::UITheme::White(),
-		true);
-	PointerEndpointText->SetJustification(ETextJustify::Center);
-	PointerEndpointSurface->SetContent(PointerEndpointText);
-	PointerEndpointSlot = Place(
-		Root,
-		PointerEndpointSurface,
-		FAnchors(0.5f),
-		FMargin(0.0f, 0.0f, 26.0f, 26.0f),
-		10);
-	PointerEndpointSurface->SetVisibility(ESlateVisibility::Collapsed);
-
-	CrossingSurface = Surface(
-		WidgetTree,
-		TEXT("RunwayCrossingMarker"),
-		AMSim::UITheme::ESurface::Chip,
-		FMargin(8.0f, 4.0f));
-	CrossingText = Text(
-		WidgetTree,
-		TEXT("RunwayCrossingLabel"),
-		TEXT("RUNWAY CROSSING"),
-		8,
-		AMSim::UITheme::White(),
-		true);
-	CrossingText->SetJustification(ETextJustify::Center);
-	CrossingSurface->SetContent(CrossingText);
-	CrossingSlot = Place(
-		Root,
-		CrossingSurface,
-		FAnchors(0.5f),
-		FMargin(0.0f, 0.0f, 132.0f, 30.0f),
-		11);
-	CrossingSurface->SetVisibility(ESlateVisibility::Collapsed);
-
-	for (int32 Index = 0; Index < HandleCount; ++Index)
-	{
-		UBorder* Handle = ColorSurface(
-			WidgetTree,
-			*FString::Printf(TEXT("BuildHandle%d"), Index),
-			AMSim::UITheme::Navy900(),
-			AMSim::UITheme::Cyan(),
-			2.0f,
-			14.0f);
-		UTextBlock* HandleLabel = Text(
-			WidgetTree,
-			*FString::Printf(TEXT("BuildHandleLabel%d"), Index),
-			Index == GateAHandle ? TEXT("A") :
-				Index == GateBHandle ? TEXT("B") : TEXT(""),
-			8,
-			AMSim::UITheme::White(),
-			true);
-		HandleLabel->SetJustification(ETextJustify::Center);
-		Handle->SetContent(HandleLabel);
-		HandleSurfaces.Add(Handle);
-		HandleTexts.Add(HandleLabel);
-		HandleSlots.Add(Place(
-			Root,
-			Handle,
-			FAnchors(0.5f),
-			FMargin(0.0f, 0.0f,
-				Index == GateAHandle || Index == GateBHandle ? 34.0f : 26.0f,
-				Index == GateAHandle || Index == GateBHandle ? 34.0f : 26.0f),
-			9));
-	}
-
-	for (int32 Index = 0; Index < 4; ++Index)
-	{
-		UBorder* Diagnostic = Surface(
-			WidgetTree,
-			*FString::Printf(TEXT("BuildDiagnostic%d"), Index),
-			AMSim::UITheme::ESurface::Danger,
-			FMargin(7.0f, 4.0f));
-		UTextBlock* DiagnosticText = Text(
-			WidgetTree,
-			*FString::Printf(TEXT("BuildDiagnosticText%d"), Index),
-			TEXT("CHECK PLACEMENT"),
-			9,
-			AMSim::UITheme::White(),
-			true);
-		DiagnosticText->SetJustification(ETextJustify::Center);
-		Diagnostic->SetContent(DiagnosticText);
-		UCanvasPanelSlot* DiagnosticSlot = Place(
-			Root,
-			Diagnostic,
-			FAnchors(0.5f),
-			FMargin(0.0f, 0.0f, 150.0f, 32.0f),
-			13);
-		Diagnostic->SetVisibility(ESlateVisibility::Collapsed);
-		DiagnosticSlots.Add(DiagnosticSlot);
-		DiagnosticSurfaces.Add(Diagnostic);
-		DiagnosticTexts.Add(DiagnosticText);
-	}
-
 	UBorder* ActionsSurface = Surface(
 		WidgetTree,
 		TEXT("BuildActions"),
@@ -1012,9 +490,12 @@ FReply UAMSimConstructionProposalView::NativeOnMouseButtonDown(
 	{
 		return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 	}
-	DragStartMapPoint = MapLocalPositionToParcel(
-		LocalPosition,
-		InGeometry.GetLocalSize());
+	if (!TryMapScreenPositionToParcel(
+		InMouseEvent.GetScreenSpacePosition(),
+		DragStartMapPoint))
+	{
+		return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+	}
 	DragStartProposal = CurrentProposal;
 	DragStartPlacementMask = PlacementMask;
 	DraggedTaxiwaySegmentIndex = INDEX_NONE;
@@ -1069,9 +550,10 @@ FReply UAMSimConstructionProposalView::NativeOnMouseButtonUp(
 	{
 		return Super::NativeOnMouseButtonUp(InGeometry, InMouseEvent);
 	}
-	const AMSim::FPhase1Point PointerPoint = MapLocalPositionToParcel(
-		InGeometry.AbsoluteToLocal(InMouseEvent.GetScreenSpacePosition()),
-		InGeometry.GetLocalSize());
+	AMSim::FPhase1Point PointerPoint = DragStartMapPoint;
+	TryMapScreenPositionToParcel(
+		InMouseEvent.GetScreenSpacePosition(),
+		PointerPoint);
 	bool bCommittedPlacement = false;
 	if (bPathStartedByPress)
 	{
@@ -1128,16 +610,20 @@ FReply UAMSimConstructionProposalView::NativeOnMouseMove(
 		bHoveringWorld = bInsideWorld;
 		if (bInsideWorld)
 		{
-			HoverMapPoint = MapLocalPositionToParcel(
-				LocalPosition,
-				InGeometry.GetLocalSize());
+			TryMapScreenPositionToParcel(
+				InMouseEvent.GetScreenSpacePosition(),
+				HoverMapPoint);
 		}
 		RefreshPointerGhost();
 		return Super::NativeOnMouseMove(InGeometry, InMouseEvent);
 	}
-	const AMSim::FPhase1Point PointerPoint = MapLocalPositionToParcel(
-		LocalPosition,
-		InGeometry.GetLocalSize());
+	AMSim::FPhase1Point PointerPoint = HoverMapPoint;
+	if (!TryMapScreenPositionToParcel(
+		InMouseEvent.GetScreenSpacePosition(),
+		PointerPoint))
+	{
+		return FReply::Handled();
+	}
 	HoverMapPoint = PointerPoint;
 	if (PointerPoint != DragStartMapPoint)
 	{
@@ -1609,6 +1095,44 @@ UAMSimConstructionProposalView::ResolveTaxiwayEditHit(
 	// placement path then snaps a new segment to the existing network instead
 	// of translating the selected segment.
 	return {};
+}
+
+bool UAMSimConstructionProposalView::TryMapScreenPositionToParcel(
+	const FVector2D& ScreenPosition,
+	AMSim::FPhase1Point& OutPoint) const
+{
+	APlayerController* PlayerController = GetOwningPlayer();
+	if (!PlayerController)
+	{
+		return false;
+	}
+	FVector2D PixelPosition;
+	FVector2D ViewportPosition;
+	USlateBlueprintLibrary::AbsoluteToViewport(
+		this,
+		ScreenPosition,
+		PixelPosition,
+		ViewportPosition);
+	FVector WorldOrigin;
+	FVector WorldDirection;
+	if (!PlayerController->DeprojectScreenPositionToWorld(
+		PixelPosition.X,
+		PixelPosition.Y,
+		WorldOrigin,
+		WorldDirection) ||
+		FMath::IsNearlyZero(WorldDirection.Z))
+	{
+		return false;
+	}
+	const double DistanceToAirportPlane =
+		-WorldOrigin.Z / WorldDirection.Z;
+	if (DistanceToAirportPlane < 0.0)
+	{
+		return false;
+	}
+	OutPoint = MapWorldPositionToParcel(
+		WorldOrigin + WorldDirection * DistanceToAirportPlane);
+	return true;
 }
 
 bool UAMSimConstructionProposalView::IsWorldPlacementPosition(

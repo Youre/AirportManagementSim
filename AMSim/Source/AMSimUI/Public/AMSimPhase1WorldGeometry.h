@@ -15,6 +15,8 @@ namespace AMSim
 	AMSIMUI_API FVector MapPhase1PointToWorld(
 		const FPhase1Point& Point,
 		double Height = 0.0);
+	AMSIMUI_API FPhase1Point MapPhase1WorldToPoint(
+		const FVector& WorldPosition);
 	AMSIMUI_API FPhase1WorldSegmentGeometry MakePhase1WorldSegmentGeometry(
 		const FPhase1Point& Start,
 		const FPhase1Point& End,

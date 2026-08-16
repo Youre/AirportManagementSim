@@ -6,6 +6,11 @@ Material profile: documents
 Initialization mode: augment-existing
 
 Active priorities:
+- Keep one authoritative Paper2D airport-world renderer in every interaction
+  mode. Build mode is UMG tool chrome over the live `AAMSimWorldPresenter`;
+  committed infrastructure, the schema-10 terminal, gates, and transient
+  construction previews all use shared parcel/world geometry. Do not restore
+  UMG facility substitutes or widget-local map transforms.
 - Use the schema-10 spatial terminal as the authoritative starter-terminal
   presentation from airport creation onward. The normal overview shows its
   generated, map-readable roof at the fixed service-road/gate anchor; opening
@@ -67,9 +72,21 @@ Current architectural tensions:
 
 Next verification command:
 - Run the next owner-selected acceptance journey from the consolidated Phase 7
-  protocol against the schema-9 candidate.
+  protocol against the schema-10 candidate.
 
 Last verification:
+- 2026-08-16 EDT: build mode and normal play now share the authoritative
+  Paper2D world. The duplicate UMG terminal/gate/runway/taxiway/road renderer
+  and its widget-local coordinate model were removed; transient plans use a
+  bounded Paper2D proxy pool and the same geometry helpers as committed
+  infrastructure. All 81 automation tests pass, clean UE 5.8 Editor/Game and
+  Development/Shipping builds pass, packaged Development smoke passes, and
+  the Shipping launch remains responsive. A real 1280x720 replay confirmed
+  terminal/gate continuity, direct runway/taxiway placement, network-ready
+  validation, and no position jump on confirmation. Release scans report zero
+  runtime string loads, forbidden dependencies/package matches, and line-limit
+  violations. The canonical package was refreshed with all 22 saves restored
+  byte-for-byte; no shared cache was cleared.
 - 2026-08-08 EDT: the normal new-airport presentation now sends the Phase 3
   terminal-layout snapshot to the world before the Terminal screen is opened.
   Focused automation proves one generated roof proxy per built floor cell,

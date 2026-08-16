@@ -2,7 +2,6 @@
 
 #include "AMSimAirportSimulationSubsystem.h"
 #include "AMSimCameraPawn.h"
-#include "AMSimConstructionProposalView.h"
 #include "AMSimGameInstanceSubsystem.h"
 #include "AMSimReleaseGuideView.h"
 #include "AMSimSaveLoadView.h"
@@ -64,7 +63,6 @@ FReply UAMSimRootScreen::NativeOnMouseButtonDown(
 		LocalPosition.Y / Size.Y <= 0.88f;
 	if (!bSupportedPanButton ||
 		!bOverWorld ||
-		(ConstructionProposalView && ConstructionProposalView->IsProposalOpen()) ||
 		(ReleaseGuideView && ReleaseGuideView->IsGuideOpen()) ||
 		(SchedulePickerView && SchedulePickerView->IsPickerOpen()) ||
 		(SaveLoadView && SaveLoadView->IsPickerOpen()) ||

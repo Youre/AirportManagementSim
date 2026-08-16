@@ -273,11 +273,8 @@ void AAMSimWorldPresenter::SetFacilitiesVisible(
 	bRequestedPhase1NetworkVisible = bNetworkVisible;
 	bRequestedPhase1Operational = bOperational;
 	bRequestedStarterContextVisible = bStarterContextVisible;
-	const bool bShowNetwork =
-		bNetworkVisible && !bConstructionEditorOverlayVisible;
-	const bool bShowContext =
-		(bStarterContextVisible || bNetworkVisible) &&
-		!bConstructionEditorOverlayVisible;
+	const bool bShowNetwork = bNetworkVisible;
+	const bool bShowContext = bStarterContextVisible || bNetworkVisible;
 	Runway->SetVisibility(bShowNetwork);
 	for (int32 Index = 0; Index < Phase1TaxiwaySegments.Num(); ++Index)
 	{
@@ -339,7 +336,10 @@ float AAMSimWorldPresenter::GetStarterGateYawForTest() const
 void AAMSimWorldPresenter::SetConstructionEditorOverlayVisible(
 	const bool bVisible)
 {
-	bConstructionEditorOverlayVisible = bVisible;
+	if (!bVisible)
+	{
+		ClearPhase1ConstructionPreview();
+	}
 	SetFacilitiesVisible(
 		bRequestedPhase1NetworkVisible,
 		bRequestedPhase1Operational,

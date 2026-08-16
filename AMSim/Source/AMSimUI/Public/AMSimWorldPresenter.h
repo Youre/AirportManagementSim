@@ -6,6 +6,7 @@
 #include "AMSimPhase4Types.h"
 #include "AMSimPhase5Types.h"
 #include "AMSimPhase6Types.h"
+#include "AMSimPhase1ConstructionPreview.h"
 #include "GameFramework/Actor.h"
 #include "AMSimWorldPresenter.generated.h"
 
@@ -62,6 +63,13 @@ public:
 	void SetMatureOverviewMode(bool bEnabled);
 	void SetMatureSelectionFacility(bool bFacilitySelected);
 	void SetConstructionEditorOverlayVisible(bool bVisible);
+	void SetPhase1ConstructionPreview(
+		const AMSim::FPhase1ConstructionPreviewState& Preview);
+	void ClearPhase1ConstructionPreview();
+	int32 GetActivePhase1ConstructionPreviewSurfaceCount() const;
+	int32 GetActivePhase1ConstructionPreviewMarkerCount() const;
+	FVector GetPhase1ConstructionPreviewRunwayCenterForTest() const;
+	bool IsStarterContextVisibleForTest() const;
 	uint64 GetLastAppliedRevision() const { return LastAppliedRevision; }
 	bool HasRequiredPresentationAssets() const;
 	bool HasDistinctStarterFacilityAssets() const;
@@ -147,6 +155,8 @@ private:
 		const AMSim::FPhase1State& State);
 	void ApplyPhase1Geometry(const AMSim::FStarterPlanProposal& Proposal);
 	void InitializePhase1ConstructionPresentation();
+	void InitializePhase1ConstructionPreviewPresentation();
+	void FinalizePhase1ConstructionPreviewPresentation();
 	void FinalizePhase1OperationsPresentation(
 		UPaperSprite* ConstructionTruckSprite,
 		UPaperSprite* ConstructionWorkerSprite,
@@ -248,6 +258,14 @@ private:
 	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1ConstructionCrew;
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1ConstructionBoundaryMarkers;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPaperSpriteComponent> Phase1ConstructionPreviewRunway;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1ConstructionPreviewTaxiways;
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UPaperSpriteComponent> Phase1ConstructionPreviewRoad;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1ConstructionPreviewMarkers;
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> Phase2Aircraft;
 	UPROPERTY(VisibleAnywhere)
@@ -464,7 +482,6 @@ private:
 	FVector Phase1StandCenter = FVector::ZeroVector;
 	int32 ActivePhase1TaxiwaySegmentCount = 0;
 	bool bPhase1RoadPresent = false;
-	bool bConstructionEditorOverlayVisible = false;
 	bool bRequestedPhase1NetworkVisible = false;
 	bool bRequestedPhase1Operational = false;
 	bool bRequestedStarterContextVisible = false;

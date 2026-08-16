@@ -40,6 +40,7 @@ void UAMSimConstructionProposalView::OpenProposal()
 void UAMSimConstructionProposalView::CloseProposal()
 {
 	const bool bWasOpen = IsProposalOpen();
+	ClearWorldPreview();
 	DraggedEndpointIndex = INDEX_NONE;
 	ActiveTaxiwaySegmentIndex = INDEX_NONE;
 	DraggedTaxiwaySegmentIndex = INDEX_NONE;

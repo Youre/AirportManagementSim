@@ -146,6 +146,7 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 			69 + Index));
 	}
 	InitializePhase1ConstructionPresentation();
+	InitializePhase1ConstructionPreviewPresentation();
 	for (int32 Index = 0; Index < 4; ++Index)
 	{
 		Phase2Aircraft.Add(CreateSpriteComponent(
@@ -627,6 +628,7 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 	ConfigureSprite(Windsock, WindsockSprite, FVector(14000.0, -45000.0, 45.0), FVector(3.0, 1.0, 3.0));
 	Aircraft->SetRelativeScale3D(FVector(10.0, 1.0, 10.0));
 	ConfigureSprite(Selection, SelectionSprite, FVector(-32000.0, 23000.0, 70.0), FVector(2.2, 1.0, 2.2));
+	FinalizePhase1ConstructionPreviewPresentation();
 	ConfigureSprite(InspectionMarker, SelectionSprite, FVector(-32000.0, 18000.0, 72.0), FVector(1.1, 1.0, 1.1));
 	ConfigureSprite(FuelMarker, SelectionSprite, FVector(-32000.0, 28000.0, 72.0), FVector(1.1, 1.0, 1.1));
 	for (int32 Index = 0; Index < Phase2Aircraft.Num(); ++Index)

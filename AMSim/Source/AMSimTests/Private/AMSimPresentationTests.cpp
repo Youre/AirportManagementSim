@@ -386,21 +386,19 @@ bool FAMSimPhase45ConstructionValidationContentTest::RunTest(
 		Moved.AccessEnd.Y,
 		95000ll);
 	const AMSim::FPhase1Point TopLeft =
-		UAMSimConstructionProposalView::MapLocalPositionToParcel(
-			FVector2D(205.0, 135.0),
-			FVector2D(1000.0, 1000.0));
+		UAMSimConstructionProposalView::MapWorldPositionToParcel(
+			AMSim::MapPhase1PointToWorld({0, 0}));
 	const AMSim::FPhase1Point BottomRight =
-		UAMSimConstructionProposalView::MapLocalPositionToParcel(
-			FVector2D(785.0, 825.0),
-			FVector2D(1000.0, 1000.0));
-	TestEqual(TEXT("Full map left edge maps to parcel origin"), TopLeft.X, 0ll);
-	TestEqual(TEXT("Full map top edge maps to parcel origin"), TopLeft.Y, 0ll);
+		UAMSimConstructionProposalView::MapWorldPositionToParcel(
+			AMSim::MapPhase1PointToWorld({100000, 100000}));
+	TestEqual(TEXT("World parcel origin maps back to its X coordinate"), TopLeft.X, 0ll);
+	TestEqual(TEXT("World parcel origin maps back to its Y coordinate"), TopLeft.Y, 0ll);
 	TestEqual(
-		TEXT("Full map right edge reaches the parcel boundary"),
+		TEXT("World parcel maximum maps back to its X boundary"),
 		BottomRight.X,
 		100000ll);
 	TestEqual(
-		TEXT("Full map bottom edge reaches the parcel boundary"),
+		TEXT("World parcel maximum maps back to its Y boundary"),
 		BottomRight.Y,
 		100000ll);
 	const AMSim::FStarterPlanProposal RunwayOnly =
@@ -859,9 +857,6 @@ bool FAMSimPhase15WorldPresenterTest::RunTest(const FString& Parameters)
 	TestTrue(
 		TEXT("Starter gate centerlines correct the Paper2D plane quarter-turn"),
 		FMath::IsNearlyEqual(Presenter->GetStarterGateYawForTest(), 90.0f));
-	TestTrue(
-		TEXT("Construction overlay resolves the matching terminal and gate textures"),
-		GetDefault<UAMSimConstructionProposalView>()->HasRequiredFacilityArtwork());
 	TestEqual(
 		TEXT("Accessible path owns four dashes across five route legs"),
 		Presenter->GetTerminalAccessibleDashProxyCount(),
@@ -1154,8 +1149,36 @@ bool FAMSimTerminalGrowthWorldPresentationTest::RunTest(const FString& Parameter
 		Presenter->GetActiveTerminalRoofProxyCount(), ExpectedFloorCount);
 	TestFalse(TEXT("Spatial terminal suppresses the legacy starter-terminal sprite"),
 		Presenter->IsLegacyStarterTerminalVisibleForTest());
+	TestTrue(TEXT("Starter gates remain in the authoritative world before construction"),
+		Presenter->IsStarterContextVisibleForTest());
+	FPhase1ConstructionPreviewState BuildPreview;
+	BuildPreview.Proposal = CreateDefaultStarterPlan();
+	BuildPreview.bRunwayVisible = true;
+	BuildPreview.bRoadVisible = true;
+	BuildPreview.bValid = true;
+	BuildPreview.SelectedTool = EPhase1ConstructionPreviewTool::Taxiway;
+	BuildPreview.ActiveTaxiwaySegmentIndex = 0;
+	BuildPreview.Markers.Add({
+		BuildPreview.Proposal.RunwayStart,
+		EPhase1ConstructionMarkerStyle::Connection});
+	Presenter->SetPhase1ConstructionPreview(BuildPreview);
+	TestEqual(TEXT("Build preview uses one world surface for runway, taxiway, and road"),
+		Presenter->GetActivePhase1ConstructionPreviewSurfaceCount(), 3);
+	TestEqual(TEXT("Build preview markers are pooled in the world"),
+		Presenter->GetActivePhase1ConstructionPreviewMarkerCount(), 1);
+	TestTrue(TEXT("Preview runway uses the committed world geometry transform"),
+		Presenter->GetPhase1ConstructionPreviewRunwayCenterForTest().Equals(
+			MakePhase1WorldSegmentGeometry(
+				BuildPreview.Proposal.RunwayStart,
+				BuildPreview.Proposal.RunwayEnd,
+				BuildPreview.Proposal.RunwayWidthCentimeters,
+				84.0).Center));
 	Presenter->SetConstructionEditorOverlayVisible(true);
+	TestTrue(TEXT("Build mode preserves the authoritative starter gates"),
+		Presenter->IsStarterContextVisibleForTest());
 	Presenter->SetConstructionEditorOverlayVisible(false);
+	TestEqual(TEXT("Leaving build mode clears every transient world preview"),
+		Presenter->GetActivePhase1ConstructionPreviewSurfaceCount(), 0);
 	TestEqual(TEXT("Build-mode transitions preserve the generated terminal roof"),
 		Presenter->GetActiveTerminalRoofProxyCount(), ExpectedFloorCount);
 	TestFalse(TEXT("Build-mode transitions cannot restore the legacy terminal"),

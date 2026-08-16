@@ -6,10 +6,8 @@
 
 class UButton;
 class UBorder;
-class UCanvasPanelSlot;
 class UTextBlock;
-class UTexture2D;
-class UWidget;
+class AAMSimWorldPresenter;
 
 UCLASS()
 class AMSIMUI_API UAMSimConstructionProposalView final : public UUserWidget
@@ -17,8 +15,6 @@ class AMSIMUI_API UAMSimConstructionProposalView final : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	UAMSimConstructionProposalView(const FObjectInitializer& ObjectInitializer);
-
 	enum class EPlacementTool : uint8
 	{
 		Runway,
@@ -78,14 +74,11 @@ public:
 		const AMSim::FPhase1Validation& Validation);
 	static FString DescribeRunwayGeometry(
 		const AMSim::FStarterPlanProposal& Proposal);
-	static AMSim::FPhase1Point MapLocalPositionToParcel(
-		const FVector2D& LocalPosition,
-		const FVector2D& LocalSize);
+	static AMSim::FPhase1Point MapWorldPositionToParcel(
+		const FVector& WorldPosition);
 	static FTaxiwayEditHit ResolveTaxiwayEditHit(
 		const AMSim::FStarterPlanProposal& Proposal,
 		const AMSim::FPhase1Point& Point);
-	bool HasRequiredFacilityArtwork() const;
-
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
 	virtual FReply NativeOnMouseButtonDown(
@@ -137,9 +130,14 @@ private:
 	bool IsWorldPlacementPosition(
 		const FVector2D& LocalPosition,
 		const FVector2D& LocalSize) const;
+	bool TryMapScreenPositionToParcel(
+		const FVector2D& ScreenPosition,
+		AMSim::FPhase1Point& OutPoint) const;
 	void RefreshPointerGhost();
-	void RefreshDiagnostics();
 	void RefreshProposalPresentation();
+	void SyncWorldPreview();
+	void ClearWorldPreview();
+	AAMSimWorldPresenter* ResolveWorldPresenter();
 	void SyncLegacyTaxiwayFields();
 	void RemoveDegenerateTaxiwaySegments();
 	AMSim::FPhase1Point SnapTaxiwayPoint(
@@ -167,85 +165,13 @@ private:
 	UPROPERTY(Transient)
 	TObjectPtr<UTextBlock> GeometryText;
 	UPROPERTY(Transient)
-	TObjectPtr<UTextBlock> RunwayGeometryLabel;
-	UPROPERTY(Transient)
 	TObjectPtr<UTextBlock> ConnectionText;
 	UPROPERTY(Transient)
 	TObjectPtr<UTextBlock> ConfirmLabelText;
 	UPROPERTY(Transient)
-	TObjectPtr<UWidget> RunwayGeometryWidget;
-	UPROPERTY(Transient)
-	TArray<TObjectPtr<UWidget>> TaxiGeometryWidgets;
-	UPROPERTY(Transient)
-	TObjectPtr<UWidget> TerminalGeometryWidget;
-	UPROPERTY(Transient)
-	TObjectPtr<UWidget> GateAGeometryWidget;
-	UPROPERTY(Transient)
-	TObjectPtr<UWidget> GateBGeometryWidget;
-	UPROPERTY(Transient)
-	TObjectPtr<UWidget> AccessGeometryWidget;
-	UPROPERTY(Transient)
-	TObjectPtr<UWidget> HoverGhostWidget;
-	UPROPERTY(Transient)
 	TObjectPtr<UBorder> ValidationSurface;
 	UPROPERTY(Transient)
-	TObjectPtr<UBorder> RunwayGeometrySurface;
-	UPROPERTY(Transient)
-	TArray<TObjectPtr<UBorder>> TaxiGeometrySurfaces;
-	UPROPERTY(Transient)
-	TObjectPtr<UBorder> TerminalGeometrySurface;
-	UPROPERTY(Transient)
-	TObjectPtr<UBorder> GateAGeometrySurface;
-	UPROPERTY(Transient)
-	TObjectPtr<UBorder> GateBGeometrySurface;
-	UPROPERTY(Transient)
-	TObjectPtr<UBorder> AccessGeometrySurface;
-	UPROPERTY(Transient)
-	TObjectPtr<UBorder> HoverGhostSurface;
-	UPROPERTY(Transient)
-	TObjectPtr<UTextBlock> HoverGhostText;
-	UPROPERTY(Transient)
-	TObjectPtr<UBorder> PointerEndpointSurface;
-	UPROPERTY(Transient)
-	TObjectPtr<UTextBlock> PointerEndpointText;
-	UPROPERTY(Transient)
-	TObjectPtr<UCanvasPanelSlot> PointerEndpointSlot;
-	UPROPERTY(Transient)
-	TObjectPtr<UBorder> CrossingSurface;
-	UPROPERTY(Transient)
-	TObjectPtr<UTextBlock> CrossingText;
-	UPROPERTY(Transient)
-	TObjectPtr<UCanvasPanelSlot> CrossingSlot;
-	UPROPERTY(Transient)
-	TObjectPtr<UCanvasPanelSlot> RunwayGeometrySlot;
-	UPROPERTY(Transient)
-	TArray<TObjectPtr<UCanvasPanelSlot>> TaxiGeometrySlots;
-	UPROPERTY(Transient)
-	TObjectPtr<UCanvasPanelSlot> TerminalGeometrySlot;
-	UPROPERTY(Transient)
-	TObjectPtr<UCanvasPanelSlot> GateAGeometrySlot;
-	UPROPERTY(Transient)
-	TObjectPtr<UCanvasPanelSlot> GateBGeometrySlot;
-	UPROPERTY(Transient)
-	TObjectPtr<UCanvasPanelSlot> AccessGeometrySlot;
-	UPROPERTY(Transient)
-	TObjectPtr<UCanvasPanelSlot> HoverGhostSlot;
-	UPROPERTY(Transient)
-	TArray<TObjectPtr<UBorder>> HandleSurfaces;
-	UPROPERTY(Transient)
-	TArray<TObjectPtr<UTextBlock>> HandleTexts;
-	UPROPERTY(Transient)
-	TArray<TObjectPtr<UCanvasPanelSlot>> HandleSlots;
-	UPROPERTY(Transient)
-	TArray<TObjectPtr<UCanvasPanelSlot>> DiagnosticSlots;
-	UPROPERTY(Transient)
-	TArray<TObjectPtr<UBorder>> DiagnosticSurfaces;
-	UPROPERTY(Transient)
-	TArray<TObjectPtr<UTextBlock>> DiagnosticTexts;
-	UPROPERTY()
-	TObjectPtr<UTexture2D> StarterTerminalTexture;
-	UPROPERTY()
-	TObjectPtr<UTexture2D> StarterGateTexture;
+	TObjectPtr<AAMSimWorldPresenter> CachedWorldPresenter;
 
 	AMSim::FStarterPlanProposal CurrentProposal;
 	AMSim::FPhase1Validation CurrentValidation;

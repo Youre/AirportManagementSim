@@ -9,6 +9,25 @@ Treat this repository as a hybrid Unreal project. “C++ project” and “Bluep
 - For UI, prefer a native widget class that owns behavior and exposes deliberate `UPROPERTY`, `UFUNCTION`, delegate, and `BindWidget` boundaries, with a Widget Blueprint owning visual hierarchy and styling.
 - Do not move visual layout into C++ merely because the repository has native source. Do not move core systems into Blueprint merely because MCP can mutate the asset.
 
+## Airport-world rendering boundary
+
+- `AAMSimWorldPresenter` and its focused Paper2D presenter modules are the only
+  runtime owners of airport-world facilities, vehicles, people, overlays, and
+  construction previews.
+- UMG/CommonUI owns screen-space chrome: tools, cards, drawers, validation,
+  instructions, and actions. It must not maintain a second airport renderer or
+  substitute world geometry for terminals, gates, runways, taxiways, roads, or
+  other placed facilities.
+- Reuse `AMSimPhase1WorldGeometry` for parcel/world conversion in both
+  directions. Do not add a widget-local parcel rectangle or a second
+  world-to-screen coordinate model.
+- Build mode is a tool/input state over the live Paper2D world. Committed and
+  fixed context stays visible; uncommitted geometry uses bounded pooled preview
+  proxies driven by immutable presentation state.
+- Preview systems are presentation-only. They never write proxy positions back
+  into simulation and must use the same geometry helpers as committed objects
+  so confirmation changes state/treatment without changing position.
+
 ## Unreal MCP boundary
 
 - Unreal MCP is an editor bridge, not a replacement for the C++ toolchain.

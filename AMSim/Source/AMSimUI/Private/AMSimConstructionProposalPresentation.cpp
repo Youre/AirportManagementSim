@@ -2,31 +2,15 @@
 
 #include "AMSimPhase1Fixture.h"
 #include "AMSimUITheme.h"
+#include "AMSimWorldPresenter.h"
 #include "Components/Border.h"
 #include "Components/Button.h"
-#include "Components/CanvasPanelSlot.h"
 #include "Components/TextBlock.h"
+#include "EngineUtils.h"
 
 namespace AMSimConstructionProposalPresentationPrivate
 {
-	constexpr float ParcelLeft = 0.205f;
-	constexpr float ParcelTop = 0.135f;
-	constexpr float ParcelRight = 0.785f;
-	constexpr float ParcelBottom = 0.825f;
-	constexpr double ParcelCentimeters = 100000.0;
 	constexpr int64 ConnectionSnapCentimeters = 5000;
-
-	float MapX(const int64 X)
-	{
-		return ParcelLeft + static_cast<float>(X / ParcelCentimeters) *
-			(ParcelRight - ParcelLeft);
-	}
-
-	float MapY(const int64 Y)
-	{
-		return ParcelTop + static_cast<float>(Y / ParcelCentimeters) *
-			(ParcelBottom - ParcelTop);
-	}
 
 	int64 DistanceSquared(
 		const AMSim::FPhase1Point Left,
@@ -35,94 +19,6 @@ namespace AMSimConstructionProposalPresentationPrivate
 		const int64 DeltaX = Left.X - Right.X;
 		const int64 DeltaY = Left.Y - Right.Y;
 		return DeltaX * DeltaX + DeltaY * DeltaY;
-	}
-
-	void SetSegmentGeometry(
-		UCanvasPanelSlot* Slot,
-		UWidget* Widget,
-		const AMSim::FPhase1Point Start,
-		const AMSim::FPhase1Point End,
-		const float HalfThickness)
-	{
-		if (!Slot || !Widget)
-		{
-			return;
-		}
-		const float StartX = MapX(Start.X);
-		const float StartY = MapY(Start.Y);
-		const float EndX = MapX(End.X);
-		const float EndY = MapY(End.Y);
-		const float DeltaX = EndX - StartX;
-		const float ScreenDeltaY = (EndY - StartY) * (1080.0f / 1920.0f);
-		const float Length = FMath::Max(
-			FMath::Sqrt(DeltaX * DeltaX + ScreenDeltaY * ScreenDeltaY),
-			0.006f);
-		const float CenterX = (StartX + EndX) * 0.5f;
-		const float CenterY = (StartY + EndY) * 0.5f;
-		Slot->SetAnchors(FAnchors(
-			CenterX - Length * 0.5f,
-			CenterY - HalfThickness,
-			CenterX + Length * 0.5f,
-			CenterY + HalfThickness));
-		Slot->SetOffsets(FMargin());
-		Widget->SetRenderTransformPivot(FVector2D(0.5f));
-		Widget->SetRenderTransformAngle(
-			FMath::RadiansToDegrees(FMath::Atan2(ScreenDeltaY, DeltaX)));
-	}
-
-	void SetBoxGeometry(
-		UCanvasPanelSlot* Slot,
-		const AMSim::FPhase1Point Center,
-		const float HalfWidth,
-		const float HalfHeight)
-	{
-		if (Slot)
-		{
-			Slot->SetAnchors(FAnchors(
-				MapX(Center.X) - HalfWidth,
-				MapY(Center.Y) - HalfHeight,
-				MapX(Center.X) + HalfWidth,
-				MapY(Center.Y) + HalfHeight));
-			Slot->SetOffsets(FMargin());
-		}
-	}
-
-	void SetPointGeometry(
-		UCanvasPanelSlot* Slot,
-		const AMSim::FPhase1Point Point,
-		const FVector2D Size,
-		const FVector2D Offset = FVector2D::ZeroVector)
-	{
-		if (!Slot)
-		{
-			return;
-		}
-		Slot->SetAnchors(FAnchors(
-			FMath::Clamp(MapX(Point.X), ParcelLeft, ParcelRight),
-			FMath::Clamp(MapY(Point.Y), ParcelTop, ParcelBottom)));
-		Slot->SetAlignment(FVector2D(0.5f));
-		Slot->SetOffsets(FMargin(Offset.X, Offset.Y, Size.X, Size.Y));
-	}
-
-	void StyleProposalSurface(
-		UBorder* Surface,
-		const bool bSelected,
-		const bool bSnapTarget,
-		const FLinearColor Identity)
-	{
-		if (!Surface)
-		{
-			return;
-		}
-		const FLinearColor Stroke = bSnapTarget
-			? AMSim::UITheme::Amber()
-			: bSelected ? AMSim::UITheme::White() : AMSim::UITheme::Cyan();
-		Surface->SetBrush(AMSim::UITheme::RoundedBrush(
-			FLinearColor(Identity.R, Identity.G, Identity.B,
-				bSelected || bSnapTarget ? 0.58f : 0.34f),
-			8.0f,
-			Stroke,
-			bSelected || bSnapTarget ? 3.0f : 1.6f));
 	}
 
 	const TCHAR* ToolName(const UAMSimConstructionProposalView::EPlacementTool Tool)
@@ -229,133 +125,7 @@ AMSim::FPhase1Point UAMSimConstructionProposalView::SnapTaxiwayPoint(
 
 void UAMSimConstructionProposalView::RefreshPointerGhost()
 {
-	using namespace AMSimConstructionProposalPresentationPrivate;
-	const bool bActivePathDrag = bPlacementDragging && bPathStartedByPress;
-	if (!HoverGhostWidget || !HoverGhostSlot || !HoverGhostSurface ||
-		!PointerEndpointSurface || !PointerEndpointSlot ||
-		(!bHoveringWorld && !bActivePathDrag))
-	{
-		if (HoverGhostWidget)
-		{
-			HoverGhostWidget->SetVisibility(ESlateVisibility::Collapsed);
-		}
-		if (PointerEndpointSurface)
-		{
-			PointerEndpointSurface->SetVisibility(ESlateVisibility::Collapsed);
-		}
-		return;
-	}
-	const bool bToolAlreadyComplete =
-		SelectedPlacementTool != EPlacementTool::Taxiway &&
-		PathPlacementStep == 0 && IsToolPlaced(SelectedPlacementTool);
-	if (!bActivePathDrag && bToolAlreadyComplete)
-	{
-		HoverGhostWidget->SetVisibility(ESlateVisibility::Collapsed);
-		PointerEndpointSurface->SetVisibility(ESlateVisibility::Collapsed);
-		return;
-	}
-
-	AMSim::FPhase1Point PointerPoint = HoverMapPoint;
-	if (SelectedPlacementTool == EPlacementTool::Taxiway)
-	{
-		PointerPoint = SnapTaxiwayPoint(
-			HoverMapPoint,
-			ActiveTaxiwaySegmentIndex);
-	}
-	SetPointGeometry(PointerEndpointSlot, PointerPoint, FVector2D(26.0f));
-	PointerEndpointSurface->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	if (PointerEndpointText)
-	{
-		PointerEndpointText->SetText(FText::GetEmpty());
-	}
-	HoverGhostWidget->SetVisibility(ESlateVisibility::Collapsed);
-
-	AMSim::FStarterPlanProposal Candidate = CurrentProposal;
-	bool bHasPreviewSegment = PathPlacementStep == 1 || bActivePathDrag;
-	if (bHasPreviewSegment)
-	{
-		Candidate = SetSelectedToolEndpoint(CurrentProposal, 1, PointerPoint);
-		AMSim::FPhase1Point Start;
-		AMSim::FPhase1Point End;
-		if (SelectedPlacementTool == EPlacementTool::Runway)
-		{
-			Start = Candidate.RunwayStart;
-			End = Candidate.RunwayEnd;
-		}
-		else if (SelectedPlacementTool == EPlacementTool::RoadAccess)
-		{
-			Start = Candidate.AccessStart;
-			End = Candidate.AccessEnd;
-		}
-		else if (Candidate.TaxiwaySegments.IsValidIndex(
-			ActiveTaxiwaySegmentIndex))
-		{
-			Start = Candidate.TaxiwaySegments[ActiveTaxiwaySegmentIndex].Start;
-			End = Candidate.TaxiwaySegments[ActiveTaxiwaySegmentIndex].End;
-		}
-		SetSegmentGeometry(HoverGhostSlot, HoverGhostWidget, Start, End, 0.0035f);
-		HoverGhostWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	}
-
-	FLinearColor GhostColor = AMSim::UITheme::Cyan();
-	if (bHasPreviewSegment && SelectedPlacementTool == EPlacementTool::Taxiway)
-	{
-		const AMSim::FTaxiwayNetworkValidation Network =
-			AMSim::ValidateTaxiwayNetwork(Candidate);
-		if (Network.bHasRunwayConnection && Network.bHasGateConnection)
-		{
-			GhostColor = AMSim::UITheme::Green();
-		}
-		else if (PointerPoint != HoverMapPoint)
-		{
-			GhostColor = AMSim::UITheme::Amber();
-		}
-	}
-	HoverGhostSurface->SetBrush(AMSim::UITheme::RoundedBrush(
-		FLinearColor(GhostColor.R, GhostColor.G, GhostColor.B, 0.30f),
-		8.0f,
-		GhostColor,
-		2.4f));
-	PointerEndpointSurface->SetBrush(AMSim::UITheme::RoundedBrush(
-		AMSim::UITheme::Navy900(),
-		13.0f,
-		GhostColor,
-		2.6f));
-}
-
-void UAMSimConstructionProposalView::RefreshDiagnostics()
-{
-	using namespace AMSimConstructionProposalPresentationPrivate;
-	const TArray<FPlacementDiagnostic> Diagnostics =
-		MakePlacementDiagnostics(CurrentProposal, CurrentValidation);
-	for (int32 Index = 0; Index < DiagnosticSlots.Num(); ++Index)
-	{
-		UWidget* Widget = DiagnosticSurfaces.IsValidIndex(Index)
-			? DiagnosticSurfaces[Index]
-			: nullptr;
-		if (Index >= Diagnostics.Num())
-		{
-			if (Widget)
-			{
-				Widget->SetVisibility(ESlateVisibility::Collapsed);
-			}
-			continue;
-		}
-		if (Widget)
-		{
-			Widget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		}
-		SetPointGeometry(
-			DiagnosticSlots[Index],
-			Diagnostics[Index].Point,
-			FVector2D(154.0f, 34.0f),
-			Index % 2 == 0 ? FVector2D(-82.0f, -24.0f) : FVector2D(82.0f, 24.0f));
-		if (DiagnosticTexts.IsValidIndex(Index) && DiagnosticTexts[Index])
-		{
-			DiagnosticTexts[Index]->SetText(
-				FText::FromString(Diagnostics[Index].Label));
-		}
-	}
+	SyncWorldPreview();
 }
 
 void UAMSimConstructionProposalView::RefreshProposalPresentation()
@@ -392,7 +162,7 @@ void UAMSimConstructionProposalView::RefreshProposalPresentation()
 	if (HeaderStateText)
 	{
 		HeaderStateText->SetText(FText::FromString(FString::Printf(
-			TEXT("10 M GRID  -  %s"),
+			TEXT("10 M SNAP  -  %s"),
 			ToolName(SelectedPlacementTool))));
 	}
 	if (ValidationLabelText)
@@ -472,114 +242,10 @@ void UAMSimConstructionProposalView::RefreshProposalPresentation()
 						: TEXT("FIX NETWORK CONNECTION")));
 	}
 
-	SetSegmentGeometry(
-		RunwayGeometrySlot,
-		RunwayGeometryWidget,
-		CurrentProposal.RunwayStart,
-		CurrentProposal.RunwayEnd,
-		0.028f);
-	if (RunwayGeometryWidget)
-	{
-		RunwayGeometryWidget->SetVisibility(
-			IsToolPlaced(EPlacementTool::Runway) ||
-				(SelectedPlacementTool == EPlacementTool::Runway && PathPlacementStep == 1)
-				? ESlateVisibility::SelfHitTestInvisible
-				: ESlateVisibility::Collapsed);
-	}
 	const TArray<AMSim::FTaxiwaySegment> Segments =
 		CurrentProposal.TaxiwaySegments;
-	for (int32 Index = 0; Index < TaxiGeometryWidgets.Num(); ++Index)
-	{
-		const bool bVisible = Segments.IsValidIndex(Index);
-		if (bVisible && TaxiGeometrySlots.IsValidIndex(Index))
-		{
-			SetSegmentGeometry(
-				TaxiGeometrySlots[Index],
-				TaxiGeometryWidgets[Index],
-				Segments[Index].Start,
-				Segments[Index].End,
-				0.013f);
-		}
-		TaxiGeometryWidgets[Index]->SetVisibility(
-			bVisible ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-		if (TaxiGeometrySurfaces.IsValidIndex(Index))
-		{
-			StyleProposalSurface(
-				TaxiGeometrySurfaces[Index],
-				SelectedPlacementTool == EPlacementTool::Taxiway &&
-					Index == ActiveTaxiwaySegmentIndex,
-				SelectedPlacementTool == EPlacementTool::Taxiway &&
-					Index != ActiveTaxiwaySegmentIndex,
-				AMSim::UITheme::Cyan());
-		}
-	}
-
-	const TArray<AMSim::FPhase1Point>& Gates = AMSim::GetStarterGatePoints();
-	// Preserve the authored top-down proportions. The old wide, shallow boxes
-	// made the upright terminal read as rotated and reduced the gate art to bars.
-	SetBoxGeometry(TerminalGeometrySlot, AMSim::GetStarterTerminalCenter(), 0.050f, 0.074f);
-	SetBoxGeometry(GateAGeometrySlot, Gates[0], 0.026f, 0.046f);
-	SetBoxGeometry(GateBGeometrySlot, Gates[1], 0.026f, 0.046f);
-	for (UWidget* FixedWidget : {
-		TerminalGeometryWidget.Get(), GateAGeometryWidget.Get(), GateBGeometryWidget.Get()})
-	{
-		if (FixedWidget)
-		{
-			FixedWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		}
-	}
-	StyleProposalSurface(
-		TerminalGeometrySurface,
-		false,
-		false,
-		AMSim::UITheme::Amber());
-	StyleProposalSurface(
-		GateAGeometrySurface,
-		false,
-		SelectedPlacementTool == EPlacementTool::Taxiway,
-		AMSim::UITheme::Cyan());
-	StyleProposalSurface(
-		GateBGeometrySurface,
-		false,
-		SelectedPlacementTool == EPlacementTool::Taxiway,
-		AMSim::UITheme::Cyan());
-
 	const bool bRoadVisible = CurrentProposal.AccessStart != CurrentProposal.AccessEnd ||
 		(SelectedPlacementTool == EPlacementTool::RoadAccess && PathPlacementStep == 1);
-	SetSegmentGeometry(
-		AccessGeometrySlot,
-		AccessGeometryWidget,
-		CurrentProposal.AccessStart,
-		CurrentProposal.AccessEnd,
-		0.010f);
-	if (AccessGeometryWidget)
-	{
-		AccessGeometryWidget->SetVisibility(
-			bRoadVisible ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-	}
-	StyleProposalSurface(
-		RunwayGeometrySurface,
-		SelectedPlacementTool == EPlacementTool::Runway,
-		SelectedPlacementTool == EPlacementTool::Taxiway &&
-			IsToolPlaced(EPlacementTool::Runway),
-		AMSim::UITheme::Cyan());
-	StyleProposalSurface(
-		AccessGeometrySurface,
-		SelectedPlacementTool == EPlacementTool::RoadAccess,
-		false,
-		AMSim::UITheme::Cyan());
-
-	if (RunwayGeometryLabel && IsToolPlaced(EPlacementTool::Runway))
-	{
-		FString Label = DescribeRunwayGeometry(CurrentProposal);
-		Label.RemoveFromStart(TEXT("RUNWAY "));
-		const int32 WidthSeparator = Label.Find(TEXT(" x "));
-		if (WidthSeparator != INDEX_NONE)
-		{
-			Label.LeftInline(WidthSeparator);
-		}
-		RunwayGeometryLabel->SetText(FText::FromString(Label));
-	}
 	if (GeometryText)
 	{
 		FString Description;
@@ -648,87 +314,152 @@ void UAMSimConstructionProposalView::RefreshProposalPresentation()
 		ConnectionText->SetColorAndOpacity(StateColor);
 	}
 
+	SyncWorldPreview();
+}
+
+AAMSimWorldPresenter* UAMSimConstructionProposalView::ResolveWorldPresenter()
+{
+	if (IsValid(CachedWorldPresenter))
+	{
+		return CachedWorldPresenter;
+	}
+	UWorld* World = GetWorld();
+	if (!World)
+	{
+		return nullptr;
+	}
+	for (TActorIterator<AAMSimWorldPresenter> It(World); It; ++It)
+	{
+		CachedWorldPresenter = *It;
+		return CachedWorldPresenter;
+	}
+	return nullptr;
+}
+
+void UAMSimConstructionProposalView::SyncWorldPreview()
+{
+	AAMSimWorldPresenter* Presenter = ResolveWorldPresenter();
+	if (!Presenter)
+	{
+		return;
+	}
+
+	AMSim::FPhase1ConstructionPreviewState Preview;
+	Preview.Proposal = CurrentProposal;
+	Preview.SelectedTool = SelectedPlacementTool == EPlacementTool::Runway
+		? AMSim::EPhase1ConstructionPreviewTool::Runway
+		: SelectedPlacementTool == EPlacementTool::Taxiway
+			? AMSim::EPhase1ConstructionPreviewTool::Taxiway
+			: AMSim::EPhase1ConstructionPreviewTool::RoadAccess;
+	Preview.ActiveTaxiwaySegmentIndex = ActiveTaxiwaySegmentIndex;
+	Preview.bRunwayVisible = IsToolPlaced(EPlacementTool::Runway) ||
+		(SelectedPlacementTool == EPlacementTool::Runway && PathPlacementStep == 1);
+	Preview.bRoadVisible = CurrentProposal.AccessStart != CurrentProposal.AccessEnd ||
+		(SelectedPlacementTool == EPlacementTool::RoadAccess && PathPlacementStep == 1);
+	Preview.bValid = CurrentValidation.bValid;
+
+	const bool bActivePath =
+		PathPlacementStep == 1 || (bPlacementDragging && bPathStartedByPress);
+	const bool bCanPreviewPointer = bHoveringWorld || bActivePath;
+	AMSim::FPhase1Point PreviewPointer = HoverMapPoint;
+	if (SelectedPlacementTool == EPlacementTool::Taxiway)
+	{
+		PreviewPointer = SnapTaxiwayPoint(
+			PreviewPointer,
+			ActiveTaxiwaySegmentIndex);
+	}
+	if (bActivePath && bCanPreviewPointer)
+	{
+		const int32 TaxiwayIndex = FMath::Max(ActiveTaxiwaySegmentIndex, 0);
+		Preview.Proposal = SetToolEndpoint(
+			CurrentProposal,
+			SelectedPlacementTool,
+			1,
+			PreviewPointer,
+			IsToolPlaced(EPlacementTool::Runway),
+			true,
+			TaxiwayIndex);
+	}
+
+	const auto AddMarker = [&Preview](
+		const AMSim::FPhase1Point Point,
+		const AMSim::EPhase1ConstructionMarkerStyle Style)
+	{
+		Preview.Markers.Add({Point, Style});
+	};
+	if (Preview.bRunwayVisible)
+	{
+		const auto Style = SelectedPlacementTool == EPlacementTool::Taxiway
+			? AMSim::EPhase1ConstructionMarkerStyle::Connection
+			: AMSim::EPhase1ConstructionMarkerStyle::Endpoint;
+		AddMarker(Preview.Proposal.RunwayStart, Style);
+		AddMarker(Preview.Proposal.RunwayEnd, Style);
+	}
+	const TArray<AMSim::FTaxiwaySegment> TaxiSegments =
+		Preview.Proposal.TaxiwaySegments;
+	for (int32 Index = 0; Index < TaxiSegments.Num(); ++Index)
+	{
+		const auto Style = SelectedPlacementTool == EPlacementTool::Taxiway &&
+			Index != ActiveTaxiwaySegmentIndex
+				? AMSim::EPhase1ConstructionMarkerStyle::Connection
+				: AMSim::EPhase1ConstructionMarkerStyle::Endpoint;
+		AddMarker(TaxiSegments[Index].Start, Style);
+		AddMarker(TaxiSegments[Index].End, Style);
+	}
+	if (SelectedPlacementTool == EPlacementTool::Taxiway)
+	{
+		for (const AMSim::FPhase1Point Gate : AMSim::GetStarterGatePoints())
+		{
+			AddMarker(
+				Gate,
+				AMSim::EPhase1ConstructionMarkerStyle::Connection);
+		}
+	}
+	if (Preview.bRoadVisible)
+	{
+		AddMarker(
+			Preview.Proposal.AccessStart,
+			AMSim::EPhase1ConstructionMarkerStyle::Endpoint);
+		AddMarker(
+			Preview.Proposal.AccessEnd,
+			AMSim::EPhase1ConstructionMarkerStyle::Endpoint);
+	}
+	if (bCanPreviewPointer)
+	{
+		const bool bToolComplete =
+			SelectedPlacementTool != EPlacementTool::Taxiway &&
+			PathPlacementStep == 0 && IsToolPlaced(SelectedPlacementTool);
+		if (!bToolComplete)
+		{
+			AddMarker(
+				PreviewPointer,
+				AMSim::EPhase1ConstructionMarkerStyle::Pointer);
+		}
+	}
+	for (const FPlacementDiagnostic& Diagnostic :
+		MakePlacementDiagnostics(CurrentProposal, CurrentValidation))
+	{
+		AddMarker(
+			Diagnostic.Point,
+			AMSim::EPhase1ConstructionMarkerStyle::Invalid);
+	}
 	AMSim::FPhase1Point CrossingPoint;
-	const bool bHasCrossing = IsToolPlaced(EPlacementTool::Runway) &&
-		FindRunwayCrossing(CurrentProposal, CrossingPoint);
-	if (CrossingSurface && CrossingSlot)
+	if (Preview.bRunwayVisible &&
+		AMSimConstructionProposalPresentationPrivate::FindRunwayCrossing(
+			Preview.Proposal,
+			CrossingPoint))
 	{
-		CrossingSurface->SetVisibility(
-			bHasCrossing ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-		if (bHasCrossing)
-		{
-			SetPointGeometry(CrossingSlot, CrossingPoint, FVector2D(132.0f, 30.0f),
-				FVector2D(0.0f, -34.0f));
-		}
+		AddMarker(
+			CrossingPoint,
+			AMSim::EPhase1ConstructionMarkerStyle::Connection);
 	}
+	Presenter->SetPhase1ConstructionPreview(Preview);
+}
 
-	TArray<AMSim::FPhase1Point> HandlePoints;
-	HandlePoints.SetNum(HandleSlots.Num());
-	if (HandlePoints.Num() >= 22)
+void UAMSimConstructionProposalView::ClearWorldPreview()
+{
+	if (AAMSimWorldPresenter* Presenter = ResolveWorldPresenter())
 	{
-		HandlePoints[0] = CurrentProposal.RunwayStart;
-		HandlePoints[1] = CurrentProposal.RunwayEnd;
-		for (int32 Index = 0; Index < MaximumTaxiwaySegments; ++Index)
-		{
-			if (Segments.IsValidIndex(Index))
-			{
-				HandlePoints[2 + Index * 2] = Segments[Index].Start;
-				HandlePoints[3 + Index * 2] = Segments[Index].End;
-			}
-		}
-		HandlePoints[18] = Gates[0];
-		HandlePoints[19] = Gates[1];
-		HandlePoints[20] = CurrentProposal.AccessStart;
-		HandlePoints[21] = CurrentProposal.AccessEnd;
+		Presenter->ClearPhase1ConstructionPreview();
 	}
-	for (int32 Index = 0; Index < HandleSlots.Num(); ++Index)
-	{
-		const bool bRunwayHandle = Index < 2;
-		const bool bTaxiHandle = Index >= 2 && Index < 18;
-		const int32 TaxiIndex = bTaxiHandle ? (Index - 2) / 2 : INDEX_NONE;
-		const bool bGateHandle = Index == 18 || Index == 19;
-		const bool bRoadHandle = Index >= 20;
-		const bool bVisible =
-			(bRunwayHandle && (IsToolPlaced(EPlacementTool::Runway) ||
-				(SelectedPlacementTool == EPlacementTool::Runway && PathPlacementStep == 1))) ||
-			(bTaxiHandle && Segments.IsValidIndex(TaxiIndex)) ||
-			bGateHandle ||
-			(bRoadHandle && bRoadVisible);
-		if (!HandleSurfaces.IsValidIndex(Index) || !HandleSurfaces[Index])
-		{
-			continue;
-		}
-		HandleSurfaces[Index]->SetVisibility(
-			bVisible ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
-		if (!bVisible)
-		{
-			continue;
-		}
-		const FVector2D Size = bGateHandle ? FVector2D(34.0f) : FVector2D(26.0f);
-		SetPointGeometry(HandleSlots[Index], HandlePoints[Index], Size);
-		const bool bSelected =
-			(SelectedPlacementTool == EPlacementTool::Runway && bRunwayHandle) ||
-			(SelectedPlacementTool == EPlacementTool::Taxiway && bTaxiHandle &&
-				TaxiIndex == ActiveTaxiwaySegmentIndex) ||
-			(SelectedPlacementTool == EPlacementTool::RoadAccess && bRoadHandle);
-		const bool bSnapTarget = SelectedPlacementTool == EPlacementTool::Taxiway &&
-			(bGateHandle || bRunwayHandle ||
-				(bTaxiHandle && TaxiIndex != ActiveTaxiwaySegmentIndex));
-		bool bDiagnostic = false;
-		for (const FPlacementDiagnostic& Diagnostic : Diagnostics)
-		{
-			bDiagnostic |= Diagnostic.Point == HandlePoints[Index];
-		}
-		const FLinearColor Stroke = bDiagnostic ? AMSim::UITheme::Coral() :
-			bSelected ? AMSim::UITheme::Cyan() :
-				bSnapTarget ? AMSim::UITheme::Amber() : AMSim::UITheme::Muted();
-		HandleSurfaces[Index]->SetBrush(AMSim::UITheme::RoundedBrush(
-			AMSim::UITheme::Navy900(),
-			bGateHandle ? 17.0f : 13.0f,
-			Stroke,
-			bDiagnostic ? 3.2f : bSelected || bSnapTarget ? 2.6f : 1.2f));
-	}
-
-	RefreshDiagnostics();
-	RefreshPointerGhost();
 }

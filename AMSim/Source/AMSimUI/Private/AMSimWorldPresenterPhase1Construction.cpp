@@ -135,8 +135,7 @@ void AAMSimWorldPresenter::RefreshPhase1ConstructionPresentation(
 	Phase1ConstructionTravelProgress = Visual.DeliveryTravelProgress;
 	Phase1ConstructionSurfaceProgress = Visual.SurfaceProgress;
 
-	const bool bWorldAllowed =
-		bRequestedPhase1NetworkVisible && !bConstructionEditorOverlayVisible;
+	const bool bWorldAllowed = bRequestedPhase1NetworkVisible;
 	const AMSim::FStarterPlanProposal& Proposal = State.Project.Proposal;
 	const TArray<AMSim::FTaxiwaySegment> TaxiSegments =
 		AMSim::GetTaxiwaySegments(Proposal);

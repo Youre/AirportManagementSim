@@ -1,14 +1,10 @@
 #include "AMSimConstructionProposalView.h"
 
 #include "AMSimPhase1Fixture.h"
+#include "AMSimPhase1WorldGeometry.h"
 
 namespace AMSimConstructionProposalGeometryPrivate
 {
-	constexpr float ParcelLeft = 0.205f;
-	constexpr float ParcelTop = 0.135f;
-	constexpr float ParcelRight = 0.785f;
-	constexpr float ParcelBottom = 0.825f;
-	constexpr double ParcelCentimeters = 100000.0;
 	constexpr int64 GridCentimeters = 1000;
 	constexpr int64 ConnectionSnapCentimeters = 5000;
 	constexpr int64 ParcelMinimum = 0;
@@ -62,23 +58,14 @@ bool UAMSimConstructionProposalView::AreAllRequiredPlacementsComplete(
 	return (InPlacementMask & AllPlacementParts) == AllPlacementParts;
 }
 
-AMSim::FPhase1Point
-UAMSimConstructionProposalView::MapLocalPositionToParcel(
-	const FVector2D& LocalPosition,
-	const FVector2D& LocalSize)
+AMSim::FPhase1Point UAMSimConstructionProposalView::MapWorldPositionToParcel(
+	const FVector& WorldPosition)
 {
 	using namespace AMSimConstructionProposalGeometryPrivate;
-	if (LocalSize.X <= 0.0 || LocalSize.Y <= 0.0)
-	{
-		return {};
-	}
-	const double NormalizedX = LocalPosition.X / LocalSize.X;
-	const double NormalizedY = LocalPosition.Y / LocalSize.Y;
-	return {
-		Snap((NormalizedX - ParcelLeft) /
-			(ParcelRight - ParcelLeft) * ParcelCentimeters),
-		Snap((NormalizedY - ParcelTop) /
-			(ParcelBottom - ParcelTop) * ParcelCentimeters)};
+	AMSim::FPhase1Point Point = AMSim::MapPhase1WorldToPoint(WorldPosition);
+	Point.X = Snap(Point.X);
+	Point.Y = Snap(Point.Y);
+	return Point;
 }
 
 void UAMSimConstructionProposalView::TranslateProposal(

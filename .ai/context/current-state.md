@@ -6,6 +6,13 @@ Material profile: documents
 Initialization mode: augment-existing
 
 Active priorities:
+- Preserve the recovered VA-02 build-planning language in the authoritative
+  Paper2D world: subdued parcel grid and boundary, translucent cyan/coral plan
+  fills, diagonal proposal patterns, compact endpoints, and distinct snap,
+  connection, crossing, and blocked nodes. All new airport surfaces must use
+  the shared terrain/road/runway/taxiway/gate/structure/proposal/marker layer
+  contract so roads and movement surfaces remain below gates and terminal
+  artwork while interaction markers remain legible above them.
 - Keep one authoritative Paper2D airport-world renderer in every interaction
   mode. Build mode is UMG tool chrome over the live `AAMSimWorldPresenter`;
   committed infrastructure, the schema-10 terminal, gates, and transient
@@ -71,10 +78,23 @@ Current architectural tensions:
   time-based owner observation.
 
 Next verification command:
-- Run the next owner-selected acceptance journey from the consolidated Phase 7
-  protocol against the schema-10 candidate.
+- Run the owner's build-mode visual acceptance journey against
+  `D:\AMSim-Current\Windows\AMSim.exe`, including runway placement, connection
+  node discovery, a runway-to-gate taxi link, and a service road crossing a
+  gate footprint. Then resume the next owner-selected Phase 7 journey.
 
 Last verification:
+- 2026-08-16 EDT: the unified Paper2D build world now restores the missing
+  VA-02 planning overlay and connection language. Proposal surfaces use
+  source-size-correct translucent fills, outlines, and diagonal patterns;
+  snap/connected/crossing/blocked markers are distinct and camera-scaled; and
+  a shared height/sort contract keeps roads, runways, and taxiways below gates
+  and terminal artwork. A live 1280x720 replay proved the connected network and
+  a deliberate road/gate overlap, all 81 automation tests passed, the Phase 7
+  release scan reported zero runtime string loads or forbidden dependencies,
+  and a clean 748-package Development archive plus packaged launch smoke
+  passed. The canonical package was refreshed with all 24 saved files restored
+  byte-for-byte; no shared Unreal cache was cleared.
 - 2026-08-16 EDT: build mode and normal play now share the authoritative
   Paper2D world. The duplicate UMG terminal/gate/runway/taxiway/road renderer
   and its widget-local coordinate model were removed; transient plans use a

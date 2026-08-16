@@ -2,14 +2,13 @@
 
 #include "Algo/AllOf.h"
 #include "Algo/Count.h"
-#include "AMSimAircraftPresentation.h"
 #include "AMSimPhase1Fixture.h"
+#include "AMSimWorldPresentationLayers.h"
 #include "Components/SceneComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "PaperSprite.h"
 #include "PaperSpriteComponent.h"
 #include "UObject/ConstructorHelpers.h"
-
 namespace AMSimWorldPresenterPrivate
 {
 	UPaperSprite* FindSprite(const TCHAR* ObjectPath)
@@ -104,20 +103,34 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(Root);
 
-	Terrain = CreateSpriteComponent(TEXT("Terrain"), 0);
-	Runway = CreateSpriteComponent(TEXT("Runway"), 10);
-	Taxiway = CreateSpriteComponent(TEXT("Taxiway"), 20);
+	Terrain = CreateSpriteComponent(
+		TEXT("Terrain"),
+		AMSim::WorldPresentationLayers::Terrain.SortPriority);
+	Runway = CreateSpriteComponent(
+		TEXT("Runway"),
+		AMSim::WorldPresentationLayers::Runway.SortPriority);
+	Taxiway = CreateSpriteComponent(
+		TEXT("Taxiway"),
+		AMSim::WorldPresentationLayers::Taxiway.SortPriority);
 	Phase1TaxiwaySegments.Add(Taxiway);
 	for (int32 Index = 1; Index < 8; ++Index)
 	{
 		Phase1TaxiwaySegments.Add(CreateSpriteComponent(
 			*FString::Printf(TEXT("Phase1TaxiwaySegment%d"), Index),
-			20 + Index));
+			AMSim::WorldPresentationLayers::Taxiway.SortPriority));
 	}
-	Stand = CreateSpriteComponent(TEXT("Stand"), 30);
-	GateB = CreateSpriteComponent(TEXT("GateB"), 31);
-	Access = CreateSpriteComponent(TEXT("Access"), 20);
-	OperationsHut = CreateSpriteComponent(TEXT("OperationsHut"), 40);
+	Stand = CreateSpriteComponent(
+		TEXT("Stand"),
+		AMSim::WorldPresentationLayers::GateA.SortPriority);
+	GateB = CreateSpriteComponent(
+		TEXT("GateB"),
+		AMSim::WorldPresentationLayers::GateB.SortPriority);
+	Access = CreateSpriteComponent(
+		TEXT("Access"),
+		AMSim::WorldPresentationLayers::ServiceRoad.SortPriority);
+	OperationsHut = CreateSpriteComponent(
+		TEXT("OperationsHut"),
+		AMSim::WorldPresentationLayers::Structure.SortPriority);
 	Windsock = CreateSpriteComponent(TEXT("Windsock"), 45);
 	RunwayStartNumber = CreateDefaultSubobject<UTextRenderComponent>(
 		TEXT("RunwayStartNumber"));
@@ -456,6 +469,7 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 	HutSprite = FindSprite(TEXT("/Game/Phase1/Presentation/Sprites/Props/S_OperationsHut.S_OperationsHut"));
 	WindsockSprite = FindSprite(TEXT("/Game/Phase1/Presentation/Sprites/Props/S_Windsock.S_Windsock"));
 	SelectionSprite = FindSprite(TEXT("/Game/Phase1/Presentation/Sprites/Props/S_SelectionRing.S_SelectionRing"));
+	LoadPhase1ConstructionPreviewAssets();
 
 	for (int32 Index = 0; Index < 16; ++Index)
 	{
@@ -592,10 +606,22 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 		OperationSprite(EOperationsSprite::RampWorker),
 		TerminalSprite(ETerminalSprite::DirectionArrow));
 
-	ConfigureSprite(Terrain, TerrainSprite, FVector(0.0, 0.0, 0.0), FVector(100.0, 1.0, 100.0));
+	ConfigureSprite(
+		Terrain,
+		TerrainSprite,
+		FVector(0.0, 0.0, AMSim::WorldPresentationLayers::Terrain.Height),
+		FVector(100.0, 1.0, 100.0));
 	Terrain->SetSpriteColor(FLinearColor(0.25f, 0.34f, 0.22f, 1.0f));
-	ConfigureSprite(Runway, RunwaySprite, FVector(-5000.0, 0.0, 10.0), FVector(2.5, 1.0, 45.0));
-	ConfigureSprite(Taxiway, TaxiSprite, FVector(-20000.0, 18000.0, 20.0), FVector(10.0, 1.0, 1.25));
+	ConfigureSprite(
+		Runway,
+		RunwaySprite,
+		FVector(-5000.0, 0.0, AMSim::WorldPresentationLayers::Runway.Height),
+		FVector(2.5, 1.0, 45.0));
+	ConfigureSprite(
+		Taxiway,
+		TaxiSprite,
+		FVector(-20000.0, 18000.0, AMSim::WorldPresentationLayers::Taxiway.Height),
+		FVector(10.0, 1.0, 1.25));
 	for (int32 Index = 1; Index < Phase1TaxiwaySegments.Num(); ++Index)
 	{
 		ConfigureSprite(
@@ -608,18 +634,24 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 	ConfigureSprite(
 		Stand,
 		SiteSprite(ESiteSprite::ApronStand),
-		FVector(-32000.0, 23000.0, 30.0),
+		FVector(-32000.0, 23000.0, AMSim::WorldPresentationLayers::GateA.Height),
 		FVector(7.5, 1.0, 7.5));
 	ConfigureSprite(
 		GateB,
 		SiteSprite(ESiteSprite::ApronStand),
-		FVector(-22000.0, 23000.0, 31.0),
+		FVector(-22000.0, 23000.0, AMSim::WorldPresentationLayers::GateB.Height),
 		FVector(7.5, 1.0, 7.5));
-	ConfigureSprite(Access, AccessSprite, FVector(-35000.0, 36000.0, 20.0), FVector(7.0, 1.0, 1.25));
+	ConfigureSprite(
+		Access,
+		AccessSprite,
+		FVector(-35000.0, 36000.0,
+			AMSim::WorldPresentationLayers::ServiceRoad.Height),
+		FVector(7.0, 1.0, 1.25));
 	ConfigureSprite(
 		OperationsHut,
 		SiteSprite(ESiteSprite::RegionalTerminal),
-		FVector(-27000.0, 36000.0, 40.0),
+		FVector(-27000.0, 36000.0,
+			AMSim::WorldPresentationLayers::Structure.Height),
 		FVector(11.0, 1.0, 11.0));
 	Stand->SetRelativeRotation(FRotator(0.0f, 90.0f, SpritePlaneRoll));
 	GateB->SetRelativeRotation(FRotator(0.0f, 90.0f, SpritePlaneRoll));
@@ -1283,6 +1315,9 @@ bool AAMSimWorldPresenter::HasRequiredPresentationAssets() const
 	return TerrainSprite && RunwaySprite && TaxiSprite && AccessSprite &&
 		StandSprite && WhiteSprite &&
 		HutSprite && WindsockSprite && SelectionSprite &&
+		ConstructionSnapSprite && ConstructionConnectedSprite &&
+		ConstructionCrossingSprite && ConstructionInvalidSprite &&
+		ConstructionPreviewMaterial &&
 		AircraftHeadingSprites.Num() == 16 &&
 		Algo::AllOf(
 			AircraftHeadingSprites,
@@ -1327,31 +1362,6 @@ bool AAMSimWorldPresenter::HasDistinctStarterFacilityAssets() const
 		GateSprite != StandSprite &&
 		TerminalFacilitySprite != GateSprite &&
 		TerminalFacilitySprite != HutSprite;
-}
-
-int32 AAMSimWorldPresenter::GetHeadingIndex(const AMSim::EFlightState FlightState)
-{
-	const float Degrees = AMSim::GetPhase1AircraftPresentationHeadingDegrees(FlightState);
-	return FMath::RoundToInt(FMath::Fmod(Degrees + 360.0f, 360.0f) / 22.5f) % 16;
-}
-
-int32 AAMSimWorldPresenter::GetPhase2HeadingIndex(
-	const AMSim::EPhase2FlightState FlightState)
-{
-	switch (FlightState)
-	{
-	case AMSim::EPhase2FlightState::Inbound:
-	case AMSim::EPhase2FlightState::Approach:
-	case AMSim::EPhase2FlightState::Landing:
-	case AMSim::EPhase2FlightState::TaxiIn:
-		return 10;
-	case AMSim::EPhase2FlightState::ReadyToDepart:
-	case AMSim::EPhase2FlightState::TaxiOut:
-	case AMSim::EPhase2FlightState::Outbound:
-		return 2;
-	default:
-		return 0;
-	}
 }
 
 void AAMSimWorldPresenter::ApplySnapshot(

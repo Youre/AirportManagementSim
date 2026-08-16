@@ -1391,3 +1391,25 @@ entries:
       packaged integrated smoke passed; zero runtime string loads, forbidden
       dependencies/package matches, or line-limit violations. Canonical package
       refreshed and 22 saves restored byte-for-byte; no shared cache cleared.
+  - timestamp: '2026-08-16T15:32:35.9853940+00:00'
+    commit: 6f5461c9110c823c647a8a12b5ae38555e67ebf8
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Build-world visual recovery: focused and full UE automation;
+      live 1280x720 connected-network and road/gate sorting replays; VA-02
+      comparison board; clean Development BuildCookRun; packaged launch smoke;
+      Phase 7 source/release audit; cache and save-preservation checks'
+    result: passed-with-manual-follow-up
+    notes: The authoritative Paper2D renderer again shows a subdued planning
+      grid, parcel boundary, translucent proposal fills, outline and diagonal
+      pattern, plus distinct endpoint, snap, connected, crossing, and blocked
+      nodes. Shared height/sort constants keep roads, runways, and taxiways
+      below gates and terminal artwork while interaction markers stay above.
+      All 81 automation entries passed. The clean archive cooked 748 packages;
+      the canonical Development executable stayed responsive and opened only
+      the expected local trace listener. The cook inventory contains the
+      preview material and all marker sprites. Release scans report zero
+      runtime string loads, forbidden dependencies, 3D requirements, or line
+      violations. All 24 canonical saved files were restored byte-for-byte.
+      Owner visual acceptance remains pending; no shared Unreal cache was
+      cleared.

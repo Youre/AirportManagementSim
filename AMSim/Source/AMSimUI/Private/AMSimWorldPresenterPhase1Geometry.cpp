@@ -2,14 +2,13 @@
 
 #include "AMSimPhase1Fixture.h"
 #include "AMSimPhase1WorldGeometry.h"
+#include "AMSimWorldPresentationLayers.h"
 #include "Components/TextRenderComponent.h"
 #include "PaperSpriteComponent.h"
 
 namespace
 {
 	constexpr float SpritePlaneRoll = -90.0f;
-	constexpr double ConstructionBedHeight = 5.0;
-
 	void ApplySegment(
 		UPaperSpriteComponent* Component,
 		const AMSim::FPhase1WorldSegmentGeometry& Geometry)
@@ -44,7 +43,7 @@ void AAMSimWorldPresenter::ApplyPhase1Geometry(
 			Proposal.RunwayStart,
 			Proposal.RunwayEnd,
 			Proposal.RunwayWidthCentimeters,
-			10.0);
+			AMSim::WorldPresentationLayers::Runway.Height);
 	ApplySegment(Runway, RunwayGeometry);
 	ApplySegment(
 		Phase1RunwayEarthwork,
@@ -52,7 +51,7 @@ void AAMSimWorldPresenter::ApplyPhase1Geometry(
 			Proposal.RunwayStart,
 			Proposal.RunwayEnd,
 			Proposal.RunwayWidthCentimeters,
-			ConstructionBedHeight));
+			AMSim::WorldPresentationLayers::ConstructionBed.Height));
 	const TArray<AMSim::FTaxiwaySegment> TaxiSegments =
 		AMSim::GetTaxiwaySegments(Proposal);
 	ActivePhase1TaxiwaySegmentCount = FMath::Min(
@@ -68,7 +67,8 @@ void AAMSimWorldPresenter::ApplyPhase1Geometry(
 					TaxiSegments[Index].Start,
 					TaxiSegments[Index].End,
 					1200,
-					20.0 + Index);
+					AMSim::WorldPresentationLayers::Taxiway.Height +
+						Index * 0.05);
 			ApplySegment(Phase1TaxiwaySegments[Index], SegmentGeometry);
 			if (Phase1TaxiwayEarthworks.IsValidIndex(Index))
 			{
@@ -78,7 +78,7 @@ void AAMSimWorldPresenter::ApplyPhase1Geometry(
 						TaxiSegments[Index].Start,
 						TaxiSegments[Index].End,
 						1200,
-						ConstructionBedHeight));
+						AMSim::WorldPresentationLayers::ConstructionBed.Height));
 			}
 		}
 		Phase1TaxiwaySegments[Index]->SetVisibility(bHasSegment);
@@ -92,14 +92,14 @@ void AAMSimWorldPresenter::ApplyPhase1Geometry(
 				Proposal.AccessStart,
 				Proposal.AccessEnd,
 				1000,
-				20.0));
+				AMSim::WorldPresentationLayers::ServiceRoad.Height));
 		ApplySegment(
 			Phase1RoadEarthwork,
 			AMSim::MakePhase1WorldSegmentGeometry(
 				Proposal.AccessStart,
 				Proposal.AccessEnd,
 				1000,
-				ConstructionBedHeight));
+				AMSim::WorldPresentationLayers::ConstructionBed.Height));
 	}
 
 	Phase1RunwayCenter = RunwayGeometry.Center;
@@ -108,15 +108,15 @@ void AAMSimWorldPresenter::ApplyPhase1Geometry(
 			TaxiSegments[0].Start,
 			TaxiSegments[0].End,
 			1200,
-			20.0).Center
+			AMSim::WorldPresentationLayers::Taxiway.Height).Center
 		: RunwayGeometry.Center;
 	Phase1StandCenter = AMSim::MapPhase1PointToWorld(
 		Proposal.StandCenter,
-		30.0);
+		AMSim::WorldPresentationLayers::GateA.Height);
 	Phase1GeometryOffset = Phase1StandCenter -
 		AMSim::MapPhase1PointToWorld(
 			AMSim::CreateDefaultStarterPlan().StandCenter,
-			30.0);
+			AMSim::WorldPresentationLayers::GateA.Height);
 
 	if (Stand)
 	{
@@ -128,7 +128,7 @@ void AAMSimWorldPresenter::ApplyPhase1Geometry(
 	{
 		GateB->SetRelativeLocation(AMSim::MapPhase1PointToWorld(
 			AMSim::GetStarterGatePoints()[1],
-			31.0));
+			AMSim::WorldPresentationLayers::GateB.Height));
 		GateB->SetRelativeScale3D(FVector(7.5, 1.0, 7.5));
 		GateB->SetRelativeRotation(FRotator(0.0f, 90.0f, SpritePlaneRoll));
 	}
@@ -136,7 +136,7 @@ void AAMSimWorldPresenter::ApplyPhase1Geometry(
 	{
 		OperationsHut->SetRelativeLocation(AMSim::MapPhase1PointToWorld(
 			AMSim::GetStarterTerminalCenter(),
-			40.0));
+			AMSim::WorldPresentationLayers::Structure.Height));
 		OperationsHut->SetRelativeScale3D(FVector(11.0, 1.0, 11.0));
 		OperationsHut->SetRelativeRotation(
 			FRotator(0.0f, 90.0f, SpritePlaneRoll));

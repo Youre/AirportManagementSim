@@ -16,6 +16,15 @@ namespace AMSim
 		Endpoint,
 		Connection,
 		Pointer,
+		Snapped,
+		Crossing,
+		Invalid
+	};
+
+	enum class EPhase1ConstructionSurfaceStyle : uint8
+	{
+		Context,
+		Selected,
 		Invalid
 	};
 
@@ -32,7 +41,13 @@ namespace AMSim
 		TArray<FPhase1ConstructionPreviewMarker> Markers;
 		EPhase1ConstructionPreviewTool SelectedTool =
 			EPhase1ConstructionPreviewTool::Runway;
+		EPhase1ConstructionSurfaceStyle RunwayStyle =
+			EPhase1ConstructionSurfaceStyle::Context;
+		TArray<EPhase1ConstructionSurfaceStyle> TaxiwayStyles;
+		EPhase1ConstructionSurfaceStyle RoadStyle =
+			EPhase1ConstructionSurfaceStyle::Context;
 		int32 ActiveTaxiwaySegmentIndex = INDEX_NONE;
+		float MarkerScale = 4.0f;
 		bool bRunwayVisible = false;
 		bool bRoadVisible = false;
 		bool bValid = false;

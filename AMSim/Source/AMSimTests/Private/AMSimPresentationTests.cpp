@@ -22,6 +22,7 @@
 #include "AMSimTimetableGeometry.h"
 #include "AMSimTurnaroundView.h"
 #include "AMSimUITheme.h"
+#include "AMSimWorldPresentationLayers.h"
 #include "AMSimWorldPresenter.h"
 #include "Camera/CameraComponent.h"
 #include "Components/Button.h"
@@ -1161,24 +1162,53 @@ bool FAMSimTerminalGrowthWorldPresentationTest::RunTest(const FString& Parameter
 	BuildPreview.Markers.Add({
 		BuildPreview.Proposal.RunwayStart,
 		EPhase1ConstructionMarkerStyle::Connection});
+	BuildPreview.Markers.Add({
+		BuildPreview.Proposal.RunwayEnd,
+		EPhase1ConstructionMarkerStyle::Snapped});
+	BuildPreview.Markers.Add({
+		BuildPreview.Proposal.TaxiwaySegments[0].Start,
+		EPhase1ConstructionMarkerStyle::Crossing});
+	BuildPreview.Markers.Add({
+		BuildPreview.Proposal.TaxiwaySegments[0].End,
+		EPhase1ConstructionMarkerStyle::Invalid});
 	Presenter->SetPhase1ConstructionPreview(BuildPreview);
 	TestEqual(TEXT("Build preview uses one world surface for runway, taxiway, and road"),
 		Presenter->GetActivePhase1ConstructionPreviewSurfaceCount(), 3);
 	TestEqual(TEXT("Build preview markers are pooled in the world"),
-		Presenter->GetActivePhase1ConstructionPreviewMarkerCount(), 1);
+		Presenter->GetActivePhase1ConstructionPreviewMarkerCount(), 4);
+	TestTrue(TEXT("Build preview owns distinct connection-state marker assets"),
+		Presenter->HasPhase1ConstructionPreviewMarkerAssets());
+	TestEqual(TEXT("Build preview restores the parcel boundary and major planning grid"),
+		Presenter->GetActivePhase1ConstructionPlanningGridCount(), 26);
+	TestTrue(TEXT("Build preview surfaces have a non-color planning pattern"),
+		Presenter->GetActivePhase1ConstructionPreviewPatternCount() > 0);
+	TestTrue(TEXT("Proposal surfaces sort below starter gates and the terminal"),
+		Presenter->ArePhase1ConstructionPreviewSurfacesBelowStarterFacilities());
+	TestTrue(TEXT("Connection markers sort above starter gates and the terminal"),
+		Presenter->ArePhase1ConstructionPreviewMarkersAboveStarterFacilities());
 	TestTrue(TEXT("Preview runway uses the committed world geometry transform"),
 		Presenter->GetPhase1ConstructionPreviewRunwayCenterForTest().Equals(
 			MakePhase1WorldSegmentGeometry(
 				BuildPreview.Proposal.RunwayStart,
 				BuildPreview.Proposal.RunwayEnd,
 				BuildPreview.Proposal.RunwayWidthCentimeters,
-				84.0).Center));
+				WorldPresentationLayers::Runway.Height).Center));
+	const int32 AllocatedPatternCount =
+		Presenter->GetActivePhase1ConstructionPreviewPatternCount();
+	Presenter->SetPhase1ConstructionPreview(BuildPreview);
+	TestEqual(TEXT("Repeated preview refresh reuses the bounded planning-pattern pool"),
+		Presenter->GetActivePhase1ConstructionPreviewPatternCount(),
+		AllocatedPatternCount);
 	Presenter->SetConstructionEditorOverlayVisible(true);
 	TestTrue(TEXT("Build mode preserves the authoritative starter gates"),
 		Presenter->IsStarterContextVisibleForTest());
 	Presenter->SetConstructionEditorOverlayVisible(false);
 	TestEqual(TEXT("Leaving build mode clears every transient world preview"),
 		Presenter->GetActivePhase1ConstructionPreviewSurfaceCount(), 0);
+	TestEqual(TEXT("Leaving build mode clears planning patterns"),
+		Presenter->GetActivePhase1ConstructionPreviewPatternCount(), 0);
+	TestEqual(TEXT("Leaving build mode clears planning grids and boundaries"),
+		Presenter->GetActivePhase1ConstructionPlanningGridCount(), 0);
 	TestEqual(TEXT("Build-mode transitions preserve the generated terminal roof"),
 		Presenter->GetActiveTerminalRoofProxyCount(), ExpectedFloorCount);
 	TestFalse(TEXT("Build-mode transitions cannot restore the legacy terminal"),

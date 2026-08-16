@@ -1,8 +1,10 @@
 #include "AMSimConstructionProposalView.h"
 
+#include "AMSimCameraPawn.h"
 #include "AMSimPhase1Fixture.h"
 #include "AMSimUITheme.h"
 #include "AMSimWorldPresenter.h"
+#include "Camera/CameraComponent.h"
 #include "Components/Border.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
@@ -19,6 +21,18 @@ namespace AMSimConstructionProposalPresentationPrivate
 		const int64 DeltaX = Left.X - Right.X;
 		const int64 DeltaY = Left.Y - Right.Y;
 		return DeltaX * DeltaX + DeltaY * DeltaY;
+	}
+
+	bool IsPointNearSegment(
+		const AMSim::FPhase1Point& Point,
+		const AMSim::FPhase1Point& Start,
+		const AMSim::FPhase1Point& End)
+	{
+		constexpr int64 DiagnosticToleranceCentimeters = 2000;
+		return DistanceSquared(
+			Point,
+			AMSim::ClosestPointOnSegment(Point, Start, End)) <=
+			DiagnosticToleranceCentimeters * DiagnosticToleranceCentimeters;
 	}
 
 	const TCHAR* ToolName(const UAMSimConstructionProposalView::EPlacementTool Tool)
@@ -357,6 +371,28 @@ void UAMSimConstructionProposalView::SyncWorldPreview()
 	Preview.bRoadVisible = CurrentProposal.AccessStart != CurrentProposal.AccessEnd ||
 		(SelectedPlacementTool == EPlacementTool::RoadAccess && PathPlacementStep == 1);
 	Preview.bValid = CurrentValidation.bValid;
+	Preview.RunwayStyle = SelectedPlacementTool == EPlacementTool::Runway
+		? AMSim::EPhase1ConstructionSurfaceStyle::Selected
+		: AMSim::EPhase1ConstructionSurfaceStyle::Context;
+	Preview.RoadStyle = SelectedPlacementTool == EPlacementTool::RoadAccess
+		? AMSim::EPhase1ConstructionSurfaceStyle::Selected
+		: AMSim::EPhase1ConstructionSurfaceStyle::Context;
+	Preview.TaxiwayStyles.Init(
+		AMSim::EPhase1ConstructionSurfaceStyle::Context,
+		CurrentProposal.TaxiwaySegments.Num());
+	if (Preview.TaxiwayStyles.IsValidIndex(ActiveTaxiwaySegmentIndex))
+	{
+		Preview.TaxiwayStyles[ActiveTaxiwaySegmentIndex] =
+			AMSim::EPhase1ConstructionSurfaceStyle::Selected;
+	}
+	if (const AAMSimCameraPawn* CameraPawn =
+		Cast<AAMSimCameraPawn>(GetOwningPlayerPawn()))
+	{
+		if (const UCameraComponent* Camera = CameraPawn->GetCamera())
+		{
+			Preview.MarkerScale = 4.0f * Camera->OrthoWidth / 105000.0f;
+		}
+	}
 
 	const bool bActivePath =
 		PathPlacementStep == 1 || (bPlacementDragging && bPathStartedByPress);
@@ -368,6 +404,9 @@ void UAMSimConstructionProposalView::SyncWorldPreview()
 			PreviewPointer,
 			ActiveTaxiwaySegmentIndex);
 	}
+	const bool bPointerSnapped =
+		SelectedPlacementTool == EPlacementTool::Taxiway &&
+		PreviewPointer != HoverMapPoint;
 	if (bActivePath && bCanPreviewPointer)
 	{
 		const int32 TaxiwayIndex = FMath::Max(ActiveTaxiwaySegmentIndex, 0);
@@ -433,15 +472,48 @@ void UAMSimConstructionProposalView::SyncWorldPreview()
 		{
 			AddMarker(
 				PreviewPointer,
-				AMSim::EPhase1ConstructionMarkerStyle::Pointer);
+				bPointerSnapped
+					? AMSim::EPhase1ConstructionMarkerStyle::Snapped
+					: AMSim::EPhase1ConstructionMarkerStyle::Pointer);
 		}
 	}
-	for (const FPlacementDiagnostic& Diagnostic :
-		MakePlacementDiagnostics(CurrentProposal, CurrentValidation))
+	const TArray<FPlacementDiagnostic> Diagnostics =
+		MakePlacementDiagnostics(CurrentProposal, CurrentValidation);
+	for (const FPlacementDiagnostic& Diagnostic : Diagnostics)
 	{
 		AddMarker(
 			Diagnostic.Point,
 			AMSim::EPhase1ConstructionMarkerStyle::Invalid);
+		if (Preview.bRunwayVisible &&
+			AMSimConstructionProposalPresentationPrivate::IsPointNearSegment(
+				Diagnostic.Point,
+				Preview.Proposal.RunwayStart,
+				Preview.Proposal.RunwayEnd))
+		{
+			Preview.RunwayStyle =
+				AMSim::EPhase1ConstructionSurfaceStyle::Invalid;
+		}
+		for (int32 Index = 0; Index < TaxiSegments.Num(); ++Index)
+		{
+			if (AMSimConstructionProposalPresentationPrivate::IsPointNearSegment(
+				Diagnostic.Point,
+				TaxiSegments[Index].Start,
+				TaxiSegments[Index].End) &&
+				Preview.TaxiwayStyles.IsValidIndex(Index))
+			{
+				Preview.TaxiwayStyles[Index] =
+					AMSim::EPhase1ConstructionSurfaceStyle::Invalid;
+			}
+		}
+		if (Preview.bRoadVisible &&
+			AMSimConstructionProposalPresentationPrivate::IsPointNearSegment(
+				Diagnostic.Point,
+				Preview.Proposal.AccessStart,
+				Preview.Proposal.AccessEnd))
+		{
+			Preview.RoadStyle =
+				AMSim::EPhase1ConstructionSurfaceStyle::Invalid;
+		}
 	}
 	AMSim::FPhase1Point CrossingPoint;
 	if (Preview.bRunwayVisible &&
@@ -451,7 +523,7 @@ void UAMSimConstructionProposalView::SyncWorldPreview()
 	{
 		AddMarker(
 			CrossingPoint,
-			AMSim::EPhase1ConstructionMarkerStyle::Connection);
+			AMSim::EPhase1ConstructionMarkerStyle::Crossing);
 	}
 	Presenter->SetPhase1ConstructionPreview(Preview);
 }

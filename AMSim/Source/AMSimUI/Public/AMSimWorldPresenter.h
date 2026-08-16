@@ -12,6 +12,7 @@
 
 class UPaperSprite;
 class UPaperSpriteComponent;
+class UMaterialInterface;
 class UTextRenderComponent;
 class USceneComponent;
 
@@ -68,6 +69,11 @@ public:
 	void ClearPhase1ConstructionPreview();
 	int32 GetActivePhase1ConstructionPreviewSurfaceCount() const;
 	int32 GetActivePhase1ConstructionPreviewMarkerCount() const;
+	int32 GetActivePhase1ConstructionPreviewPatternCount() const;
+	int32 GetActivePhase1ConstructionPlanningGridCount() const;
+	bool HasPhase1ConstructionPreviewMarkerAssets() const;
+	bool ArePhase1ConstructionPreviewSurfacesBelowStarterFacilities() const;
+	bool ArePhase1ConstructionPreviewMarkersAboveStarterFacilities() const;
 	FVector GetPhase1ConstructionPreviewRunwayCenterForTest() const;
 	bool IsStarterContextVisibleForTest() const;
 	uint64 GetLastAppliedRevision() const { return LastAppliedRevision; }
@@ -156,6 +162,7 @@ private:
 	void ApplyPhase1Geometry(const AMSim::FStarterPlanProposal& Proposal);
 	void InitializePhase1ConstructionPresentation();
 	void InitializePhase1ConstructionPreviewPresentation();
+	void LoadPhase1ConstructionPreviewAssets();
 	void FinalizePhase1ConstructionPreviewPresentation();
 	void FinalizePhase1OperationsPresentation(
 		UPaperSprite* ConstructionTruckSprite,
@@ -264,6 +271,12 @@ private:
 	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1ConstructionPreviewTaxiways;
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UPaperSpriteComponent> Phase1ConstructionPreviewRoad;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1ConstructionPreviewOutlines;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1ConstructionPreviewPattern;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1ConstructionPlanningGrid;
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> Phase1ConstructionPreviewMarkers;
 	UPROPERTY(VisibleAnywhere)
@@ -413,6 +426,16 @@ private:
 	TObjectPtr<UPaperSprite> WindsockSprite;
 	UPROPERTY()
 	TObjectPtr<UPaperSprite> SelectionSprite;
+	UPROPERTY()
+	TObjectPtr<UPaperSprite> ConstructionSnapSprite;
+	UPROPERTY()
+	TObjectPtr<UPaperSprite> ConstructionConnectedSprite;
+	UPROPERTY()
+	TObjectPtr<UPaperSprite> ConstructionCrossingSprite;
+	UPROPERTY()
+	TObjectPtr<UPaperSprite> ConstructionInvalidSprite;
+	UPROPERTY()
+	TObjectPtr<UMaterialInterface> ConstructionPreviewMaterial;
 	UPROPERTY()
 	TArray<TObjectPtr<UPaperSprite>> AircraftHeadingSprites;
 	UPROPERTY()

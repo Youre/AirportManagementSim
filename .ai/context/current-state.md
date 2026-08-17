@@ -9,20 +9,39 @@ Active priorities:
 - Use the recovered root UI shell as the interaction baseline. Decorative
   activity and context canvases are self-hit-test-invisible, so only their
   actual controls consume pointer input. A successful load always returns to
-  the airport overview; Terminal, Regional, Advanced, and Major are explicit
-  destinations and never open one another automatically. Every destination
-  retains a visible Back action and Escape restores the overview and its
-  management camera.
+  the airport overview. Terminal tools are contextual overlays on that same
+  airport canvas; they must not replace the root shell, hide the rest of the
+  airport, or move/reset the player-owned management camera. Regional, Advanced,
+  and Major remain explicit destinations, retain a visible Back action, and
+  never open one another automatically.
 - Compose presentation revisions with a non-serialized restore epoch. This
   invalidates UI and Paper2D caches after every successful save restore even
   when the loaded domain revisions equal the current revisions. Do not remove
   this epoch or compare raw restored revisions directly in presentation code.
-- Keep the schema-10 terminal as the only authoritative terminal view. Its
-  overview roof and cutaway share one footprint, anchor, and scale; cutaway
-  hides mature-site substitutes and screen-fixed legacy labels. Mixed-
+- Keep the schema-10 terminal as the only authoritative terminal
+  presentation. It is permanently roofless: floors, walls, doors, furniture,
+  construction, workers, and occupants remain at one footprint, anchor, and
+  scale in every gameplay mode. Terminal tools change interaction and chrome,
+  never world visibility or camera state. Mixed-
   perspective facility artwork is fixed north-up and must not be rotated;
   replace it with strict-nadir procedural geometry or reviewed directional
   variants rather than compensating with transforms.
+- Preserve the doubled terminal presentation contract. Saved terminal cells
+  remain the one-meter logical edit unit, but the airport renderer and pointer
+  deprojection share a sixteen-meter world-presentation module. The furnished
+  starter footprint is approximately 288x192 meters, the grown regional
+  footprint is 480x288 meters, static furnishings fill 84 percent of their
+  authored sixteen-meter-cell footprint, and people, bags, workers, and
+  vehicles use a separate twelve-times readability scale. The fixed landside-
+  campus anchor places the full footprint between the apron and access road
+  without moving the camera.
+- Treat the mature exterior overview as the default presentation state after
+  every direct load, Back action, and destination close. The retired fixed-
+  coordinate Phase 3 terminal proof surfaces, routes, and props must remain
+  hidden there. Large scale-sensitive mature facilities now use deterministic
+  procedural footprints, borders, seams, entrances, lanes, and markings;
+  retain sprites only for small identity-bearing aircraft, people, vehicles,
+  fixtures, and reviewed landscaping.
 - Apply the terminal object's shared clockwise 90-degree art-basis correction
   only in the Paper2D presenter. Saved and player-authored `QuarterTurns`,
   footprints, routes, walls, doors, and source sprites remain authoritative.
@@ -65,9 +84,9 @@ Active priorities:
   construction previews all use shared parcel/world geometry. Do not restore
   UMG facility substitutes or widget-local map transforms.
 - Use the schema-10 spatial terminal as the authoritative starter-terminal
-  presentation from airport creation onward. The normal overview shows its
-  generated, map-readable roof at the fixed service-road/gate anchor; opening
-  Terminal reveals the furnished editable interior. Never restore the legacy
+  presentation from airport creation onward. The normal overview and every
+  tool mode show its furnished roofless interior at the fixed landside-campus
+  anchor. Opening Terminal exposes contextual tools only. Never restore the legacy
   regional-terminal sprite after build-mode or visibility transitions. The
   apron-stand art remains authoritative for the two starter gates.
 - Use the corrected airport-naming card as the initial-creation baseline: a
@@ -124,12 +143,99 @@ Current architectural tensions:
   time-based owner observation.
 
 Next verification command:
-- Run the owner's build-mode visual acceptance journey against
-  `D:\AMSim-Current\Windows\AMSim.exe`, including runway placement, connection
-  node discovery, a runway-to-gate taxi link, and a service road crossing a
-  gate footprint. Then resume the next owner-selected Phase 7 journey.
+- Load `VisualBaseline` in `D:\AMSim-Current\Windows\AMSim.exe`, confirm the
+  roofless terminal interior is already present at doubled campus scale on the
+  airport canvas, its seats/desks/amenities and moving identities are readable
+  at overview zoom, and the footprint clears the landside access road, then
+  open and close Terminal tools without any world or camera transition. Pan and
+  zoom from the airport overview into the interior using the same management
+  camera. Then run the owner's build-mode visual acceptance journey, including
+  runway placement, connection-node discovery, a runway-to-gate taxi link, and
+  a service road crossing a gate footprint.
 
 Last verification:
+- 2026-08-16 EDT: terminal contents now match the doubled campus proportions.
+  Static furniture and exact 2/4/6-seat compositions use the full sixteen-meter
+  presentation cell with the existing aspect-preserving 84-percent footprint
+  fill. Passengers, visitors, workers, bags, staff, and service vehicles use a
+  separate twelve-times identity scale, making them readable without changing
+  their anchor cells or gameplay occupancy. The same-state packaged
+  before/after proves the prior dots are now legible furniture and activity;
+  room boundaries, routes, camera, renderer, schema, and simulation remain
+  unchanged. Focused automation and all 82 AMSim tests pass. Clean Development
+  and Shipping packages each cook 750 packages; the Phase 7 release audit is
+  clean. The canonical windowed launch passes with all 106 prior Saved files
+  restored byte-for-byte; inner executable SHA-256 is
+  E9F70D254097C9CA91985A81721DA606614C45605534BA5E3EA309E713B9C4B2. C
+  retains 125.05 GiB and D retains 669.58 GiB free; project caches measure
+  8.61 GiB, shared Unreal caches measure 0.81 GiB, and no cache was cleared.
+- 2026-08-16 EDT: the owner-rejected eight-meter terminal correction is
+  superseded by the doubled airport-campus contract. One shared presentation
+  geometry contract maps the 18x12 starter layout to approximately 288x192
+  meters and the 30x18 regional layout to 480x288 meters; furniture and moving
+  entities retain a bounded six-times readability scale. A fixed
+  presentation-only campus anchor places the grown footprint between the apron
+  and landside access road while rendering and pointer deprojection keep the
+  same center. The terminal now occupies roughly one quarter of the packaged
+  1920x1080 world width and is comparable in prominence to VA-01. The
+  single world renderer, permanently roofless interior, and player-owned
+  camera remain unchanged. Focused automation and all 82 AMSim tests pass.
+  Clean Development and Shipping packages each cook 750 packages; the Phase 7
+  release audit passes with zero runtime string loads, forbidden dependencies,
+  required 3D candidates, or line violations. The retained doubled-scale VA-01
+  comparison is under
+  `docs/planning/50-production/terminal-growth-visual-validation`. The
+  canonical package passed a real windowed launch with all 106 prior Saved
+  files restored byte-for-byte; inner executable SHA-256 is
+  26D4725C40C3051D168C53702F3CA76B31557796366E20C7DF63FBDE0755135B. C
+  retains 125.06 GiB and D retains 671.31 GiB free; project Intermediate is
+  8.32 GiB, shared Unreal caches are 0.44 GiB, and no cache was cleared.
+- 2026-08-16 EDT: the terminal is now permanently roofless on the one
+  authoritative airport canvas. Opening and closing Terminal tools changes
+  only the left/right contextual panels; the camera location, player zoom,
+  mature airport, and schema-10 terminal world geometry do not change. One
+  adaptive player-controlled zoom curve spans the full airport overview down
+  to close interior inspection without a facility mode. The fixed-coordinate
+  Phase 3 proof renderer remains retired. Focused automation and all 82 AMSim
+  tests pass; clean Development and Shipping packages cook 750 packages; the
+  Phase 7 release audit is clean. Packaged same-frame captures are retained in
+  `AMSim/Saved/SingleCanvasTerminalAudit`. The canonical package was refreshed
+  with all 103 saved files preserved byte-for-byte; its inner executable
+  SHA-256 is
+  EC5D8103A1391993F14180DF020D873A84F9C7622680659E99D2C7D3C57824E4.
+  The terminal remains physically small at full-airport zoom; that is scale
+  and composition debt rather than a second renderer. C retains 127.07 GiB
+  free and no Unreal cache was cleared.
+- 2026-08-16 EDT: Terminal is now an in-place contextual cutaway on the
+  persistent airport canvas rather than a replacement destination. Exact-frame
+  packaged captures retain the root shell, runway, apron, roads, aircraft,
+  landscaping, mature facility geometry, and camera position while only the
+  terminal roof/interior state and contextual tools change. Pan and zoom remain
+  continuous through open and close, and the hidden Regional presenter no
+  longer overwrites the terminal visibility state. All 82 automation tests and
+  clean Development/Shipping packages pass. The Phase 7 release audit reports
+  750 cooked packages and zero runtime string loads, forbidden dependencies,
+  required 3D candidates, or line-limit violations. The canonical inner
+  executable SHA-256 is
+  271D4460E214962D0750C731219FAC23F89F0DC8552EDEC2B4F8AB48C920058C.
+  VA-03 density, routes, occupants, curb/gate context, and richer materials
+  remain visual debt. C retains 127.77 GiB and D retains 681.67 GiB free; no
+  Unreal cache was cleared.
+- 2026-08-16 EDT: direct save restore and destination close now explicitly
+  enter the mature exterior overview, so the retired Phase 3 terminal proof
+  renderer cannot leak into the airport map. Eight scale-sensitive mature
+  facility families now use 24 strict-nadir procedural base, surface, and
+  detail meshes with explicit layer separation; only one bounded apron-fixture
+  sprite remains from the old mature-site pool. A packaged VisualBaseline ->
+  Terminal -> Back replay confirms a coherent exterior, the authoritative
+  schema-10 cutaway, and stable return. All 82 automation tests, clean
+  Development and Shipping packages, both launch smokes, and the Phase 7
+  release audit pass. The canonical package was refreshed with all 92 saved
+  files restored byte-for-byte; its inner executable SHA-256 is
+  C9681F2FD307C5ABC48EBB63049CF17F36DE1ED07B117A9F616548AD7B1E5D5A.
+  VA-01 still records facility texture, landscape/activity density, and the
+  bottom contextual inspector as continuing polish debt. C retains 128.36 GiB
+  free and no Unreal cache was cleared.
 - 2026-08-16 EDT: airport movement surfaces now use a cooker-visible,
   vertex-colored procedural mesh renderer instead of sprite-scale geometry.
   Phase 1 previews, construction progress, completed runways/taxiways/roads,
@@ -464,9 +570,9 @@ Verification note:
   release Primary Assets are integrated without adding simulation mechanics.
 - The Phase 7 actual-product audit compares live Unreal captures to VA-01
   through VA-07 and records three material differences, intentional
-  differences, and a bounded correction for every state. Terminal, Regional,
-  Advanced, and Major are explicit destinations so later eligibility no
-  longer obscures concept-mapped surfaces.
+  differences, and a bounded correction for every state. Regional, Advanced,
+  and Major are explicit destinations; Terminal is an in-place airport-world
+  cutaway so later eligibility no longer obscures concept-mapped surfaces.
 - Phase 7 focused automation passes 5/5. The final complete suite reports 67
   clean passes, one retained warning-only Phase 0 backup probe, and zero
   failures or not-run tests.
@@ -541,22 +647,33 @@ Verification note:
   of the next owner gameplay listen rather than an automated claim.
 - PI-11 delivers the growable-terminal starter vertical slice. New airports
   receive a built, editable 18x12 GA terminal; initialized passenger fixtures
-  receive a spatial 30x18 grown terminal. One-meter floor cells, wall/door
-  edges, rotatable objects, inferred rooms, construction jobs, closures,
-  transactions, and autonomous visitors persist in schema 10.
+  receive a spatial 30x18 grown terminal. One-meter logical floor cells,
+  wall/door edges, rotatable objects, inferred rooms, construction jobs,
+  closures, transactions, and autonomous visitors persist in schema 10; their
+  airport-world presentation uses the doubled-scale module documented above.
 - Terminal editing uses full-world mouse deprojection, immediate Phase 1 ledger
   spending, no-mutation invalid/unaffordable previews, full queued/in-progress
   undo refunds, completed demolition with 25% salvage, and ordinary moving
-  construction workers. The generated roof fades into a pooled Paper2D
-  cutaway. The root presentation now supplies the spatial snapshot before the
-  Terminal screen is opened; the map-readable roof uses the authoritative
-  starter-terminal/service-road anchor and the legacy sprite stays suppressed.
+  construction workers. The schema-10 interior is permanently roofless on the
+  live Paper2D airport canvas. The root presentation supplies the spatial
+  snapshot before Terminal tools are opened; the authoritative service-road
+  anchor is shared and the legacy sprite stays suppressed.
+- Opening Terminal retains the airport header, footer, side rails, full
+  exterior world, terminal interior, and exact player-owned camera frame. Its
+  contextual tools are layered over the airport canvas. Closing them changes
+  no world proxy, pan position, or zoom and restores no alternate camera state.
 - The owner approved both OpenAI visual targets. The retained deterministic
-  kit contains 44 source textures and 44 PaperSprite companions under
+  kit contains 45 source textures and 45 PaperSprite companions under
   `/Game/TerminalGrowth`; rejected ComfyUI surface candidates remain outside
   runtime content. Comparison boards record continuing density, route-overlay,
   and surrounding-world polish debt without expanding this rollout to upper
   floors or the passenger construction catalog.
+- Terminal furnishings now use strict-nadir, footprint-safe presentation. A
+  project-owned modular seat composes exact two-, four-, and six-seat groups,
+  back-to-back rows face opposite directions, and all other placed furnishings
+  use uniform aspect-preserving footprint fit instead of independent-axis
+  stretching. The Phase 3 layout, saves, routing, economy, and construction
+  contracts remain unchanged.
 - Final PI-11 verification has zero failures across 81 discovered AMSim
   automation entries, passes the Phase 4 rendered fixture and the starter,
   grown, and component-gallery states at all five UI scales, and passes clean

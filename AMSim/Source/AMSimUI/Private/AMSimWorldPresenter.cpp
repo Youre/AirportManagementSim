@@ -94,6 +94,8 @@ namespace AMSimWorldPresenterPrivate
 		ApronFixtures,
 		Count
 	};
+
+	constexpr int32 MatureProceduralFacilityCount = 8;
 }
 
 using namespace AMSimWorldPresenterPrivate;
@@ -342,6 +344,18 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 		MatureLandsideLinks.Add(CreateProceduralSurfaceComponent(
 			*FString::Printf(TEXT("MatureLandsideLink%d"), Index),
 			11 + Index));
+	}
+	for (int32 Index = 0; Index < MatureProceduralFacilityCount; ++Index)
+	{
+		MatureFacilityBases.Add(CreateProceduralSurfaceComponent(
+			*FString::Printf(TEXT("MatureFacilityBase%d"), Index),
+			AMSim::WorldPresentationLayers::Structure.SortPriority - 2));
+		MatureFacilitySurfaces.Add(CreateProceduralSurfaceComponent(
+			*FString::Printf(TEXT("MatureFacilitySurface%d"), Index),
+			AMSim::WorldPresentationLayers::Structure.SortPriority - 1));
+		MatureFacilityDetails.Add(CreateProceduralSurfaceComponent(
+			*FString::Printf(TEXT("MatureFacilityDetail%d"), Index),
+			AMSim::WorldPresentationLayers::Structure.SortPriority));
 	}
 	for (int32 Index = 0; Index < 10; ++Index)
 	{
@@ -1950,5 +1964,8 @@ int32 AAMSimWorldPresenter::GetActiveMatureSiteProxyCount() const
 	}
 	return Count + CountProcedural(MatureGatePads) +
 		CountProcedural(MatureTaxiConnectors) +
-		CountProcedural(MatureLandsideLinks);
+		CountProcedural(MatureLandsideLinks) +
+		CountProcedural(MatureFacilityBases) +
+		CountProcedural(MatureFacilitySurfaces) +
+		CountProcedural(MatureFacilityDetails);
 }

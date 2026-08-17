@@ -2,7 +2,7 @@
 
 **Status:** Implemented baseline accepted; continuing visual polish recorded
 **Reference:** VA-03 Terminal and passenger flow
-**Canonical state:** 1920 x 1080, 100 percent UI scale, ground-floor cutaway
+**Canonical state:** 1920 x 1080, 100 percent UI scale, roofless ground floor
 
 ## Approved targets and runtime evidence
 
@@ -18,11 +18,17 @@ geometry, routes, and timings come from the revisioned simulation query.
 ## Implemented visual contract
 
 - The terminal remains in the continuous orthographic airport world and uses a
-  stable terminal anchor independent of runway-proposal or operations-hut
-  movement.
-- Selecting the terminal enters a ground-floor cutaway with generated roof
-  removal, a one-meter grid, pooled floors, walls, doors, furniture,
+  stable landside-campus anchor independent of runway-proposal or operations-
+  hut movement.
+- The ground-floor interior is always present with no generated roof: a
+  one-meter logical grid, pooled floors, walls, doors, furniture,
   amenities, construction stages, workers, and visitors.
+- Each logical grid cell maps to a sixteen-meter airport-world presentation
+  module. The furnished starter footprint is approximately 288x192 meters and
+  the grown regional footprint is approximately 480x288 meters. Static
+  furniture uses an aspect-preserving 84-percent fill of its full authored
+  footprint; people, bags, workers, and vehicles use a separate twelve-times
+  readability scale.
 - Build and Operations are explicit modes. The Build rail uses compact icons,
   hover labels, a world-space placement ghost, price/status copy, rotate,
   demolish, and undo. Operations retains room, occupant, route, closure, and
@@ -32,6 +38,54 @@ geometry, routes, and timings come from the revisioned simulation query.
   retained.
 - At 175 and 200 percent the rail and contextual content use the compact drawer
   layout instead of reducing typography.
+- Seating uses one strict-nadir project-owned module composed into the exact
+  two-, four-, and six-seat counts authored by the terminal layout. Opposing
+  rows face opposite directions. Every other furnishing preserves its source
+  aspect ratio while fitting its rotated simulation footprint.
+
+### Single-canvas boundary
+
+The root airport map remains the only world after loading a save and while
+Terminal tools are open. The retired fixed-coordinate Phase 3 terminal proof
+renderer is never a root-level view. The schema-10 interior remains roofless
+and visible in the airport world at all times. Opening and closing Terminal
+tools preserves the runway, apron, roads, aircraft, landscaping, terminal
+geometry, root shell, and player-owned camera frame. Large mature facilities
+use deterministic procedural base, surface, and detail geometry; small
+aircraft, people, vehicles, fixtures, and landscaping retain reviewed sprites
+where their silhouettes carry useful identity.
+
+### Doubled terminal-campus correction
+
+The first eight-meter correction still read too small in owner review and is
+superseded. The presentation now uses the same sixteen-meter module for floor
+proxies, walls, construction treatments, pointer deprojection, placement
+previews, and physical-size feedback. A fixed presentation-only anchor places
+the doubled footprint between the apron and access road. It does not change
+simulation cells, costs, routes, save schema, camera state, or renderer
+ownership.
+
+The packaged equivalent-state record is
+`double-scale-terminal-va01-comparison.png`; its implementation source capture
+is `double-scale-terminal-packaged.png`. The earlier `normal-scale-*` artifacts
+remain historical evidence of the rejected intermediate scale.
+
+### Interior-content proportion correction
+
+The first doubled-campus capture exposed a second proportion error: the
+building was large enough, but furnishings and moving identities still read as
+dots. Static objects and exact seat compositions now fit against the full
+sixteen-meter presentation cell while retaining the existing 84-percent safe
+inset and uniform aspect ratio. People, bags, workers, and service vehicles use
+a smaller twelve-times identity token so they remain subordinate to furniture
+and room boundaries.
+
+The identical-state before/after record is
+`scaled-content-terminal-before-after.png`; the updated VA-01 board is
+`scaled-content-terminal-va01-comparison.png`; and the packaged source capture
+is `scaled-content-terminal-packaged.png`. Object anchors, counts, rotations,
+routes, occupancy, schema, simulation, camera, and renderer ownership do not
+change.
 
 ## Equivalent-state assessment
 
@@ -83,10 +137,10 @@ deferred.
   the complete terminal visible behind small scrollable drawers.
 - The final packaged Development proof exits cleanly and writes
   `AMSim/Saved/TerminalGrowth/starter-ga-terminal-build.png`; SHA-256
-  `ff771f62737444f6c5055c1b77063783acdee878eaa99cafdcd7944552e4c697`.
+  `8c2995dac8d39e6ea4270144af7c5203c72d9f8acae622499329c5ce4cd0969e`.
 - The grown Phase 4 rendered fixture passes journey, save/load, state,
   screenshot, reconciliation, and performance assertions.
-- Cook inventory contains all 44 terminal textures and all 44 PaperSprite
+- Cook inventory contains all 45 terminal textures and all 45 PaperSprite
   companions under `/Game/TerminalGrowth`.
 
 ## Intentional differences
@@ -98,3 +152,7 @@ deferred.
   player-placeable catalog.
 - No upper floors, 3D assets, real airline brands, or runtime string loads are
   introduced.
+- VA-01 still gives the terminal and landside campus substantially richer
+  architectural, material, and activity density. The doubled runtime footprint
+  now has comparable visual prominence; further composition and dressing remain
+  a separate bounded visual pass.

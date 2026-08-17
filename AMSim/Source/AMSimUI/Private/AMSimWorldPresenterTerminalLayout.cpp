@@ -3,17 +3,17 @@
 #include "Algo/Count.h"
 #include "AMSimPhase1Fixture.h"
 #include "AMSimPhase1WorldGeometry.h"
+#include "AMSimTerminalPresentationGeometry.h"
 #include "PaperSprite.h"
 #include "PaperSpriteComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
 namespace
 {
-	constexpr float TerminalGridUnrealUnits = 100.0f;
-	constexpr float TerminalCellSpriteScale = 0.125f;
-	// Roof and cutaway are visibility states of the same spatial building. A
-	// different overview scale made the terminal jump when the roof faded.
-	constexpr float TerminalOverviewScale = 1.0f;
+	constexpr float TerminalFurnitureFootprintFill = 0.84f;
+	constexpr float TerminalSeatSpacingCells = 0.82f;
+	// Retained roof assets share the spatial footprint but remain hidden. The
+	// roofless interior is the terminal's only runtime world representation.
 	constexpr float SpritePlaneRoll = -90.0f;
 	// Terminal furniture source art is authored upright in screen space, with
 	// its front facing the bottom of the texture. The terminal grid swaps its
@@ -36,10 +36,10 @@ namespace
 		const int32 MinimumY,
 		const int32 MaximumX,
 		const int32 MaximumY,
-		const float Height,
-		const float PresentationScale = 1.0f)
+		const float Height)
 	{
-		const float GridUnits = TerminalGridUnrealUnits * PresentationScale;
+		const float GridUnits =
+			AMSim::TerminalPresentationGeometry::CellWorldUnits;
 		const float Width = (MaximumX - MinimumX + 1) * GridUnits;
 		const float Depth = (MaximumY - MinimumY + 1) * GridUnits;
 		return FVector(
@@ -73,6 +73,62 @@ namespace
 			MaximumY = FMath::Max(MaximumY, Cell.Cell.Y);
 		}
 	}
+
+	bool IsTerminalSeatGroup(const AMSim::ETerminalObjectKind Kind)
+	{
+		return Kind == AMSim::ETerminalObjectKind::SeatGroup2 ||
+			Kind == AMSim::ETerminalObjectKind::SeatGroup4 ||
+			Kind == AMSim::ETerminalObjectKind::SeatGroup6;
+	}
+
+	FIntPoint GetTerminalSeatPattern(const AMSim::ETerminalObjectKind Kind)
+	{
+		switch (Kind)
+		{
+		case AMSim::ETerminalObjectKind::SeatGroup2:
+			return {2, 1};
+		case AMSim::ETerminalObjectKind::SeatGroup4:
+			return {2, 2};
+		case AMSim::ETerminalObjectKind::SeatGroup6:
+			return {3, 2};
+		default:
+			return {0, 0};
+		}
+	}
+
+	FVector CalculateTerminalObjectScale(
+		const UPaperSprite* Sprite,
+		const int32 FootprintWidth,
+		const int32 FootprintHeight,
+		const int32 QuarterTurns)
+	{
+		if (!Sprite)
+		{
+			return FVector(
+				AMSim::TerminalPresentationGeometry::CellSpriteScale,
+				1.0f,
+				AMSim::TerminalPresentationGeometry::CellSpriteScale);
+		}
+		const FBoxSphereBounds RenderBounds = Sprite->GetRenderBounds();
+		float SourceWidthUnits = RenderBounds.BoxExtent.X * 2.0f;
+		float SourceHeightUnits = RenderBounds.BoxExtent.Z * 2.0f;
+		if ((FMath::Abs(QuarterTurns) % 2) != 0)
+		{
+			Swap(SourceWidthUnits, SourceHeightUnits);
+		}
+		const float AvailableWidth =
+			FMath::Max(FootprintWidth, 1) *
+			AMSim::TerminalPresentationGeometry::FurnitureWorldUnitsPerLogicalCell *
+			TerminalFurnitureFootprintFill;
+		const float AvailableHeight =
+			FMath::Max(FootprintHeight, 1) *
+			AMSim::TerminalPresentationGeometry::FurnitureWorldUnitsPerLogicalCell *
+			TerminalFurnitureFootprintFill;
+		const float UniformScale = FMath::Min(
+			AvailableWidth / FMath::Max(SourceWidthUnits, KINDA_SMALL_NUMBER),
+			AvailableHeight / FMath::Max(SourceHeightUnits, KINDA_SMALL_NUMBER));
+		return FVector(UniformScale, 1.0f, UniformScale);
+	}
 }
 
 void AAMSimWorldPresenter::InitializeTerminalLayoutPresentation()
@@ -96,10 +152,12 @@ void AAMSimWorldPresenter::InitializeTerminalLayoutPresentation()
 		FindTerminalSprite(TEXT("/Game/TerminalGrowth/Presentation/Sprites/Door/S_StandardDoor.S_StandardDoor")),
 		FindTerminalSprite(TEXT("/Game/TerminalGrowth/Presentation/Sprites/Door/S_ServiceDoor.S_ServiceDoor")),
 		FindTerminalSprite(TEXT("/Game/TerminalGrowth/Presentation/Sprites/Door/S_AirsideGateDoor.S_AirsideGateDoor"))};
+	TerminalSeatSprite = FindTerminalSprite(
+		TEXT("/Game/TerminalGrowth/Presentation/Sprites/Furniture/S_SeatSingle.S_SeatSingle"));
 	TerminalObjectSprites = {
-		FindTerminalSprite(TEXT("/Game/Phase45/Presentation/Sprites/Terminal/S_SeatingCluster.S_SeatingCluster")),
-		FindTerminalSprite(TEXT("/Game/Phase45/Presentation/Sprites/Terminal/S_SeatingCluster.S_SeatingCluster")),
-		FindTerminalSprite(TEXT("/Game/Phase45/Presentation/Sprites/Terminal/S_SeatingCluster.S_SeatingCluster")),
+		nullptr,
+		nullptr,
+		nullptr,
 		FindTerminalSprite(TEXT("/Game/Phase45/Presentation/Sprites/Terminal/S_InformationDesk.S_InformationDesk")),
 		FindTerminalSprite(TEXT("/Game/Phase45/Presentation/Sprites/Terminal/S_RestroomBlock.S_RestroomBlock")),
 		FindTerminalSprite(TEXT("/Game/TerminalGrowth/Presentation/Sprites/Furniture/S_StaffDesk.S_StaffDesk")),
@@ -169,62 +227,27 @@ void AAMSimWorldPresenter::HideTerminalLayoutPool(
 
 FVector AAMSimWorldPresenter::GetTerminalWorldCenter() const
 {
-	// The starter terminal is fixed map context, so use the same authoritative
-	// coordinate mapping as its gates and service road. Do not derive this from
-	// the player's mutable runway proposal.
-	return AMSim::MapPhase1PointToWorld(
+	// The terminal remains fixed map context. The presentation-only campus
+	// offset places the full-size roofless footprint south of the access road;
+	// it never depends on the player's mutable runway proposal.
+	FVector Center = AMSim::MapPhase1PointToWorld(
 		AMSim::GetStarterTerminalCenter(),
 		40.0);
+	Center.X += AMSim::TerminalPresentationGeometry::CampusOffsetWorldX;
+	return Center;
 }
 
-void AAMSimWorldPresenter::SetTerminalCutawayMode(const bool bEnabled)
+void AAMSimWorldPresenter::SetTerminalInteractionMode(const bool bEnabled)
 {
-	if (bTerminalCutawayMode == bEnabled)
+	if (bTerminalInteractionMode == bEnabled)
 	{
 		return;
 	}
-	bTerminalCutawayMode = bEnabled;
-	RefreshTerminalLayoutPresentation(
-		CachedTerminalLayoutSnapshot,
-		CachedTerminalPhase3State,
-		true);
-	if (bEnabled)
+	bTerminalInteractionMode = bEnabled;
+	if (!bEnabled)
 	{
-		SetMatureInfrastructureVisible(false);
-		for (UPaperSpriteComponent* Component : MatureSite)
-		{
-			Component->SetVisibility(false);
-		}
-		for (UPaperSpriteComponent* Component : MatureLandscapeClusters)
-		{
-			Component->SetVisibility(false);
-		}
-		for (UPaperSpriteComponent* Component : MatureAircraft)
-		{
-			Component->SetVisibility(false);
-		}
-		for (UPaperSpriteComponent* Component : MatureGroundVehicles)
-		{
-			Component->SetVisibility(false);
-		}
-		for (UPaperSpriteComponent* Component : MaturePeople)
-		{
-			Component->SetVisibility(false);
-		}
-		for (UPaperSpriteComponent* Component : MatureBags)
-		{
-			Component->SetVisibility(false);
-		}
-		if (MatureSelection)
-		{
-			MatureSelection->SetVisibility(false);
-		}
+		ClearTerminalPlacementPreview();
 	}
-	else
-	{
-		SetMatureOverviewMode(bMatureOverviewMode);
-	}
-	RefreshIncidentPresentationVisibility();
 }
 
 int32 AAMSimWorldPresenter::GetActiveTerminalFloorProxyCount() const
@@ -252,6 +275,38 @@ FVector AAMSimWorldPresenter::GetTerminalFloorProxyScaleForTest() const
 	return TerminalLayoutFloorProxies.IsEmpty()
 		? FVector::ZeroVector
 		: TerminalLayoutFloorProxies[0]->GetRelativeScale3D();
+}
+
+FVector2D AAMSimWorldPresenter::GetTerminalFloorWorldSizeForTest() const
+{
+	bool bHasFloor = false;
+	FVector2D Minimum = FVector2D::ZeroVector;
+	FVector2D Maximum = FVector2D::ZeroVector;
+	for (const UPaperSpriteComponent* Floor : TerminalLayoutFloorProxies)
+	{
+		if (!Floor || !Floor->IsVisible())
+		{
+			continue;
+		}
+		const FVector Location = Floor->GetRelativeLocation();
+		const FVector2D Point(Location.X, Location.Y);
+		if (!bHasFloor)
+		{
+			Minimum = Maximum = Point;
+			bHasFloor = true;
+		}
+		else
+		{
+			Minimum.X = FMath::Min(Minimum.X, Point.X);
+			Minimum.Y = FMath::Min(Minimum.Y, Point.Y);
+			Maximum.X = FMath::Max(Maximum.X, Point.X);
+			Maximum.Y = FMath::Max(Maximum.Y, Point.Y);
+		}
+	}
+	return bHasFloor
+		? Maximum - Minimum + FVector2D(
+			AMSim::TerminalPresentationGeometry::CellWorldUnits)
+		: FVector2D::ZeroVector;
 }
 
 FVector AAMSimWorldPresenter::GetTerminalRoofProxyScaleForTest() const
@@ -294,6 +349,43 @@ float AAMSimWorldPresenter::GetTerminalObjectProxyYawForTest(
 		: 0.0f;
 }
 
+FVector AAMSimWorldPresenter::GetTerminalObjectProxyScaleForTest(
+	const int32 ObjectIndex) const
+{
+	return TerminalLayoutObjectProxies.IsValidIndex(ObjectIndex) &&
+		TerminalLayoutObjectProxies[ObjectIndex]
+		? TerminalLayoutObjectProxies[ObjectIndex]->GetRelativeScale3D()
+		: FVector::ZeroVector;
+}
+
+int32 AAMSimWorldPresenter::GetActiveTerminalSeatProxyCount() const
+{
+	return Algo::CountIf(
+		TerminalLayoutSeatProxies,
+		[](const UPaperSpriteComponent* Component)
+		{
+			return Component && Component->IsVisible();
+		});
+}
+
+FVector AAMSimWorldPresenter::GetTerminalSeatProxyScaleForTest(
+	const int32 SeatIndex) const
+{
+	return TerminalLayoutSeatProxies.IsValidIndex(SeatIndex) &&
+		TerminalLayoutSeatProxies[SeatIndex]
+		? TerminalLayoutSeatProxies[SeatIndex]->GetRelativeScale3D()
+		: FVector::ZeroVector;
+}
+
+float AAMSimWorldPresenter::GetTerminalSeatProxyYawForTest(
+	const int32 SeatIndex) const
+{
+	return TerminalLayoutSeatProxies.IsValidIndex(SeatIndex) &&
+		TerminalLayoutSeatProxies[SeatIndex]
+		? TerminalLayoutSeatProxies[SeatIndex]->GetRelativeRotation().Yaw
+		: 0.0f;
+}
+
 int32 AAMSimWorldPresenter::GetActiveTerminalConstructionProxyCount() const
 {
 	return Algo::CountIf(
@@ -319,7 +411,7 @@ void AAMSimWorldPresenter::SetTerminalPlacementPreview(
 	const AMSim::FTerminalCellCoord& End,
 	const int32 VisualState)
 {
-	if (!bTerminalCutawayMode || CachedTerminalLayoutSnapshot.FloorCells.IsEmpty())
+	if (!bTerminalInteractionMode || CachedTerminalLayoutSnapshot.FloorCells.IsEmpty())
 	{
 		ClearTerminalPlacementPreview();
 		return;
@@ -349,7 +441,10 @@ void AAMSimWorldPresenter::SetTerminalPlacementPreview(
 					: WhiteSprite.Get(),
 				CellWorldPosition({X, Y}, GetTerminalWorldCenter(),
 					MinimumX, MinimumY, MaximumX, MaximumY, 70.0f),
-				FVector(TerminalCellSpriteScale, 1.0f, TerminalCellSpriteScale));
+				FVector(
+					AMSim::TerminalPresentationGeometry::CellSpriteScale,
+					1.0f,
+					AMSim::TerminalPresentationGeometry::CellSpriteScale));
 			Preview->SetSpriteColor(FLinearColor::White);
 			Preview->SetVisibility(true);
 		}
@@ -375,7 +470,7 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 	// A restored schema-10 terminal is authoritative on its own. Do not depend
 	// on a preceding Phase 1 presentation pass: mature saves intentionally skip
 	// some starter-world rendering, and loading one directly from the new-
-	// airport screen would otherwise leave the cutaway empty.
+	// airport screen; direct restore must leave the persistent interior complete.
 	const bool bShowTerminal = !Query.FloorCells.IsEmpty();
 	if (!bShowTerminal)
 	{
@@ -384,9 +479,30 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 		HideTerminalLayoutPool(TerminalLayoutRoofDetailProxies, 0);
 		HideTerminalLayoutPool(TerminalLayoutEdgeProxies, 0);
 		HideTerminalLayoutPool(TerminalLayoutObjectProxies, 0);
+		HideTerminalLayoutPool(TerminalLayoutSeatProxies, 0);
 		HideTerminalLayoutPool(TerminalLayoutConstructionProxies, 0);
 		HideTerminalLayoutPool(TerminalLayoutWorkerProxies, 0);
 		HideTerminalLayoutPool(TerminalLayoutVisitorProxies, 0);
+		for (UPaperSpriteComponent* Component : Phase3Passengers)
+		{
+			Component->SetVisibility(false);
+		}
+		for (UPaperSpriteComponent* Component : Phase3Bags)
+		{
+			Component->SetVisibility(false);
+		}
+		for (UPaperSpriteComponent* Component : Phase3Vehicles)
+		{
+			Component->SetVisibility(false);
+		}
+		for (UPaperSpriteComponent* Component : Phase3Staff)
+		{
+			Component->SetVisibility(false);
+		}
+		if (Phase3Aircraft)
+		{
+			Phase3Aircraft->SetVisibility(false);
+		}
 		ClearTerminalPlacementPreview();
 		return;
 	}
@@ -416,7 +532,10 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 				? TerminalServiceFloorSprite.Get()
 				: TerminalPublicFloorSprite.Get();
 		ConfigureSprite(Floor, FloorSprite, Location,
-			FVector(TerminalCellSpriteScale, 1.0f, TerminalCellSpriteScale));
+			FVector(
+				AMSim::TerminalPresentationGeometry::CellSpriteScale,
+				1.0f,
+				AMSim::TerminalPresentationGeometry::CellSpriteScale));
 		const FLinearColor BuiltTint =
 			Cell.Kind == AMSim::ETerminalFloorKind::Restroom
 				? FLinearColor(0.73f, 0.94f, 0.91f, 1.0f)
@@ -432,7 +551,7 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 		Floor->SetSpriteColor(Cell.bBuilt
 			? BuiltTint
 			: FLinearColor(0.48f, 0.62f, 0.60f, 0.52f));
-		Floor->SetVisibility(bTerminalCutawayMode);
+		Floor->SetVisibility(true);
 
 		if (Cell.bBuilt)
 		{
@@ -440,14 +559,14 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 				TerminalLayoutRoofProxies, RoofIndex++, TEXT("TerminalLayoutRoof"), 47);
 			const FVector RoofLocation = CellWorldPosition(
 				Cell.Cell, Center, MinimumX, MinimumY, MaximumX, MaximumY,
-				47.0f, TerminalOverviewScale);
+				47.0f);
 			ConfigureSprite(Roof, TerminalRoofSurfaceSprite, RoofLocation,
 				FVector(
-					TerminalCellSpriteScale * TerminalOverviewScale,
+					AMSim::TerminalPresentationGeometry::CellSpriteScale,
 					1.0f,
-					TerminalCellSpriteScale * TerminalOverviewScale));
+					AMSim::TerminalPresentationGeometry::CellSpriteScale));
 			Roof->SetSpriteColor(FLinearColor::White);
-			Roof->SetVisibility(!bTerminalCutawayMode);
+			Roof->SetVisibility(false);
 		}
 	}
 	HideTerminalLayoutPool(TerminalLayoutFloorProxies, FloorIndex);
@@ -483,15 +602,14 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 				TEXT("TerminalRoofEdge"), 49);
 			ConfigureSprite(Edge, TerminalRoofDetailSprites[0],
 				CellWorldPosition(Cell.Cell, Center,
-					MinimumX, MinimumY, MaximumX, MaximumY, 49.0f,
-					TerminalOverviewScale),
+					MinimumX, MinimumY, MaximumX, MaximumY, 49.0f),
 				FVector(
-					TerminalCellSpriteScale * TerminalOverviewScale,
+					AMSim::TerminalPresentationGeometry::CellSpriteScale,
 					1.0f,
-					TerminalCellSpriteScale * TerminalOverviewScale));
+					AMSim::TerminalPresentationGeometry::CellSpriteScale));
 			Edge->SetRelativeRotation(FRotator(
 				0.0f, Direction < 2 ? 90.0f : 0.0f, SpritePlaneRoll));
-			Edge->SetVisibility(!bTerminalCutawayMode);
+			Edge->SetVisibility(false);
 		}
 		if (ExposedEdgeCount >= 2)
 		{
@@ -500,13 +618,12 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 				TEXT("TerminalRoofCorner"), 50);
 			ConfigureSprite(Corner, TerminalRoofDetailSprites[1],
 				CellWorldPosition(Cell.Cell, Center,
-					MinimumX, MinimumY, MaximumX, MaximumY, 50.0f,
-					TerminalOverviewScale),
+					MinimumX, MinimumY, MaximumX, MaximumY, 50.0f),
 				FVector(
-					TerminalCellSpriteScale * TerminalOverviewScale,
+					AMSim::TerminalPresentationGeometry::CellSpriteScale,
 					1.0f,
-					TerminalCellSpriteScale * TerminalOverviewScale));
-			Corner->SetVisibility(!bTerminalCutawayMode);
+					AMSim::TerminalPresentationGeometry::CellSpriteScale));
+			Corner->SetVisibility(false);
 		}
 		if (((Cell.Cell.X * 31 + Cell.Cell.Y * 17) & 63) == 0)
 		{
@@ -515,13 +632,12 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 				TEXT("TerminalRoofHVAC"), 51);
 			ConfigureSprite(HVAC, TerminalRoofDetailSprites[3],
 				CellWorldPosition(Cell.Cell, Center,
-					MinimumX, MinimumY, MaximumX, MaximumY, 51.0f,
-					TerminalOverviewScale),
+					MinimumX, MinimumY, MaximumX, MaximumY, 51.0f),
 				FVector(
-					TerminalCellSpriteScale * TerminalOverviewScale,
+					AMSim::TerminalPresentationGeometry::CellSpriteScale,
 					1.0f,
-					TerminalCellSpriteScale * TerminalOverviewScale));
-			HVAC->SetVisibility(!bTerminalCutawayMode);
+					AMSim::TerminalPresentationGeometry::CellSpriteScale));
+			HVAC->SetVisibility(false);
 		}
 	}
 	if (const AMSim::FTerminalEdgeRecord* Entrance = Query.Edges.FindByPredicate(
@@ -535,13 +651,12 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 			TEXT("TerminalRoofCanopy"), 52);
 		ConfigureSprite(Canopy, TerminalRoofDetailSprites[2],
 			CellWorldPosition(Entrance->From, Center,
-				MinimumX, MinimumY, MaximumX, MaximumY, 52.0f,
-				TerminalOverviewScale),
+				MinimumX, MinimumY, MaximumX, MaximumY, 52.0f),
 			FVector(
-				TerminalCellSpriteScale * 1.5f * TerminalOverviewScale,
+				AMSim::TerminalPresentationGeometry::CellSpriteScale * 1.5f,
 				1.0f,
-				TerminalCellSpriteScale * 1.5f * TerminalOverviewScale));
-		Canopy->SetVisibility(!bTerminalCutawayMode);
+				AMSim::TerminalPresentationGeometry::CellSpriteScale * 1.5f));
+		Canopy->SetVisibility(false);
 	}
 	HideTerminalLayoutPool(TerminalLayoutRoofDetailProxies, RoofDetailIndex);
 
@@ -558,7 +673,10 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 		ConfigureSprite(Proxy, TerminalEdgeSprites.IsValidIndex(SpriteIndex)
 			? TerminalEdgeSprites[SpriteIndex].Get() : WhiteSprite.Get(),
 			(From + To) * 0.5f,
-			FVector(TerminalCellSpriteScale, 1.0f, TerminalCellSpriteScale));
+			FVector(
+				AMSim::TerminalPresentationGeometry::CellSpriteScale,
+				1.0f,
+				AMSim::TerminalPresentationGeometry::CellSpriteScale));
 		const FVector Delta = To - From;
 		Proxy->SetRelativeRotation(FRotator(
 			0.0f,
@@ -567,29 +685,89 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 		Proxy->SetSpriteColor(Edge.bLocallyClosed
 			? FLinearColor(1.0f, 0.45f, 0.26f, 0.78f)
 			: Edge.bBuilt ? FLinearColor::White : FLinearColor(0.42f, 0.84f, 0.88f, 0.55f));
-		Proxy->SetVisibility(bTerminalCutawayMode);
+		Proxy->SetVisibility(true);
 	}
 	HideTerminalLayoutPool(TerminalLayoutEdgeProxies, EdgeIndex);
 
 	int32 ObjectIndex = 0;
+	int32 SeatIndex = 0;
 	for (const AMSim::FTerminalPlacedObjectRecord& Object : Query.Objects)
 	{
+		const FVector ObjectCenter = [&Object, &Center,
+			MinimumX, MinimumY, MaximumX, MaximumY]()
+		{
+			FVector Location = CellWorldPosition(
+				Object.Anchor, Center, MinimumX, MinimumY, MaximumX, MaximumY, 52.0f);
+			Location.X += (FMath::Max(Object.FootprintHeight, 1) - 1) *
+				AMSim::TerminalPresentationGeometry::CellWorldUnits * 0.5f;
+			Location.Y += (FMath::Max(Object.FootprintWidth, 1) - 1) *
+				AMSim::TerminalPresentationGeometry::CellWorldUnits * 0.5f;
+			return Location;
+		}();
+		if (IsTerminalSeatGroup(Object.Kind))
+		{
+			const FIntPoint Pattern = GetTerminalSeatPattern(Object.Kind);
+			const int32 QuarterTurns = ((Object.QuarterTurns % 4) + 4) % 4;
+			for (int32 Row = 0; Row < Pattern.Y; ++Row)
+			{
+				for (int32 Column = 0; Column < Pattern.X; ++Column)
+				{
+					const float LocalX =
+						(Column - (Pattern.X - 1) * 0.5f) * TerminalSeatSpacingCells;
+					const float LocalY =
+						(Row - (Pattern.Y - 1) * 0.5f) * TerminalSeatSpacingCells;
+					float RotatedX = LocalX;
+					float RotatedY = LocalY;
+					switch (QuarterTurns)
+					{
+					case 1: RotatedX = -LocalY; RotatedY = LocalX; break;
+					case 2: RotatedX = -LocalX; RotatedY = -LocalY; break;
+					case 3: RotatedX = LocalY; RotatedY = -LocalX; break;
+					default: break;
+					}
+					UPaperSpriteComponent* SeatProxy = AcquireTerminalLayoutProxy(
+						TerminalLayoutSeatProxies, SeatIndex++, TEXT("TerminalLayoutSeat"), 52);
+					ConfigureSprite(
+						SeatProxy,
+						TerminalSeatSprite ? TerminalSeatSprite.Get() : WhiteSprite.Get(),
+						ObjectCenter + FVector(
+							RotatedY * AMSim::TerminalPresentationGeometry::
+								FurnitureWorldUnitsPerLogicalCell,
+							RotatedX * AMSim::TerminalPresentationGeometry::
+								FurnitureWorldUnitsPerLogicalCell,
+							0.0f),
+						CalculateTerminalObjectScale(TerminalSeatSprite.Get(), 1, 1, 0));
+					const float RowFacing = Pattern.Y > 1 && Row == 1 ? 180.0f : 0.0f;
+					SeatProxy->SetRelativeRotation(FRotator(
+						0.0f,
+						TerminalObjectArtYawCorrectionDegrees +
+							QuarterTurns * 90.0f + RowFacing,
+						SpritePlaneRoll));
+					SeatProxy->SetSpriteColor(Object.bLocallyClosed
+						? FLinearColor(1.0f, 0.45f, 0.26f, 0.70f)
+						: Object.bOperational
+							? FLinearColor::White
+							: FLinearColor(0.55f, 0.72f, 0.72f, 0.62f));
+					SeatProxy->SetVisibility(true);
+				}
+			}
+			continue;
+		}
 		UPaperSpriteComponent* Proxy = AcquireTerminalLayoutProxy(
 			TerminalLayoutObjectProxies, ObjectIndex++, TEXT("TerminalLayoutObject"), 52);
 		const int32 SpriteIndex = FMath::Clamp(static_cast<int32>(Object.Kind), 0, 13);
-		FVector Location = CellWorldPosition(
-			Object.Anchor, Center, MinimumX, MinimumY, MaximumX, MaximumY, 52.0f);
-		Location.X += (FMath::Max(Object.FootprintHeight, 1) - 1) *
-			TerminalGridUnrealUnits * 0.5f;
-		Location.Y += (FMath::Max(Object.FootprintWidth, 1) - 1) *
-			TerminalGridUnrealUnits * 0.5f;
-		ConfigureSprite(Proxy, TerminalObjectSprites.IsValidIndex(SpriteIndex)
-			? TerminalObjectSprites[SpriteIndex].Get() : WhiteSprite.Get(),
-			Location,
-			FVector(
-				TerminalCellSpriteScale * 1.35f * FMath::Max(Object.FootprintHeight, 1),
-				1.0f,
-				TerminalCellSpriteScale * 1.35f * FMath::Max(Object.FootprintWidth, 1)));
+		UPaperSprite* ObjectSprite = TerminalObjectSprites.IsValidIndex(SpriteIndex)
+			? TerminalObjectSprites[SpriteIndex].Get()
+			: WhiteSprite.Get();
+		ConfigureSprite(
+			Proxy,
+			ObjectSprite,
+			ObjectCenter,
+			CalculateTerminalObjectScale(
+				ObjectSprite,
+				Object.FootprintWidth,
+				Object.FootprintHeight,
+				Object.QuarterTurns));
 		Proxy->SetRelativeRotation(FRotator(
 			0.0f,
 			TerminalObjectArtYawCorrectionDegrees +
@@ -598,9 +776,10 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 		Proxy->SetSpriteColor(Object.bLocallyClosed
 			? FLinearColor(1.0f, 0.45f, 0.26f, 0.70f)
 			: Object.bOperational ? FLinearColor::White : FLinearColor(0.55f, 0.72f, 0.72f, 0.62f));
-		Proxy->SetVisibility(bTerminalCutawayMode);
+		Proxy->SetVisibility(true);
 	}
 	HideTerminalLayoutPool(TerminalLayoutObjectProxies, ObjectIndex);
+	HideTerminalLayoutPool(TerminalLayoutSeatProxies, SeatIndex);
 
 	int32 ConstructionIndex = 0;
 	int32 WorkerIndex = 0;
@@ -619,7 +798,10 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 			? TerminalConstructionSprites[StageIndex].Get() : WhiteSprite.Get(),
 			CellWorldPosition(Job.WorkCell, Center,
 				MinimumX, MinimumY, MaximumX, MaximumY, 57.0f),
-			FVector(TerminalCellSpriteScale, 1.0f, TerminalCellSpriteScale));
+			FVector(
+				AMSim::TerminalPresentationGeometry::CellSpriteScale,
+				1.0f,
+				AMSim::TerminalPresentationGeometry::CellSpriteScale));
 		Proxy->SetSpriteColor(FLinearColor::White);
 		Proxy->SetVisibility(true);
 
@@ -630,17 +812,23 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 		const FVector WorkLocation = CellWorldPosition(Job.WorkCell, Center,
 			MinimumX, MinimumY, MaximumX, MaximumY, 61.0f);
 		const FVector MotionOffset(
-			FMath::Sin(MotionPhase * UE_TWO_PI) * 42.0f,
-			FMath::Cos(MotionPhase * UE_TWO_PI) * 32.0f,
+			FMath::Sin(MotionPhase * UE_TWO_PI) * 42.0f *
+				AMSim::TerminalPresentationGeometry::IdentityScale,
+			FMath::Cos(MotionPhase * UE_TWO_PI) * 32.0f *
+				AMSim::TerminalPresentationGeometry::IdentityScale,
 			0.0f);
 		ConfigureSprite(Worker, TerminalConstructionWorkerSprite,
-			WorkLocation + MotionOffset, FVector(0.32f, 1.0f, 0.32f));
+			WorkLocation + MotionOffset,
+			FVector(
+				0.32f * AMSim::TerminalPresentationGeometry::IdentityScale,
+				1.0f,
+				0.32f * AMSim::TerminalPresentationGeometry::IdentityScale));
 		Worker->SetRelativeRotation(FRotator(
 			0.0f,
 			FMath::RadiansToDegrees(FMath::Atan2(MotionOffset.Y, MotionOffset.X)) + 90.0f,
 			SpritePlaneRoll));
 		Worker->SetSpriteColor(FLinearColor::White);
-		Worker->SetVisibility(bTerminalCutawayMode);
+		Worker->SetVisibility(true);
 	}
 	HideTerminalLayoutPool(TerminalLayoutConstructionProxies, ConstructionIndex);
 	HideTerminalLayoutPool(TerminalLayoutWorkerProxies, WorkerIndex);
@@ -658,15 +846,17 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 		ConfigureSprite(Proxy, TerminalVisitorSprite,
 			CellWorldPosition(Visitor.Cell, Center,
 				MinimumX, MinimumY, MaximumX, MaximumY, 62.0f),
-			FVector(0.34f, 1.0f, 0.34f));
+			FVector(
+				0.34f * AMSim::TerminalPresentationGeometry::IdentityScale,
+				1.0f,
+				0.34f * AMSim::TerminalPresentationGeometry::IdentityScale));
 		Proxy->SetSpriteColor(Visitor.bRequiresAccessibleRoute
 			? FLinearColor(1.0f, 0.88f, 0.28f, 1.0f)
 			: FLinearColor::White);
-		Proxy->SetVisibility(bTerminalCutawayMode);
+		Proxy->SetVisibility(true);
 	}
 	HideTerminalLayoutPool(TerminalLayoutVisitorProxies, VisitorIndex);
 
-	if (bTerminalCutawayMode)
 	{
 		for (UPaperSpriteComponent* Component : Phase3Floor) Component->SetVisibility(false);
 		for (UPaperSpriteComponent* Component : Phase3Rooms) Component->SetVisibility(false);
@@ -715,7 +905,10 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 			}
 			Phase3Passengers[Index]->SetRelativeLocation(CellWorldPosition(
 				Cell, Center, MinimumX, MinimumY, MaximumX, MaximumY, 61.0f));
-			Phase3Passengers[Index]->SetRelativeScale3D(FVector(0.11f, 1.0f, 0.11f));
+			Phase3Passengers[Index]->SetRelativeScale3D(FVector(
+				0.11f * AMSim::TerminalPresentationGeometry::IdentityScale,
+				1.0f,
+				0.11f * AMSim::TerminalPresentationGeometry::IdentityScale));
 			Phase3Passengers[Index]->SetVisibility(true);
 		}
 		for (int32 Index = 0; Index < Phase3BagAvailableCount; ++Index)
@@ -728,7 +921,10 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 			const AMSim::FTerminalCellCoord Cell = {15 + Index % 3, 6 + (Index / 3) % 4};
 			Phase3Bags[Index]->SetRelativeLocation(CellWorldPosition(
 				Cell, Center, MinimumX, MinimumY, MaximumX, MaximumY, 59.0f));
-			Phase3Bags[Index]->SetRelativeScale3D(FVector(0.08f, 1.0f, 0.08f));
+			Phase3Bags[Index]->SetRelativeScale3D(FVector(
+				0.08f * AMSim::TerminalPresentationGeometry::IdentityScale,
+				1.0f,
+				0.08f * AMSim::TerminalPresentationGeometry::IdentityScale));
 			Phase3Bags[Index]->SetVisibility(true);
 		}
 		for (int32 Index = 0; Index < Phase3Staff.Num(); ++Index)
@@ -737,7 +933,10 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 				7 + Index % 4, 2 + (Index / 4) * 3};
 			Phase3Staff[Index]->SetRelativeLocation(CellWorldPosition(
 				Cell, Center, MinimumX, MinimumY, MaximumX, MaximumY, 63.0f));
-			Phase3Staff[Index]->SetRelativeScale3D(FVector(0.13f, 1.0f, 0.13f));
+			Phase3Staff[Index]->SetRelativeScale3D(FVector(
+				0.13f * AMSim::TerminalPresentationGeometry::IdentityScale,
+				1.0f,
+				0.13f * AMSim::TerminalPresentationGeometry::IdentityScale));
 			Phase3Staff[Index]->SetVisibility(Index < 6);
 		}
 		for (int32 Index = 0; Index < Phase3Vehicles.Num(); ++Index)
@@ -745,7 +944,10 @@ void AAMSimWorldPresenter::RefreshTerminalLayoutPresentation(
 			const AMSim::FTerminalCellCoord Cell = {2 + Index * 3, -2};
 			Phase3Vehicles[Index]->SetRelativeLocation(CellWorldPosition(
 				Cell, Center, MinimumX, MinimumY, MaximumX, MaximumY, 58.0f));
-			Phase3Vehicles[Index]->SetRelativeScale3D(FVector(0.38f, 1.0f, 0.38f));
+			Phase3Vehicles[Index]->SetRelativeScale3D(FVector(
+				0.38f * AMSim::TerminalPresentationGeometry::IdentityScale,
+				1.0f,
+				0.38f * AMSim::TerminalPresentationGeometry::IdentityScale));
 			Phase3Vehicles[Index]->SetVisibility(Index < 3);
 		}
 	}

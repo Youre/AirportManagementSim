@@ -5,6 +5,7 @@
 #include "AMSimGameInstanceSubsystem.h"
 #include "AMSimExpandingToolButton.h"
 #include "AMSimRegionalOperationsView.h"
+#include "AMSimTerminalPresentationGeometry.h"
 #include "AMSimUITheme.h"
 #include "AMSimWorldPresenter.h"
 #include "Blueprint/WidgetTree.h"
@@ -252,13 +253,25 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		AMSim::UITheme::ESurface::Chrome,
 		FMargin(0.0f),
 		0.0f);
-	TerminalChrome->SetBrushColor(FLinearColor(1.0f, 1.0f, 1.0f, 0.32f));
+	TerminalChrome->SetBrushColor(FLinearColor::Transparent);
+	TerminalChrome->SetVisibility(ESlateVisibility::Collapsed);
 	AddAnchored(
 		Canvas,
 		TerminalChrome,
 		FAnchors(0.0f, 0.0f, 1.0f, 1.0f),
 		FMargin(0.0f),
 		0);
+	TerminalInteractionSurface = WidgetTree->ConstructWidget<UBorder>(
+		UBorder::StaticClass(),
+		TEXT("TerminalWorldInteractionSurface"));
+	TerminalInteractionSurface->SetBrushColor(FLinearColor::Transparent);
+	TerminalInteractionSurface->SetPadding(FMargin(0.0f));
+	AddAnchored(
+		Canvas,
+		TerminalInteractionSurface,
+		FAnchors(0.065f, 0.10f, 0.935f, 0.89f),
+		FMargin(0.0f),
+		3);
 
 	UBorder* TopBar = MakeSurface(
 		WidgetTree,
@@ -266,6 +279,8 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		AMSim::UITheme::ESurface::Chrome,
 		bCompact ? FMargin(12.0f, 7.0f) : FMargin(20.0f, 10.0f),
 		16.0f);
+	TerminalTopBar = TopBar;
+	TerminalTopBar->SetVisibility(ESlateVisibility::Collapsed);
 	UHorizontalBox* TopRow = WidgetTree->ConstructWidget<UHorizontalBox>(
 		UHorizontalBox::StaticClass(),
 		TEXT("TerminalTopRow"));
@@ -402,6 +417,12 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 	ModeRow->AddChildToHorizontalBox(BuildModeButton)->SetPadding(FMargin(0, 0, 3, 0));
 	ModeRow->AddChildToHorizontalBox(OperationsModeButton)->SetPadding(FMargin(3, 0, 0, 0));
 	AddVertical(Tools, ModeRow, 8.0f);
+	UButton* CloseCutawayButton = MakeButton(
+		WidgetTree, TEXT("TerminalCloseTools"), TEXT("CLOSE TERMINAL TOOLS"),
+		AMSim::UITheme::EButton::Quiet, SmallSize);
+	CloseCutawayButton->OnClicked.AddUniqueDynamic(
+		this, &UAMSimTerminalView::ReturnToAirport);
+	AddVertical(Tools, CloseCutawayButton, 8.0f);
 
 	TerminalBuildToolsPanel = WidgetTree->ConstructWidget<UVerticalBox>(
 		UVerticalBox::StaticClass(),
@@ -533,7 +554,7 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		LeftRail,
 		bCompact
 			? FAnchors(0.01f, 0.80f, 0.49f, 0.985f)
-			: FAnchors(0.008f, 0.105f, 0.176f, 0.89f),
+			: FAnchors(0.065f, 0.105f, 0.225f, 0.89f),
 		FMargin(0.0f),
 		9);
 
@@ -698,7 +719,7 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		PartyRail,
 		bCompact
 			? FAnchors(0.74f, 0.105f, 0.992f, 0.43f)
-			: FAnchors(0.802f, 0.105f, 0.992f, 0.89f),
+			: FAnchors(0.775f, 0.105f, 0.935f, 0.89f),
 		FMargin(0.0f),
 		9);
 
@@ -782,6 +803,8 @@ TSharedRef<SWidget> UAMSimTerminalView::RebuildWidget()
 		AMSim::UITheme::ESurface::Chrome,
 		FMargin(12.0f, 7.0f),
 		14.0f);
+	TerminalFooterLegend = Legend;
+	TerminalFooterLegend->SetVisibility(ESlateVisibility::Collapsed);
 	UHorizontalBox* LegendRow = WidgetTree->ConstructWidget<UHorizontalBox>(
 		UHorizontalBox::StaticClass(),
 		TEXT("TerminalLegendRow"));
@@ -957,9 +980,9 @@ FReply UAMSimTerminalView::NativeOnMouseButtonDown(
 		return FReply::Handled().CaptureMouse(TakeWidget());
 	}
 	if (bBuildMode && InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton &&
-		TerminalLabels)
+		TerminalInteractionSurface)
 	{
-		const FGeometry MapGeometry = TerminalLabels->GetCachedGeometry();
+		const FGeometry MapGeometry = TerminalInteractionSurface->GetCachedGeometry();
 		const FVector2D Local = MapGeometry.AbsoluteToLocal(
 			InMouseEvent.GetScreenSpacePosition());
 		const FVector2D Size = MapGeometry.GetLocalSize();
@@ -1063,8 +1086,10 @@ FReply UAMSimTerminalView::NativeOnMouseMove(
 		}
 		InteractionText->SetText(FText::FromString(FString::Printf(
 			TEXT("%dm x %dm  \u00b7  %lld CR  \u00b7  release to commit"),
-			Width,
-			Height,
+			FMath::RoundToInt(Width *
+				AMSim::TerminalPresentationGeometry::PresentedMetersPerCell),
+			FMath::RoundToInt(Height *
+				AMSim::TerminalPresentationGeometry::PresentedMetersPerCell),
 			PreviewCost)));
 		return FReply::Handled();
 	}
@@ -1081,6 +1106,25 @@ FReply UAMSimTerminalView::NativeOnKeyDown(
 		return FReply::Handled();
 	}
 	return Super::NativeOnKeyDown(InGeometry, InKeyEvent);
+}
+
+AMSim::FTerminalCellCoord UAMSimTerminalView::MapTerminalWorldPointToCell(
+	const FVector& WorldPoint,
+	const FVector& Center,
+	const int32 MinimumX,
+	const int32 MinimumY,
+	const int32 MaximumX,
+	const int32 MaximumY)
+{
+	const double CellWorldUnits =
+		AMSim::TerminalPresentationGeometry::CellWorldUnits;
+	const double Width = (MaximumX - MinimumX + 1) * CellWorldUnits;
+	const double Depth = (MaximumY - MinimumY + 1) * CellWorldUnits;
+	return {
+		MinimumX + static_cast<int32>(FMath::FloorToInt(
+			(WorldPoint.Y - Center.Y + Width * 0.5) / CellWorldUnits)),
+		MinimumY + static_cast<int32>(FMath::FloorToInt(
+			(WorldPoint.X - Center.X + Depth * 0.5) / CellWorldUnits))};
 }
 
 AMSim::FTerminalCellCoord UAMSimTerminalView::PointerToTerminalCell(
@@ -1109,20 +1153,20 @@ AMSim::FTerminalCellCoord UAMSimTerminalView::PointerToTerminalCell(
 					const double Distance = (42.0 - RayOrigin.Z) / RayDirection.Z;
 					const FVector WorldPoint = RayOrigin + RayDirection * Distance;
 					const FVector Center = It->GetTerminalWorldCenter();
-					const double Width = (Layout->MaximumX - Layout->MinimumX + 1) * 100.0;
-					const double Depth = (Layout->MaximumY - Layout->MinimumY + 1) * 100.0;
-					return {
-						Layout->MinimumX + static_cast<int32>(FMath::FloorToInt(
-							(WorldPoint.Y - Center.Y + Width * 0.5) / 100.0)),
-						Layout->MinimumY + static_cast<int32>(FMath::FloorToInt(
-							(WorldPoint.X - Center.X + Depth * 0.5) / 100.0))};
+					return MapTerminalWorldPointToCell(
+						WorldPoint,
+						Center,
+						Layout->MinimumX,
+						Layout->MinimumY,
+						Layout->MaximumX,
+						Layout->MaximumY);
 				}
 				break;
 			}
 		}
 	}
-	const FGeometry MapGeometry = TerminalLabels
-		? TerminalLabels->GetCachedGeometry()
+	const FGeometry MapGeometry = TerminalInteractionSurface
+		? TerminalInteractionSurface->GetCachedGeometry()
 		: GetCachedGeometry();
 	const FVector2D Local = MapGeometry.AbsoluteToLocal(ScreenPosition);
 	const FVector2D Size = MapGeometry.GetLocalSize();
@@ -1589,109 +1633,6 @@ void UAMSimTerminalView::OpenMajorOperations()
 	ShowMajorOperations();
 }
 
-void UAMSimTerminalView::ShowRegionalOperations()
-{
-	bHasBeenOpened = true;
-	bPresentationOpen = true;
-	PresentationDestination = EAMSimTerminalPresentationDestination::Regional;
-	SetTerminalCutawayEnabled(false);
-	if (RegionalOperationsView)
-	{
-		RegionalOperationsView->ShowRegionalOperations();
-	}
-	RefreshFromSimulation();
-	SetKeyboardFocus();
-}
-
-void UAMSimTerminalView::ShowAdvancedOperations()
-{
-	bHasBeenOpened = true;
-	bPresentationOpen = true;
-	PresentationDestination = EAMSimTerminalPresentationDestination::Advanced;
-	SetTerminalCutawayEnabled(false);
-	if (RegionalOperationsView)
-	{
-		RegionalOperationsView->ShowAdvancedOperations();
-	}
-	RefreshFromSimulation();
-	SetKeyboardFocus();
-}
-
-void UAMSimTerminalView::ShowMajorOperations()
-{
-	bHasBeenOpened = true;
-	bPresentationOpen = true;
-	PresentationDestination = EAMSimTerminalPresentationDestination::Major;
-	SetTerminalCutawayEnabled(false);
-	if (RegionalOperationsView)
-	{
-		RegionalOperationsView->ShowMajorOperations();
-	}
-	RefreshFromSimulation();
-	SetKeyboardFocus();
-}
-
-void UAMSimTerminalView::ShowPresentation()
-{
-	bHasBeenOpened = true;
-	bPresentationOpen = true;
-	PresentationDestination = EAMSimTerminalPresentationDestination::Terminal;
-	// Refresh the loaded layout before hiding the exterior world. A save can
-	// legitimately carry the same raw Phase 3 revision as the prior state.
-	// Entering cutaway with the previous cached layout produced a blank map.
-	RefreshFromSimulation();
-	SetTerminalCutawayEnabled(true);
-	SetKeyboardFocus();
-}
-
-void UAMSimTerminalView::SetTerminalCutawayEnabled(const bool bEnabled)
-{
-	FVector TerminalCenter = FVector(-27000.0f, 36000.0f, 40.0f);
-	float TerminalOrthoWidth = 2000.0f;
-	if (const UAMSimAirportSimulationSubsystem* Subsystem =
-		GetWorld() ? GetWorld()->GetSubsystem<UAMSimAirportSimulationSubsystem>() : nullptr)
-	{
-		const AMSim::FTerminalLayoutState& Layout =
-			Subsystem->GetSimulation().GetPhase3State().TerminalLayout;
-		const float HorizontalMeters =
-			static_cast<float>(Layout.MaximumX - Layout.MinimumX + 1);
-		const float VerticalMeters =
-			static_cast<float>(Layout.MaximumY - Layout.MinimumY + 1);
-		if (HorizontalMeters > 18.0f || VerticalMeters > 12.0f)
-		{
-			TerminalOrthoWidth = FMath::Max(
-				2000.0f,
-				FMath::Max(HorizontalMeters * 112.0f, VerticalMeters * 190.0f));
-		}
-	}
-	for (TActorIterator<AAMSimWorldPresenter> It(GetWorld()); It; ++It)
-	{
-		It->SetTerminalCutawayMode(bEnabled);
-		TerminalCenter = It->GetTerminalWorldCenter();
-	}
-	for (TActorIterator<AAMSimCameraPawn> It(GetWorld()); It; ++It)
-	{
-		It->SetTerminalCutawayMode(
-			bEnabled,
-			bEnabled ? TerminalCenter : FVector::ZeroVector,
-			TerminalOrthoWidth);
-	}
-}
-
-void UAMSimTerminalView::ClosePresentation()
-{
-	bPresentationOpen = false;
-	PresentationDestination = EAMSimTerminalPresentationDestination::Terminal;
-	SetTerminalCutawayEnabled(false);
-	SetVisibility(ESlateVisibility::Collapsed);
-}
-
-void UAMSimTerminalView::ReturnToAirport()
-{
-	ClosePresentation();
-	OnReturnRequested.ExecuteIfBound();
-}
-
 void UAMSimTerminalView::RefreshFromSimulation()
 {
 	if (!bPresentationOpen)
@@ -1741,7 +1682,9 @@ void UAMSimTerminalView::RefreshFromSimulation()
 				? ESlateVisibility::Visible
 				: ESlateVisibility::Collapsed);
 	}
-	if (RegionalOperationsView)
+	if (RegionalOperationsView &&
+		PresentationDestination !=
+			EAMSimTerminalPresentationDestination::Terminal)
 	{
 		RegionalOperationsView->RefreshFromSimulation();
 	}
@@ -1968,9 +1911,16 @@ void UAMSimTerminalView::RestoreTerminalShellVisibility()
 	for (int32 Index = 0; Index < TerminalCanvas->GetChildrenCount(); ++Index)
 	{
 		UWidget* Child = TerminalCanvas->GetChildAt(Index);
-		if (Child == RegionalOperationsView)
+		if (Child == RegionalOperationsView ||
+			Child == TerminalChrome ||
+			Child == TerminalTopBar ||
+			Child == TerminalFooterLegend)
 		{
 			Child->SetVisibility(ESlateVisibility::Collapsed);
+		}
+		else if (Child == TerminalInteractionSurface)
+		{
+			Child->SetVisibility(ESlateVisibility::Visible);
 		}
 		else if (Child != TerminalLabels && Child != PlanningCard)
 		{

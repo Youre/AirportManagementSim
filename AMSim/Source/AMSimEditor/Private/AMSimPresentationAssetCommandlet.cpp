@@ -536,7 +536,7 @@ int32 UAMSimPresentationAssetCommandlet::Main(const FString& Params)
 		{TEXT("Structure"), {TEXT("ExteriorWall"), TEXT("InteriorWall"), TEXT("GlassWall")}},
 		{TEXT("Door"), {TEXT("EntranceDoor"), TEXT("StandardDoor"), TEXT("ServiceDoor"), TEXT("AirsideGateDoor")}},
 		{TEXT("Roof"), {TEXT("RoofEdge"), TEXT("RoofCorner"), TEXT("EntranceCanopy"), TEXT("RoofHVAC")}},
-		{TEXT("Furniture"), {TEXT("StaffDesk"), TEXT("Storage"), TEXT("Vending"), TEXT("Water"), TEXT("WasteRecycling"), TEXT("Noticeboard"), TEXT("Signage"), TEXT("Plant")}},
+		{TEXT("Furniture"), {TEXT("SeatSingle"), TEXT("StaffDesk"), TEXT("Storage"), TEXT("Vending"), TEXT("Water"), TEXT("WasteRecycling"), TEXT("Noticeboard"), TEXT("Signage"), TEXT("Plant")}},
 		{TEXT("Construction"), {TEXT("ConstructionFoundation"), TEXT("ConstructionDelivery"), TEXT("ConstructionFraming"), TEXT("ConstructionActive"), TEXT("ConstructionInspection"), TEXT("ConstructionClosure")}},
 		{TEXT("Overlay"), {TEXT("PlacementValid"), TEXT("PlacementBlocked"), TEXT("PlacementUnaffordable"), TEXT("PlacementRouteLoss"), TEXT("PlacementSnap"), TEXT("PlacementConnection")}},
 		{TEXT("Icon"), {TEXT("IconStructure"), TEXT("IconDoors"), TEXT("IconFurniture"), TEXT("IconAmenities"), TEXT("IconOperations"), TEXT("IconZones"), TEXT("IconDemolish"), TEXT("IconRotate"), TEXT("IconCopy"), TEXT("IconUndo")}}

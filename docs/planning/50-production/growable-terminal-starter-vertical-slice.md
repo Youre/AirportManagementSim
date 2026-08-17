@@ -7,10 +7,19 @@
 
 ## Outcome
 
-Replace the static starter-terminal presentation with a ground-floor,
-one-meter-grid terminal that remains part of the airport world. Selecting the
-terminal and zooming through the cutaway threshold fades its generated roof and
-reveals the editable interior without loading a separate management scene.
+Replace the static starter-terminal presentation with a ground-floor terminal
+whose saved and editable layout retains a one-meter logical grid. In the
+airport world, each logical cell uses one shared sixteen-meter presentation
+module so the roofless facility reads at the same gameplay scale as aprons,
+roads, gates, and aircraft. The editable interior is always rendered at one
+fixed landside-campus anchor. The player decides when to inspect it by panning
+and zooming the shared camera.
+
+The single-canvas contract is literal: Terminal does not collapse or replace
+the airport HUD, hide the exterior airport, switch world renderers, or own a
+terminal-specific camera. Opening Terminal adds contextual tools over the
+existing airport canvas. Closing those tools leaves every world proxy and the
+player's current pan and zoom unchanged.
 
 The first rollout includes a furnished GA terminal, immediate-spend editing,
 local construction closures, active construction workers, autonomous GA visitor
@@ -75,9 +84,15 @@ must be serialized or constructor-visible and cooker-visible.
 - Reference and target state: 1920 x 1080 at 100 percent UI scale.
 - Persistent status occupies no more than 9 percent of height.
 - Normal terminal tools and contextual inspector each target 15-17 percent of
-  width; the continuous cutaway remains at least 60 percent of screen area.
-- The one-meter grid is visible only in Build mode and becomes subordinate at
-  operational zoom.
+  width; the continuous airport world remains at least 60 percent of screen area.
+- The one-meter logical grid overlay is visible only in Build mode and becomes
+  subordinate at operational zoom. The world footprint uses a sixteen-meter
+  presentation module per logical cell. Static furniture uses an aspect-
+  preserving 84-percent fill of its full authored footprint; people, bags,
+  workers, and vehicles use an independent twelve-times readability scale.
+- The furnished 18x12 starter footprint presents at approximately 288x192
+  meters. The 30x18 grown regional footprint presents at approximately
+  480x288 meters.
 - Public floors use warm neutrals, secure/departure routes cyan, arrivals and
   reclaim purple, landside flow green, congestion amber, and accessible routes
   yellow pattern plus icon/text.
@@ -95,8 +110,9 @@ must be serialized or constructor-visible and cooker-visible.
    validation, checksum, derived topology, fixtures, and migrations.
 4. **PI11-03 — construction loop:** implement immediate spending, undo,
    demolition, local closures, worker jobs, and visible stage changes.
-5. **PI11-04 — world integration:** implement pooled layout proxies, generated
-   roof, seamless cutaway camera behavior, sorting, overlays, and responsive UI.
+5. **PI11-04 — world integration:** implement pooled layout proxies, roofless
+   persistent interior rendering, player-owned camera behavior, sorting,
+   overlays, and responsive UI.
 6. **PI11-05 — living terminal:** seed the furnished GA terminal, animate GA
    visitor journeys, and spatialize the Phase 3 passenger fixture.
 7. **PI11-06 — hardening:** run focused/full automation, visual comparison,
@@ -113,27 +129,42 @@ current state, and comparison records are current.
 
 ## Verification closeout
 
+- The single-canvas remediation proves an identical airport camera frame and
+  identical terminal world geometry before and after opening Terminal tools.
+  Runway, apron, roads, aircraft, landscaping, and persistent HUD regions
+  remain visible; the roofless interior never swaps with a roof renderer.
 - Both OpenAI target frames were approved before bulk asset production.
-- The deterministic modular kit retained 44 normalized 32-pixels-per-meter
+- The deterministic modular kit retained 45 normalized 32-pixels-per-meter
   assets; its contact-sheet validation scored 96.167 with zero failed checks.
   ComfyUI surface candidates were rejected rather than imported because their
   seam/slab quality did not meet the visual standard.
 - Schema 10, schemas 1-9 migration, terminal topology, costs, undo/refunds,
   demolition salvage, construction workers, pooled presentation, and revision
   gating are covered by focused tests. The final complete AMSim report contains
-  81 discovered entries, zero failed, zero not-run, and zero in-process tests.
+  82 discovered entries, zero failed, zero not-run, and zero in-process tests.
 - Starter and grown runtime captures pass their deterministic journeys. The
   five-scale 1920 x 1080 matrix passes the starter editor, grown operations,
   and component gallery at 100-200 percent; compact scales retain a dominant
   world region with scrollable drawers.
 - Clean Development and Shipping BuildCookRun archives pass. The packaged
-  terminal proof renders the full spatial terminal, all 88 TerminalGrowth
+  terminal proof renders the full spatial terminal, all 90 TerminalGrowth
   texture/sprite packages are in the cooked reference set, and packaged
   runtime/save-load/offline checks pass.
 - Technical release-audit fields are clean: zero runtime string asset loads,
   forbidden runtime dependencies, required 3D assets, or line-limit
   violations. The aggregate Phase 7 release audit remains pending only because
   its separate final owner-acceptance field is intentionally still pending.
+- The doubled-scale correction keeps the same renderer and camera while mapping
+  the starter and grown layouts to their 288x192-meter and 480x288-meter
+  presentation footprints. A fixed landside-campus anchor places the terminal
+  between the apron and access road without changing simulation state or saved
+  coordinates. The packaged VA-01 comparison is retained in
+  `terminal-growth-visual-validation/double-scale-terminal-va01-comparison.png`.
+- The content-proportion correction keeps every saved anchor, footprint,
+  rotation, route, and entity count unchanged while fitting furnishings to the
+  full presented cells and doubling mobile-identity readability. The identical-
+  state proof is retained in
+  `terminal-growth-visual-validation/scaled-content-terminal-before-after.png`.
 
 Continuing visual debt and intentional scope differences are recorded in
 `terminal-growth-visual-validation/README.md`. They do not block this starter

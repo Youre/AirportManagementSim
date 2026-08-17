@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "generatedAt":  "2026-08-08T12:30:29-04:00",
+    "generatedAt":  "2026-08-16T16:27:45-04:00",
     "source":  "SourceAssets/TerminalGrowth/Vector/terminal-modular-kit-contact-sheet.svg",
     "sourceSha256":  "43c72256674058b1785d1f98a29f90a33b465730c1b3c30d626df4f1763566e0",
     "generator":  "scripts/assets/Export-TerminalGrowthVectorKit.ps1",
@@ -264,6 +264,19 @@
                        "pixelsPerMeter":  32,
                        "rotation":  "QuarterTurn",
                        "sha256":  "9bb7753ba75597a868bfa3f18024312d7c65d83ee9a48dc97ba35eb7170c3c92"
+                   },
+                   {
+                       "name":  "SeatSingle",
+                       "category":  "Furniture",
+                       "source":  "SourceAssets/TerminalGrowth/Masters/OpenAI/T_SeatSingle_OpenAI_Master.png",
+                       "texture":  "SourceAssets/TerminalGrowth/Runtime/Textures/T_SeatSingle.png",
+                       "dimensions":  [
+                                          256,
+                                          256
+                                      ],
+                       "pixelsPerMeter":  32,
+                       "rotation":  "QuarterTurn",
+                       "sha256":  "5bbe39f62da65e437c4a7c7ca13c8031982071578cba6762e14d04988df3738c"
                    },
                    {
                        "name":  "StaffDesk",

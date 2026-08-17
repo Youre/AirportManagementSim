@@ -77,7 +77,8 @@ void AAMSimCameraPawn::Pan(const FVector Direction)
 	{
 		return;
 	}
-	AddActorWorldOffset(Direction * (bTerminalCutawayMode ? 150.0 : 1250.0));
+	const float PanStep = FMath::Max(Camera->OrthoWidth / 84.0f, 150.0f);
+	AddActorWorldOffset(Direction * PanStep);
 	ClampManagementLocation();
 }
 
@@ -109,17 +110,6 @@ void AAMSimCameraPawn::ClampManagementLocation()
 	FVector Location = GetActorLocation();
 	Location.X = FMath::Clamp(Location.X, -60000.0, 60000.0);
 	Location.Y = FMath::Clamp(Location.Y, -60000.0, 60000.0);
-	if (bTerminalCutawayMode)
-	{
-		Location.X = FMath::Clamp(
-			Location.X,
-			TerminalCutawayCenter.X - 4000.0,
-			TerminalCutawayCenter.X + 4000.0);
-		Location.Y = FMath::Clamp(
-			Location.Y,
-			TerminalCutawayCenter.Y - 4000.0,
-			TerminalCutawayCenter.Y + 4000.0);
-	}
 	SetActorLocation(Location);
 }
 
@@ -129,11 +119,25 @@ void AAMSimCameraPawn::Zoom(const FInputActionValue& Value)
 	{
 		return;
 	}
-	const float ZoomStep = bTerminalCutawayMode ? 400.0f : 5000.0f;
-	Camera->OrthoWidth = FMath::Clamp(
-		Camera->OrthoWidth - Value.Get<float>() * ZoomStep,
-		bTerminalCutawayMode ? 1800.0f : 30000.0f,
-		bTerminalCutawayMode ? 9000.0f : 160000.0f);
+	Camera->OrthoWidth = CalculateZoomedOrthoWidth(
+		Camera->OrthoWidth,
+		Value.Get<float>());
+}
+
+float AAMSimCameraPawn::CalculateZoomedOrthoWidth(
+	const float CurrentOrthoWidth,
+	const float InputAmount)
+{
+	// One adaptive zoom curve serves the entire airport. Close inspection is
+	// never unlocked by a facility mode, and overview movement remains coarse.
+	const float ZoomStep = FMath::Clamp(
+		CurrentOrthoWidth * 0.12f,
+		120.0f,
+		12000.0f);
+	return FMath::Clamp(
+		CurrentOrthoWidth - InputAmount * ZoomStep,
+		1800.0f,
+		160000.0f);
 }
 
 void AAMSimCameraPawn::SetCloseOperationsMode(const bool bEnabled)
@@ -156,42 +160,4 @@ void AAMSimCameraPawn::SetCloseOperationsMode(const bool bEnabled)
 		Camera->OrthoWidth = ManagementOrthoWidth;
 	}
 	bCloseOperationsMode = bEnabled;
-}
-
-void AAMSimCameraPawn::SetTerminalCutawayMode(
-	const bool bEnabled,
-	const FVector& TerminalCenter,
-	const float DesiredOrthoWidth)
-{
-	if (bEnabled && bTerminalCutawayMode)
-	{
-		TerminalCutawayCenter = TerminalCenter;
-		SetActorLocation(FVector(
-			TerminalCenter.X,
-			TerminalCenter.Y,
-			GetActorLocation().Z));
-		Camera->OrthoWidth = FMath::Clamp(DesiredOrthoWidth, 1800.0f, 9000.0f);
-		return;
-	}
-	if (bEnabled == bTerminalCutawayMode)
-	{
-		return;
-	}
-	if (bEnabled)
-	{
-		ManagementCameraLocation = GetActorLocation();
-		ManagementOrthoWidth = Camera->OrthoWidth;
-		TerminalCutawayCenter = TerminalCenter;
-		SetActorLocation(FVector(
-			TerminalCenter.X,
-			TerminalCenter.Y,
-			GetActorLocation().Z));
-		Camera->OrthoWidth = FMath::Clamp(DesiredOrthoWidth, 1800.0f, 9000.0f);
-	}
-	else
-	{
-		SetActorLocation(ManagementCameraLocation);
-		Camera->OrthoWidth = ManagementOrthoWidth;
-	}
-	bTerminalCutawayMode = bEnabled;
 }

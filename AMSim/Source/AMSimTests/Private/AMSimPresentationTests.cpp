@@ -21,6 +21,7 @@
 #include "AMSimRootScreen.h"
 #include "AMSimSimulation.h"
 #include "AMSimTerminalView.h"
+#include "AMSimTerminalPresentationGeometry.h"
 #include "AMSimTimetableGeometry.h"
 #include "AMSimTurnaroundView.h"
 #include "AMSimUITheme.h"
@@ -1170,6 +1171,17 @@ bool FAMSimTerminalGrowthWorldPresentationTest::RunTest(const FString& Parameter
 	FPhase3QuerySnapshot TerminalQuery = Simulation.CreatePhase3QuerySnapshot();
 	TerminalQuery.Revision = 81002;
 	TerminalQuery.TerminalLayout.Revision = 81003;
+	int32 ExpectedSeatCount = 0;
+	for (const FTerminalPlacedObjectRecord& Object : TerminalQuery.TerminalLayout.Objects)
+	{
+		switch (Object.Kind)
+		{
+		case ETerminalObjectKind::SeatGroup2: ExpectedSeatCount += 2; break;
+		case ETerminalObjectKind::SeatGroup4: ExpectedSeatCount += 4; break;
+		case ETerminalObjectKind::SeatGroup6: ExpectedSeatCount += 6; break;
+		default: break;
+		}
+	}
 	AAMSimWorldPresenter* RestoreOnlyPresenter = World
 		? World->SpawnActor<AAMSimWorldPresenter>()
 		: nullptr;
@@ -1179,32 +1191,145 @@ bool FAMSimTerminalGrowthWorldPresentationTest::RunTest(const FString& Parameter
 	{
 		return false;
 	}
+	FPhase3QuerySnapshot MatureTerminalQuery = TerminalQuery;
+	// Model a mature save restore independently of the fixture command journey.
+	// The mature airport and its roofless spatial terminal coexist before any
+	// contextual terminal tools are opened.
+	MatureTerminalQuery.bInitialized = true;
+	MatureTerminalQuery.TerminalStage =
+		ETerminalConstructionStage::Operational;
 	RestoreOnlyPresenter->ApplyPhase3Snapshot(
-		TerminalQuery,
+		MatureTerminalQuery,
 		Simulation.GetPhase3State());
-	TestEqual(TEXT("Direct save restore renders the complete terminal roof"),
-		RestoreOnlyPresenter->GetActiveTerminalRoofProxyCount(),
-		TerminalQuery.TerminalLayout.FloorCells.Num());
-	RestoreOnlyPresenter->SetTerminalCutawayMode(true);
-	TestEqual(TEXT("Direct save restore opens a non-empty terminal cutaway"),
+	TestTrue(TEXT("A direct restore defaults to the exterior airport overview"),
+		RestoreOnlyPresenter->IsMatureOverviewModeForTest());
+	TestEqual(TEXT("The exterior overview hides every legacy Phase 3 interior proxy"),
+		RestoreOnlyPresenter->GetActiveLegacyPhase3InteriorProxyCount(), 0);
+	TestEqual(TEXT("Eight mature facilities use three procedural layers each"),
+		RestoreOnlyPresenter->GetActiveMatureFacilityProceduralCount(), 24);
+	TestEqual(TEXT("Only the bounded apron-fixtures site sprite remains active"),
+		RestoreOnlyPresenter->GetActiveMatureLegacySiteSpriteCount(), 1);
+	TestTrue(TEXT("Procedural facilities own valid cooker-visible geometry"),
+		RestoreOnlyPresenter->HasMatureFacilityProceduralMaterialForTest());
+	TestEqual(TEXT("Direct save restore keeps every terminal roof proxy hidden"),
+		RestoreOnlyPresenter->GetActiveTerminalRoofProxyCount(), 0);
+	TestEqual(TEXT("Direct save restore renders the complete roofless interior"),
 		RestoreOnlyPresenter->GetActiveTerminalFloorProxyCount(),
 		TerminalQuery.TerminalLayout.FloorCells.Num());
+	RestoreOnlyPresenter->SetTerminalInteractionMode(true);
+	TestTrue(TEXT("Terminal tools enable interaction without changing the world"),
+		RestoreOnlyPresenter->IsTerminalInteractionMode());
+	TestEqual(TEXT("Terminal tools preserve exterior procedural facilities"),
+		RestoreOnlyPresenter->GetActiveMatureFacilityProceduralCount(), 24);
+	TestEqual(TEXT("Terminal tools preserve the bounded mature apron fixture"),
+		RestoreOnlyPresenter->GetActiveMatureLegacySiteSpriteCount(), 1);
+	TestEqual(TEXT("Terminal tools do not revive the legacy interior renderer"),
+		RestoreOnlyPresenter->GetActiveLegacyPhase3InteriorProxyCount(), 0);
+	TestEqual(TEXT("Terminal tools leave the same roofless interior visible"),
+		RestoreOnlyPresenter->GetActiveTerminalFloorProxyCount(),
+		TerminalQuery.TerminalLayout.FloorCells.Num());
+	TestEqual(TEXT("Direct save restore composes the exact authored seat count"),
+		RestoreOnlyPresenter->GetActiveTerminalSeatProxyCount(),
+		ExpectedSeatCount);
+	TestTrue(TEXT("Terminal seating uses its cooker-visible strict-nadir asset"),
+		RestoreOnlyPresenter->HasTerminalSeatSpriteForTest());
 	TestTrue(TEXT("Direct save restore uses the upright object-art basis"),
 		FMath::IsNearlyEqual(
 			RestoreOnlyPresenter->GetTerminalObjectProxyYawForTest(0),
 			90.0f));
-	RestoreOnlyPresenter->SetTerminalCutawayMode(false);
+	AAMSimCameraPawn* TerminalCamera = World->SpawnActor<AAMSimCameraPawn>();
+	if (!TestNotNull(TEXT("Single canvas owns one management camera"), TerminalCamera))
+	{
+		return false;
+	}
+	const FVector PriorCameraLocation(1000.0f, 2000.0f, 2000.0f);
+	TerminalCamera->SetActorLocation(PriorCameraLocation);
+	TerminalCamera->GetCamera()->OrthoWidth = 60000.0f;
+	RestoreOnlyPresenter->SetTerminalInteractionMode(false);
+	TestTrue(TEXT("Closing terminal tools never moves the player camera"),
+		TerminalCamera->GetActorLocation().Equals(PriorCameraLocation));
+	TestEqual(TEXT("Closing terminal tools never changes player zoom"),
+		TerminalCamera->GetCamera()->OrthoWidth, 60000.0f);
+	TestTrue(TEXT("The shared zoom curve moves inward from airport overview"),
+		AAMSimCameraPawn::CalculateZoomedOrthoWidth(105000.0f, 1.0f) < 105000.0f);
+	TestEqual(TEXT("The shared zoom curve reaches and holds close inspection"),
+		AAMSimCameraPawn::CalculateZoomedOrthoWidth(1800.0f, 1.0f), 1800.0f);
+	TestEqual(TEXT("The shared zoom curve reaches and holds the airport maximum"),
+		AAMSimCameraPawn::CalculateZoomedOrthoWidth(160000.0f, -1.0f), 160000.0f);
+	TestEqual(TEXT("Closing terminal tools preserves the procedural airport overview"),
+		RestoreOnlyPresenter->GetActiveMatureFacilityProceduralCount(), 24);
 	Presenter->ApplyPhase3Snapshot(TerminalQuery, Simulation.GetPhase3State());
 	const int32 ExpectedFloorCount = TerminalQuery.TerminalLayout.FloorCells.Num();
-	TestTrue(TEXT("Spatial terminal shares the authoritative starter-facility anchor"),
-		Presenter->GetTerminalWorldCenter().Equals(
-			MapPhase1PointToWorld(GetStarterTerminalCenter(), 40.0)));
-	TestEqual(TEXT("Airport overview owns one generated roof cell per built floor cell"),
-		Presenter->GetActiveTerminalRoofProxyCount(), ExpectedFloorCount);
-	const FVector OverviewRoofScale =
-		Presenter->GetTerminalRoofProxyScaleForTest();
-	const FVector OverviewRoofLocation =
-		Presenter->GetTerminalRoofProxyLocationForTest();
+	FVector ExpectedTerminalCenter =
+		MapPhase1PointToWorld(GetStarterTerminalCenter(), 40.0);
+	ExpectedTerminalCenter.X +=
+		TerminalPresentationGeometry::CampusOffsetWorldX;
+	TestTrue(TEXT("Spatial terminal uses the fixed landside campus anchor"),
+		Presenter->GetTerminalWorldCenter().Equals(ExpectedTerminalCenter));
+	TestEqual(TEXT("Airport overview keeps the terminal roof permanently hidden"),
+		Presenter->GetActiveTerminalRoofProxyCount(), 0);
+	TestEqual(TEXT("Airport overview keeps the complete terminal interior visible"),
+		Presenter->GetActiveTerminalFloorProxyCount(), ExpectedFloorCount);
+	const FVector PersistentFloorScale =
+		Presenter->GetTerminalFloorProxyScaleForTest();
+	const FVector PersistentFloorLocation =
+		Presenter->GetTerminalFloorProxyLocationForTest();
+	int32 MinimumTerminalX = MAX_int32;
+	int32 MinimumTerminalY = MAX_int32;
+	int32 MaximumTerminalX = MIN_int32;
+	int32 MaximumTerminalY = MIN_int32;
+	for (const FTerminalFloorCellRecord& Cell : TerminalQuery.TerminalLayout.FloorCells)
+	{
+		MinimumTerminalX = FMath::Min(MinimumTerminalX, Cell.Cell.X);
+		MinimumTerminalY = FMath::Min(MinimumTerminalY, Cell.Cell.Y);
+		MaximumTerminalX = FMath::Max(MaximumTerminalX, Cell.Cell.X);
+		MaximumTerminalY = FMath::Max(MaximumTerminalY, Cell.Cell.Y);
+	}
+	const FVector2D ExpectedTerminalWorldSize(
+		(MaximumTerminalY - MinimumTerminalY + 1) *
+			TerminalPresentationGeometry::CellWorldUnits,
+		(MaximumTerminalX - MinimumTerminalX + 1) *
+			TerminalPresentationGeometry::CellWorldUnits);
+	const FVector2D TerminalWorldSize =
+		Presenter->GetTerminalFloorWorldSizeForTest();
+	TestTrue(TEXT("Starter terminal uses the doubled airport-world footprint"),
+		TerminalWorldSize.Equals(ExpectedTerminalWorldSize) &&
+		TerminalWorldSize.X >= 19200.0f && TerminalWorldSize.Y >= 28800.0f);
+	constexpr float MatureAccessRoadNorthEdgeWorldX = -31700.0f;
+	constexpr float GrownTerminalDepthWorld =
+		18.0f * TerminalPresentationGeometry::CellWorldUnits;
+	TestTrue(TEXT("Doubled grown terminal clears the landside access road"),
+		Presenter->GetTerminalWorldCenter().X - GrownTerminalDepthWorld * 0.5f >
+			MatureAccessRoadNorthEdgeWorldX);
+	TestTrue(TEXT("Floor art uses the shared sixteen-meter presentation module"),
+		FMath::IsNearlyEqual(
+			PersistentFloorScale.X,
+			TerminalPresentationGeometry::CellSpriteScale) &&
+		FMath::IsNearlyEqual(
+			PersistentFloorScale.Z,
+			TerminalPresentationGeometry::CellSpriteScale));
+	TestEqual(TEXT("Static furniture fits against the full presented cell"),
+		TerminalPresentationGeometry::FurnitureWorldUnitsPerLogicalCell,
+		TerminalPresentationGeometry::CellWorldUnits);
+	TestEqual(TEXT("Mobile terminal identities retain three-quarter-cell readability"),
+		TerminalPresentationGeometry::IdentityScale,
+		TerminalPresentationGeometry::PresentedMetersPerCell * 0.75f);
+	const FVector TerminalCenter = Presenter->GetTerminalWorldCenter();
+	const FVector MinimumCellCenter(
+		TerminalCenter.X - ExpectedTerminalWorldSize.X * 0.5f +
+			TerminalPresentationGeometry::CellWorldUnits * 0.5f,
+		TerminalCenter.Y - ExpectedTerminalWorldSize.Y * 0.5f +
+			TerminalPresentationGeometry::CellWorldUnits * 0.5f,
+		42.0f);
+	TestTrue(TEXT("Pointer mapping shares the enlarged terminal world geometry"),
+		UAMSimTerminalView::MapTerminalWorldPointToCell(
+			MinimumCellCenter,
+			TerminalCenter,
+			MinimumTerminalX,
+			MinimumTerminalY,
+			MaximumTerminalX,
+			MaximumTerminalY) ==
+			FTerminalCellCoord{MinimumTerminalX, MinimumTerminalY});
 	TestFalse(TEXT("Spatial terminal suppresses the legacy starter-terminal sprite"),
 		Presenter->IsLegacyStarterTerminalVisibleForTest());
 	TestFalse(TEXT("Spatial terminal suppresses the legacy mature-terminal sprite"),
@@ -1268,29 +1393,50 @@ bool FAMSimTerminalGrowthWorldPresentationTest::RunTest(const FString& Parameter
 		Presenter->GetActivePhase1ConstructionPreviewPatternCount(), 0);
 	TestEqual(TEXT("Leaving build mode clears planning grids and boundaries"),
 		Presenter->GetActivePhase1ConstructionPlanningGridCount(), 0);
-	TestEqual(TEXT("Build-mode transitions preserve the generated terminal roof"),
-		Presenter->GetActiveTerminalRoofProxyCount(), ExpectedFloorCount);
+	TestEqual(TEXT("Build-mode transitions preserve the roofless terminal interior"),
+		Presenter->GetActiveTerminalFloorProxyCount(), ExpectedFloorCount);
+	TestEqual(TEXT("Build-mode transitions cannot restore terminal roof proxies"),
+		Presenter->GetActiveTerminalRoofProxyCount(), 0);
 	TestFalse(TEXT("Build-mode transitions cannot restore the legacy terminal"),
 		Presenter->IsLegacyStarterTerminalVisibleForTest());
 
-	Presenter->SetTerminalCutawayMode(true);
-	TestEqual(TEXT("Cutaway owns one visible proxy per spatial floor cell"),
+	Presenter->SetTerminalInteractionMode(true);
+	TestEqual(TEXT("Terminal tools retain one visible proxy per spatial floor cell"),
 		Presenter->GetActiveTerminalFloorProxyCount(), ExpectedFloorCount);
-	const FVector CutawayFloorScale =
+	const FVector InteractiveFloorScale =
 		Presenter->GetTerminalFloorProxyScaleForTest();
-	const FVector CutawayFloorLocation =
+	const FVector InteractiveFloorLocation =
 		Presenter->GetTerminalFloorProxyLocationForTest();
-	TestTrue(TEXT("Roof and cutaway use the same terminal footprint scale"),
-		FMath::IsNearlyEqual(OverviewRoofScale.X, CutawayFloorScale.X) &&
-		FMath::IsNearlyEqual(OverviewRoofScale.Z, CutawayFloorScale.Z));
-	TestTrue(TEXT("Roof and cutaway use the same terminal world anchor"),
-		FMath::IsNearlyEqual(OverviewRoofLocation.X, CutawayFloorLocation.X) &&
-		FMath::IsNearlyEqual(OverviewRoofLocation.Y, CutawayFloorLocation.Y));
+	TestTrue(TEXT("Terminal tools preserve the persistent interior footprint scale"),
+		FMath::IsNearlyEqual(PersistentFloorScale.X, InteractiveFloorScale.X) &&
+		FMath::IsNearlyEqual(PersistentFloorScale.Z, InteractiveFloorScale.Z));
+	TestTrue(TEXT("Terminal tools preserve the persistent interior world anchor"),
+		FMath::IsNearlyEqual(PersistentFloorLocation.X, InteractiveFloorLocation.X) &&
+		FMath::IsNearlyEqual(PersistentFloorLocation.Y, InteractiveFloorLocation.Y));
 	TestTrue(TEXT("Zero-turn terminal art receives the upright clockwise basis"),
 		FMath::IsNearlyEqual(
 			Presenter->GetTerminalObjectProxyYawForTest(0),
 			90.0f));
+	TestEqual(TEXT("Two-, four-, and six-seat records compose exact visible seats"),
+		Presenter->GetActiveTerminalSeatProxyCount(), ExpectedSeatCount);
+	const FVector ObjectScale = Presenter->GetTerminalObjectProxyScaleForTest(0);
+	TestTrue(TEXT("Non-seat furnishing preserves its source aspect ratio"),
+		FMath::IsNearlyEqual(ObjectScale.X, ObjectScale.Z));
+	TestTrue(TEXT("Information desk no longer reads as a dot inside enlarged rooms"),
+		ObjectScale.X >= PersistentFloorScale.X);
+	const FVector SeatScale = Presenter->GetTerminalSeatProxyScaleForTest(0);
+	TestTrue(TEXT("Modular seat furnishing preserves its source aspect ratio"),
+		FMath::IsNearlyEqual(SeatScale.X, SeatScale.Z));
+	TestTrue(TEXT("Modular seating remains legible within the doubled footprint"),
+		SeatScale.X >= PersistentFloorScale.X * 0.75f);
+	TestTrue(TEXT("Back-to-back seat rows face opposite directions"),
+		FMath::IsNearlyEqual(
+			FMath::Abs(FMath::UnwindDegrees(
+				Presenter->GetTerminalSeatProxyYawForTest(3) -
+				Presenter->GetTerminalSeatProxyYawForTest(0))),
+			180.0f));
 	const int32 AllocatedFloorCount = Presenter->GetAllocatedTerminalFloorProxyCount();
+	const int32 AllocatedSeatCount = Presenter->GetAllocatedTerminalSeatProxyCount();
 
 	FPhase3QuerySnapshot SameRevisionEmpty = TerminalQuery;
 	SameRevisionEmpty.TerminalLayout.FloorCells.Reset();
@@ -1310,7 +1456,9 @@ bool FAMSimTerminalGrowthWorldPresentationTest::RunTest(const FString& Parameter
 	Presenter->ApplyPhase3Snapshot(TerminalQuery, Simulation.GetPhase3State());
 	TestEqual(TEXT("Previously allocated floor proxies are reused"),
 		Presenter->GetAllocatedTerminalFloorProxyCount(), AllocatedFloorCount);
-	TestEqual(TEXT("Reused proxies restore the complete cutaway"),
+	TestEqual(TEXT("Previously allocated modular-seat proxies are reused"),
+		Presenter->GetAllocatedTerminalSeatProxyCount(), AllocatedSeatCount);
+	TestEqual(TEXT("Reused proxies restore the complete roofless interior"),
 		Presenter->GetActiveTerminalFloorProxyCount(), ExpectedFloorCount);
 	FPhase3QuerySnapshot RotatedObjectQuery = TerminalQuery;
 	RotatedObjectQuery.Revision = 81008;
@@ -1332,7 +1480,13 @@ bool FAMSimTerminalGrowthWorldPresentationTest::RunTest(const FString& Parameter
 	Presenter->ClearTerminalPlacementPreview();
 	TestEqual(TEXT("Completed gesture clears every placement preview"),
 		Presenter->GetActiveTerminalPlacementPreviewCount(), 0);
-	Presenter->SetTerminalCutawayMode(false);
+	Presenter->SetTerminalInteractionMode(false);
+	TestFalse(TEXT("Closing terminal tools disables only terminal interaction"),
+		Presenter->IsTerminalInteractionMode());
+	TestEqual(TEXT("Closing terminal tools leaves every floor cell visible"),
+		Presenter->GetActiveTerminalFloorProxyCount(), ExpectedFloorCount);
+	TestEqual(TEXT("Closing terminal tools leaves every roof proxy hidden"),
+		Presenter->GetActiveTerminalRoofProxyCount(), 0);
 	return true;
 }
 

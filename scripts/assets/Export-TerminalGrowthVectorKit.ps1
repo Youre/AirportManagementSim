@@ -79,6 +79,18 @@ $assets = @(
     @{ Name="IconUndo"; Category="Icon"; Symbol="icon-undo-symbol"; Square=$true }
 )
 
+$externalRasterAssets = @(
+    @{
+        Name = "SeatSingle"
+        Category = "Furniture"
+        Source = "SourceAssets/TerminalGrowth/Masters/OpenAI/T_SeatSingle_OpenAI_Master.png"
+        Texture = "SourceAssets/TerminalGrowth/Runtime/Textures/T_SeatSingle.png"
+        Dimensions = @(256, 256)
+        PixelsPerMeter = 32
+        Rotation = "QuarterTurn"
+    }
+)
+
 $profileDirectory = Join-Path $env:TEMP "AMSim-TerminalGrowth-Edge"
 $manifestAssets = New-Object System.Collections.Generic.List[object]
 foreach ($asset in $assets) {
@@ -124,6 +136,25 @@ $body = if ($asset.Body) {
     })
 }
 
+foreach ($asset in $externalRasterAssets) {
+    $sourcePath = [System.IO.Path]::GetFullPath((Join-Path $repoRoot $asset.Source))
+    $texturePath = [System.IO.Path]::GetFullPath((Join-Path $repoRoot $asset.Texture))
+    if (-not (Test-Path -LiteralPath $sourcePath) -or
+        -not (Test-Path -LiteralPath $texturePath)) {
+        throw "Missing reviewed external raster for $($asset.Name)."
+    }
+    $manifestAssets.Add([ordered]@{
+        name = $asset.Name
+        category = $asset.Category
+        source = (Get-RepositoryRelativePath $sourcePath)
+        texture = (Get-RepositoryRelativePath $texturePath)
+        dimensions = $asset.Dimensions
+        pixelsPerMeter = $asset.PixelsPerMeter
+        rotation = $asset.Rotation
+        sha256 = (Get-FileHash -LiteralPath $texturePath -Algorithm SHA256).Hash.ToLowerInvariant()
+    })
+}
+
 $manifest = [ordered]@{
     schemaVersion = 1
     generatedAt = (Get-Date).ToString("yyyy-MM-ddTHH:mm:ssK")
@@ -138,5 +169,5 @@ $manifestPath = Join-Path $outputAbsolute "terminal-growth-runtime-manifest.json
     ($manifest | ConvertTo-Json -Depth 8),
     [System.Text.UTF8Encoding]::new($false))
 
-Write-Output "Exported $($assets.Count) terminal assets to $outputAbsolute"
+Write-Output "Exported $($assets.Count + $externalRasterAssets.Count) terminal assets to $outputAbsolute"
 Write-Output $manifestPath

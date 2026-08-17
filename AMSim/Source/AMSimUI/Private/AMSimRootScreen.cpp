@@ -1724,10 +1724,11 @@ void UAMSimRootScreen::RefreshFromSimulation()
 	RefreshPhase1OperationsHub(Query, State);
 	if (Phase1Page)
 	{
+		const bool bFullScreenDestinationOpen =
+			TerminalView && TerminalView->IsPresentationOpen() &&
+			!TerminalView->IsAirportWorldOverlayOpen();
 		Phase1Page->SetVisibility(
-			TerminalView &&
-			TerminalView->IsPresentationOpen() &&
-			!bShowPhase2ClosureProof
+			bFullScreenDestinationOpen && !bShowPhase2ClosureProof
 				? ESlateVisibility::Collapsed
 				: ESlateVisibility::Visible);
 	}

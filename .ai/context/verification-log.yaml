@@ -1500,3 +1500,176 @@ entries:
       SHA-256 is D19DDCB04520AB0C08DD3BE1C6D2F2E61461A9F99662D4574CDC2F025851C3DC.
       Retained faux-perspective sprites remain separate nadir-asset debt. C
       retains 128.47 GiB free; no Unreal cache was cleared.
+  - timestamp: '2026-08-16T20:33:43.9969866+00:00'
+    commit: 3bc9e2e27f15f953a99548563124606bea8e10cb
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Terminal furnishing consistency: focused/full UE automation;
+      strict-nadir seat generation and provenance; clean Development and
+      Shipping BuildCookRun; packaged runtime/release audit; packaged VA-03
+      comparison; canonical refresh with save preservation'
+    result: passed
+    notes: Exact two-, four-, and six-seat arrangements now compose from one
+      cooker-visible project-owned module. Back-to-back rows face opposite and
+      all non-seat furniture uses uniform aspect-preserving footprint fit. All
+      82 automation tests passed. Both 750-package archives and packaged
+      runtime checks passed; release scans report zero runtime string loads,
+      forbidden dependencies, required 3D candidates, or line violations.
+      Seat texture and sprite appear in the cooked reference set. The
+      canonical package was refreshed with all 91 Saved files byte-identical;
+      inner SHA-256 is
+      9810651D81B8F3C6D7F4EE2D0A448D7DEEE43B941B8E0D0473661A60DD79FD47.
+      VA-03 still identifies passenger-processing content density as future
+      polish. C retained 128.12 GiB and D retained 687.44 GiB; no cache was
+      cleared.
+  - timestamp: '2026-08-16T17:06:41.5288983-04:00'
+    commit: 3bc9e2e27f15f953a99548563124606bea8e10cb
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Procedural overview recovery: focused/full UE automation; clean
+      Development and Shipping BuildCookRun; packaged VisualBaseline ->
+      Terminal -> Back visual replay; before/after and VA-01 comparison boards;
+      canonical refresh with save preservation; Phase 7 release audit; cache
+      measurement'
+    result: passed-with-manual-follow-up
+    notes: Direct restore and destination close now force the exterior mature
+      overview; the fixed-coordinate Phase 3 terminal proof surfaces, routes,
+      and props no longer leak into the root map. Eight facility families use
+      24 deterministic procedural base/surface/detail meshes with explicit
+      layer separation, while one bounded mature apron-fixture sprite remains.
+      All 82 automation tests passed. Clean Development and Shipping packages
+      cooked 750 packages, both launch smokes passed, and release scans report
+      zero runtime string loads, forbidden dependencies, required 3D assets,
+      or line-limit violations. The canonical package was refreshed and all 92
+      Saved files were restored byte-for-byte; inner SHA-256 is
+      C9681F2FD307C5ABC48EBB63049CF17F36DE1ED07B117A9F616548AD7B1E5D5A.
+      VA-01 still identifies flat facility materials, sparse landscape and
+      apron activity, and the missing bottom contextual inspector as visual
+      debt. C retained 128.36 GiB free; no Unreal cache was cleared.
+  - timestamp: '2026-08-16T17:52:10.9403620-04:00'
+    commit: 3bc9e2e27f15f953a99548563124606bea8e10cb
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Continuous terminal cutaway remediation: exact-frame packaged
+      visual replay; camera and presenter regression automation; complete UE
+      automation; clean Development and Shipping BuildCookRun; VA-03 and
+      before/after comparison boards; Phase 7 release audit'
+    result: passed-with-manual-follow-up
+    notes: Terminal now opens as an in-place contextual cutaway on the
+      persistent airport canvas. The root shell, runway, apron, roads,
+      aircraft, landscaping, and mature facility geometry remain visible;
+      only the terminal roof/interior state and contextual tools change.
+      Opening and closing preserve the current camera position and zoom, and a
+      hidden regional presenter no longer overwrites cutaway visibility. All
+      82 automation tests passed. Clean Development and Shipping packages
+      passed, and the Phase 7 audit reports 750 cooked packages with zero
+      runtime string loads, forbidden dependencies, required 3D candidates,
+      or line violations. Canonical inner executable SHA-256 is
+      271D4460E214962D0750C731219FAC23F89F0DC8552EDEC2B4F8AB48C920058C.
+      VA-03 content density, route hierarchy, occupants, curb/gate context,
+      and richer material treatment remain visual debt. C retained 127.77 GiB
+      and D retained 681.67 GiB free; no cache was cleared.
+  - timestamp: '2026-08-16T19:27:00.5636662-04:00'
+    commit: 3bc9e2e27f15f953a99548563124606bea8e10cb
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Roofless single-canvas terminal: architecture and adversarial
+      reviews; focused/full UE automation; clean Development and Shipping
+      BuildCookRun; packaged same-frame overview/Terminal-tools replay;
+      canonical refresh with save preservation; Phase 7 release audit'
+    result: passed-with-manual-follow-up
+    notes: The schema-10 terminal interior is now the permanent terminal world
+      presentation. Every generated roof layer stays hidden, and Terminal tools
+      change only contextual UI and placement interaction. Facility modes no
+      longer own camera position or zoom; one adaptive player-controlled curve
+      spans 1,800-160,000 world units. The retired fixed-coordinate Phase 3
+      renderer remains hidden. Focused automation and all 82 AMSim tests pass.
+      Clean Development and Shipping packages cook 750 packages, and the Phase
+      7 release audit reports zero runtime string loads, forbidden dependencies,
+      required 3D candidates, or line violations. Packaged captures prove the
+      same airport frame before/after opening tools and preservation of manual
+      zoom after close. The canonical package was refreshed with all 103 saved
+      files byte-identical; inner SHA-256 is
+      EC5D8103A1391993F14180DF020D873A84F9C7622680659E99D2C7D3C57824E4. The
+      terminal remains physically tiny at full-airport zoom; composition and
+      local-campus scale remain manual visual follow-up. C retained 127.07 GiB
+      and shared Unreal caches 0.81 GiB; no cache was cleared.
+  - timestamp: '2026-08-16T20:20:10.8131433-04:00'
+    commit: 3bc9e2e27f15f953a99548563124606bea8e10cb
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Terminal normal-scale correction: Product Design image-to-code
+      audit; architecture and adversarial reviews; shared renderer/deprojection
+      geometry; focused and complete UE automation; clean Development and
+      Shipping BuildCookRun; packaged VA-01 comparison; Phase 7 release audit;
+      canonical refresh with save preservation; cache measurement'
+    result: passed-with-manual-follow-up
+    notes: The 18x12 starter terminal now presents at approximately 144x96
+      meters and the 30x18 grown terminal at 240x144 meters using one shared
+      eight-meter presentation module. Furniture and moving entities retain a
+      separate three-times readability scale. A presentation-only 60-meter
+      landside-campus offset corrected the access-road overlap revealed by the
+      first packaged capture; simulation, schema 10, renderer ownership, and
+      player camera are unchanged. Focused automation and all 82 AMSim tests
+      passed. Clean Development and Shipping packages cooked 750 packages, the
+      deterministic packaged fixture passed, and the Phase 7 audit reports zero
+      runtime string loads, forbidden dependencies, required 3D candidates, or
+      line violations. The canonical windowed launch smoke passed and all 105
+      Saved files were preserved byte-for-byte; inner SHA-256 is
+      3CB9905D4EE8C598FF10A3A807DEF2BBEEB5BDF97254EC08202A81F125EFDFDD. C
+      retained 126.71 GiB, D retained 673.09 GiB, project caches measured 8.63
+      GiB, shared Unreal caches measured 0.81 GiB, and no cache was cleared.
+      VA-01/VA-03 campus density and material richness remain visual polish.
+  - timestamp: '2026-08-16T21:56:42.1229733-04:00'
+    commit: 3bc9e2e27f15f953a99548563124606bea8e10cb
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Terminal double-scale correction: Product Design image-to-code
+      comparison; architecture and adversarial reviews; shared sixteen-meter
+      renderer/deprojection geometry; focused and complete UE automation; clean
+      Development and Shipping BuildCookRun; packaged VA-01 comparison; Phase 7
+      release audit; canonical refresh with save preservation; cache measurement'
+    result: passed-with-manual-follow-up
+    notes: The owner-rejected eight-meter intermediate scale is superseded. The
+      18x12 starter terminal now presents at approximately 288x192 meters and
+      the 30x18 grown terminal at 480x288 meters using one shared sixteen-meter
+      presentation module. Furniture and moving entities use a bounded
+      six-times readability scale. The fixed campus anchor places the grown
+      footprint between apron and landside access road, and automation guards
+      its clearance. Simulation, schema 10, renderer ownership, and the player
+      camera are unchanged. Focused automation and all 82 AMSim tests passed.
+      Clean Development and Shipping packages cooked 750 packages; the
+      deterministic packaged fixture and Phase 7 release audit passed with zero
+      runtime string loads, forbidden dependencies, required 3D candidates, or
+      line violations. The canonical windowed launch smoke passed and all 106
+      prior Saved files were restored byte-for-byte; inner SHA-256 is
+      26D4725C40C3051D168C53702F3CA76B31557796366E20C7DF63FBDE0755135B. C
+      retained 125.06 GiB, D retained 671.31 GiB, project Intermediate measured
+      8.32 GiB, shared Unreal caches measured 0.44 GiB, and no cache was
+      cleared. VA-01/VA-03 material and activity density remain visual polish.
+  - timestamp: '2026-08-16T22:12:46.9029436-04:00'
+    commit: 3bc9e2e27f15f953a99548563124606bea8e10cb
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Terminal-content proportion correction: Product Design
+      image-to-code comparison; architecture/adversarial reviews; separated
+      footprint-safe furniture and mobile-identity sizing; focused/full UE
+      automation; clean Development/Shipping BuildCookRun; packaged same-state
+      before/after and VA-01 boards; release audit; canonical refresh'
+    result: passed-with-manual-follow-up
+    notes: Static furniture and exact 2/4/6-seat compositions now fit against
+      the full sixteen-meter presentation cell with the existing uniform
+      84-percent safe inset. Passengers, visitors, workers, bags, staff, and
+      service vehicles use a separate twelve-times readability scale. The
+      packaged identical-state board proves the prior dot-sized contents are
+      legible while remaining within room and route context. Anchors, counts,
+      rotations, routes, occupancy, schema, simulation, renderer ownership,
+      camera, and pointer mapping are unchanged. Focused automation and all 82
+      AMSim tests passed. Clean Development and Shipping packages each cooked
+      750 packages; the deterministic fixture and Phase 7 release audit passed
+      with zero runtime string loads, forbidden dependencies, required 3D
+      candidates, or line violations. The canonical windowed launch passed and
+      all 106 prior Saved files were restored byte-for-byte; inner SHA-256 is
+      E9F70D254097C9CA91985A81721DA606614C45605534BA5E3EA309E713B9C4B2. C
+      retained 125.05 GiB, D retained 669.58 GiB, project caches measured 8.61
+      GiB, shared Unreal caches measured 0.81 GiB, and no cache was cleared.

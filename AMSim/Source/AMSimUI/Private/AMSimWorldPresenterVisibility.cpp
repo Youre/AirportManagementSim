@@ -1,7 +1,15 @@
 #include "AMSimWorldPresenter.h"
 
+#include "Algo/Count.h"
 #include "AMSimProceduralSurfaceComponent.h"
 #include "PaperSpriteComponent.h"
+
+namespace
+{
+	// Large scale-sensitive site art is replaced by procedural geometry. This
+	// small apron-fixtures sprite remains a bounded top-down detail layer.
+	constexpr int32 MatureApronFixturesSpriteIndex = 15;
+}
 
 void AAMSimWorldPresenter::SetMatureInfrastructureVisible(const bool bVisible)
 {
@@ -25,6 +33,18 @@ void AAMSimWorldPresenter::SetMatureInfrastructureVisible(const bool bVisible)
 		Component->SetVisibility(bVisible);
 	}
 	for (UAMSimProceduralSurfaceComponent* Component : MatureLandsideLinks)
+	{
+		Component->SetVisibility(bVisible);
+	}
+	for (UAMSimProceduralSurfaceComponent* Component : MatureFacilityBases)
+	{
+		Component->SetVisibility(bVisible);
+	}
+	for (UAMSimProceduralSurfaceComponent* Component : MatureFacilitySurfaces)
+	{
+		Component->SetVisibility(bVisible);
+	}
+	for (UAMSimProceduralSurfaceComponent* Component : MatureFacilityDetails)
 	{
 		Component->SetVisibility(bVisible);
 	}
@@ -56,6 +76,27 @@ void AAMSimWorldPresenter::SetMatureInfrastructureTint(
 	{
 		Component->SetSurfaceTint(Tint);
 	}
+	for (UAMSimProceduralSurfaceComponent* Component : MatureFacilityBases)
+	{
+		Component->SetSurfaceTint(Tint);
+	}
+	for (UAMSimProceduralSurfaceComponent* Component : MatureFacilitySurfaces)
+	{
+		Component->SetSurfaceTint(Tint);
+	}
+	for (UAMSimProceduralSurfaceComponent* Component : MatureFacilityDetails)
+	{
+		Component->SetSurfaceTint(Tint);
+	}
+}
+
+void AAMSimWorldPresenter::SetMatureSiteSpritesVisible(const bool bVisible)
+{
+	for (int32 Index = 0; Index < MatureSite.Num(); ++Index)
+	{
+		MatureSite[Index]->SetVisibility(
+			bVisible && Index == MatureApronFixturesSpriteIndex);
+	}
 }
 
 void AAMSimWorldPresenter::SetMatureSelectionFacility(
@@ -78,9 +119,9 @@ void AAMSimWorldPresenter::SetMatureOverviewMode(const bool bEnabled)
 		bEnabled ||
 		bIncidentPresentationMode ||
 		bPhase4IncidentWorldVisible;
-	const bool bShowInterior =
-		bPhase3WorldVisible && !bMatureOverviewMode &&
-		!bTerminalCutawayMode;
+	// The fixed-coordinate Phase 3 proof renderer is retired. The schema-10
+	// spatial terminal owns the only terminal interior in every world mode.
+	const bool bShowInterior = false;
 	for (UPaperSpriteComponent* Component : Phase3Floor)
 	{
 		Component->SetVisibility(bShowInterior);
@@ -97,61 +138,33 @@ void AAMSimWorldPresenter::SetMatureOverviewMode(const bool bEnabled)
 	{
 		Component->SetVisibility(bShowInterior);
 	}
-	for (int32 Index = 0; Index < Phase3Passengers.Num(); ++Index)
-	{
-		Phase3Passengers[Index]->SetVisibility(
-			bShowInterior && Index < Phase3PassengerAvailableCount);
-	}
-	for (int32 Index = 0; Index < Phase3Bags.Num(); ++Index)
-	{
-		Phase3Bags[Index]->SetVisibility(
-			bShowInterior && Index < Phase3BagAvailableCount);
-	}
-	for (UPaperSpriteComponent* Component : Phase3Vehicles)
-	{
-		Component->SetVisibility(bShowInterior);
-	}
-	for (UPaperSpriteComponent* Component : Phase3Staff)
-	{
-		Component->SetVisibility(bShowInterior);
-	}
 	Phase3Aircraft->SetVisibility(
 		bShowInterior && bPhase3AircraftAvailable);
-	for (int32 Index = 0; Index < MatureSite.Num(); ++Index)
-	{
-		MatureSite[Index]->SetVisibility(
-			Index >= 4 &&
-			Index != 4 &&
-			bPhase3WorldVisible && bMatureOverviewMode &&
-			!bTerminalCutawayMode);
-	}
+	SetMatureSiteSpritesVisible(
+		bPhase3WorldVisible && bMatureOverviewMode);
 	SetMatureInfrastructureVisible(
-		bPhase3WorldVisible && bMatureOverviewMode && !bTerminalCutawayMode);
+		bPhase3WorldVisible && bMatureOverviewMode);
 	for (UPaperSpriteComponent* Component : MatureLandscapeClusters)
 	{
 		Component->SetVisibility(
-			bPhase3WorldVisible && bMatureOverviewMode &&
-			!bTerminalCutawayMode);
+			bPhase3WorldVisible && bMatureOverviewMode);
 	}
 	for (int32 Index = 0; Index < MatureAircraft.Num(); ++Index)
 	{
 		MatureAircraft[Index]->SetVisibility(
 			bPhase3WorldVisible &&
 			bMatureOverviewMode &&
-			!bTerminalCutawayMode &&
 			(Index < MatureAircraftAvailableCount || Index == 0));
 	}
 	MatureSelection->SetVisibility(
 		bPhase3WorldVisible &&
 		bMatureOverviewMode &&
-		!bTerminalCutawayMode &&
 		!bPhase4IncidentWorldVisible);
 	for (int32 Index = 0; Index < MatureGroundVehicles.Num(); ++Index)
 	{
 		MatureGroundVehicles[Index]->SetVisibility(
 			bPhase3WorldVisible &&
 			bMatureOverviewMode &&
-			!bTerminalCutawayMode &&
 			Index < MatureGroundVehicleAvailableCount);
 	}
 	for (int32 Index = 0; Index < MaturePeople.Num(); ++Index)
@@ -159,7 +172,6 @@ void AAMSimWorldPresenter::SetMatureOverviewMode(const bool bEnabled)
 		MaturePeople[Index]->SetVisibility(
 			bPhase3WorldVisible &&
 			bMatureOverviewMode &&
-			!bTerminalCutawayMode &&
 			Index < MaturePeopleAvailableCount);
 	}
 	for (int32 Index = 0; Index < MatureBags.Num(); ++Index)
@@ -167,7 +179,6 @@ void AAMSimWorldPresenter::SetMatureOverviewMode(const bool bEnabled)
 		MatureBags[Index]->SetVisibility(
 			bPhase3WorldVisible &&
 			bMatureOverviewMode &&
-			!bTerminalCutawayMode &&
 			Index < MatureBagAvailableCount);
 	}
 	Phase4IncidentRunway->SetVisibility(
@@ -184,8 +195,7 @@ void AAMSimWorldPresenter::SetPhase3WorldVisible(const bool bVisible)
 	{
 		bMatureOverviewMode = true;
 	}
-	const bool bShowInterior =
-		bVisible && !bMatureOverviewMode && !bTerminalCutawayMode;
+	const bool bShowInterior = false;
 	for (UPaperSpriteComponent* Component : Phase3Floor)
 	{
 		Component->SetVisibility(bShowInterior);
@@ -202,62 +212,34 @@ void AAMSimWorldPresenter::SetPhase3WorldVisible(const bool bVisible)
 	{
 		Component->SetVisibility(false);
 	}
-	for (int32 Index = 0; Index < Phase3Passengers.Num(); ++Index)
-	{
-		Phase3Passengers[Index]->SetVisibility(
-			bShowInterior && Index < Phase3PassengerAvailableCount);
-	}
-	for (int32 Index = 0; Index < Phase3Bags.Num(); ++Index)
-	{
-		Phase3Bags[Index]->SetVisibility(
-			bShowInterior && Index < Phase3BagAvailableCount);
-	}
-	for (UPaperSpriteComponent* Component : Phase3Vehicles)
-	{
-		Component->SetVisibility(bShowInterior);
-	}
-	for (UPaperSpriteComponent* Component : Phase3Staff)
-	{
-		Component->SetVisibility(bShowInterior);
-	}
 	for (UPaperSpriteComponent* Component : Phase3Props)
 	{
 		Component->SetVisibility(bShowInterior);
 	}
-	for (int32 Index = 0; Index < MatureSite.Num(); ++Index)
-	{
-		MatureSite[Index]->SetVisibility(
-			Index >= 4 &&
-			Index != 4 &&
-			bVisible && bMatureOverviewMode &&
-			!bTerminalCutawayMode);
-	}
+	SetMatureSiteSpritesVisible(
+		bVisible && bMatureOverviewMode);
 	SetMatureInfrastructureVisible(
-		bVisible && bMatureOverviewMode && !bTerminalCutawayMode);
+		bVisible && bMatureOverviewMode);
 	for (UPaperSpriteComponent* Component : MatureLandscapeClusters)
 	{
-		Component->SetVisibility(
-			bVisible && bMatureOverviewMode && !bTerminalCutawayMode);
+		Component->SetVisibility(bVisible && bMatureOverviewMode);
 	}
 	for (int32 Index = 0; Index < MatureAircraft.Num(); ++Index)
 	{
 		MatureAircraft[Index]->SetVisibility(
 			bVisible &&
 			bMatureOverviewMode &&
-			!bTerminalCutawayMode &&
 			(Index < MatureAircraftAvailableCount || Index == 0));
 	}
 	MatureSelection->SetVisibility(
 		bVisible &&
 		bMatureOverviewMode &&
-		!bTerminalCutawayMode &&
 		!bPhase4IncidentWorldVisible);
 	for (int32 Index = 0; Index < MatureGroundVehicles.Num(); ++Index)
 	{
 		MatureGroundVehicles[Index]->SetVisibility(
 			bVisible &&
 			bMatureOverviewMode &&
-			!bTerminalCutawayMode &&
 			Index < MatureGroundVehicleAvailableCount);
 	}
 	for (int32 Index = 0; Index < MaturePeople.Num(); ++Index)
@@ -265,7 +247,6 @@ void AAMSimWorldPresenter::SetPhase3WorldVisible(const bool bVisible)
 		MaturePeople[Index]->SetVisibility(
 			bVisible &&
 			bMatureOverviewMode &&
-			!bTerminalCutawayMode &&
 			Index < MaturePeopleAvailableCount);
 	}
 	for (int32 Index = 0; Index < MatureBags.Num(); ++Index)
@@ -273,7 +254,6 @@ void AAMSimWorldPresenter::SetPhase3WorldVisible(const bool bVisible)
 		MatureBags[Index]->SetVisibility(
 			bVisible &&
 			bMatureOverviewMode &&
-			!bTerminalCutawayMode &&
 			Index < MatureBagAvailableCount);
 	}
 	if (bVisible)
@@ -293,7 +273,6 @@ void AAMSimWorldPresenter::RefreshIncidentPresentationVisibility()
 	const bool bShowIncident =
 		bPhase3WorldVisible &&
 		bMatureOverviewMode &&
-		!bTerminalCutawayMode &&
 		bPhase4IncidentWorldVisible;
 	if (bMatureOverviewMode)
 	{
@@ -332,7 +311,6 @@ void AAMSimWorldPresenter::RefreshIncidentPresentationVisibility()
 		MatureAircraft[Index]->SetVisibility(
 			bPhase3WorldVisible &&
 			bMatureOverviewMode &&
-			!bTerminalCutawayMode &&
 			(Index < MatureAircraftAvailableCount || Index == 0) &&
 			!(bShowIncident && Index == 2));
 	}
@@ -359,7 +337,6 @@ void AAMSimWorldPresenter::RefreshIncidentPresentationVisibility()
 	MatureSelection->SetVisibility(
 		bPhase3WorldVisible &&
 		bMatureOverviewMode &&
-		!bTerminalCutawayMode &&
 		!bShowIncident);
 	for (int32 Index = 0; Index < Phase4ResponseVehicles.Num(); ++Index)
 	{
@@ -371,4 +348,82 @@ void AAMSimWorldPresenter::RefreshIncidentPresentationVisibility()
 	}
 	Phase4ProtectionZone->SetVisibility(
 		bShowIncident && bPhase4ProtectionVisible);
+}
+
+int32 AAMSimWorldPresenter::GetActiveMatureFacilityProceduralCount() const
+{
+	const auto CountVisible = [](const auto& Components)
+	{
+		return Algo::CountIf(
+			Components,
+			[](const UAMSimProceduralSurfaceComponent* Component)
+			{
+				return Component && Component->IsVisible();
+			});
+	};
+	return CountVisible(MatureFacilityBases) +
+		CountVisible(MatureFacilitySurfaces) +
+		CountVisible(MatureFacilityDetails);
+}
+
+int32 AAMSimWorldPresenter::GetActiveMatureLegacySiteSpriteCount() const
+{
+	return Algo::CountIf(
+		MatureSite,
+		[](const UPaperSpriteComponent* Component)
+		{
+			return Component && Component->IsVisible();
+		});
+}
+
+int32 AAMSimWorldPresenter::GetActiveLegacyPhase3InteriorProxyCount() const
+{
+	const auto CountVisible = [](const auto& Components)
+	{
+		return Algo::CountIf(
+			Components,
+			[](const UPaperSpriteComponent* Component)
+			{
+				return Component && Component->IsVisible();
+			});
+	};
+	int32 Count = CountVisible(Phase3Floor) +
+		CountVisible(Phase3Rooms) +
+		CountVisible(Phase3DepartureFlow) +
+		CountVisible(Phase3ArrivalFlow) +
+		CountVisible(Phase3LandsideFlow) +
+		CountVisible(Phase3BaggageFlow) +
+		CountVisible(Phase3AccessibleFlow) +
+		CountVisible(Phase3AccessibleDashes) +
+		CountVisible(Phase3SecurityBoundary) +
+		CountVisible(Phase3BaggageExceptionRoute) +
+		CountVisible(Phase3Congestion) +
+		CountVisible(Phase3Props);
+	for (const UPaperSpriteComponent* Component : {
+		Phase3Aircraft.Get(),
+		Phase3BaggageExceptionZone.Get(),
+		Phase3BaggageExceptionStation.Get()})
+	{
+		Count += Component && Component->IsVisible() ? 1 : 0;
+	}
+	return Count;
+}
+
+bool AAMSimWorldPresenter::HasMatureFacilityProceduralMaterialForTest() const
+{
+	const auto IsValidFamily = [](const auto& Components)
+	{
+		return Components.Num() > 0 &&
+			Algo::CountIf(
+				Components,
+				[](const UAMSimProceduralSurfaceComponent* Component)
+				{
+					return Component &&
+						Component->HasCookerVisibleMaterialForTest() &&
+						Component->GetSurfaceVertexCountForTest() >= 3;
+				}) == Components.Num();
+	};
+	return IsValidFamily(MatureFacilityBases) &&
+		IsValidFamily(MatureFacilitySurfaces) &&
+		IsValidFamily(MatureFacilityDetails);
 }

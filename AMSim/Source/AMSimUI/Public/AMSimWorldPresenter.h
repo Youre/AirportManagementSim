@@ -45,12 +45,13 @@ public:
 		const AMSim::FPhase6State& State);
 	void SetPhase1OverlayMode(int32 Mode);
 	void SetPhase3OverlayMode(int32 Mode);
-	void SetTerminalCutawayMode(bool bEnabled);
-	bool IsTerminalCutawayMode() const { return bTerminalCutawayMode; }
+	void SetTerminalInteractionMode(bool bEnabled);
+	bool IsTerminalInteractionMode() const { return bTerminalInteractionMode; }
 	FVector GetTerminalWorldCenter() const;
 	int32 GetActiveTerminalFloorProxyCount() const;
 	int32 GetActiveTerminalRoofProxyCount() const;
 	FVector GetTerminalFloorProxyScaleForTest() const;
+	FVector2D GetTerminalFloorWorldSizeForTest() const;
 	FVector GetTerminalRoofProxyScaleForTest() const;
 	FVector GetTerminalFloorProxyLocationForTest() const;
 	FVector GetTerminalRoofProxyLocationForTest() const;
@@ -68,6 +69,15 @@ public:
 	bool IsLegacyStarterTerminalVisibleForTest() const;
 	bool IsLegacyMatureTerminalVisibleForTest() const;
 	float GetTerminalObjectProxyYawForTest(int32 ObjectIndex) const;
+	FVector GetTerminalObjectProxyScaleForTest(int32 ObjectIndex) const;
+	int32 GetActiveTerminalSeatProxyCount() const;
+	int32 GetAllocatedTerminalSeatProxyCount() const
+	{
+		return TerminalLayoutSeatProxies.Num();
+	}
+	FVector GetTerminalSeatProxyScaleForTest(int32 SeatIndex) const;
+	float GetTerminalSeatProxyYawForTest(int32 SeatIndex) const;
+	bool HasTerminalSeatSpriteForTest() const { return TerminalSeatSprite != nullptr; }
 	void SetMatureOverviewMode(bool bEnabled);
 	void SetMatureSelectionFacility(bool bFacilitySelected);
 	void SetConstructionEditorOverlayVisible(bool bVisible);
@@ -101,6 +111,11 @@ public:
 	int32 GetActivePhase5CargoProxyCount() const;
 	int32 GetActivePhase6ProxyCount() const;
 	int32 GetActiveMatureSiteProxyCount() const;
+	int32 GetActiveMatureFacilityProceduralCount() const;
+	int32 GetActiveMatureLegacySiteSpriteCount() const;
+	int32 GetActiveLegacyPhase3InteriorProxyCount() const;
+	bool HasMatureFacilityProceduralMaterialForTest() const;
+	bool IsMatureOverviewModeForTest() const { return bMatureOverviewMode; }
 	int32 GetActivePhase1ConstructionProxyCount() const;
 	int32 GetActivePhase1EarthworkProxyCount() const;
 	bool ArePhase1ConstructionBedsBelowSurfaces() const;
@@ -188,6 +203,7 @@ private:
 	void SetPhase3WorldVisible(bool bVisible);
 	void SetMatureInfrastructureVisible(bool bVisible);
 	void SetMatureInfrastructureTint(const FLinearColor& Tint);
+	void SetMatureSiteSpritesVisible(bool bVisible);
 	void RefreshPhase3OverlayVisibility();
 	void RefreshIncidentPresentationVisibility();
 	void FinalizeTerminalPresentation(
@@ -346,6 +362,8 @@ private:
 	TArray<TObjectPtr<UPaperSpriteComponent>> TerminalLayoutEdgeProxies;
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> TerminalLayoutObjectProxies;
+	UPROPERTY()
+	TArray<TObjectPtr<UPaperSpriteComponent>> TerminalLayoutSeatProxies;
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> TerminalLayoutConstructionProxies;
 	UPROPERTY(VisibleAnywhere)
@@ -370,6 +388,12 @@ private:
 	TArray<TObjectPtr<UAMSimProceduralSurfaceComponent>> MatureTaxiConnectors;
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UAMSimProceduralSurfaceComponent>> MatureLandsideLinks;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UAMSimProceduralSurfaceComponent>> MatureFacilityBases;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UAMSimProceduralSurfaceComponent>> MatureFacilitySurfaces;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UAMSimProceduralSurfaceComponent>> MatureFacilityDetails;
 	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UPaperSpriteComponent>> MatureLandscapeClusters;
 	UPROPERTY(VisibleAnywhere)
@@ -474,6 +498,8 @@ private:
 	UPROPERTY()
 	TArray<TObjectPtr<UPaperSprite>> TerminalObjectSprites;
 	UPROPERTY()
+	TObjectPtr<UPaperSprite> TerminalSeatSprite;
+	UPROPERTY()
 	TArray<TObjectPtr<UPaperSprite>> TerminalConstructionSprites;
 	UPROPERTY()
 	TObjectPtr<UPaperSprite> TerminalConstructionWorkerSprite;
@@ -498,13 +524,15 @@ private:
 	int32 Phase1OverlayMode = 0;
 	bool bPhase3WorldVisible = false;
 	bool bPhase1AirportInitialized = false;
-	bool bTerminalCutawayMode = false;
+	bool bTerminalInteractionMode = false;
 	uint64 LastAppliedTerminalLayoutRevision = MAX_uint64;
 	AMSim::FTerminalLayoutQuerySnapshot CachedTerminalLayoutSnapshot;
 	AMSim::FPhase3State CachedTerminalPhase3State;
 	bool bPhase3RoutesConnected = false;
 	bool bPhase3BaggageExceptionActive = false;
-	bool bMatureOverviewMode = false;
+	// A restored simulation enters the exterior airport view unless a specific
+	// presentation surface explicitly requests another mode.
+	bool bMatureOverviewMode = true;
 	bool bMatureFacilitySelected = false;
 	bool bIncidentPresentationMode = false;
 	int32 Phase3PassengerAvailableCount = 0;

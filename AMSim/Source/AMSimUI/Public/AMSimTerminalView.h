@@ -51,6 +51,11 @@ public:
 	UFUNCTION()
 	void ShowBuildMode();
 	bool IsPresentationOpen() const { return bPresentationOpen; }
+	bool IsAirportWorldOverlayOpen() const
+	{
+		return bPresentationOpen &&
+			PresentationDestination == EAMSimTerminalPresentationDestination::Terminal;
+	}
 	bool HasBeenOpened() const { return bHasBeenOpened; }
 	EAMSimTerminalPresentationDestination GetPresentationDestinationForTest() const
 	{
@@ -61,6 +66,13 @@ public:
 	{
 		return PassengerFamilyTexture != nullptr;
 	}
+	static AMSim::FTerminalCellCoord MapTerminalWorldPointToCell(
+		const FVector& WorldPoint,
+		const FVector& Center,
+		int32 MinimumX,
+		int32 MinimumY,
+		int32 MaximumX,
+		int32 MaximumY);
 
 protected:
 	virtual TSharedRef<SWidget> RebuildWidget() override;
@@ -138,7 +150,7 @@ private:
 	void UpdateWorldPresentation(
 		const AMSim::FPhase3QuerySnapshot& Query,
 		const AMSim::FPhase3State& State);
-	void SetTerminalCutawayEnabled(bool bEnabled);
+	void SetTerminalInteractionEnabled(bool bEnabled);
 	void RestoreTerminalShellVisibility();
 	AMSim::FTerminalCellCoord PointerToTerminalCell(
 		const FGeometry& Geometry,
@@ -150,6 +162,12 @@ private:
 
 	UPROPERTY(Transient)
 	TObjectPtr<UBorder> TerminalChrome;
+	UPROPERTY(Transient)
+	TObjectPtr<UBorder> TerminalTopBar;
+	UPROPERTY(Transient)
+	TObjectPtr<UBorder> TerminalFooterLegend;
+	UPROPERTY(Transient)
+	TObjectPtr<UBorder> TerminalInteractionSurface;
 	UPROPERTY(Transient)
 	TObjectPtr<UCanvasPanel> TerminalCanvas;
 	UPROPERTY(Transient)

@@ -98,6 +98,7 @@ The inventory confirms presence, format, dimensions, and source classification. 
 - [Phase 7 actual-product visual validation](50-production/phase7-visual-validation/README.md)
 - [Growable terminal starter vertical slice](50-production/growable-terminal-starter-vertical-slice.md)
 - [Growable terminal visual validation](50-production/terminal-growth-visual-validation/README.md)
+- [Growable terminal content provenance](30-content-and-assets/terminal-growth-content-provenance.md)
 - [Phase 7 content and release provenance](30-content-and-assets/phase-7-release-content-provenance.md)
 - [Phase 1 reference-hardware gate](50-production/phase-1-reference-hardware.md)
 - [Phase 1 unassisted new-tester protocol](50-production/phase-1-new-tester-protocol.md)

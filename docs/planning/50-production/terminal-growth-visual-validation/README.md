@@ -87,6 +87,19 @@ is `scaled-content-terminal-packaged.png`. Object anchors, counts, rotations,
 routes, occupancy, schema, simulation, camera, and renderer ownership do not
 change.
 
+### Clean airport-campus zoning
+
+The enlarged terminal exposed overlap in the deterministic mature-airport
+fixture. That fixture now uses a shared site layout with separate runway,
+taxiway, apron/gate, terminal, curb/road, parking, and transit bands. Hangar,
+operations, fuel, and other support footprints sit outside the terminal AABB,
+while gate pads deliberately bridge the terminal-to-apron band. Terminal and
+furnishing scale remain exactly as approved; this correction moves exterior
+context around the terminal instead of shrinking it. The retained packaged
+capture and VA-01 board are under
+`../visual-baseline-remediation/audit/clean-airport-layout-phase4-overview.png`
+and `../visual-baseline-remediation/comparisons/clean-airport-layout-va01.png`.
+
 ## Equivalent-state assessment
 
 ### Starter GA terminal editor

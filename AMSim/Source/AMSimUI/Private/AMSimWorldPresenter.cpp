@@ -2,6 +2,7 @@
 
 #include "Algo/AllOf.h"
 #include "Algo/Count.h"
+#include "AMSimMatureAirportLayout.h"
 #include "AMSimPhase1Fixture.h"
 #include "AMSimProceduralSurfaceComponent.h"
 #include "AMSimWorldPresentationLayers.h"
@@ -885,23 +886,25 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 		TerminalSprite(ETerminalSprite::PartitionWall),
 		TerminalSprite(ETerminalSprite::CautionHatch),
 		TerminalSprite(ETerminalSprite::SortingTable));
+	const TConstArrayView<AMSim::MatureAirportLayout::FFacility>
+		MatureFacilities = AMSim::MatureAirportLayout::GetFacilities();
 	const FVector MatureSiteLocations[] = {
-		FVector(32000.0, 0.0, 8.0),
-		FVector(21000.0, 0.0, 9.0),
-		FVector(7000.0, 0.0, 10.0),
-		FVector(-34000.0, 0.0, 11.0),
-		FVector(-7500.0, 0.0, 40.0),
-		FVector(7000.0, -31000.0, 41.0),
-		FVector(7000.0, 30000.0, 42.0),
-		FVector(1000.0, 42000.0, 43.0),
-		FVector(-23500.0, -25000.0, 44.0),
-		FVector(-22500.0, -4000.0, 45.0),
-		FVector(-24000.0, 27000.0, 44.0),
-		FVector(-13500.0, 8000.0, 43.0),
-		FVector(40500.0, -41000.0, 39.0),
-		FVector(40500.0, 41000.0, 39.0),
-		FVector(-35000.0, -41000.0, 42.0),
-		FVector(7000.0, 21000.0, 46.0)};
+		FVector(AMSim::MatureAirportLayout::RunwayCenterWorldX, 0.0, 8.0),
+		FVector(AMSim::MatureAirportLayout::TaxiwayCenterWorldX, 0.0, 9.0),
+		FVector(AMSim::MatureAirportLayout::ApronCenterWorldX, 0.0, 10.0),
+		FVector(AMSim::MatureAirportLayout::AccessRoadCenterWorldX, 0.0, 11.0),
+		FVector(AMSim::MatureAirportLayout::TerminalCenterWorldX, 0.0, 40.0),
+		FVector(MatureFacilities[0].Center, 41.0),
+		FVector(MatureFacilities[1].Center, 42.0),
+		FVector(MatureFacilities[2].Center, 43.0),
+		FVector(MatureFacilities[3].Center, 44.0),
+		FVector(MatureFacilities[4].Center, 45.0),
+		FVector(MatureFacilities[5].Center, 44.0),
+		FVector(MatureFacilities[6].Center, 43.0),
+		FVector(50000.0, -50000.0, 39.0),
+		FVector(50000.0, 50000.0, 39.0),
+		FVector(MatureFacilities[7].Center, 42.0),
+		FVector(AMSim::MatureAirportLayout::ApronCenterWorldX, 26000.0, 46.0)};
 	const FVector MatureSiteScales[] = {
 		FVector(82.0, 1.0, 13.0),
 		FVector(76.0, 1.0, 10.0),
@@ -945,16 +948,16 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 		Phase5FreighterSprites[1]);
 	InitializePhase6Presentation();
 	const FVector LandscapeLocations[] = {
-		FVector(39000.0, -26000.0, 36.0),
-		FVector(39000.0, -8000.0, 36.0),
-		FVector(39000.0, 12000.0, 36.0),
-		FVector(39000.0, 30000.0, 36.0),
-		FVector(23000.0, -43000.0, 36.0),
-		FVector(22000.0, 43000.0, 36.0),
-		FVector(-5000.0, -43000.0, 36.0),
-		FVector(-6000.0, 43000.0, 36.0),
-		FVector(-36000.0, -25000.0, 36.0),
-		FVector(-36000.0, 30000.0, 36.0)};
+		FVector(50000.0, -46000.0, 36.0),
+		FVector(50000.0, -18000.0, 36.0),
+		FVector(50000.0, 18000.0, 36.0),
+		FVector(50000.0, 46000.0, 36.0),
+		FVector(25000.0, -58000.0, 36.0),
+		FVector(25000.0, 58000.0, 36.0),
+		FVector(0.0, -59000.0, 36.0),
+		FVector(0.0, 59000.0, 36.0),
+		FVector(-56000.0, -26000.0, 36.0),
+		FVector(-56000.0, 26000.0, 36.0)};
 	for (int32 Index = 0; Index < MatureLandscapeClusters.Num(); ++Index)
 	{
 		ConfigureSprite(
@@ -971,9 +974,9 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 		MatureLandscapeClusters[Index]->SetVisibility(false);
 	}
 	const FVector MatureAircraftLocations[] = {
-		FVector(7000.0, -9000.0, 63.0),
-		FVector(7000.0, 9000.0, 64.0),
-		FVector(23000.0, -28000.0, 65.0)};
+		FVector(-7000.0, -15000.0, 63.0),
+		FVector(-7000.0, 15000.0, 64.0),
+		FVector(27000.0, -30000.0, 65.0)};
 	const float MatureAircraftScales[] = {12.0f, 11.0f, 13.0f};
 	for (int32 Index = 0; Index < MatureAircraft.Num(); ++Index)
 	{
@@ -993,7 +996,7 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 	ConfigureSprite(
 		MatureSelection,
 		SelectionSprite,
-		FVector(7000.0, -9000.0, 75.0),
+		FVector(-7000.0, -15000.0, 75.0),
 		FVector(16.0f, 1.0f, 16.0f));
 	MatureSelection->SetVisibility(false);
 	const EOperationsSprite MatureVehicleSprites[] = {
@@ -1006,14 +1009,14 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 		EOperationsSprite::RentalCar,
 		EOperationsSprite::FireRescueTruck};
 	const FVector MatureVehicleLocations[] = {
-		FVector(8500.0, -10000.0, 66.0),
-		FVector(8500.0, 10000.0, 67.0),
-		FVector(7000.0, 24000.0, 68.0),
-		FVector(6000.0, 33000.0, 69.0),
-		FVector(-23000.0, -5000.0, 66.0),
-		FVector(-25500.0, -21000.0, 67.0),
-		FVector(-26000.0, 10000.0, 68.0),
-		FVector(10000.0, 30000.0, 69.0)};
+		FVector(-3000.0, -16000.0, 66.0),
+		FVector(-3000.0, 16000.0, 67.0),
+		FVector(12000.0, 30000.0, 68.0),
+		FVector(9000.0, 47000.0, 69.0),
+		FVector(-45000.0, 14000.0, 66.0),
+		FVector(-45000.0, -14000.0, 67.0),
+		FVector(-31500.0, -39000.0, 68.0),
+		FVector(9000.0, 50000.0, 69.0)};
 	for (int32 Index = 0; Index < MatureGroundVehicles.Num(); ++Index)
 	{
 		ConfigureSprite(
@@ -1024,12 +1027,12 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 		MatureGroundVehicles[Index]->SetVisibility(false);
 	}
 	const FVector MaturePeopleAreas[] = {
-		FVector(-10500.0, -12000.0, 70.0),
-		FVector(-10500.0, 0.0, 70.0),
-		FVector(-10500.0, 12000.0, 70.0),
-		FVector(7000.0, -12000.0, 70.0),
-		FVector(7000.0, 12000.0, 70.0),
-		FVector(-22000.0, -5000.0, 70.0)};
+		FVector(-11000.0, -15000.0, 70.0),
+		FVector(-11000.0, 0.0, 70.0),
+		FVector(-11000.0, 15000.0, 70.0),
+		FVector(2000.0, -15000.0, 70.0),
+		FVector(2000.0, 15000.0, 70.0),
+		FVector(-45000.0, 0.0, 70.0)};
 	for (int32 Index = 0; Index < MaturePeople.Num(); ++Index)
 	{
 		const FVector Base = MaturePeopleAreas[Index % UE_ARRAY_COUNT(MaturePeopleAreas)];
@@ -1055,8 +1058,8 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 			MatureBags[Index],
 			OperationSprite(EOperationsSprite::Suitcase),
 			FVector(
-				6500.0 + (Index % 4) * 750.0,
-				-5000.0 + (Index / 4) * 10000.0,
+				-5000.0 + (Index % 4) * 750.0,
+				-15000.0 + (Index / 4) * 30000.0,
 				69.0 + Index % 2),
 			FVector(1.1f, 1.0f, 1.1f));
 		MatureBags[Index]->SetVisibility(false);
@@ -1093,7 +1096,7 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 	ConfigureSprite(
 		Phase4IncidentRunway,
 		RunwaySprite,
-		FVector(27000.0, 0.0, 78.0),
+		FVector(AMSim::MatureAirportLayout::RunwayCenterWorldX, 0.0, 78.0),
 		FVector(2.8, 1.0, 45.0));
 	Phase4IncidentRunway->SetVisibility(false);
 	ConfigureSprite(
@@ -1101,7 +1104,7 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 		AircraftHeadingSprites.IsValidIndex(4)
 			? AircraftHeadingSprites[4]
 			: WhiteSprite,
-		FVector(24000.0, -21000.0, 85.0),
+		FVector(36000.0, -21000.0, 85.0),
 		FVector(14.0f, 1.0f, 14.0f));
 	Phase4AffectedAircraft->SetSpriteColor(
 		FLinearColor(0.92f, 0.93f, 0.96f, 1.0f));
@@ -1112,17 +1115,17 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 			Phase4ClosureHatch[Index],
 			TerminalSprite(ETerminalSprite::ProtectionZone),
 			FVector(
-				20500.0 + (Index % 2) * 5500.0,
+				32500.0 + (Index % 2) * 5500.0,
 				-28500.0 + (Index / 2) * 5000.0,
 				81.0 + Index % 2),
 			FVector(6.2f, 1.0f, 6.2f));
 		Phase4ClosureHatch[Index]->SetVisibility(false);
 	}
 	const FVector ClosureLocations[] = {
-		FVector(24000.0, -30000.0, 82.0),
-		FVector(24000.0, -12000.0, 82.0),
-		FVector(17000.0, -21000.0, 82.0),
-		FVector(31000.0, -21000.0, 82.0)};
+		FVector(36000.0, -30000.0, 82.0),
+		FVector(36000.0, -12000.0, 82.0),
+		FVector(30000.0, -21000.0, 82.0),
+		FVector(42000.0, -21000.0, 82.0)};
 	for (int32 Index = 0; Index < Phase4RunwayClosure.Num(); ++Index)
 	{
 		ConfigureSprite(
@@ -1135,13 +1138,13 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 		Phase4RunwayClosure[Index]->SetVisibility(false);
 	}
 	const FVector RouteLocations[] = {
-		FVector(-15000.0, 28000.0, 79.0),
-		FVector(-8000.0, 20000.0, 79.0),
-		FVector(-2000.0, 12000.0, 79.0),
-		FVector(4000.0, 4000.0, 79.0),
-		FVector(10000.0, -4000.0, 79.0),
-		FVector(16000.0, -12000.0, 79.0),
-		FVector(22000.0, -18000.0, 79.0)};
+		FVector(9000.0, 45000.0, 79.0),
+		FVector(14000.0, 34000.0, 79.0),
+		FVector(19000.0, 22000.0, 79.0),
+		FVector(24000.0, 10000.0, 79.0),
+		FVector(29000.0, -2000.0, 79.0),
+		FVector(33000.0, -12000.0, 79.0),
+		FVector(36000.0, -18000.0, 79.0)};
 	for (int32 Index = 0; Index < Phase4EmergencyRoute.Num(); ++Index)
 	{
 		ConfigureSprite(
@@ -1182,8 +1185,8 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 			Phase4ResponseVehicles[Index],
 			OperationSprite(ResponseSprite),
 			FVector(
-				-8000.0 + Index * 12000.0,
-				18000.0 - Index * 14000.0,
+				9000.0 + Index * 12000.0,
+				45000.0 - Index * 26000.0,
 				82.0 + Index),
 			FVector(9.5f, 1.0f, 9.5f));
 		Phase4ResponseVehicles[Index]->SetSpriteColor(
@@ -1193,7 +1196,7 @@ AAMSimWorldPresenter::AAMSimWorldPresenter()
 	ConfigureSprite(
 		Phase4ProtectionZone,
 		TerminalSprite(ETerminalSprite::ProtectionZone),
-		FVector(24000.0, -21000.0, 80.0),
+		FVector(36000.0, -21000.0, 80.0),
 		FVector(10.0f, 1.0f, 10.0f));
 	Phase4ProtectionZone->SetVisibility(false);
 	Phase4WeatherOverlay->SetVisibility(false);

@@ -34,7 +34,29 @@ Use the baseline as follows:
 
 Run the installer with `-Refresh` only when the fixture or presentation state
 has materially changed. The current installed schema-10 snapshot SHA-256 is
-`dac5a834c6b7607b7f35b3eb3111000a62eb3a2ed98264eb33291d9489799bd0`.
+`0aac593daa10bf0a51040759ef3f9e36a96af9918047a924c22277381f15ce38`.
+
+## Clean mature-airport layout
+
+The mature review airport now follows the VA-01 site hierarchy from north to
+south: runway, parallel taxi lane, apron and gate pads, the permanently
+roofless terminal, then curb, access road, parking, and transit. Hangar,
+operations, fuel, rail, and perimeter facilities flank those bands instead of
+occupying the terminal footprint. One shared `FAMSimMatureAirportLayout`
+contract owns the deterministic coordinates used by ordinary presentation,
+incident overlays, selection targets, and layout tests.
+
+The terminal scale and interior-content scale are unchanged. Gates are the
+only surfaces allowed to bridge the apron-to-terminal clearance; all support
+facility footprints are tested against the terminal bounds. The default
+management framing was shifted just enough to show the operating campus
+without introducing a facility-specific camera mode.
+
+Evidence:
+
+- [packaged overview](./audit/clean-airport-layout-phase4-overview.png)
+- [VA-01 comparison](./comparisons/clean-airport-layout-va01.png)
+- [comparison review](./comparisons/clean-airport-layout-va01.md)
 
 ## First bounded remediation: persistent HUD shell
 

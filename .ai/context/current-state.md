@@ -65,6 +65,14 @@ Active priorities:
   `scripts/ui/Install-VisualBaselineSave.ps1`; use `-Refresh` only after a
   material fixture or presentation change. Load it from the canonical package
   and return from Regional directly to the mature exterior airport.
+- Keep the mature review airport on the shared
+  `FAMSimMatureAirportLayout` contract. Its north-to-south order is runway,
+  parallel taxiway, apron/gates, permanently roofless terminal, curb/access
+  road, parking, and transit; support facilities flank those bands and must not
+  intersect the terminal footprint. Gate pads are the only intentional bridge
+  across the terminal-to-apron clearance. Do not reintroduce independent
+  fixture coordinates in presentation or shrink the approved terminal to make
+  exterior content fit.
 - Continue VA-01 remediation one bounded visual system at a time. The compact
   one-line header, header-adjacent time controls, map-dominant shell, inward-
   expanding right activity rail, hidden locked destinations, and Paper2D-only
@@ -143,17 +151,31 @@ Current architectural tensions:
   time-based owner observation.
 
 Next verification command:
-- Load `VisualBaseline` in `D:\AMSim-Current\Windows\AMSim.exe`, confirm the
-  roofless terminal interior is already present at doubled campus scale on the
-  airport canvas, its seats/desks/amenities and moving identities are readable
-  at overview zoom, and the footprint clears the landside access road, then
-  open and close Terminal tools without any world or camera transition. Pan and
-  zoom from the airport overview into the interior using the same management
-  camera. Then run the owner's build-mode visual acceptance journey, including
-  runway placement, connection-node discovery, a runway-to-gate taxi link, and
-  a service road crossing a gate footprint.
+- Load `VisualBaseline` in `D:\AMSim-Current\Windows\AMSim.exe` and inspect the
+  clean mature-airport zoning at the owner's preferred window size: runway and
+  taxiway north of the apron, gates bridging to the roofless terminal, and
+  curb/access/parking/transit clear to the south. Confirm no support facility,
+  ambient vehicle, route, or incident overlay occupies the terminal interior.
+  Then pan and zoom through the single canvas and open/close Terminal tools to
+  verify that the same layout and camera remain authoritative.
 
 Last verification:
+- 2026-08-16 EDT: the packaged `VisualBaseline` airport has been rebuilt around
+  one clean mature-layout contract. Runway, taxiway, apron/gates, the approved
+  doubled roofless terminal, curb/access road, parking, transit, and support
+  facilities occupy deliberate airside-to-landside bands; automation guards
+  the terminal anchor, apron/road clearances, and every support-facility AABB.
+  Terminal/furnishing scale, schema, simulation, routes, economy, and player
+  camera ownership remain unchanged. The full AMSim suite passes with 81
+  successes plus one retained warning, the 750-package Development build and
+  deterministic Phase 4 fixture pass, and the Phase 7 source audit is clean.
+  The canonical `VisualBaseline` snapshot SHA-256 is
+  0aac593daa10bf0a51040759ef3f9e36a96af9918047a924c22277381f15ce38;
+  all four other smoke save slots were restored byte-for-byte. The canonical
+  inner executable SHA-256 is
+  6964778416ACA737268CECE1FAA4383BAA39905B6991034C067427D402EFAE85. C
+  retains 124.71 GiB and D retains 668.17 GiB free; project caches measure
+  8.85 GiB, shared Unreal caches measure 0.81 GiB, and no cache was cleared.
 - 2026-08-16 EDT: terminal contents now match the doubled campus proportions.
   Static furniture and exact 2/4/6-seat compositions use the full sixteen-meter
   presentation cell with the existing aspect-preserving 84-percent footprint

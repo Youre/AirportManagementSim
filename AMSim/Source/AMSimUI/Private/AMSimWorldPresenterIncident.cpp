@@ -1,5 +1,6 @@
 #include "AMSimWorldPresenter.h"
 
+#include "AMSimMatureAirportLayout.h"
 #include "PaperSprite.h"
 #include "PaperSpriteComponent.h"
 
@@ -13,9 +14,9 @@ void AAMSimWorldPresenter::FinalizeIncidentPresentation(
 		TaxiwayAsphaltSprite,
 		ApronStandSprite};
 	const FVector WetSurfaceLocations[] = {
-		FVector(32000.0, 0.0, 48.0),
-		FVector(21000.0, 0.0, 49.0),
-		FVector(7000.0, 0.0, 50.0)};
+		FVector(AMSim::MatureAirportLayout::RunwayCenterWorldX, 0.0, 48.0),
+		FVector(AMSim::MatureAirportLayout::TaxiwayCenterWorldX, 0.0, 49.0),
+		FVector(AMSim::MatureAirportLayout::ApronCenterWorldX, 0.0, 50.0)};
 	const FVector WetSurfaceScales[] = {
 		FVector(80.0, 1.0, 12.2),
 		FVector(74.0, 1.0, 9.2),

@@ -5,6 +5,7 @@
 #include "AMSimExpandingToolButton.h"
 #include "AMSimPhase1WorldGeometry.h"
 #include "AMSimGameMode.h"
+#include "AMSimMatureAirportLayout.h"
 #include "AMSimOverviewView.h"
 #include "AMSimPhase1AircraftPresentation.h"
 #include "AMSimPhase1ConstructionPresentation.h"
@@ -114,9 +115,9 @@ bool FAMSimOrthographicCameraTest::RunTest(const FString& Parameters)
 	TestEqual(TEXT("Camera projection is orthographic"), Pawn->GetCamera()->ProjectionMode, ECameraProjectionMode::Orthographic);
 	TestEqual(TEXT("Camera frames the Phase 1.5 parcel"), Pawn->GetCamera()->OrthoWidth, 105000.0f);
 	TestEqual(
-		TEXT("Initial management framing keeps the starter terminal above the footer"),
+		TEXT("Initial management framing keeps the complete airport campus visible"),
 		AAMSimCameraPawn::GetInitialManagementCameraOffset(),
-		FVector(-12000.0f, 0.0f, 0.0f));
+		FVector(-5000.0f, 0.0f, 0.0f));
 	const FVector MousePan = AAMSimCameraPawn::CalculateScreenPanDelta(
 		FVector2D(120.0f, -60.0f),
 		108000.0f);
@@ -1266,6 +1267,9 @@ bool FAMSimTerminalGrowthWorldPresentationTest::RunTest(const FString& Parameter
 		TerminalPresentationGeometry::CampusOffsetWorldX;
 	TestTrue(TEXT("Spatial terminal uses the fixed landside campus anchor"),
 		Presenter->GetTerminalWorldCenter().Equals(ExpectedTerminalCenter));
+	TestEqual(TEXT("Terminal anchor matches the mature airport layout"),
+		Presenter->GetTerminalWorldCenter().X,
+		AMSim::MatureAirportLayout::TerminalCenterWorldX);
 	TestEqual(TEXT("Airport overview keeps the terminal roof permanently hidden"),
 		Presenter->GetActiveTerminalRoofProxyCount(), 0);
 	TestEqual(TEXT("Airport overview keeps the complete terminal interior visible"),
@@ -1295,12 +1299,39 @@ bool FAMSimTerminalGrowthWorldPresentationTest::RunTest(const FString& Parameter
 	TestTrue(TEXT("Starter terminal uses the doubled airport-world footprint"),
 		TerminalWorldSize.Equals(ExpectedTerminalWorldSize) &&
 		TerminalWorldSize.X >= 19200.0f && TerminalWorldSize.Y >= 28800.0f);
-	constexpr float MatureAccessRoadNorthEdgeWorldX = -31700.0f;
 	constexpr float GrownTerminalDepthWorld =
 		18.0f * TerminalPresentationGeometry::CellWorldUnits;
-	TestTrue(TEXT("Doubled grown terminal clears the landside access road"),
-		Presenter->GetTerminalWorldCenter().X - GrownTerminalDepthWorld * 0.5f >
-			MatureAccessRoadNorthEdgeWorldX);
+	const double TerminalAirsideEdgeWorldX =
+		Presenter->GetTerminalWorldCenter().X + GrownTerminalDepthWorld * 0.5;
+	const double ApronLandsideEdgeWorldX =
+		AMSim::MatureAirportLayout::ApronCenterWorldX -
+		AMSim::MatureAirportLayout::ApronWidth * 0.5;
+	TestTrue(TEXT("Grown terminal retains a clear gate band before the apron"),
+		ApronLandsideEdgeWorldX - TerminalAirsideEdgeWorldX >= 7000.0);
+	const double TerminalLandsideEdgeWorldX =
+		Presenter->GetTerminalWorldCenter().X - GrownTerminalDepthWorld * 0.5;
+	const double AccessRoadAirsideEdgeWorldX =
+		AMSim::MatureAirportLayout::AccessRoadCenterWorldX +
+		AMSim::MatureAirportLayout::AccessRoadWidth * 0.5;
+	TestTrue(TEXT("Grown terminal retains a clear curb band before the access road"),
+		TerminalLandsideEdgeWorldX - AccessRoadAirsideEdgeWorldX >= 5000.0);
+	const AMSim::MatureAirportLayout::FAxisAlignedFootprint TerminalFootprint = {
+		Presenter->GetTerminalWorldCenter().X - TerminalWorldSize.X * 0.5,
+		Presenter->GetTerminalWorldCenter().Y - TerminalWorldSize.Y * 0.5,
+		Presenter->GetTerminalWorldCenter().X + TerminalWorldSize.X * 0.5,
+		Presenter->GetTerminalWorldCenter().Y + TerminalWorldSize.Y * 0.5};
+	int32 OverlappingMatureFacilityCount = 0;
+	for (const AMSim::MatureAirportLayout::FFacility& Facility :
+		AMSim::MatureAirportLayout::GetFacilities())
+	{
+		OverlappingMatureFacilityCount +=
+			TerminalFootprint.Intersects(
+				AMSim::MatureAirportLayout::MakeFootprint(Facility))
+				? 1
+				: 0;
+	}
+	TestEqual(TEXT("No mature support facility intersects the terminal"),
+		OverlappingMatureFacilityCount, 0);
 	TestTrue(TEXT("Floor art uses the shared sixteen-meter presentation module"),
 		FMath::IsNearlyEqual(
 			PersistentFloorScale.X,

@@ -1673,3 +1673,29 @@ entries:
       E9F70D254097C9CA91985A81721DA606614C45605534BA5E3EA309E713B9C4B2. C
       retained 125.05 GiB, D retained 669.58 GiB, project caches measured 8.61
       GiB, shared Unreal caches measured 0.81 GiB, and no cache was cleared.
+  - timestamp: '2026-08-16T22:45:14.1212142-04:00'
+    commit: 305c24279c1b431466478b27bd5504948fd84a84
+    branch: codex/planning-docs-concept-art
+    worktree: C:/Users/dave/Documents/AirportManagementSim
+    command: 'Clean VisualBaseline airport layout: architecture/adversarial
+      reviews; centralized mature-airport layout contract; focused/full UE
+      automation; clean Development BuildCookRun; packaged Phase 4 fixture;
+      VA-01 comparison; source release audit; canonical baseline refresh with
+      non-baseline save-slot preservation; cache measurement'
+    result: passed-with-manual-follow-up
+    notes: Runway, taxiway, apron/gates, the approved doubled roofless terminal,
+      curb/access road, parking, transit, and support facilities now occupy
+      deliberate airside-to-landside bands. Layout automation guards the
+      terminal anchor, apron/road clearance bands, and non-intersection of all
+      support-facility footprints. Terminal and furnishing scale, simulation,
+      schema, routes, economy, and player camera ownership remain unchanged.
+      The full AMSim suite passed with 81 successes plus one retained warning;
+      the clean 750-package Development archive and deterministic Phase 4
+      fixture passed; the Phase 7 source audit passed. The canonical
+      VisualBaseline snapshot SHA-256 is
+      0aac593daa10bf0a51040759ef3f9e36a96af9918047a924c22277381f15ce38,
+      and the four other smoke save slots were restored byte-for-byte. The
+      canonical inner executable SHA-256 is
+      6964778416ACA737268CECE1FAA4383BAA39905B6991034C067427D402EFAE85. C
+      retained 124.71 GiB, D retained 668.17 GiB, project caches measured 8.85
+      GiB, shared Unreal caches measured 0.81 GiB, and no cache was cleared.

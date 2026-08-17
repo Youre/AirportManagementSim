@@ -29,7 +29,7 @@ public:
 		float InputAmount);
 	static FVector GetInitialManagementCameraOffset()
 	{
-		return FVector(-12000.0f, 0.0f, 0.0f);
+		return FVector(-5000.0f, 0.0f, 0.0f);
 	}
 
 private:

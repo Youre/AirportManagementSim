@@ -38,8 +38,8 @@ void AAMSimCameraPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	// The gameplay viewport is shallower than the full window because of the
-	// persistent header and footer. Bias the initial view toward the starter
-	// terminal so fixed context is not hidden beneath the footer.
+	// persistent header and footer. Bias the initial view just enough to keep
+	// the complete runway-to-road campus visible without shrinking the terminal.
 	SetActorLocation(GetActorLocation() + GetInitialManagementCameraOffset());
 	ManagementCameraLocation = GetActorLocation();
 	ManagementOrthoWidth = Camera->OrthoWidth;

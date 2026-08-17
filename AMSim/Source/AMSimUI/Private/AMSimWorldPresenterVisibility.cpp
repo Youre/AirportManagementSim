@@ -1,6 +1,7 @@
 #include "AMSimWorldPresenter.h"
 
 #include "Algo/Count.h"
+#include "AMSimMatureAirportLayout.h"
 #include "AMSimProceduralSurfaceComponent.h"
 #include "PaperSpriteComponent.h"
 
@@ -105,8 +106,11 @@ void AAMSimWorldPresenter::SetMatureSelectionFacility(
 	bMatureFacilitySelected = bFacilitySelected;
 	MatureSelection->SetRelativeLocation(
 		bFacilitySelected
-			? FVector(-7500.0, 0.0, 75.0)
-			: FVector(7000.0, -9000.0, 75.0));
+			? FVector(
+				AMSim::MatureAirportLayout::TerminalCenterWorldX,
+				AMSim::MatureAirportLayout::TerminalCenterWorldY,
+				75.0)
+			: FVector(-7000.0, -15000.0, 75.0));
 	MatureSelection->SetRelativeScale3D(
 		bFacilitySelected
 			? FVector(28.0f, 1.0f, 28.0f)

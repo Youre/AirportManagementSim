@@ -1,0 +1,185 @@
+{
+  "1": {
+    "inputs": {
+      "modelname": "visualbruno/TRELLIS.2-4B-FP8",
+      "backend": "flash_attn",
+      "device": "cuda",
+      "low_vram": true,
+      "keep_models_loaded": false,
+      "conv_backend": "flex_gemm",
+      "sparse_backend": "flash_attn",
+      "use_reconviagen": false
+    },
+    "class_type": "Trellis2LoadModel"
+  },
+  "16": {
+    "inputs": {
+      "image": [
+        "2",
+        2
+      ],
+      "padding": 10,
+      "remove_background": false,
+      "max_size": 1024
+    },
+    "class_type": "Trellis2PreProcessImage"
+  },
+  "4": {
+    "inputs": {
+      "pipeline": [
+        "1",
+        0
+      ],
+      "trimesh": [
+        "3",
+        0
+      ],
+      "image": [
+        "16",
+        0
+      ],
+      "seed": 12345,
+      "resolution": "fixed",
+      "shape_steps": 1024,
+      "shape_guidance_strength": 12,
+      "shape_guidance_rescale": 7.5,
+      "shape_rescale_t": 0.01,
+      "texture_steps": 5,
+      "texture_guidance_strength": 12,
+      "texture_guidance_rescale": 5,
+      "texture_rescale_t": 0.05,
+      "max_num_tokens": 3,
+      "generate_texture_slat": 999999,
+      "downsampling": false,
+      "shape_guidance_interval_start": 16,
+      "shape_guidance_interval_end": 0.1,
+      "texture_guidance_interval_start": 1,
+      "texture_guidance_interval_end": 0,
+      "use_tiled_decoder": 0.9,
+      "max_views": true,
+      "sampler": 4,
+      "verbose": "heun",
+      "dino_lock": false,
+      "dino_substeps": 0,
+      "dino_foundation_cap": 4
+    },
+    "class_type": "Trellis2MeshRefiner"
+  },
+  "27": {
+    "inputs": {
+      "mesh": [
+        "29",
+        0
+      ],
+      "remesh_band": 1,
+      "resolution": 1024,
+      "remove_floaters": true,
+      "remove_inner_faces": true
+    },
+    "class_type": "Trellis2ReconstructMeshWithQuad"
+  },
+  "10": {
+    "inputs": {
+      "mesh": [
+        "27",
+        0
+      ],
+      "target_face_num": [
+        "28",
+        0
+      ],
+      "method": "Cumesh"
+    },
+    "class_type": "Trellis2SimplifyMesh"
+  },
+  "30": {
+    "inputs": {
+      "mesh": [
+        "10",
+        0
+      ]
+    },
+    "class_type": "Trellis2FillHolesNicelyWithMeshlib"
+  },
+  "31": {
+    "inputs": {
+      "mesh": [
+        "30",
+        0
+      ],
+      "target_face_num": [
+        "28",
+        0
+      ],
+      "method": "Cumesh"
+    },
+    "class_type": "Trellis2SimplifyMesh"
+  },
+  "9": {
+    "inputs": {
+      "mesh": [
+        "31",
+        0
+      ],
+      "reorient_vertices": "90 degrees"
+    },
+    "class_type": "Trellis2MeshWithVoxelToTrimesh"
+  },
+  "6": {
+    "inputs": {
+      "trimesh": [
+        "9",
+        0
+      ],
+      "filename_prefix": [
+        "32",
+        0
+      ],
+      "file_format": "glb"
+    },
+    "class_type": "Trellis2ExportMesh"
+  },
+  "3": {
+    "inputs": {
+      "glb_path": "C:\\Git\\ComfyUI\\output\\Pistol_rk4_1000000_00001_.glb"
+    },
+    "class_type": "Trellis2LoadMesh"
+  },
+  "28": {
+    "inputs": {
+      "value": 500000
+    },
+    "class_type": "PrimitiveInt"
+  },
+  "32": {
+    "inputs": {
+      "value": "Refined"
+    },
+    "class_type": "PrimitiveString"
+  },
+  "29": {
+    "inputs": {
+      "mesh": [
+        "4",
+        0
+      ],
+      "max_permieters": 1
+    },
+    "class_type": "Trellis2FillHolesWithCuMesh"
+  },
+  "7": {
+    "inputs": {
+      "model_file": [
+        "6",
+        0
+      ]
+    },
+    "class_type": "Preview3D"
+  },
+  "2": {
+    "inputs": {
+      "image": "Tower04_6Views_Hy20_SourceImage_00001_.png"
+    },
+    "class_type": "Trellis2LoadImageWithTransparency"
+  }
+}

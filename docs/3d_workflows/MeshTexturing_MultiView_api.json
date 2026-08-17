@@ -1,0 +1,147 @@
+{
+  "42": {
+    "inputs": {
+      "value": "Textured"
+    },
+    "class_type": "PrimitiveString"
+  },
+  "34": {
+    "inputs": {
+      "trimesh": [
+        "44",
+        0
+      ]
+    },
+    "class_type": "Trellis2SmoothNormals"
+  },
+  "2": {
+    "inputs": {
+      "modelname": "microsoft/TRELLIS.2-4B",
+      "backend": "flash_attn",
+      "device": "cuda",
+      "low_vram": true,
+      "keep_models_loaded": false,
+      "conv_backend": "flex_gemm",
+      "sparse_backend": "flash_attn",
+      "use_reconviagen": false
+    },
+    "class_type": "Trellis2LoadModel"
+  },
+  "8": {
+    "inputs": {
+      "glb_path": "C:\\Git\\ComfyUI\\output\\3D\\Armor_MV_Qwen_4Steps\\Armor_MV_Qwen_4Steps_WhiteMesh_00001_.glb"
+    },
+    "class_type": "Trellis2LoadMesh"
+  },
+  "43": {
+    "inputs": {
+      "value": 2048
+    },
+    "class_type": "PrimitiveInt"
+  },
+  "11": {
+    "inputs": {
+      "trimesh": [
+        "34",
+        0
+      ],
+      "filename_prefix": [
+        "42",
+        0
+      ],
+      "file_format": "glb"
+    },
+    "class_type": "Trellis2ExportMesh"
+  },
+  "44": {
+    "inputs": {
+      "pipeline": [
+        "2",
+        0
+      ],
+      "front_image": [
+        "18",
+        0
+      ],
+      "trimesh": [
+        "8",
+        0
+      ],
+      "back_image": [
+        "46",
+        0
+      ],
+      "texture_size": [
+        "43",
+        0
+      ],
+      "seed": 12345,
+      "texture_steps": "fixed",
+      "texture_guidance_strength": 12,
+      "texture_guidance_rescale": 5,
+      "texture_rescale_t": 0.05,
+      "resolution": 3,
+      "texture_alpha_mode": 4096,
+      "double_side_material": "OPAQUE",
+      "texture_guidance_interval_start": false,
+      "texture_guidance_interval_end": 0,
+      "bake_on_vertices": 0.9,
+      "use_custom_normals": false,
+      "mesh_cluster_threshold_cone_half_angle_rad": false,
+      "front_axis": 60,
+      "blend_temperature": "z",
+      "sampler": 1,
+      "inpainting": "euler",
+      "verbose": "telea",
+      "dino_lock": false,
+      "dino_substeps": 0,
+      "dino_foundation_cap": 4
+    },
+    "class_type": "Trellis2MeshTexturingMultiView"
+  },
+  "1": {
+    "inputs": {
+      "image": "Image_1024_00067_.png"
+    },
+    "class_type": "Trellis2LoadImageWithTransparency"
+  },
+  "18": {
+    "inputs": {
+      "image": [
+        "1",
+        2
+      ],
+      "padding": 10,
+      "remove_background": false,
+      "max_size": 1024
+    },
+    "class_type": "Trellis2PreProcessImage"
+  },
+  "45": {
+    "inputs": {
+      "image": "Image_1024_00067_.png"
+    },
+    "class_type": "Trellis2LoadImageWithTransparency"
+  },
+  "46": {
+    "inputs": {
+      "image": [
+        "45",
+        2
+      ],
+      "padding": 10,
+      "remove_background": false,
+      "max_size": 1024
+    },
+    "class_type": "Trellis2PreProcessImage"
+  },
+  "12": {
+    "inputs": {
+      "model_file": [
+        "11",
+        0
+      ]
+    },
+    "class_type": "Preview3D"
+  }
+}

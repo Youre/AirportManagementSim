@@ -1,0 +1,393 @@
+{
+  "417": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "265": {
+    "inputs": {
+      "trimesh": [
+        "264",
+        0
+      ],
+      "filename_prefix": [
+        "267",
+        0
+      ],
+      "file_format": "glb"
+    },
+    "class_type": "Trellis2ExportMesh"
+  },
+  "363": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "267": {
+    "inputs": {
+      "string_a": [
+        "363",
+        0
+      ],
+      "string_b": "_Textured_MV",
+      "delimiter": ""
+    },
+    "class_type": "StringConcatenate"
+  },
+  "266": {
+    "inputs": {
+      "model_file": [
+        "265",
+        0
+      ]
+    },
+    "class_type": "Preview3D"
+  },
+  "259": {
+    "inputs": {
+      "string_b": [
+        "219",
+        0
+      ],
+      "string_a": "3D/",
+      "delimiter": ""
+    },
+    "class_type": "StringConcatenate"
+  },
+  "358": {
+    "inputs": {
+      "STRING": [
+        "260",
+        0
+      ]
+    },
+    "class_type": "SetNode"
+  },
+  "260": {
+    "inputs": {
+      "string_a": [
+        "259",
+        0
+      ],
+      "string_b": [
+        "219",
+        0
+      ],
+      "delimiter": "/"
+    },
+    "class_type": "StringConcatenate"
+  },
+  "431": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "1690": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "436": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "1691": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "432": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "433": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "1621": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "1752": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "1751": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "1750": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "1749": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "422": {
+    "inputs": {
+      "IMAGE": [
+        "420",
+        0
+      ]
+    },
+    "class_type": "SetNode"
+  },
+  "1478": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "435": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "1707": {
+    "inputs": {
+      "STRING": [
+        "1703",
+        0
+      ]
+    },
+    "class_type": "SetNode"
+  },
+  "1705": {
+    "inputs": {
+      "STRING": [
+        "1702",
+        0
+      ]
+    },
+    "class_type": "SetNode"
+  },
+  "1704": {
+    "inputs": {
+      "STRING": [
+        "1701",
+        0
+      ]
+    },
+    "class_type": "SetNode"
+  },
+  "1618": {
+    "inputs": {
+      "value": 2048
+    },
+    "class_type": "PrimitiveInt"
+  },
+  "1476": {
+    "inputs": {
+      "value": 12345
+    },
+    "class_type": "PrimitiveInt"
+  },
+  "1477": {
+    "inputs": {
+      "INT": [
+        "1476",
+        0
+      ]
+    },
+    "class_type": "SetNode"
+  },
+  "361": {
+    "inputs": {
+      "INT": [
+        "209",
+        0
+      ]
+    },
+    "class_type": "SetNode"
+  },
+  "1619": {
+    "inputs": {
+      "INT": [
+        "1618",
+        0
+      ]
+    },
+    "class_type": "SetNode"
+  },
+  "1754": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "1747": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "1748": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "1757": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "418": {
+    "inputs": {
+      "TRIMESH": [
+        "416",
+        0
+      ]
+    },
+    "class_type": "SetNode"
+  },
+  "1755": {
+    "inputs": {
+      "value": "C:\\Program Files\\Blender Foundation\\Blender 5.0\\blender.exe"
+    },
+    "class_type": "PrimitiveString"
+  },
+  "1756": {
+    "inputs": {
+      "STRING": [
+        "1755",
+        0
+      ]
+    },
+    "class_type": "SetNode"
+  },
+  "1027": {
+    "inputs": {
+      "IMAGE": [
+        "239",
+        2
+      ]
+    },
+    "class_type": "SetNode"
+  },
+  "416": {
+    "inputs": {
+      "image": [
+        "1691",
+        0
+      ],
+      "": [
+        "417",
+        0
+      ],
+      "target_face_num": [
+        "436",
+        0
+      ],
+      "_1": [
+        "1478",
+        0
+      ],
+      "_2": [
+        "1690",
+        0
+      ]
+    },
+    "class_type": "a7c4d8ae-5500-4f9b-9601-eafdb97e7a68"
+  },
+  "239": {
+    "inputs": {
+      "image": "Image_1024_00192_.png"
+    },
+    "class_type": "Trellis2LoadImageWithTransparency"
+  },
+  "1701": {
+    "inputs": {
+      "value": "0,90,180,270,0"
+    },
+    "class_type": "PrimitiveString"
+  },
+  "1702": {
+    "inputs": {
+      "value": "0,0,0,0,90"
+    },
+    "class_type": "PrimitiveString"
+  },
+  "1703": {
+    "inputs": {
+      "value": "1,1,1,1,1"
+    },
+    "class_type": "PrimitiveString"
+  },
+  "219": {
+    "inputs": {
+      "value": "Tower_XViews"
+    },
+    "class_type": "PrimitiveString"
+  },
+  "209": {
+    "inputs": {
+      "value": 500000
+    },
+    "class_type": "PrimitiveInt"
+  },
+  "264": {
+    "inputs": {
+      "trimesh": [
+        "431",
+        0
+      ],
+      "custom_images": [
+        "1749",
+        0
+      ],
+      "texture_size": [
+        "1621",
+        0
+      ],
+      "custom_azimuths": [
+        "1750",
+        0
+      ],
+      "custom_elevations": [
+        "1751",
+        0
+      ],
+      "custom_weights": [
+        "1752",
+        0
+      ],
+      "blend_texture": true,
+      "blend_exponent": 2,
+      "ortho_scale": 1.2,
+      "norm_size": 1.15,
+      "fill_holes": true,
+      "max_hole_size": 20,
+      "use_metallic": false,
+      "depth_eps": 0.01,
+      "mesh_cluster_threshold_cone_half_angle_rad": 60,
+      "add_alpha_channel": false,
+      "front_weight": 1,
+      "back_weight": 1,
+      "left_weight": 1,
+      "right_weight": 1,
+      "top_weight": 1,
+      "bottom_weight": 1
+    },
+    "class_type": "Trellis2MultiViewTexturing"
+  },
+  "420": {
+    "inputs": {
+      "": [
+        "432",
+        0
+      ],
+      "trimesh": [
+        "433",
+        0
+      ],
+      "_1": [
+        "435",
+        0
+      ],
+      "azimuths": [
+        "1747",
+        0
+      ],
+      "elevations": [
+        "1748",
+        0
+      ],
+      "_2": [
+        "1754",
+        0
+      ],
+      "blender_exec_path": [
+        "1757",
+        0
+      ]
+    },
+    "class_type": "bf1edf2f-ccb7-45ac-882e-55bdd5f0be86"
+  }
+}

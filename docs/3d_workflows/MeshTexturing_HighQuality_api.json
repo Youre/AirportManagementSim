@@ -1,0 +1,115 @@
+{
+  "39": {
+    "inputs": {
+      "modelname": "microsoft/TRELLIS.2-4B",
+      "backend": "flash_attn",
+      "device": "cuda",
+      "low_vram": true,
+      "keep_models_loaded": false,
+      "conv_backend": "flex_gemm",
+      "sparse_backend": "flash_attn",
+      "use_reconviagen": false
+    },
+    "class_type": "Trellis2LoadModel"
+  },
+  "260": {
+    "inputs": {
+      "value": 2048
+    },
+    "class_type": "PrimitiveInt"
+  },
+  "262": {
+    "inputs": {
+      "trimesh": [
+        "261",
+        0
+      ],
+      "filename_prefix": [
+        "219",
+        0
+      ],
+      "file_format": "glb"
+    },
+    "class_type": "Trellis2ExportMesh"
+  },
+  "263": {
+    "inputs": {
+      "model_file": [
+        "262",
+        0
+      ]
+    },
+    "class_type": "Preview3D"
+  },
+  "6": {
+    "inputs": {
+      "image": "Tower04_6Views_Hy20_SourceImage_00001_.png"
+    },
+    "class_type": "Trellis2LoadImageWithTransparency"
+  },
+  "219": {
+    "inputs": {
+      "value": "Tower"
+    },
+    "class_type": "PrimitiveString"
+  },
+  "268": {
+    "inputs": {
+      "glb_path": "C:\\Git\\ComfyUI\\output\\3D\\Tower04_6Views_Hy20\\Tower04_6Views_Hy20_WhiteMesh_HighPoly_00001_.glb"
+    },
+    "class_type": "Trellis2LoadMesh"
+  },
+  "194": {
+    "inputs": {
+      "image": [
+        "6",
+        2
+      ],
+      "padding": 10,
+      "remove_background": false,
+      "max_size": 1024
+    },
+    "class_type": "Trellis2PreProcessImage"
+  },
+  "261": {
+    "inputs": {
+      "pipeline": [
+        "39",
+        0
+      ],
+      "image": [
+        "194",
+        0
+      ],
+      "trimesh": [
+        "268",
+        0
+      ],
+      "texture_size": [
+        "260",
+        0
+      ],
+      "seed": 12345,
+      "texture_steps": "fixed",
+      "texture_guidance_strength": 25,
+      "texture_guidance_rescale": 7.5,
+      "texture_rescale_t": 0.01,
+      "resolution": 3,
+      "texture_alpha_mode": 2048,
+      "double_side_material": "OPAQUE",
+      "texture_guidance_interval_start": false,
+      "texture_guidance_interval_end": 0,
+      "max_views": 0.9,
+      "bake_on_vertices": 1,
+      "use_custom_normals": false,
+      "mesh_cluster_threshold_cone_half_angle_rad": false,
+      "sampler": 60,
+      "inpainting": "heun",
+      "verbose": "telea",
+      "dino_lock": false,
+      "dino_substeps": 0.35,
+      "dino_foundation_cap": 2
+    },
+    "class_type": "Trellis2MeshTexturing"
+  }
+}

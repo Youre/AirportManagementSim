@@ -1,5 +1,7 @@
 #pragma once
 
+#include "AMSimMatureAirportLayout.h"
+
 namespace AMSim::TerminalPresentationGeometry
 {
 	// Terminal layouts retain one stable logical construction grid in the
@@ -19,7 +21,9 @@ namespace AMSim::TerminalPresentationGeometry
 	// The legacy hut marker sits below the mature landside composition. Move the
 	// doubled roofless footprint between the apron and access road so it remains
 	// fully visible in the shared overview without a facility-owned camera.
-	inline constexpr float CampusOffsetWorldX = 21200.0f;
+	inline constexpr float CampusOffsetWorldX =
+		static_cast<float>(
+			MatureAirportLayout::TerminalCenterWorldX + 38400.0);
 
 	// Static furniture uses the full presentation cell so its uniform,
 	// footprint-safe fit remains proportional to the enlarged room geometry.

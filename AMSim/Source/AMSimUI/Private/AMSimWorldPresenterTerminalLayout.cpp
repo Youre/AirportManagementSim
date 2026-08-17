@@ -228,8 +228,9 @@ void AAMSimWorldPresenter::HideTerminalLayoutPool(
 FVector AAMSimWorldPresenter::GetTerminalWorldCenter() const
 {
 	// The terminal remains fixed map context. The presentation-only campus
-	// offset places the full-size roofless footprint south of the access road;
-	// it never depends on the player's mutable runway proposal.
+	// offset places the full-size roofless footprint between the apron and the
+	// landside access road; it never depends on the player's mutable runway
+	// proposal.
 	FVector Center = AMSim::MapPhase1PointToWorld(
 		AMSim::GetStarterTerminalCenter(),
 		40.0);

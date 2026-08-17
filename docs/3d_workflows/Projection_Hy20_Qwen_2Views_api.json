@@ -1,0 +1,459 @@
+{
+  "358": {
+    "inputs": {
+      "STRING": [
+        "260",
+        0
+      ]
+    },
+    "class_type": "SetNode"
+  },
+  "260": {
+    "inputs": {
+      "string_a": [
+        "259",
+        0
+      ],
+      "string_b": [
+        "219",
+        0
+      ],
+      "delimiter": "/"
+    },
+    "class_type": "StringConcatenate"
+  },
+  "417": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "265": {
+    "inputs": {
+      "trimesh": [
+        "1595",
+        0
+      ],
+      "filename_prefix": [
+        "267",
+        0
+      ],
+      "file_format": "glb"
+    },
+    "class_type": "Trellis2ExportMesh"
+  },
+  "363": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "267": {
+    "inputs": {
+      "string_a": [
+        "363",
+        0
+      ],
+      "string_b": "_Textured_MV",
+      "delimiter": ""
+    },
+    "class_type": "StringConcatenate"
+  },
+  "360": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "246": {
+    "inputs": {
+      "string_a": [
+        "360",
+        0
+      ],
+      "string_b": "_Textured",
+      "delimiter": ""
+    },
+    "class_type": "StringConcatenate"
+  },
+  "482": {
+    "inputs": {
+      "input_1": [
+        "1025",
+        0
+      ],
+      "input_2": [
+        "242",
+        0
+      ]
+    },
+    "class_type": "Trellis2Continue"
+  },
+  "242": {
+    "inputs": {
+      "trimesh": [
+        "1025",
+        0
+      ],
+      "filename_prefix": [
+        "246",
+        0
+      ],
+      "file_format": "glb"
+    },
+    "class_type": "Trellis2ExportMesh"
+  },
+  "389": {
+    "inputs": {
+      "*": [
+        "482",
+        0
+      ]
+    },
+    "class_type": "SetNode"
+  },
+  "429": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "266": {
+    "inputs": {
+      "model_file": [
+        "265",
+        0
+      ]
+    },
+    "class_type": "Preview3D"
+  },
+  "259": {
+    "inputs": {
+      "string_b": [
+        "219",
+        0
+      ],
+      "string_a": "3D/",
+      "delimiter": ""
+    },
+    "class_type": "StringConcatenate"
+  },
+  "432": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "433": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "435": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "436": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "1532": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "1490": {
+    "inputs": {
+      "INT": [
+        "1489",
+        0
+      ]
+    },
+    "class_type": "SetNode"
+  },
+  "1538": {
+    "inputs": {
+      "INT": [
+        "1537",
+        0
+      ]
+    },
+    "class_type": "SetNode"
+  },
+  "1535": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "419": {
+    "inputs": {
+      "TRELLIS2PIPELINE": [
+        "416",
+        0
+      ]
+    },
+    "class_type": "SetNode"
+  },
+  "424": {
+    "inputs": {
+      "IMAGE": [
+        "420",
+        1
+      ]
+    },
+    "class_type": "SetNode"
+  },
+  "422": {
+    "inputs": {
+      "IMAGE": [
+        "420",
+        0
+      ]
+    },
+    "class_type": "SetNode"
+  },
+  "356": {
+    "inputs": {
+      "IMAGE": [
+        "1564",
+        0
+      ]
+    },
+    "class_type": "SetNode"
+  },
+  "428": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "1534": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "384": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "361": {
+    "inputs": {
+      "INT": [
+        "209",
+        0
+      ]
+    },
+    "class_type": "SetNode"
+  },
+  "418": {
+    "inputs": {
+      "*": [
+        "416",
+        1
+      ]
+    },
+    "class_type": "SetNode"
+  },
+  "388": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "1493": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "1539": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "1574": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "1592": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "1575": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "412": {
+    "inputs": {
+      "IMAGE": [
+        "1563",
+        1
+      ]
+    },
+    "class_type": "SetNode"
+  },
+  "1027": {
+    "inputs": {
+      "IMAGE": [
+        "1563",
+        0
+      ]
+    },
+    "class_type": "SetNode"
+  },
+  "1492": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "1542": {
+    "inputs": {},
+    "class_type": "GetNode"
+  },
+  "1595": {
+    "inputs": {
+      "trimesh": [
+        "1532",
+        0
+      ],
+      "front_image": [
+        "1534",
+        0
+      ],
+      "back_image": [
+        "1535",
+        0
+      ],
+      "texture_size": [
+        "1542",
+        0
+      ],
+      "blend_texture": true,
+      "blend_exponent": 2,
+      "ortho_scale": 1.2,
+      "norm_size": 1.15,
+      "fill_holes": true,
+      "max_hole_size": 20,
+      "use_metallic": false,
+      "depth_eps": 0.01,
+      "mesh_cluster_threshold_cone_half_angle_rad": 60,
+      "add_alpha_channel": 1,
+      "front_weight": 1,
+      "back_weight": 0.01,
+      "left_weight": 0.01,
+      "right_weight": 0.01,
+      "top_weight": 0.01,
+      "bottom_weight": "",
+      "custom_azimuths": "",
+      "custom_elevations": ""
+    },
+    "class_type": "Trellis2MultiViewTexturing"
+  },
+  "1489": {
+    "inputs": {
+      "value": 12345
+    },
+    "class_type": "PrimitiveInt"
+  },
+  "1025": {
+    "inputs": {
+      "pipeline": [
+        "429",
+        0
+      ],
+      "image": [
+        "384",
+        0
+      ],
+      "trimesh": [
+        "388",
+        0
+      ],
+      "seed": [
+        "1493",
+        0
+      ],
+      "texture_size": [
+        "1539",
+        0
+      ],
+      "texture_steps": "fixed",
+      "texture_guidance_strength": 12,
+      "texture_guidance_rescale": 5,
+      "texture_rescale_t": 0.05,
+      "resolution": 3,
+      "texture_alpha_mode": 1024,
+      "double_side_material": "OPAQUE",
+      "texture_guidance_interval_start": false,
+      "texture_guidance_interval_end": 0,
+      "max_views": 0.9,
+      "bake_on_vertices": 1,
+      "use_custom_normals": false,
+      "mesh_cluster_threshold_cone_half_angle_rad": false,
+      "sampler": 60,
+      "inpainting": "heun",
+      "verbose": "telea",
+      "dino_lock": false,
+      "dino_substeps": 0,
+      "dino_foundation_cap": 4
+    },
+    "class_type": "Trellis2MeshTexturing"
+  },
+  "420": {
+    "inputs": {
+      "": [
+        "432",
+        0
+      ],
+      "trimesh": [
+        "433",
+        0
+      ],
+      "_1": [
+        "435",
+        0
+      ]
+    },
+    "class_type": "bf1edf2f-ccb7-45ac-882e-55bdd5f0be86"
+  },
+  "1563": {
+    "inputs": {
+      "image": [
+        "1574",
+        0
+      ],
+      "": [
+        "1575",
+        0
+      ],
+      "_1": [
+        "1592",
+        0
+      ]
+    },
+    "class_type": "ecc69b0a-ac71-4ba2-81e9-02fc51ec5746"
+  },
+  "1564": {
+    "inputs": {
+      "image": "Image_1024_00144_.png"
+    },
+    "class_type": "LoadImage"
+  },
+  "219": {
+    "inputs": {
+      "value": "Church"
+    },
+    "class_type": "PrimitiveString"
+  },
+  "1537": {
+    "inputs": {
+      "value": 2048
+    },
+    "class_type": "PrimitiveInt"
+  },
+  "209": {
+    "inputs": {
+      "value": 1000000
+    },
+    "class_type": "PrimitiveInt"
+  },
+  "416": {
+    "inputs": {
+      "image": [
+        "428",
+        0
+      ],
+      "": [
+        "417",
+        0
+      ],
+      "_1": [
+        "1492",
+        0
+      ],
+      "_2": [
+        "436",
+        0
+      ]
+    },
+    "class_type": "a7c4d8ae-5500-4f9b-9601-eafdb97e7a68"
+  }
+}

@@ -1,5 +1,6 @@
 #include "AMSimWorldPresenter.h"
 
+#include "AMSimMatureAirportLayout.h"
 #include "AMSimProceduralSurfaceComponent.h"
 #include "AMSimWorldPresentationLayers.h"
 
@@ -23,6 +24,13 @@ namespace
 		FVector2D Forward;
 		double Length;
 		double Width;
+		FLinearColor Border;
+		FLinearColor Surface;
+		EMatureFacilityDetail Detail;
+	};
+
+	struct FMatureFacilityStyle
+	{
 		FLinearColor Border;
 		FLinearColor Surface;
 		EMatureFacilityDetail Detail;
@@ -206,126 +214,157 @@ void AAMSimWorldPresenter::InitializeMatureInfrastructurePresentation()
 		AMSim::WorldPresentationLayers::Runway.Height,
 		AMSim::WorldPresentationLayers::Runway.SortPriority);
 	MatureRunway->BuildRunway(
-		FVector(32000.0, -60000.0, 0.0),
-		FVector(32000.0, 60000.0, 0.0),
-		11000.0,
+		FVector(
+			AMSim::MatureAirportLayout::RunwayCenterWorldX,
+			-AMSim::MatureAirportLayout::RunwayHalfLength,
+			0.0),
+		FVector(
+			AMSim::MatureAirportLayout::RunwayCenterWorldX,
+			AMSim::MatureAirportLayout::RunwayHalfLength,
+			0.0),
+		AMSim::MatureAirportLayout::RunwayWidth,
 		AMSim::MakeOperationalRunwayPalette());
 	MatureTaxiway->SetPresentationLayer(
 		AMSim::WorldPresentationLayers::Taxiway.Height,
 		AMSim::WorldPresentationLayers::Taxiway.SortPriority);
 	MatureTaxiway->BuildTaxiway(
-		FVector(21000.0, -54000.0, 0.0),
-		FVector(21000.0, 54000.0, 0.0),
-		6200.0,
+		FVector(
+			AMSim::MatureAirportLayout::TaxiwayCenterWorldX,
+			-AMSim::MatureAirportLayout::TaxiwayHalfLength,
+			0.0),
+		FVector(
+			AMSim::MatureAirportLayout::TaxiwayCenterWorldX,
+			AMSim::MatureAirportLayout::TaxiwayHalfLength,
+			0.0),
+		AMSim::MatureAirportLayout::TaxiwayWidth,
 		AMSim::MakeOperationalTaxiwayPalette());
 	MatureApron->SetPresentationLayer(
 		AMSim::WorldPresentationLayers::GateA.Height,
 		AMSim::WorldPresentationLayers::GateA.SortPriority);
 	MatureApron->BuildApron(
-		FVector(7000.0, 0.0, 0.0),
+		FVector(
+			AMSim::MatureAirportLayout::ApronCenterWorldX,
+			0.0,
+			0.0),
 		FVector(0.0, 1.0, 0.0),
-		72000.0,
-		30000.0,
+		AMSim::MatureAirportLayout::ApronLength,
+		AMSim::MatureAirportLayout::ApronWidth,
 		AMSim::MakeOperationalApronPalette(),
 		true);
 	MatureAccessRoad->SetPresentationLayer(
 		AMSim::WorldPresentationLayers::ServiceRoad.Height,
 		AMSim::WorldPresentationLayers::ServiceRoad.SortPriority);
 	MatureAccessRoad->BuildRoad(
-		FVector(-34000.0, -56000.0, 0.0),
-		FVector(-34000.0, 56000.0, 0.0),
-		4600.0,
+		FVector(
+			AMSim::MatureAirportLayout::AccessRoadCenterWorldX,
+			-AMSim::MatureAirportLayout::AccessRoadHalfLength,
+			0.0),
+		FVector(
+			AMSim::MatureAirportLayout::AccessRoadCenterWorldX,
+			AMSim::MatureAirportLayout::AccessRoadHalfLength,
+			0.0),
+		AMSim::MatureAirportLayout::AccessRoadWidth,
 		AMSim::MakeOperationalRoadPalette());
 
-	const double GateOffsets[] = {-23000.0, 0.0, 23000.0};
 	for (int32 Index = 0; Index < MatureGatePads.Num(); ++Index)
 	{
 		MatureGatePads[Index]->SetPresentationLayer(
 			AMSim::WorldPresentationLayers::GateA.Height + 0.2 + Index * 0.05,
 			AMSim::WorldPresentationLayers::GateA.SortPriority + 1 + Index);
 		MatureGatePads[Index]->BuildGateApron(
-			FVector(7000.0, GateOffsets[Index], 0.0),
+			FVector(
+				AMSim::MatureAirportLayout::GateCenterWorldX,
+				AMSim::MatureAirportLayout::GateCenterWorldY[Index],
+				0.0),
 			FVector(1.0, 0.0, 0.0),
-			22000.0,
-			15000.0,
+			AMSim::MatureAirportLayout::GateLength,
+			AMSim::MatureAirportLayout::GateWidth,
 			AMSim::MakeOperationalGatePalette());
 	}
 
-	const FVector AirsideLinkLocations[] = {
-		FVector(14500.0, -26000.0, 12.0),
-		FVector(14500.0, 26000.0, 13.0),
-		FVector(14500.0, 0.0, 14.0),
-		FVector(7000.0, -21000.0, 15.0),
-		FVector(7000.0, 21000.0, 16.0),
-		FVector(0.0, 0.0, 17.0)};
-	const double AirsideLinkLengths[] = {
-		26000.0, 26000.0, 22000.0, 18000.0, 18000.0, 18000.0};
+	const TConstArrayView<AMSim::MatureAirportLayout::FLinearConnection>
+		AirsideConnections =
+			AMSim::MatureAirportLayout::GetAirsideConnections();
+	check(AirsideConnections.Num() == MatureTaxiConnectors.Num());
 	for (int32 Index = 0; Index < MatureTaxiConnectors.Num(); ++Index)
 	{
+		const AMSim::MatureAirportLayout::FLinearConnection& Connection =
+			AirsideConnections[Index];
 		MatureTaxiConnectors[Index]->SetPresentationLayer(
 			AMSim::WorldPresentationLayers::Taxiway.Height + 0.3 + Index * 0.03,
 			AMSim::WorldPresentationLayers::Taxiway.SortPriority + 1 + Index);
 		MatureTaxiConnectors[Index]->BuildTaxiway(
-			AirsideLinkLocations[Index] -
-				FVector(AirsideLinkLengths[Index] * 0.5, 0.0, 0.0),
-			AirsideLinkLocations[Index] +
-				FVector(AirsideLinkLengths[Index] * 0.5, 0.0, 0.0),
+			FVector(
+				Connection.Center.X - Connection.Length * 0.5,
+				Connection.Center.Y,
+				0.0),
+			FVector(
+				Connection.Center.X + Connection.Length * 0.5,
+				Connection.Center.Y,
+				0.0),
 			5200.0,
 			AMSim::MakeOperationalTaxiwayPalette());
 		MatureTaxiConnectors[Index]->SetVisibility(false);
 	}
 
-	const FVector LandsideLinkLocations[] = {
-		FVector(-15500.0, -18000.0, 12.0),
-		FVector(-15500.0, 18000.0, 13.0),
-		FVector(-28500.0, -31000.0, 14.0),
-		FVector(-28500.0, -12000.0, 15.0),
-		FVector(-28500.0, 8000.0, 16.0),
-		FVector(-28500.0, 27000.0, 17.0),
-		FVector(-17500.0, 6000.0, 18.0)};
+	const TConstArrayView<AMSim::MatureAirportLayout::FLinearConnection>
+		LandsideConnections =
+			AMSim::MatureAirportLayout::GetLandsideConnections();
+	check(LandsideConnections.Num() == MatureLandsideLinks.Num());
 	for (int32 Index = 0; Index < MatureLandsideLinks.Num(); ++Index)
 	{
-		const double Length = Index < 2 ? 22000.0 : 18000.0;
+		const AMSim::MatureAirportLayout::FLinearConnection& Connection =
+			LandsideConnections[Index];
 		MatureLandsideLinks[Index]->SetPresentationLayer(
 			AMSim::WorldPresentationLayers::ServiceRoad.Height + 0.2 + Index * 0.03,
 			AMSim::WorldPresentationLayers::ServiceRoad.SortPriority + 1 + Index);
 		MatureLandsideLinks[Index]->BuildRoad(
-			LandsideLinkLocations[Index] - FVector(Length * 0.5, 0.0, 0.0),
-			LandsideLinkLocations[Index] + FVector(Length * 0.5, 0.0, 0.0),
+			FVector(
+				Connection.Center.X - Connection.Length * 0.5,
+				Connection.Center.Y,
+				0.0),
+			FVector(
+				Connection.Center.X + Connection.Length * 0.5,
+				Connection.Center.Y,
+				0.0),
 			4000.0,
 			AMSim::MakeOperationalRoadPalette());
 		MatureLandsideLinks[Index]->SetVisibility(false);
 	}
 
-	const FMatureFacilityDefinition Facilities[] = {
-		{{7000.0, -31000.0}, {0.0, 1.0}, 18000.0, 13000.0,
-			{0.08f, 0.17f, 0.20f, 1.0f}, {0.34f, 0.51f, 0.55f, 1.0f},
+	const FMatureFacilityStyle FacilityStyles[] = {
+		{{0.08f, 0.17f, 0.20f, 1.0f}, {0.34f, 0.51f, 0.55f, 1.0f},
 			EMatureFacilityDetail::Hangar},
-		{{7000.0, 30000.0}, {0.0, 1.0}, 12000.0, 9000.0,
-			{0.08f, 0.17f, 0.20f, 1.0f}, {0.74f, 0.68f, 0.52f, 1.0f},
+		{{0.08f, 0.17f, 0.20f, 1.0f}, {0.74f, 0.68f, 0.52f, 1.0f},
 			EMatureFacilityDetail::Operations},
-		{{1000.0, 42000.0}, {0.0, 1.0}, 10000.0, 8000.0,
-			{0.40f, 0.28f, 0.08f, 1.0f}, {0.18f, 0.22f, 0.20f, 1.0f},
+		{{0.40f, 0.28f, 0.08f, 1.0f}, {0.18f, 0.22f, 0.20f, 1.0f},
 			EMatureFacilityDetail::Fuel},
-		{{-23500.0, -25000.0}, {0.0, 1.0}, 22000.0, 16000.0,
-			{0.28f, 0.31f, 0.29f, 1.0f}, {0.14f, 0.16f, 0.15f, 1.0f},
+		{{0.28f, 0.31f, 0.29f, 1.0f}, {0.14f, 0.16f, 0.15f, 1.0f},
 			EMatureFacilityDetail::Parking},
-		{{-22500.0, -4000.0}, {0.0, 1.0}, 16000.0, 11000.0,
-			{0.30f, 0.34f, 0.31f, 1.0f}, {0.16f, 0.19f, 0.17f, 1.0f},
+		{{0.30f, 0.34f, 0.31f, 1.0f}, {0.16f, 0.19f, 0.17f, 1.0f},
 			EMatureFacilityDetail::Transit},
-		{{-24000.0, 27000.0}, {0.0, 1.0}, 19000.0, 6500.0,
-			{0.34f, 0.32f, 0.27f, 1.0f}, {0.68f, 0.63f, 0.51f, 1.0f},
+		{{0.34f, 0.32f, 0.27f, 1.0f}, {0.68f, 0.63f, 0.51f, 1.0f},
 			EMatureFacilityDetail::Rail},
-		{{-13500.0, 8000.0}, {0.0, 1.0}, 15000.0, 7000.0,
-			{0.35f, 0.31f, 0.24f, 1.0f}, {0.62f, 0.55f, 0.42f, 1.0f},
+		{{0.35f, 0.31f, 0.24f, 1.0f}, {0.62f, 0.55f, 0.42f, 1.0f},
 			EMatureFacilityDetail::Dropoff},
-		{{-35000.0, -41000.0}, {0.0, 1.0}, 7000.0, 3500.0,
-			{0.12f, 0.18f, 0.18f, 1.0f}, {0.25f, 0.33f, 0.31f, 1.0f},
+		{{0.12f, 0.18f, 0.18f, 1.0f}, {0.25f, 0.33f, 0.31f, 1.0f},
 			EMatureFacilityDetail::PerimeterGate}};
-	check(UE_ARRAY_COUNT(Facilities) == MatureFacilityBases.Num());
+	const TConstArrayView<AMSim::MatureAirportLayout::FFacility> Facilities =
+		AMSim::MatureAirportLayout::GetFacilities();
+	check(Facilities.Num() == MatureFacilityBases.Num());
+	check(UE_ARRAY_COUNT(FacilityStyles) == MatureFacilityBases.Num());
 	for (int32 Index = 0; Index < MatureFacilityBases.Num(); ++Index)
 	{
-		const FMatureFacilityDefinition& Definition = Facilities[Index];
+		const AMSim::MatureAirportLayout::FFacility& Layout = Facilities[Index];
+		const FMatureFacilityStyle& Style = FacilityStyles[Index];
+		const FMatureFacilityDefinition Definition = {
+			Layout.Center,
+			Layout.Forward,
+			Layout.Length,
+			Layout.Width,
+			Style.Border,
+			Style.Surface,
+			Style.Detail};
 		AMSim::FProceduralSurfaceMesh BaseMesh;
 		AMSim::AppendRoundedSurfaceRectangle(
 			BaseMesh,
